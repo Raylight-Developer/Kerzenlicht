@@ -9,11 +9,12 @@ using namespace CLASS::NODE;
 extern "C" {
 	EXPORT void Script_ID_build(EXEC::Script* node) {
 		node->clearIO();
-		node->addDataInput("A", "In  A", DATA::Type::DOUBLE);
+		node->addDataInput("A", DATA::Type::DOUBLE);
+		node->addDataOutput("A", DATA::Type::DOUBLE);
+		node->addExecInput("A");
+		node->addExecOutput("A");
+
 		node->data_inputs["A"]->default_value = Data(2.5, DATA::Type::DOUBLE);
-		node->addDataOutput("DATA OUT A", "Out A", DATA::Type::DOUBLE);
-		node->addExecOutput("EXEC OUT SECONDARY", "In  A");
-		node->addExecInput("A", "Out A");
 	}
 
 	EXPORT void Script_ID_exec(EXEC::Script* node) {
@@ -22,11 +23,11 @@ extern "C" {
 
 		uniform_int_distribution<> dis(-1000, 0);
 		node->internal_data["internal value"] = Data(static_cast<double>(dis(gen)), DATA::Type::DOUBLE);
-		node->exec_outputs["EXEC OUT SECONDARY"]->exec();
+		node->exec_outputs["A"]->exec();
 	}
 
 	EXPORT Data Script_ID_getData(const EXEC::Script* node, const string& port_request) {
-		if (port_request == "DATA OUT A") {
+		if (port_request == "A") {
 			auto it = node->internal_data.find("internal value");
 			if (it != node->internal_data.end())
 				return it->second;

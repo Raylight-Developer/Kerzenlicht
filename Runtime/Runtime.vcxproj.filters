@@ -15,10 +15,10 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Include\pch.h">
+    <ClInclude Include="Include\pch.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\framework.h">
+    <ClInclude Include="Include\framework.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Include\DLL.hpp">
