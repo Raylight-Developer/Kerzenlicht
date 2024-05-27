@@ -1,0 +1,176 @@
+#version 450 core
+
+#define TWO_PI   6.28318530718
+#define PI       3.14159265359
+#define INV_PI   0.31830988618
+#define DEG_RAD  0.01745329252
+#define PHI      1.61803398874
+
+#define MAX_DIST 10000
+#define EPSILON  0.0001
+
+struct Triangle {
+	vec4 v0;
+	vec4 v1;
+	vec4 v2;
+};
+
+struct Ray {
+	vec3 origin;
+	vec3 direction;
+};
+
+struct Hit {
+	float t_dist;
+	vec3  pos;
+	vec3  uvw;
+};
+
+// INPUT ------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
+layout(local_size_x = 32, local_size_y = 32, local_size_z = 1) in;
+
+layout(rgba8, binding = 0) uniform image2D screen;
+
+layout(std430, binding = 1) buffer TriangleDataBuffer {
+	Triangle triangles[];
+};
+
+uniform vec3 camera_pos;
+uniform vec3 camera_p_uv;
+uniform vec3 camera_p_u;
+uniform vec3 camera_p_v;
+
+// FUNCTIONS --------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
+
+float f_sunflowerRadius(in int k, in int n, in int b) {
+	if (k > n - b)
+		return 1.0;
+	return sqrt(float(k) - 0.5) / sqrt(float(n) - (float(b) + 1.0) / 2.0);
+}
+
+vec2 f_sunflowerPoint(in int k, in int n, in int b, in float alpha, in bool geodesic) {
+	float angle_stride = geodesic ? 360.0 * PHI : 2.0 * 3.14159265359 / (PHI * PHI);
+	float theta = float(k) * angle_stride;
+	float r = f_sunflowerRadius(k, n, b);
+	return vec2(r * cos(theta), r * sin(theta));
+}
+
+void sunflowerDistribution(in int n, in float alpha, in bool geodesic) {
+	int b = int(round(alpha * sqrt(float(n))));
+	for (int i = 0; i < n; i++) {
+		// POINT = f_sunflowerPoint(i + 1, n, b, alpha, geodesic);
+	}
+}
+
+
+bool f_rayTriangleIntersection(in Ray ray, in Triangle tri, inout float ray_length) {
+	vec3 v1v0 = tri.v1.xyz - tri.v0.xyz;
+	vec3 v2v0 = tri.v2.xyz - tri.v0.xyz;
+	vec3 rov0 = ray.origin - tri.v0.xyz;
+
+	vec3  normal = cross(v1v0, v2v0);
+	vec3  q = cross(rov0, ray.direction);
+	float d = 1 / dot(ray.direction, normal);
+	float u = d * dot(-q, v2v0);
+	float v = d * dot(q, v1v0);
+	float t = d * dot(-normal, rov0);
+
+	if (u < 0 || v < 0 || (u + v) > 1)
+		return false;
+
+	ray_length = t;
+	return true;
+}
+
+vec3 f_barycentricCoords(in vec3 hit_pos, in Triangle tri) {
+	vec3 v0 = tri.v1.xyz - tri.v0.xyz;
+	vec3 v1 = tri.v2.xyz - tri.v0.xyz;
+	vec3 v2 = hit_pos - tri.v0.xyz;
+
+	float d00 = dot(v0, v0);
+	float d01 = dot(v0, v1);
+	float d11 = dot(v1, v1);
+	float d20 = dot(v2, v0);
+	float d21 = dot(v2, v1);
+
+	float denom = d00 * d11 - d01 * d01;
+
+	float v = (d11 * d20 - d01 * d21) / denom;
+	float w = (d00 * d21 - d01 * d20) / denom;
+	float u = 1 - v - w;
+
+	return vec3(u, v, w);
+}
+
+// SCENE --------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
+Hit f_SceneIntersection(in Ray ray) {
+	Hit hit_data;
+	hit_data.t_dist = MAX_DIST;
+	float t_dist = MAX_DIST;
+	for (uint i = 0; i < triangles.length(); i++) {
+		if (f_rayTriangleIntersection(ray, triangles[i], t_dist)) {
+			if (t_dist < hit_data.t_dist && t_dist > EPSILON) {
+				hit_data.t_dist = t_dist;
+				hit_data.pos = ray.origin + ray.direction * t_dist;
+				hit_data.uvw = f_barycentricCoords(hit_data.pos, triangles[i]);
+			}
+		}
+	}
+	return hit_data;
+}
+
+// MAIN FUNCTIONS ---------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
+
+Ray f_cameraRay(vec2 uv) {
+	return Ray(camera_pos, normalize(camera_p_uv + (camera_p_u * uv.x) + (camera_p_v * uv.y)  - camera_pos));
+}
+
+vec3 f_pathTrace(in Ray ray) {
+	Hit hit_data = f_SceneIntersection(ray);
+	if (hit_data.t_dist != MAX_DIST)
+		return hit_data.uvw;
+	return vec3(0);
+}
+
+//#define AA
+
+void main() {
+	ivec2 work_id = ivec2(gl_GlobalInvocationID.xy);
+	ivec2 resolution = imageSize(screen);
+#ifdef AA
+	float pixel_size = 0.5 / float(max(resolution.x, resolution.y));
+	vec3 pixel_color = vec3(0);
+	for (int i = 0; i < 9; i++) {
+		vec2 uv = (vec2(work_id) - 1 - vec2(resolution) / 2) / float(max(resolution.x, resolution.y));
+		if      (i == 1)
+			uv += pixel_size * vec2( 0.70707,  0.70707);
+		else if (i == 2)
+			uv += pixel_size * vec2( 0.70707, -0.70707);
+		else if (i == 3)
+			uv += pixel_size * vec2(-0.70707, -0.70707);
+		else if (i == 4)
+			uv += pixel_size * vec2(-0.70707,  0.70707);
+		else if (i == 5)
+			uv += pixel_size * vec2( 0,  1);
+		else if (i == 6)
+			uv += pixel_size * vec2( 0, -1);
+		else if (i == 7)
+			uv += pixel_size * vec2( 1,  0);
+		else if (i == 8)
+			uv += pixel_size * vec2(-1,  0);
+
+		Ray ray = f_cameraRay(uv);
+		pixel_color += f_pathTrace(ray);
+	}
+	pixel_color /= 9;
+	imageStore(screen, work_id, vec4(pixel_color, 1));
+#else
+	vec2 uv = (vec2(work_id) - 1 - vec2(resolution) / 2) / float(max(resolution.x, resolution.y));
+	Ray ray = f_cameraRay(uv);
+	imageStore(screen, work_id, vec4(f_pathTrace(ray), 1));
+#endif
+}

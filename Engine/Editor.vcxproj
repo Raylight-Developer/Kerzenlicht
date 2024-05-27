@@ -1,0 +1,260 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Engine\Include\Core\Compiler.hpp" />
+    <ClInclude Include="Editor\Include\Workspaces\Node_Editor.hpp" />
+    <ClInclude Include="Editor\Include\Viewport_Realtime.hpp" />
+    <ClInclude Include="Engine\Include\Core\Nodes.hpp" />
+    <ClInclude Include="Engine\Include\Core\Node_Def.hpp" />
+    <ClInclude Include="Editor\Include\Node_GUI.hpp" />
+    <ClInclude Include="Engine\Include\OpenGL\OpenGL.hpp" />
+    <ClInclude Include="Engine\Include\OpenGL\Main_Viewport.hpp" />
+    <ClInclude Include="Editor\Include\Node_GUI_Def.hpp" />
+    <ClInclude Include="Resources\Documentation\Layout.hpp" />
+    <ClInclude Include="Editor\Include\Workspaces\Shelf.hpp" />
+    <QtMoc Include="Editor\Include\GUI.hpp" />
+    <ClInclude Include="Engine\Include\Object\Object.hpp" />
+    <ClInclude Include="Engine\Include\Object\Data.hpp" />
+    <ClInclude Include="Engine\Include\Object\Data\Atmosphere.hpp" />
+    <ClInclude Include="Engine\Include\Object\Data\Curve.hpp" />
+    <ClInclude Include="Engine\Include\Object\Data\Empty.hpp" />
+    <ClInclude Include="Engine\Include\Object\Data\Force.hpp" />
+    <ClInclude Include="Engine\Include\Object\Data\Group.hpp" />
+    <ClInclude Include="Engine\Include\Object\Data\Light.hpp" />
+    <ClInclude Include="Engine\Include\Object\Data\Primitive.hpp" />
+    <ClInclude Include="Engine\Include\Object\Data\Sfx.hpp" />
+    <ClInclude Include="Engine\Include\Object\Data\Skeleton.hpp" />
+    <ClInclude Include="Engine\Include\Object\Data\Vfx.hpp" />
+    <ClInclude Include="Engine\Include\Object\Data\Volume.hpp" />
+    <ClInclude Include="Editor\Include\Main_Window.hpp" />
+    <ClInclude Include="Editor\Include\QT.hpp" />
+    <ClInclude Include="Engine\Include\Object\Data\Mesh.hpp" />
+    <ClInclude Include="Editor\Include\Workspaces\API.hpp" />
+    <ClInclude Include="Engine\Include\Rendering\Material.hpp" />
+    <ClInclude Include="Editor\Include\Workspaces\File_View.hpp" />
+    <ClInclude Include="Editor\Include\Workspaces\Header.hpp" />
+    <ClInclude Include="Editor\Include\Workspaces\Log.hpp" />
+    <ClInclude Include="Editor\Include\Workspaces\Manager.hpp" />
+    <ClInclude Include="Editor\Include\Workspaces\Scene_Outliner.hpp" />
+    <ClInclude Include="Editor\Include\Workspaces\Properties.hpp" />
+    <QtMoc Include="Editor\Include\Workspaces\Viewport.hpp" />
+    <ClInclude Include="Engine\Include\Core\File.hpp" />
+    <ClInclude Include="Engine\Include\Include.hpp" />
+    <ClInclude Include="Engine\Include\Core\Lace.hpp" />
+    <ClInclude Include="Engine\Include\Core\Ops.hpp" />
+    <ClInclude Include="Engine\Include\Object\Data\Camera.hpp" />
+    <ClInclude Include="Engine\Include\Core\Python_API.hpp" />
+    <ClInclude Include="Engine\Include\Rendering\Render_Kernel.hpp" />
+    <QtMoc Include="Editor\Include\CPU_Renderer.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Engine\Include\OpenGL\glad.c" />
+    <ClCompile Include="Engine\Source\Core\Node_Def.cpp" />
+    <ClCompile Include="Engine\Source\Core\Compiler.cpp" />
+    <ClCompile Include="Engine\Source\Core\Nodes.cpp" />
+    <ClCompile Include="Editor\Source\GUI.cpp" />
+    <ClCompile Include="Engine\Source\Object\Data\Curve.cpp" />
+    <ClCompile Include="Engine\Source\Object\Data\Empty.cpp" />
+    <ClCompile Include="Engine\Source\Object\Data\Force.cpp" />
+    <ClCompile Include="Engine\Source\Object\Data\Group.cpp" />
+    <ClCompile Include="Engine\Source\Object\Data\Light.cpp" />
+    <ClCompile Include="Engine\Source\Object\Data\Primitive.cpp" />
+    <ClCompile Include="Engine\Source\Object\Data\Sfx.cpp" />
+    <ClCompile Include="Engine\Source\Object\Data\Skeleton.cpp" />
+    <ClCompile Include="Engine\Source\Object\Data\Vfx.cpp" />
+    <ClCompile Include="Engine\Source\Object\Data\Volume.cpp" />
+    <ClCompile Include="Engine\Source\OpenGL\OpenGL.cpp" />
+    <ClCompile Include="Engine\Source\Rendering\Material.cpp" />
+    <ClCompile Include="Engine\Source\Object\Data.cpp" />
+    <ClCompile Include="Engine\Source\Object\Data\Atmosphere.cpp" />
+    <ClCompile Include="Engine\Source\Object\Data\Mesh.cpp" />
+    <ClCompile Include="Editor\Source\Main_Window.cpp" />
+    <ClCompile Include="Editor\Source\QT.cpp" />
+    <ClCompile Include="Editor\Source\Workspaces\API.cpp" />
+    <ClCompile Include="Editor\Source\Workspaces\File_View.cpp" />
+    <ClCompile Include="Editor\Source\Workspaces\Header.cpp" />
+    <ClCompile Include="Editor\Source\Workspaces\Log.cpp" />
+    <ClCompile Include="Editor\Source\Workspaces\Manager.cpp" />
+    <ClCompile Include="Editor\Source\Workspaces\Scene_Outliner.cpp" />
+    <ClCompile Include="Editor\Source\Workspaces\Properties.cpp" />
+    <ClCompile Include="Editor\Source\Workspaces\Viewport.cpp" />
+    <ClCompile Include="Engine\Source\Object\Object.cpp" />
+    <ClCompile Include="Engine\Source\Core\Python_API.cpp" />
+    <ClCompile Include="Editor\Source\CPU_Renderer.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="Engine\Source\Core\File.cpp" />
+    <ClCompile Include="Engine\Source\Core\Lace.cpp" />
+    <ClCompile Include="Engine\Source\Core\Ops.cpp" />
+    <ClCompile Include="Engine\Source\Object\Data\Camera.cpp" />
+    <ClCompile Include="Engine\Source\Rendering\Render_Kernel.cpp" />
+    <ClCompile Include="Editor\Source\Workspaces\Node_Editor.cpp" />
+    <ClCompile Include="Editor\Source\Viewport_Realtime.cpp" />
+    <ClCompile Include="Editor\Source\Node_GUI.cpp" />
+    <ClCompile Include="Editor\Source\Workspaces\Shelf.cpp" />
+    <ClCompile Include="Engine\Source\OpenGL\Main_Viewport.cpp" />
+    <ClCompile Include="Editor\Source\Node_GUI_Def.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Shaders\CPU_Shader.frag" />
+    <None Include="Resources\Shaders\CPU_Shader.vert" />
+    <None Include="Resources\Shaders\GPU_Shader.comp" />
+    <None Include="Resources\Shaders\GPU_Shader.frag" />
+    <None Include="Resources\Shaders\GPU_Shader.vert" />
+    <None Include="Resources\Shaders\Realtime_Shader.comp" />
+    <None Include="Resources\Shaders\Realtime_Shader.frag" />
+    <None Include="Resources\Shaders\Realtime_Shader.vert" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{d09b4857-438f-41e0-a588-829587bfdd0a}</ProjectGuid>
+    <Keyword>QtVS_v304</Keyword>
+    <WindowsTargetPlatformVersion Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">10.0.22621.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">10.0.22621.0</WindowsTargetPlatformVersion>
+    <QtMsBuild Condition="'$(QtMsBuild)'=='' OR !Exists('$(QtMsBuild)\qt.targets')">$(MSBuildProjectDirectory)\QtMsBuild</QtMsBuild>
+    <ProjectName>Editor</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <ImportGroup Condition="Exists('$(QtMsBuild)\qt_defaults.props')">
+    <Import Project="$(QtMsBuild)\qt_defaults.props" />
+  </ImportGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'" Label="QtSettings">
+    <QtInstall>6.5.1_msvc2019_64</QtInstall>
+    <QtModules>core;gui;widgets;opengl;openglwidgets</QtModules>
+    <QtBuildConfig>debug</QtBuildConfig>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'" Label="QtSettings">
+    <QtInstall>6.7.1_msvc2019_64</QtInstall>
+    <QtModules>core;gui;widgets;opengl;openglwidgets</QtModules>
+    <QtBuildConfig>release</QtBuildConfig>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <IncludePath>$(ProjectDir)\Engine\Include;$(ProjectDir)\Editor\Include;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <IncludePath>$(ProjectDir)\Engine\Include;$(ProjectDir)\Editor\Include;$(IncludePath)</IncludePath>
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Label="Vcpkg" />
+  <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <VcpkgInstalledDir>
+    </VcpkgInstalledDir>
+  </PropertyGroup>
+  <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <VcpkgInstalledDir>
+    </VcpkgInstalledDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>C:\Programs\Coding\Lib\python 3.11\include;C:\Programs\Coding\Lib\pybind 2.11.1\include;C:\Programs\Coding\Lib\glm 0.9.9.8;C:\Programs\Coding\Lib\glfw-3.3.8;C:\Programs\Coding\Lib\glad</AdditionalIncludeDirectories>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <OpenMPSupport>true</OpenMPSupport>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>C:\Programs\Coding\Lib\glfw-3.3.8\lib-vc2022;C:\Programs\Coding\Lib\python 3.11\libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glfw3.lib;opengl32.lib;python311.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <PreLinkEvent />
+    <PreLinkEvent>
+      <Command>"$(VC_ExecutablePath_x64)\lib.exe" /out:"$(OutDir)$(ProjectName).lib" "$(IntermediateOutputPath)*.obj"</Command>
+    </PreLinkEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>false</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>C:\Programs\Coding\Lib\python 3.11\include;C:\Programs\Coding\Lib\pybind 2.11.1\include;C:\Programs\Coding\Lib\glm 0.9.9.8;C:\Programs\Coding\Lib\glfw-3.3.8;C:\Programs\Coding\Lib\glad</AdditionalIncludeDirectories>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <OpenMPSupport>true</OpenMPSupport>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>C:\Programs\Coding\Lib\glfw-3.3.8\lib-vc2022;C:\Programs\Coding\Lib\python 3.11\libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glfw3.lib;opengl32.lib;python311.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <PreLinkEvent />
+    <PreLinkEvent>
+      <Command>"$(VC_ExecutablePath_x64)\lib.exe" /out:"$(OutDir)$(ProjectName).lib" "$(IntermediateOutputPath)*.obj"</Command>
+    </PreLinkEvent>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">
+    <Import Project="$(QtMsBuild)\qt.targets" />
+  </ImportGroup>
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

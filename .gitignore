@@ -1,0 +1,13 @@
+.vs/
+x64/
+enc_temp_folder/
+External/
+Resources/Other
+Resources/glad.c
+Resources/Dev/
+Kerzenlicht Renderer.vcxproj.user
+Resources/Assets/Test.krz
+Resources/Testing.blend
+/Test Tiny/DLL/Debug
+Engine/Editor.vcxproj.user
+Runtime/Runtime.vcxproj.user

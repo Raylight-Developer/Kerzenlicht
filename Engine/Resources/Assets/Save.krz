@@ -1,0 +1,101 @@
+
+┌Header
+ Version 1.0.0
+└Header
+┌Materials( 0 )
+└Materials
+┌Node-Trees( 1 )
+ ┌Node-Tree [ 0 ]
+  ┌Nodes
+   #Node :: EXEC :: Tick [ 0 ] ( -110 0 )
+  └Nodes
+  ┌Build-E
+  └Build-E
+  ┌Build-D
+  └Build-D
+ └Node-Tree
+└Node-Trees
+┌Data( 3 )
+ ┌Data :: Mesh [ 0 ] Cube
+  ┌Vertices( 8 )
+   0 ( 0.2 -0.2 -0.2 )
+   1 ( 0.2 0.2 -0.2 )
+   2 ( 0.2 -0.2 0.2 )
+   3 ( 0.2 0.2 0.2 )
+   4 ( -0.2 -0.2 -0.2 )
+   5 ( -0.2 0.2 -0.2 )
+   6 ( -0.2 -0.2 0.2 )
+   7 ( -0.2 0.2 0.2 )
+  └Vertices
+  ┌Faces( 12 )
+   0 [ 1 2 0 ]
+   1 [ 3 6 2 ]
+   2 [ 7 4 6 ]
+   3 [ 5 0 4 ]
+   4 [ 6 0 2 ]
+   5 [ 3 5 7 ]
+   6 [ 1 3 2 ]
+   7 [ 3 7 6 ]
+   8 [ 7 5 4 ]
+   9 [ 5 1 0 ]
+   10 [ 6 4 0 ]
+   11 [ 3 1 5 ]
+  └Faces
+ └Data :: Mesh
+ ┌Data :: Mesh [ 1 ] Plane
+  ┌Vertices( 4 )
+   0 ( 2 0 -2 )
+   1 ( -2 0 -2 )
+   2 ( 2 0 2 )
+   3 ( -2 0 2 )
+  └Vertices
+  ┌Faces( 2 )
+   0 [ 1 2 0 ]
+   1 [ 1 3 2 ]
+  └Faces
+ └Data :: Mesh
+ ┌Data :: Group [ 2 ] Container
+ └Data :: Group
+└Data
+┌Objects( 3 )
+ ┌Object [ 0 ] Cube
+  Position 0 0.6 0
+  Rotation 0 0 0
+  Scale 1 1 1
+  Type Mesh
+ └Object
+ ┌Object [ 1 ] Plane
+  Position 0 0 0
+  Rotation 0 0 0
+  Scale 1 1 1
+  Type Mesh
+ └Object
+ ┌Object [ 2 ] Container
+  Position 0 0 0
+  Rotation 0 0 0
+  Scale 1 1 1
+  Type Group
+ └Object
+└Objects
+┌Scenes( 3 )
+ ┌Scene [ 0 ]
+  ┌Objects
+   2 Container
+  └Objects
+ └Scene
+└Scenes
+┌Build-Steps
+ Active-Scene 0
+ ┌Object-Group
+  2 0
+  2 1
+ └Object-Group
+ ┌Object-Data
+  0 0
+  1 1
+  2 2
+ └Object-Data
+ ┌Object-Node
+  2 0
+ └Object-Node
+└Build-Steps

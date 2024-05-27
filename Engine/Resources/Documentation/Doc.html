@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<link rel="stylesheet" href="./Style.css"></link>
+<body>
+
+<h1>Project Layout</h1>
+
+<h3 class="Reserved">API</h3>
+<pre>
+	<span class="define">EXPORT</span> <span class="type"  >void</span> <span class="func">[ID]_build   </span> (EXEC::Script* node)
+	<span class="define">EXPORT</span> <span class="type"  >void</span> <span class="func">[ID]_exec    </span> (EXEC::Script* node)
+	<span class="define">EXPORT</span> <span class="struct">Data</span> <span class="func">[ID]_getData </span> (EXEC::Script* node, const string& port_request)
+	<span class="define">EXPORT</span> <span class="type"  >void</span> <span class="func">[ID]_buildGUI</span> (EXEC::Script* node, GUI::NODE::Node* gui_node);
+	<span class="define">EXPORT</span> <span class="type"  >void</span> <span class="func">[ID]_paintGUI</span> (EXEC::Script* node, GUI::NODE::Node* gui_node, QPainter* painter, const QStyleOptionGraphicsItem* style_option, QWidget* widget);
+
+	EXEC::Script* node
+
+	node->clearIO();
+
+	node->addDataInput ("<KEY>", "<LABEL>");
+	node->addDataOutput("<KEY>", "<LABEL>");
+	node->addExecInput ("<KEY>", "<LABEL>");
+	node->addExecOutput("<KEY>", "<LABEL>");
+
+	node->data_inputs ["<KEY>"] -> return Data_I_Port*
+	node->data_outputs["<KEY>"] -> return Data_O_Port*
+	node->exec_inputs ["<KEY>"] -> return Exec_I_Port*
+	node->exec_outputs["<KEY>"] -> return Exec_O_Port*
+
+	node->internal_data["<KEY>"] -> return Data
+</pre>
