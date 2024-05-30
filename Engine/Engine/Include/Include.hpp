@@ -157,25 +157,24 @@ inline ulvec2 str_to_ul(const string& val_1, const string& val_2) { return ulvec
 inline ulvec3 str_to_ul(const string& val_1, const string& val_2, const string& val_3) { return ulvec3(stoull(val_1), stoull(val_2), stoull(val_3)); }
 inline ulvec4 str_to_ul(const string& val_1, const string& val_2, const string& val_3, const string& val_4) { return ulvec4(stoull(val_1), stoull(val_2), stoull(val_3), stoull(val_4)); }
 
-#define MIN_VEC1   std::numeric_limits<vec1 >::min()
-#define MIN_DVEC1  std::numeric_limits<dvec1>::min()
-#define MAX_VEC1   std::numeric_limits<vec1 >::max()
-#define MAX_DVEC1  std::numeric_limits<dvec1>::max()
+#define MIN_VEC1  numeric_limits<vec1 >::min()
+#define MAX_VEC1  numeric_limits<vec1 >::max()
+#define MIN_DVEC1 numeric_limits<dvec1>::min()
+#define MAX_DVEC1 numeric_limits<dvec1>::max()
 
-#define MIN_INT8   std::numeric_limits<int8 >::min()
-#define MIN_INT16  std::numeric_limits<int16>::min()
-#define MIN_INT32  std::numeric_limits<int32>::min()
-#define MIN_INT64  std::numeric_limits<int64>::min()
+#define MIN_INT8  numeric_limits<int8 >::min()
+#define MAX_INT8  numeric_limits<int8 >::max()
+#define MIN_INT16 numeric_limits<int16>::min()
+#define MAX_INT16 numeric_limits<int16>::max()
+#define MIN_INT32 numeric_limits<int32>::min()
+#define MAX_INT32 numeric_limits<int32>::max()
+#define MIN_INT64 numeric_limits<int64>::min()
+#define MAX_INT64 numeric_limits<int64>::max()
 
-#define MAX_INT8   std::numeric_limits<int8 >::max()
-#define MAX_INT16  std::numeric_limits<int16>::max()
-#define MAX_INT32  std::numeric_limits<int32>::max()
-#define MAX_INT64  std::numeric_limits<int64>::max()
-
-#define MAX_UINT8  std::numeric_limits<uint8 >::max()
-#define MAX_UINT16 std::numeric_limits<uint16>::max()
-#define MAX_UINT32 std::numeric_limits<uint32>::max()
-#define MAX_UINT64 std::numeric_limits<uint64>::max()
+#define MAX_UINT8  numeric_limits<uint8 >::max()
+#define MAX_UINT16 numeric_limits<uint16>::max()
+#define MAX_UINT32 numeric_limits<uint32>::max()
+#define MAX_UINT64 numeric_limits<uint64>::max()
 
 #define PI          dvec1(3.141592653589793)
 #define TWO_PI      dvec1(6.283185307179586)

@@ -46,6 +46,8 @@ namespace GUI {
 			Node();
 			~Node();
 
+			virtual void onDataTypeSet(const CLASS::NODE::DATA::Type& type) {};
+			virtual void onDataTypeUnset() {};
 			virtual void onPortConnect(Port* port, Connection* connection) {};
 			virtual void onPortDisconnect(Port* port) {};
 
@@ -124,6 +126,7 @@ namespace GUI {
 			QPointF pos_l;
 			QPointF pos_r;
 
+			CLASS::NODE::DATA::Type data_type;
 			QColor color;
 
 			Connection(Port* port_l, Port* port_r);

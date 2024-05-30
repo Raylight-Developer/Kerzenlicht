@@ -155,6 +155,7 @@ namespace CLASS {
 			enum struct Type { VARIABLE, POINTER, GET, SET };
 			struct Pointer : Node {
 				PORT::Data_O_Port* port;
+				DATA::Type pointer_type;
 				void* pointer;
 
 				Pointer();

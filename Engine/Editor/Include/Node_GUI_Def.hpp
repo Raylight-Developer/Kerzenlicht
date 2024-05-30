@@ -31,6 +31,9 @@ namespace GUI {
 			};
 		}
 		namespace LINK {
+			struct Pointer : Node {
+				Pointer(const ivec2& pos);
+			};
 		}
 		namespace MATH {
 			struct MATH : Node {
@@ -39,6 +42,10 @@ namespace GUI {
 				PORT::Data_I_Port* in_b;
 				PORT::Data_O_Port* out_a;
 
+				CLASS::NODE::DATA::Type data_type;
+
+				void onDataTypeSet(const CLASS::NODE::DATA::Type& type) override;
+				void onDataTypeUnset() override;
 				void onPortConnect(Port* port, Connection* connection) override;
 				void onPortDisconnect(Port* port) override;
 			};

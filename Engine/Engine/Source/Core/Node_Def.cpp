@@ -246,13 +246,19 @@ CLASS::NODE::Data CLASS::NODE::LINK::Set::getData(const string& slot_id) const {
 CLASS::NODE::LINK::Pointer::Pointer() {
 	type = CLASS::NODE::Type::LINK;
 	sub_type = ETOU(CLASS::NODE::LINK::Type::POINTER);
+	pointer_type = DATA::Type::EMPTY;
+	pointer = nullptr;
 
 	port = new PORT::Data_O_Port(this, "0", DATA::Type::ANY);
 	outputs.push_back(port);
 }
 
 CLASS::NODE::Data CLASS::NODE::LINK::Pointer::getData(const string& slot_id) const {
-	return NODE::Data(pointer, DATA::Type::SCENE);
+	switch (pointer_type) {
+		case DATA::Type::SCENE: return NODE::Data(static_cast<Scene*>(pointer), DATA::Type::SCENE);
+		case DATA::Type::OBJECT: return NODE::Data(static_cast<Object*>(pointer), DATA::Type::OBJECT);
+	}
+	return NODE::Data();
 }
 
 CLASS::NODE::MATH::MATH::MATH() {

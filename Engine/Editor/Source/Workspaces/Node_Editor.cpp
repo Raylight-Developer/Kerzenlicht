@@ -7,8 +7,6 @@ GUI::WORKSPACE::Workspace_Node_Editor::Workspace_Node_Editor(Workspace_Manager* 
 	parent(i_parent),
 	file(parent->file)
 {
-	parent->setMaximumWidth(400);
-
 	viewport = new Node_Viewport(this);
 	shelf = new Node_Shelf(this);
 
@@ -130,8 +128,6 @@ void GUI::WORKSPACE::Node_Viewport::mouseReleaseEvent(QMouseEvent* event) {
 							if (drop_port->connection) delete drop_port->connection;
 							drop_port->connection = new GUI::NODE::Connection(source_port, drop_port);
 							source_port->outgoing_connections.push_back(drop_port->connection);
-							drop_port->onConnect(drop_port->connection);
-							source_port->onConnect(drop_port->connection);
 						}
 					}
 				}
@@ -146,8 +142,6 @@ void GUI::WORKSPACE::Node_Viewport::mouseReleaseEvent(QMouseEvent* event) {
 							if (source_port->connection) delete source_port->connection;
 							source_port->connection = new GUI::NODE::Connection(drop_port, source_port);
 							drop_port->outgoing_connections.push_back(source_port->connection);
-							drop_port->onConnect(source_port->connection);
-							source_port->onConnect(source_port->connection);
 						}
 					}
 				}
@@ -162,8 +156,6 @@ void GUI::WORKSPACE::Node_Viewport::mouseReleaseEvent(QMouseEvent* event) {
 							if (source_port->connection) delete source_port->connection;
 							source_port->connection = new GUI::NODE::Connection(source_port, drop_port);
 							drop_port->incoming_connections.push_back(source_port->connection);
-							drop_port->onConnect(source_port->connection);
-							source_port->onConnect(source_port->connection);
 						}
 					}
 				}
@@ -173,8 +165,6 @@ void GUI::WORKSPACE::Node_Viewport::mouseReleaseEvent(QMouseEvent* event) {
 							if (drop_port->connection) delete drop_port->connection;
 							drop_port->connection = new GUI::NODE::Connection(drop_port, source_port);
 							source_port->incoming_connections.push_back(drop_port->connection);
-							drop_port->onConnect(drop_port->connection);
-							source_port->onConnect(drop_port->connection);
 						}
 					}
 				}

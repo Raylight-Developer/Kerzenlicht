@@ -33,18 +33,10 @@ GUI::NODE::Node::~Node() {
 
 void GUI::NODE::Port::onConnect(Connection* connection) {
 	node->onPortConnect(this, connection);
-	//switch (type) {
-	//	case CLASS::NODE::PORT::Type::DATA_I: if (static_cast<GUI::NODE::PORT::Data_I_Port*>(this)->data_type == CLASS::NODE::DATA::Type::ANY) color = connection->port_l->color; break;
-	//	case CLASS::NODE::PORT::Type::DATA_O: if (static_cast<GUI::NODE::PORT::Data_O_Port*>(this)->data_type == CLASS::NODE::DATA::Type::ANY) color = connection->port_r->color; break;
-	//}
 }
 
 void GUI::NODE::Port::onDisconnect() {
 	node->onPortDisconnect(this);
-	//switch (type) {
-	//	case CLASS::NODE::PORT::Type::DATA_I: color = typeColor(static_cast<GUI::NODE::PORT::Data_I_Port*>(this)->data_type); break;
-	//	case CLASS::NODE::PORT::Type::DATA_O: color = typeColor(static_cast<GUI::NODE::PORT::Data_O_Port*>(this)->data_type); break;
-	//}
 }
 
 QRectF GUI::NODE::Port::boundingRect() const {
@@ -227,10 +219,44 @@ GUI::NODE::Connection::Connection(Port* port_l, Port* port_r) :
 	port_r(port_r)
 {
 	setZValue(3);
+
 	pos_l = mapFromItem(port_l, port_l->boundingRect().center());
 	pos_r = mapFromItem(port_l, port_l->boundingRect().center());
-	color = port_l->color;
-	if (port_l and port_r) {
+
+	data_type = CLASS::NODE::DATA::Type::EMPTY;
+	color = QColor(255, 255, 255);
+
+
+	if (port_l and !port_r) {
+		if (auto port_l_d = dynamic_cast<PORT::Data_O_Port*>(port_l)) {
+			if (port_l->color != typeColor(CLASS::NODE::DATA::Type::ANY)) {
+				data_type = port_l_d->data_type;
+			}
+			else {
+				data_type = CLASS::NODE::DATA::Type::ANY;
+			}
+			color = port_l->color;
+		}
+	}
+	else {
+		if (auto port_l_d = dynamic_cast<PORT::Data_O_Port*>(port_l)) {
+			if (port_l->color != typeColor(CLASS::NODE::DATA::Type::ANY)) {
+				data_type = port_l_d->data_type;
+			}
+			else {
+				data_type = CLASS::NODE::DATA::Type::ANY;
+			}
+			color = port_l->color;
+		}
+		else if (auto port_r_d = dynamic_cast<PORT::Data_I_Port*>(port_r)) {
+			if (port_r->color != typeColor(CLASS::NODE::DATA::Type::ANY)) {
+				data_type = port_r_d->data_type;
+			}
+			else {
+				data_type = CLASS::NODE::DATA::Type::ANY;
+			}
+			color = port_r->color;
+		}
 		port_l->onConnect(this);
 		port_r->onConnect(this);
 		pos_r = mapFromItem(port_r, port_r->boundingRect().center());
