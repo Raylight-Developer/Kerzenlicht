@@ -66,8 +66,8 @@ namespace CLASS {
 		Node();
 		~Node();
 
-		virtual void exec(const string& slot_id) {}
-		virtual NODE::Data getData(const string& slot_id) const;
+		virtual void exec(const uint16& slot_id) {}
+		virtual NODE::Data getData(const uint16& slot_id) const;
 	};
 	namespace NODE {
 		enum struct Type {
@@ -112,7 +112,8 @@ namespace CLASS {
 
 		struct Port {
 			Node* node; // ref
-			string slot_id;
+			uint16 slot_id;
+			PORT::Type type;
 
 			Port(Node* node);
 
@@ -132,10 +133,10 @@ namespace CLASS {
 				Data_O_Port* connection; // ref
 				Data default_value;
 
-				DATA::Type type;
+				DATA::Type data_type;
 				DATA::Modifier modifier;
 
-				Data_I_Port(Node* parent, const string& slot_id, const DATA::Type& type, const DATA::Modifier& modifier = DATA::Modifier::SINGLE);
+				Data_I_Port(Node* parent, const uint16& slot_id, const DATA::Type& type, const DATA::Modifier& modifier = DATA::Modifier::SINGLE);
 				~Data_I_Port();
 
 				Data getData() const override;
@@ -144,10 +145,10 @@ namespace CLASS {
 			struct Data_O_Port : Port {
 				vector<Data_I_Port*> outgoing_connections; // ref
 
-				DATA::Type type;
+				DATA::Type data_type;
 				DATA::Modifier modifier;
 
-				Data_O_Port(Node* parent, const string& slot_id, const DATA::Type& type, const DATA::Modifier& modifier = DATA::Modifier::SINGLE);
+				Data_O_Port(Node* parent, const uint16& slot_id, const DATA::Type& type, const DATA::Modifier& modifier = DATA::Modifier::SINGLE);
 				~Data_O_Port();
 
 				Data getData() const override;
@@ -156,7 +157,7 @@ namespace CLASS {
 			struct Exec_I_Port : Port {
 				vector<Exec_O_Port*> incoming_connections; // ref
 
-				Exec_I_Port(Node* parent, const string& slot_id);
+				Exec_I_Port(Node* parent, const uint16& slot_id);
 				~Exec_I_Port();
 
 				void exec() const override;
@@ -165,7 +166,7 @@ namespace CLASS {
 			struct Exec_O_Port : Port {
 				Exec_I_Port* connection; // ref
 
-				Exec_O_Port(Node* parent, const string& slot_id);
+				Exec_O_Port(Node* parent, const uint16& slot_id);
 				~Exec_O_Port();
 
 				void exec() const override;

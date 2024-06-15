@@ -12,6 +12,7 @@ GUI::WORKSPACE::Timeline::Timeline(Workspace_Viewport* parent, CLASS::File* file
 
 	info = new GUI::Label(this);
 	info->setText("FPS: 0 Frame: ");
+	info->setFixedWidth(64);
 
 	GUI::Value_Input* current_frame = new GUI::Value_Input(this);
 	current_frame->setText("0");
@@ -36,8 +37,8 @@ GUI::WORKSPACE::Timeline::Timeline(Workspace_Viewport* parent, CLASS::File* file
 	});
 
 	addWidget(slider);
-	addWidget(info);
 	addWidget(current_frame);
+	addWidget(info);
 }
 
 GUI::WORKSPACE::Workspace_Viewport::Workspace_Viewport(Workspace_Manager* parent, Log_Console* log, CLASS::File* file) :

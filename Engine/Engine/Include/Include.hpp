@@ -182,6 +182,7 @@ inline ulvec4 str_to_ul(const string& val_1, const string& val_2, const string& 
 #define DEG_RAD     dvec1(0.017453292519943)
 #define EULER       dvec1(2.718281828459045)
 #define PHI         dvec1(1.618033988749895)
+#define FPS_60      dvec1(0.016666666666667)
 #define MAX_DIST    dvec1(10000.0)
 #define EPSILON     dvec1(0.00001)
 

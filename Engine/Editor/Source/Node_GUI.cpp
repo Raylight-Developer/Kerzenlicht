@@ -37,21 +37,13 @@ GUI::NODE::Port::Port(Node* node) :
 	node(node)
 {
 	setZValue(10);
-	index = 0;
+	slot_id = 0;
 	type = CLASS::NODE::PORT::Type::NONE;
 }
 
 GUI::NODE::Node::~Node() {
 	for (Port* port : inputs) delete port;
 	for (Port* port : outputs) delete port;
-}
-
-void GUI::NODE::Port::onConnect(Connection* connection) {
-	node->onPortConnect(this, connection);
-}
-
-void GUI::NODE::Port::onDisconnect() {
-	node->onPortDisconnect(this);
 }
 
 QRectF GUI::NODE::Port::boundingRect() const {
@@ -92,7 +84,7 @@ void GUI::NODE::Port::paint(QPainter* painter, const QStyleOptionGraphicsItem* o
 	}
 }
 
-GUI::NODE::PORT::Data_I_Port::Data_I_Port(Node* parent, const uint16& index, const QString& label, const string& slot_id, const CLASS::NODE::DATA::Type& type, const CLASS::NODE::DATA::Modifier& modifier) :
+GUI::NODE::PORT::Data_I_Port::Data_I_Port(Node* parent, const uint16& slot_id, const QString& label, const CLASS::NODE::DATA::Type& type, const CLASS::NODE::DATA::Modifier& modifier) :
 	Port(parent)
 {
 	this->type = CLASS::NODE::PORT::Type::DATA_I;
@@ -100,12 +92,11 @@ GUI::NODE::PORT::Data_I_Port::Data_I_Port(Node* parent, const uint16& index, con
 	this->slot_id = slot_id;
 	this->data_type = type;
 	this->label = label;
-	this->index = index;
 
 	this->any_data_type = CLASS::NODE::DATA::Type::NONE;
 	this->connection = nullptr;
 
-	rect = QRectF(node->rect.topLeft().x() - 5, node->rect.topLeft().y() + 35 + index * 20, 10, 10);
+	rect = QRectF(node->rect.topLeft().x() - 5, node->rect.topLeft().y() + 35 + slot_id * 20, 10, 10);
 	color = typeColor(type);
 }
 
@@ -123,6 +114,11 @@ GUI::NODE::PORT::Data_I_Port::~Data_I_Port() {
 	}
 }
 
+void GUI::NODE::PORT::Data_I_Port::setDataType(const CLASS::NODE::DATA::Type& type) {
+	data_type = type;
+	color = typeColor(type);
+};
+
 void GUI::NODE::PORT::Data_I_Port::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) {
 	painter->setBrush(color);
 	painter->setPen(Qt::white);
@@ -131,7 +127,7 @@ void GUI::NODE::PORT::Data_I_Port::paint(QPainter* painter, const QStyleOptionGr
 	painter->drawText(rect.bottomRight() + QPointF(10, 0), label);
 }
 
-GUI::NODE::PORT::Data_O_Port::Data_O_Port(Node* parent, const uint16& index, const QString& label, const string& slot_id, const CLASS::NODE::DATA::Type& type, const CLASS::NODE::DATA::Modifier& modifier) :
+GUI::NODE::PORT::Data_O_Port::Data_O_Port(Node* parent, const uint16& slot_id, const QString& label, const CLASS::NODE::DATA::Type& type, const CLASS::NODE::DATA::Modifier& modifier) :
 	Port(parent)
 {
 	this->type = CLASS::NODE::PORT::Type::DATA_O;
@@ -139,12 +135,11 @@ GUI::NODE::PORT::Data_O_Port::Data_O_Port(Node* parent, const uint16& index, con
 	this->slot_id = slot_id;
 	this->data_type = type;
 	this->label = label;
-	this->index = index;
 
 	this->any_data_type = CLASS::NODE::DATA::Type::NONE;
 	this->outgoing_connections = {};
 
-	rect = QRectF(node->rect.topRight().x() - 5, node->rect.topLeft().y() + 35 + index * 20, 10, 10);
+	rect = QRectF(node->rect.topRight().x() - 5, node->rect.topLeft().y() + 35 + slot_id * 20, 10, 10);
 	color = typeColor(type);
 }
 
@@ -157,6 +152,11 @@ GUI::NODE::PORT::Data_O_Port::~Data_O_Port() {
 	}
 }
 
+void GUI::NODE::PORT::Data_O_Port::setDataType(const CLASS::NODE::DATA::Type& type) {
+	data_type = type;
+	color = typeColor(type);
+};
+
 void GUI::NODE::PORT::Data_O_Port::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) {
 	painter->setBrush(color);
 	painter->setPen(Qt::white);
@@ -166,16 +166,15 @@ void GUI::NODE::PORT::Data_O_Port::paint(QPainter* painter, const QStyleOptionGr
 	painter->drawText(rect.bottomLeft() - QPointF(10 + fontMetrics.horizontalAdvance(label), 0), label);
 }
 
-GUI::NODE::PORT::Exec_I_Port::Exec_I_Port(Node* parent, const uint16& index, const QString& label, const string& slot_id) :
+GUI::NODE::PORT::Exec_I_Port::Exec_I_Port(Node* parent, const uint16& slot_id, const QString& label) :
 	Port(parent)
 {
 	this->type = CLASS::NODE::PORT::Type::EXEC_I;
 	this->slot_id = slot_id;
 	this->label = label;
-	this->index = index;
 
 	this->incoming_connections = {};
-	rect = QRectF(node->rect.topLeft().x() - 5, node->rect.topLeft().y() + 35 + index * 20, 10, 10);
+	rect = QRectF(node->rect.topLeft().x() - 5, node->rect.topLeft().y() + 35 + slot_id * 20, 10, 10);
 	color = QColor(250, 250, 250);
 }
 
@@ -196,16 +195,15 @@ void GUI::NODE::PORT::Exec_I_Port::paint(QPainter* painter, const QStyleOptionGr
 	painter->drawText(rect.bottomRight() + QPointF(10, 0), label);
 }
 
-GUI::NODE::PORT::Exec_O_Port::Exec_O_Port(Node* parent, const uint16& index, const QString& label, const string& slot_id) :
+GUI::NODE::PORT::Exec_O_Port::Exec_O_Port(Node* parent, const uint16& slot_id, const QString& label) :
 	Port(parent)
 {
 	this->type = CLASS::NODE::PORT::Type::EXEC_O;
 	this->slot_id = slot_id;
 	this->label = label;
-	this->index = index;
 
 	this->connection = nullptr;
-	rect = QRectF(node->rect.topRight().x() - 5, node->rect.topLeft().y() + 35 + index * 20, 10, 10);
+	rect = QRectF(node->rect.topRight().x() - 5, node->rect.topLeft().y() + 35 + slot_id * 20, 10, 10);
 	color = QColor(250, 250, 250);
 }
 
@@ -276,8 +274,8 @@ GUI::NODE::Connection::Connection(Port* port_l, Port* port_r) :
 			}
 			color = port_r->color;
 		}
-		port_l->onConnect(this);
-		port_r->onConnect(this);
+		//port_l->onConnect(this);
+		//port_r->onConnect(this);
 		pos_r = mapFromItem(port_r, port_r->boundingRect().center());
 	}
 }

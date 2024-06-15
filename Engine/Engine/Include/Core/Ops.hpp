@@ -42,8 +42,8 @@ namespace CLASS {
 		dvec3 scale;
 
 		Transform(const dvec3& position = dvec3(0.0), const dvec3& rotation = dvec3(0.0), const dvec3& scale = dvec3(1.0), const Rotation_Type& type = Rotation_Type::XYZ);
-		Transform(const dvec3& position, const dvec3& axis, const dvec3& rotation, const dvec3& scale, const Rotation_Type& type = Rotation_Type::XYZ);
-		Transform(const dvec3& position, const dquat& rotation, const dvec3& scale, const Rotation_Type& type);
+		Transform(const dvec3& position, const dvec3& axis, const dvec3& rotation, const dvec3& scale, const Rotation_Type& type = Rotation_Type::AXIS);
+		Transform(const dvec3& position, const dquat& rotation, const dvec3& scale, const Rotation_Type& type = Rotation_Type::QUATERNION);
 
 		Transform operator+(const Transform& other) const;
 		Transform operator-(const Transform& other) const;
@@ -124,4 +124,14 @@ T f_ramp(const map<U, T>& curve, const U& t) {
 	const dvec1 t_lerp = static_cast<dvec1>(t - key_a) / static_cast<dvec1>(key_b - key_a);
 
 	return f_lerp<T>(val_a, val_b, t_lerp);
+}
+
+template<typename K, typename V>
+K getKeyByValue(const unordered_map<K, V>& map, const V& value) {
+	for (const auto& pair : map) {
+		if (pair.second == value) {
+			return pair.first;
+		}
+	}
+	throw out_of_range("Value not found in unordered_map");
 }

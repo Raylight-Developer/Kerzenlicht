@@ -36,6 +36,6 @@ namespace CLASS {
 
 		Object();
 
-		void f_compileMatrix(CLASS::Scene* scene);
+		void f_compileMatrix();
 	};
 }

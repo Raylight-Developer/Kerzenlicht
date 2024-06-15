@@ -208,18 +208,17 @@ dmat4 CLASS::Transform::f_compile() {
 	dmat4 rotation_matrix = dmat4(1.0);
 
 	switch (rotation_type) {
-	case CLASS::Rotation_Type::QUATERNION: {
-		rotation_matrix = glm::toMat4(quat_rotation);
-		break;
-	};
-	case CLASS::Rotation_Type::XYZ: {
-		const dmat4 rotationX = glm::rotate(dmat4(1.0), euler_rotation.x * DEG_RAD, dvec3(1.0, 0.0, 0.0));
-		const dmat4 rotationY = glm::rotate(dmat4(1.0), euler_rotation.y * DEG_RAD, dvec3(0.0, 1.0, 0.0));
-		const dmat4 rotationZ = glm::rotate(dmat4(1.0), euler_rotation.z * DEG_RAD, dvec3(0.0, 0.0, 1.0));
-		rotation_matrix = rotationX * rotationY * rotationZ;
-		break;
-	};
-	default: break;
+		case CLASS::Rotation_Type::QUATERNION: {
+			rotation_matrix = glm::toMat4(quat_rotation);
+			break;
+		}
+		case CLASS::Rotation_Type::XYZ: {
+			const dmat4 rotationX = glm::rotate(dmat4(1.0), euler_rotation.x * DEG_RAD, dvec3(1.0, 0.0, 0.0));
+			const dmat4 rotationY = glm::rotate(dmat4(1.0), euler_rotation.y * DEG_RAD, dvec3(0.0, 1.0, 0.0));
+			const dmat4 rotationZ = glm::rotate(dmat4(1.0), euler_rotation.z * DEG_RAD, dvec3(0.0, 0.0, 1.0));
+			rotation_matrix = rotationX * rotationY * rotationZ;
+			break;
+		}
 	}
 	return translation_matrix * rotation_matrix * scale_matrix;
 }

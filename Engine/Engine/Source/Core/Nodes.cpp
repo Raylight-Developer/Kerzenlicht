@@ -23,6 +23,12 @@ CLASS::Node_Tree::Node_Tree(const GUI::NODE::Node_Tree* gui_tree) :
 		switch (gui_node->type) {
 			case NODE::Type::EXEC: {
 				switch (static_cast<NODE::EXEC::Type>(gui_node->sub_type)) {
+					case NODE::EXEC::Type::COUNTER: {
+						auto node = new NODE::EXEC::Counter();
+						nodes.push_back(node);
+						node_map[gui_node] = node;
+						break;
+					}
 					case NODE::EXEC::Type::TICK: {
 						auto node = new NODE::EXEC::Tick();
 						nodes.push_back(node);
@@ -42,6 +48,16 @@ CLASS::Node_Tree::Node_Tree(const GUI::NODE::Node_Tree* gui_tree) :
 						nodes.push_back(node);
 						node_map[gui_node] = node;
 						break;
+					}
+					case NODE::LINK::Type::SET: {
+						switch (static_cast<GUI::NODE::LINK::Set*>(gui_node)->micro_type) {
+							case NODE::LINK::SET::Type::EULER_ROTATION_X: {
+								auto node = new NODE::LINK::SET::Euler_Rotation_X();
+								nodes.push_back(node);
+								node_map[gui_node] = node;
+								break;
+							}
+						}
 					}
 				}
 				break;
@@ -88,6 +104,7 @@ CLASS::Node_Tree::Node_Tree(const GUI::NODE::Node_Tree* gui_tree) :
 							for (auto port_l : node_map[cast_port->connection->port_l->node]->outputs) {
 								if (port_l->slot_id == cast_port->connection->port_l->slot_id) {
 									static_cast<NODE::PORT::Data_I_Port*>(port_r)->connection = static_cast<NODE::PORT::Data_O_Port*>(port_l);
+									cout << "Connect Data L_Node[" << getKeyByValue(node_map, port_l->node)->label.toStdString() << "] : " << port_l->slot_id << " To R_Node[" << gui_node->label.toStdString() << "] : " << port_r->slot_id << endl;
 								}
 							}
 						}
@@ -104,6 +121,7 @@ CLASS::Node_Tree::Node_Tree(const GUI::NODE::Node_Tree* gui_tree) :
 							for (auto port_r : node_map[cast_port->connection->port_r->node]->inputs) {
 								if (port_r->slot_id == cast_port->connection->port_r->slot_id) {
 									static_cast<NODE::PORT::Exec_O_Port*>(port_l)->connection = static_cast<NODE::PORT::Exec_I_Port*>(port_r);
+									cout << "Connect Exec L_Node[" << gui_node->label.toStdString() << "] : " << port_l->slot_id << " To R_Node[" << getKeyByValue(node_map, port_r->node)->label.toStdString() << "] : " << port_r->slot_id << endl;
 								}
 							}
 						}
@@ -135,7 +153,7 @@ CLASS::Node::~Node() {
 	for (CLASS::NODE::Port* port : outputs) delete port;
 }
 
-CLASS::NODE::Data CLASS::Node::getData(const string& slot_id) const {
+CLASS::NODE::Data CLASS::Node::getData(const uint16& slot_id) const {
 	return NODE::Data();
 }
 
@@ -189,16 +207,21 @@ CLASS::NODE::Data CLASS::NODE::Data::operator/(const Data& other) {
 
 CLASS::NODE::Port::Port(Node* node) :
 	node(node)
-{}
+{
+	type = PORT::Type::NONE;
+	slot_id = 0;
+}
 
-CLASS::NODE::PORT::Data_I_Port::Data_I_Port(Node* node, const string& slot_id, const DATA::Type& type, const DATA::Modifier& modifier) :
+CLASS::NODE::PORT::Data_I_Port::Data_I_Port(Node* node, const uint16& slot_id, const DATA::Type& type, const DATA::Modifier& modifier) :
 	Port(node),
-	type(type),
+	data_type(type),
 	modifier(modifier)
 {
 	this->node = node;
 	this->slot_id = slot_id;
+	this->type = Type::DATA_I;
 	this->connection = nullptr;
+	this->default_value = Data();
 }
 
 CLASS::NODE::PORT::Data_I_Port::~Data_I_Port() {
@@ -218,13 +241,14 @@ CLASS::NODE::Data CLASS::NODE::PORT::Data_I_Port::getData() const {
 	return default_value;
 }
 
-CLASS::NODE::PORT::Data_O_Port::Data_O_Port(Node* node, const string& slot_id, const DATA::Type& type, const DATA::Modifier& modifier) :
+CLASS::NODE::PORT::Data_O_Port::Data_O_Port(Node* node, const uint16& slot_id, const DATA::Type& type, const DATA::Modifier& modifier) :
 	Port(node),
-	type(type),
+	data_type(type),
 	modifier(modifier)
 {
 	this->node = node;
 	this->slot_id = slot_id;
+	this->type = Type::DATA_O;
 }
 
 CLASS::NODE::PORT::Data_O_Port::~Data_O_Port() {
@@ -238,11 +262,12 @@ CLASS::NODE::Data CLASS::NODE::PORT::Data_O_Port::getData() const {
 	return node->getData(slot_id);
 }
 
-CLASS::NODE::PORT::Exec_I_Port::Exec_I_Port(Node* node, const string& slot_id) :
+CLASS::NODE::PORT::Exec_I_Port::Exec_I_Port(Node* node, const uint16& slot_id) :
 	Port(node)
 {
 	this->node = node;
 	this->slot_id = slot_id;
+	this->type = Type::EXEC_I;
 }
 
 CLASS::NODE::PORT::Exec_I_Port::~Exec_I_Port() {
@@ -256,10 +281,11 @@ void CLASS::NODE::PORT::Exec_I_Port::exec() const {
 	node->exec(slot_id);
 }
 
-CLASS::NODE::PORT::Exec_O_Port::Exec_O_Port(Node* node, const string& slot_id) :
+CLASS::NODE::PORT::Exec_O_Port::Exec_O_Port(Node* node, const uint16& slot_id) :
 	Port(node)
 {
 	this->node = node;
+	this->type = Type::EXEC_O;
 	this->connection = nullptr;
 }
 

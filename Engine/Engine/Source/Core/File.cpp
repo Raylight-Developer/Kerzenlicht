@@ -141,29 +141,6 @@ CLASS::Node_Tree* CLASS::File::f_loadNodeTree(const vector<vector<string>>& toke
 		}
 		else if (tokens[0] == "└Node") {
 			is_processing = false;
-			//CLASS::Node* node;
-			//GUI::NODE::Node* gui_node;
-			//for (const vector<string>& sub_tokens : read_data) {
-			//	if (sub_tokens[0] == "┌Node") {
-			//		if      (sub_tokens[2] == "CONSTRAINT") {
-			//		}
-			//		else if (sub_tokens[2] == "GENERATE") {
-			//		}
-			//		else if (sub_tokens[2] == "PHYSICS") {
-			//		}
-			//		else if (sub_tokens[2] == "MODIFY") {
-			//		}
-			//		else if (sub_tokens[2] == "EXEC") {
-			//		}
-			//		else if (sub_tokens[2] == "LINK") {
-			//		}
-			//		else if (sub_tokens[2] == "MATH") {
-			//		}
-			//		else if (sub_tokens[2] == "UTIL") {
-			//		}
-			//	}
-			//}
-			//node_tree->nodes.push_back(node);
 		}
 		else if (tokens[0] == "#Node") {
 			CLASS::Node* node;
@@ -184,6 +161,20 @@ CLASS::Node_Tree* CLASS::File::f_loadNodeTree(const vector<vector<string>>& toke
 				}
 			}
 			else if (tokens[2] == "LINK") {
+				if      (tokens[4] == "Pointer") {
+					node = new NODE::LINK::Pointer();
+					gui_node = new GUI::NODE::LINK::Pointer(str_to_i(tokens[9], tokens[10]));
+				}
+				else if (tokens[4] == "SET") {
+					if      (tokens[6] == "TRANSFORM") {
+						if      (tokens[8] == "EULER_ROTATION") {
+							if      (tokens[10] == "X") {
+								node = new NODE::LINK::SET::Euler_Rotation_X();
+								gui_node = new GUI::NODE::LINK::SET::Euler_Rotation_X(str_to_i(tokens[15], tokens[16]));
+							}
+						}
+					}
+				}
 			}
 			else if (tokens[2] == "MATH") {
 				if      (tokens[4] == "Add") {
@@ -522,6 +513,21 @@ void CLASS::File::f_loadBuild(const vector<vector<string>>& token_data) {
 				objects[str_to_ul(sub_tokens[0])]->nodes = nodes[str_to_ul(sub_tokens[1])];
 			}
 		}
+		else if (tokens[0] == "┌Node-Pointer") {
+			is_processing = true;
+			read_data.clear();
+		}
+		else if (tokens[0] == "└Node-Pointer") {
+			is_processing = false;
+			for (const vector<string>& sub_tokens : read_data) {
+				auto ptr = static_cast<NODE::LINK::Pointer*>(nodes[str_to_ul(sub_tokens[0])]->nodes[str_to_ul(sub_tokens[1])]);
+				ptr->pointer = objects[str_to_ul(sub_tokens[2])];
+				ptr->pointer_type = NODE::DATA::Type::OBJECT;
+				auto gui_ptr = static_cast<GUI::NODE::LINK::Pointer*>(node_map[nodes[str_to_ul(sub_tokens[0])]]->nodes[str_to_ul(sub_tokens[1])]);
+				gui_ptr->pointer = objects[str_to_ul(sub_tokens[2])];
+				gui_ptr->pointer_type = NODE::DATA::Type::OBJECT;
+			}
+		}
 		else if (is_processing) {
 			read_data.push_back(tokens);
 		}
@@ -598,6 +604,7 @@ void CLASS::File::f_saveHeader(Lace& lace) {
 }
 
 void CLASS::File::f_saveNodeTree(Lace& lace, CLASS::Node_Tree* data, const uint64& i) {
+	uint64 j = 0;
 	lace NL << "┌Node-Tree [ " << i << " ]";
 	lace A
 	lace NL << "┌Nodes";
@@ -615,11 +622,29 @@ void CLASS::File::f_saveNodeTree(Lace& lace, CLASS::Node_Tree* data, const uint6
 			case NODE::Type::EXEC: {
 				switch (static_cast<NODE::EXEC::Type>(node->sub_type)) {
 					case NODE::EXEC::Type::TICK: {
-						lace NL << "#Node :: EXEC :: Tick [ " << i << " ] ( " << node->rect.topLeft() << " )";
+						lace NL << "#Node :: EXEC :: Tick [ " << j++ << " ] ( " << node->rect.topLeft() << " )";
 						break;
 					}
 					case NODE::EXEC::Type::COUNTER: {
-						lace NL << "#Node :: EXEC :: Counter [ " << i << " ] ( " << node->rect.topLeft() << " )";
+						lace NL << "#Node :: EXEC :: Counter [ " << j++ << " ] ( " << node->rect.topLeft() << " )";
+						break;
+					}
+				}
+				break;
+			}
+			case NODE::Type::LINK: {
+				switch (static_cast<NODE::LINK::Type>(node->sub_type)) {
+					case NODE::LINK::Type::POINTER: {
+						lace NL << "#Node :: LINK :: Pointer [ " << j++ << " ] ( " << node->rect.topLeft() << " )";
+						break;
+					}
+					case NODE::LINK::Type::SET: {
+						switch (static_cast<const GUI::NODE::LINK::Set*>(node)->micro_type) {
+							case NODE::LINK::SET::Type::EULER_ROTATION_X: {
+								lace NL << "#Node :: LINK :: SET :: TRANSFORM :: EULER_ROTATION :: X [ " << j++ << " ] ( " << node->rect.topLeft() << " )";
+								break;
+							}
+						}
 						break;
 					}
 				}
@@ -628,19 +653,19 @@ void CLASS::File::f_saveNodeTree(Lace& lace, CLASS::Node_Tree* data, const uint6
 			case NODE::Type::MATH: {
 				switch (static_cast<NODE::MATH::Type>(node->sub_type)) {
 					case NODE::MATH::Type::ADD: {
-						lace NL << "#Node :: MATH :: Add [ " << i << " ] ( " << node->rect.topLeft() << " )";
+						lace NL << "#Node :: MATH :: Add [ " << j++ << " ] ( " << node->rect.topLeft() << " )";
 						break;
 					}
 					case NODE::MATH::Type::SUB: {
-						lace NL << "#Node :: MATH :: Sub [ " << i << " ] ( " << node->rect.topLeft() << " )";
+						lace NL << "#Node :: MATH :: Sub [ " << j++ << " ] ( " << node->rect.topLeft() << " )";
 						break;
 					}
 					case NODE::MATH::Type::MUL: {
-						lace NL << "#Node :: MATH :: Mul [ " << i << " ] ( " << node->rect.topLeft() << " )";
+						lace NL << "#Node :: MATH :: Mul [ " << j++ << " ] ( " << node->rect.topLeft() << " )";
 						break;
 					}
 					case NODE::MATH::Type::DIV: {
-						lace NL << "#Node :: MATH :: Div [ " << i << " ] ( " << node->rect.topLeft() << " )";
+						lace NL << "#Node :: MATH :: Div [ " << j++ << " ] ( " << node->rect.topLeft() << " )";
 						break;
 					}
 				}
@@ -649,7 +674,7 @@ void CLASS::File::f_saveNodeTree(Lace& lace, CLASS::Node_Tree* data, const uint6
 			case NODE::Type::UTIL: {
 				switch (static_cast<NODE::UTIL::Type>(node->sub_type)) {
 					case NODE::UTIL::Type::VIEW: {
-						lace NL << "#Node :: UTIL :: View [ " << i << " ] ( " << node->rect.topLeft() << " )";
+						lace NL << "#Node :: UTIL :: View [ " << j++ << " ] ( " << node->rect.topLeft() << " )";
 						break;
 					}
 				}
@@ -661,16 +686,17 @@ void CLASS::File::f_saveNodeTree(Lace& lace, CLASS::Node_Tree* data, const uint6
 	lace NL << "└Nodes";
 	lace NL << "┌Build-E";
 	lace A
-	for (uint node_l_id = 0; node_l_id < data->nodes.size(); node_l_id++) {
+	for (uint64 node_l_id = 0; node_l_id < data->nodes.size(); node_l_id++) {
 		const auto node = data->nodes[node_l_id];
 		for (const auto& port : node->outputs) {
-			if (const auto port_l = dynamic_cast<CLASS::NODE::PORT::Exec_O_Port*>(port)) {
+			if (port->type == NODE::PORT::Type::EXEC_O) {
+				const auto port_l = static_cast<CLASS::NODE::PORT::Exec_O_Port*>(port);
 				if (port_l->connection) {
 					const auto port_r = port_l->connection;
 					const auto node_r = port_r->node;
-					const uint port_l_id = distance(node->outputs.begin(), find(node->outputs.begin(), node->outputs.end(), port_l));
-					const uint node_r_id = distance(data->nodes.begin(), find(data->nodes.begin(), data->nodes.end(), node_r));
-					const uint port_r_id = distance(node_r->inputs.begin(), find(node_r->inputs.begin(), node_r->inputs.end(), port_r));
+					const uint64 port_l_id = distance(node->outputs.begin(), find(node->outputs.begin(), node->outputs.end(), port_l));
+					const uint64 node_r_id = distance(data->nodes.begin(), find(data->nodes.begin(), data->nodes.end(), node_r));
+					const uint64 port_r_id = distance(node_r->inputs.begin(), find(node_r->inputs.begin(), node_r->inputs.end(), port_r));
 					lace NL << node_l_id SP port_l_id SP node_r_id SP port_r_id;
 				}
 			}
@@ -680,16 +706,17 @@ void CLASS::File::f_saveNodeTree(Lace& lace, CLASS::Node_Tree* data, const uint6
 	lace NL << "└Build-E";
 	lace NL << "┌Build-D";
 	lace A
-	for (uint node_r_id = 0; node_r_id < data->nodes.size(); node_r_id++) {
+	for (uint64 node_r_id = 0; node_r_id < data->nodes.size(); node_r_id++) {
 		const auto node = data->nodes[node_r_id];
 		for (const auto& port : node->inputs) {
-			if (const auto port_r = dynamic_cast<CLASS::NODE::PORT::Data_I_Port*>(port)) {
+			if (port->type == NODE::PORT::Type::DATA_I) {
+				const auto port_r = static_cast<CLASS::NODE::PORT::Data_I_Port*>(port);
 				if (port_r->connection) {
 					const auto port_l = port_r->connection;
 					const auto node_l = port_l->node;
-					const uint port_l_id = distance(node_l->outputs.begin(), find(node_l->outputs.begin(), node_l->outputs.end(), port_l));
-					const uint node_l_id = distance(data->nodes.begin(), find(data->nodes.begin(), data->nodes.end(), node_l));
-					const uint port_r_id = distance(node->inputs.begin(), find(node->inputs.begin(), node->inputs.end(), port_r));
+					const uint64 port_l_id = distance(node_l->outputs.begin(), find(node_l->outputs.begin(), node_l->outputs.end(), port_l));
+					const uint64 node_l_id = distance(data->nodes.begin(), find(data->nodes.begin(), data->nodes.end(), node_l));
+					const uint64 port_r_id = distance(node->inputs.begin(), find(node->inputs.begin(), node->inputs.end(), port_r));
 					lace NL << node_l_id SP port_l_id SP node_r_id SP port_r_id;
 				}
 			}
@@ -894,14 +921,14 @@ void CLASS::File::f_saveScene(Lace& lace, const CLASS::Scene* data, const uint64
 void CLASS::File::f_saveBuild(Lace& lace) {
 	lace NL << "┌Build-Steps";
 	lace A
-	const uint scene_id = distance(scenes.begin(), find(scenes.begin(), scenes.end(), active_scene->ptr));
+	const uint64 scene_id = distance(scenes.begin(), find(scenes.begin(), scenes.end(), active_scene->ptr));
 	lace NL << "Active-Scene " << scene_id;
 	lace NL << "┌Object-Group";
 	lace A
 	for (uint64 obj_group_id = 0; obj_group_id < objects.size(); obj_group_id++) {
 		if (objects[obj_group_id]->data->type == OBJECT::DATA::Type::GROUP) {
 			for (const auto object : objects[obj_group_id]->data->getGroup()->objects) {
-				const uint obj_id = distance(objects.begin(), find(objects.begin(), objects.end(), object));
+				const uint64 obj_id = distance(objects.begin(), find(objects.begin(), objects.end(), object));
 				lace NL << obj_group_id SP obj_id;
 			}
 		}
@@ -912,7 +939,7 @@ void CLASS::File::f_saveBuild(Lace& lace) {
 	lace A
 	for (uint64 obj_id = 0; obj_id < objects.size(); obj_id++) {
 		if (objects[obj_id]->data->type != OBJECT::DATA::Type::NONE and objects[obj_id]->data) {
-			const uint data_id = distance(object_data.begin(), find(object_data.begin(), object_data.end(), objects[obj_id]->data));
+			const uint64 data_id = distance(object_data.begin(), find(object_data.begin(), object_data.end(), objects[obj_id]->data));
 			lace NL << obj_id SP data_id;
 		}
 	}
@@ -922,12 +949,27 @@ void CLASS::File::f_saveBuild(Lace& lace) {
 	lace A
 	for (uint64 obj_id = 0; obj_id < objects.size(); obj_id++) {
 		if (objects[obj_id]->data->type != OBJECT::DATA::Type::NONE and objects[obj_id]->nodes) {
-			const uint node_id = distance(nodes.begin(), find(nodes.begin(), nodes.end(), objects[obj_id]->nodes));
+			const uint64 node_id = distance(nodes.begin(), find(nodes.begin(), nodes.end(), objects[obj_id]->nodes));
 			lace NL << obj_id SP node_id;
 		}
 	}
 	lace R
 	lace NL << "└Object-Node";
+	lace NL << "┌Node-Pointer";
+	lace A
+	for (const auto& object : objects) {
+		if (object->data->type != OBJECT::DATA::Type::NONE and object->nodes) {
+			for (uint64 node_id = 0; node_id < object->nodes->nodes.size(); node_id++) {
+				if (object->nodes->nodes[node_id]->type == CLASS::NODE::Type::LINK and object->nodes->nodes[node_id]->sub_type == ETOU(CLASS::NODE::LINK::Type::POINTER)) {
+					const uint64 node_tree_id = distance(nodes.begin(), find(nodes.begin(), nodes.end(), object->nodes));
+					const uint64 obj_id = distance(objects.begin(), find(objects.begin(), objects.end(),static_cast<Object*>(static_cast<NODE::LINK::Pointer*>(object->nodes->nodes[node_id])->pointer)));
+					lace NL << node_tree_id SP node_id SP obj_id;
+				}
+			}
+		}
+	}
+	lace R
+	lace NL << "└Node-Pointer";
 	lace R
 	lace NL << "└Build-Steps";
 }

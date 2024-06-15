@@ -6,73 +6,79 @@
 using namespace CLASS::NODE;
 
 EXEC::Timer::Timer() {
-	type = CLASS::NODE::Type::EXEC;
-	sub_type = ETOU(CLASS::NODE::EXEC::Type::TIMER);
+	type = NODE::Type::EXEC;
+	sub_type = ETOU(Type::TIMER);
 	
 	timer.setInterval(50);
-	QObject::connect(&timer, &QTimer::timeout, [this]() {exec(""); });
+	QObject::connect(&timer, &QTimer::timeout, [this]() {exec(0); });
 	timer.start();
 
-	port = new PORT::Exec_O_Port(this, "0");
+	port = new PORT::Exec_O_Port(this, 0);
 	outputs.push_back(port);
 }
 
-void EXEC::Timer::exec(const string& slot_id) {
+void EXEC::Timer::exec(const uint16& slot_id) {
 	port->exec();
 }
 
 EXEC::Counter::Counter() {
-	type = CLASS::NODE::Type::EXEC;
-	sub_type = ETOU(CLASS::NODE::EXEC::Type::COUNTER);
+	type = NODE::Type::EXEC;
+	sub_type = ETOU(Type::COUNTER);
 
 	count = 0;
 
-	PORT::Exec_I_Port* value = new PORT::Exec_I_Port(this, "0");
-	inputs.push_back(value);
+	i_exec = new PORT::Exec_I_Port(this, 0);
+
+	o_exec = new PORT::Exec_O_Port(this, 0);
+	o_count = new PORT::Data_O_Port(this, 1, CLASS::NODE::DATA::Type::UINT);
+
+	inputs.push_back(i_exec);
+	outputs.push_back(o_exec);
+	outputs.push_back(o_count);
 }
 
-void EXEC::Counter::exec(const string& slot_id) {
+void EXEC::Counter::exec(const uint16& slot_id) {
 	count++;
 }
 
 EXEC::Sequence::Sequence() {
-	type = CLASS::NODE::Type::EXEC;
-	sub_type = ETOU(CLASS::NODE::EXEC::Type::SEQUENCE);
+	type = NODE::Type::EXEC;
+	sub_type = ETOU(Type::SEQUENCE);
 
 	count = 0;
 
-	PORT::Exec_I_Port* in = new PORT::Exec_I_Port(this, "0");
-	PORT::Exec_O_Port* out = new PORT::Exec_O_Port(this, "0");
+	PORT::Exec_I_Port* in = new PORT::Exec_I_Port(this, 0);
+	PORT::Exec_O_Port* out = new PORT::Exec_O_Port(this, 0);
 
 	inputs.push_back(in);
 	outputs.push_back(out);
 }
 
-void EXEC::Sequence::exec(const string& slot_id) {
+void EXEC::Sequence::exec(const uint16& slot_id) {
 	for (Port* output : outputs) {
 		output->exec();
 	}
 }
 
 EXEC::Script::Script() {
-	type = CLASS::NODE::Type::EXEC;
-	sub_type = ETOU(CLASS::NODE::EXEC::Type::SCRIPT);
+	type = NODE::Type::EXEC;
+	sub_type = ETOU(Type::SCRIPT);
 	script_id = "Script_ID";
 
 	getDataFunc = nullptr;
 	buildFunc = nullptr;
 	execFunc = nullptr;
 
-	in = new PORT::Exec_I_Port(this, "0");
+	in = new PORT::Exec_I_Port(this, 0);
 	exec_inputs["0"] = in;
 
-	out = new PORT::Exec_O_Port(this, "0");
+	out = new PORT::Exec_O_Port(this, 0);
 	exec_outputs["0"] = out;
 
 	inputs.push_back(in);
 	outputs.push_back(out);
 
-	loadDLL(dynlib, "DLL.dll");
+	loadDLL(dynlib, "D:/Kerzenlicht Renderer/x64/Debug/Runtime.dll");
 
 	FARPROC execAddress = GetProcAddress(dynlib, (script_id + "_exec").c_str());
 	if (execAddress != NULL) {
@@ -80,7 +86,7 @@ EXEC::Script::Script() {
 	}
 	FARPROC dataAddress = GetProcAddress(dynlib, (script_id + "_getData").c_str());
 	if (dataAddress != NULL) {
-		getDataFunc = (Data(*)(const Script*, const string&))dataAddress;
+		getDataFunc = (Data(*)(const Script*, const uint16&))dataAddress;
 	}
 	FARPROC buildAddress = GetProcAddress(dynlib, (script_id + "_build").c_str());
 	if (buildAddress != NULL) {
@@ -89,28 +95,27 @@ EXEC::Script::Script() {
 	}
 }
 
-
-void EXEC::Script::addDataInput(const string& slot_id, const DATA::Type& type, const DATA::Modifier& modifier) {
+void EXEC::Script::addDataInput(const uint16& slot_id, const string& map_name, const DATA::Type& type, const DATA::Modifier& modifier) {
 	PORT::Data_I_Port* value = new PORT::Data_I_Port(this, slot_id, type, modifier);
-	data_inputs[slot_id] = value;
+	data_inputs[map_name] = value;
 	inputs.push_back(value);
 };
 
-void EXEC::Script::addDataOutput(const string& slot_id, const DATA::Type& type, const DATA::Modifier& modifier) {
+void EXEC::Script::addDataOutput(const uint16& slot_id, const string& map_name, const DATA::Type& type, const DATA::Modifier& modifier) {
 	PORT::Data_O_Port* value = new PORT::Data_O_Port(this, slot_id, type, modifier);
-	data_outputs[slot_id] = value;
+	data_outputs[map_name] = value;
 	outputs.push_back(value);
 };
 
-void EXEC::Script::addExecInput(const string& slot_id) {
+void EXEC::Script::addExecInput(const uint16& slot_id, const string& map_name) {
 	PORT::Exec_I_Port* value = new PORT::Exec_I_Port(this, slot_id);
-	exec_inputs[slot_id] = value;
+	exec_inputs[map_name] = value;
 	inputs.push_back(value);
 };
 
-void EXEC::Script::addExecOutput(const string& slot_id) {
+void EXEC::Script::addExecOutput(const uint16& slot_id, const string& map_name) {
 	PORT::Exec_O_Port* value = new PORT::Exec_O_Port(this, slot_id);
-	exec_outputs[slot_id] = value;
+	exec_outputs[map_name] = value;
 	outputs.push_back(value);
 };
 
@@ -121,7 +126,7 @@ void EXEC::Script::reloadFunctions() {
 	}
 	FARPROC dataAddress = GetProcAddress(dynlib, (script_id + "_getData").c_str());
 	if (dataAddress != NULL) {
-		getDataFunc = (Data(*)(const Script*, const string&))dataAddress;
+		getDataFunc = (Data(*)(const Script*, const uint16&))dataAddress;
 	}
 	FARPROC buildAddress = GetProcAddress(dynlib, (script_id + "_build").c_str());
 	if (buildAddress != NULL) {
@@ -132,21 +137,8 @@ void EXEC::Script::reloadFunctions() {
 
 void EXEC::Script::reloadDll() {
 	unloadDLL(dynlib);
-	loadDLL(dynlib, "DLL.dll");
-
-	FARPROC execAddress = GetProcAddress(dynlib, (script_id + "_exec").c_str());
-	if (execAddress != NULL) {
-		execFunc = (void(*)(Script*))execAddress;
-	}
-	FARPROC dataAddress = GetProcAddress(dynlib, (script_id + "_getData").c_str());
-	if (dataAddress != NULL) {
-		getDataFunc = (Data(*)(const Script*, const string&))dataAddress;
-	}
-	FARPROC buildAddress = GetProcAddress(dynlib, (script_id + "_build").c_str());
-	if (buildAddress != NULL) {
-		buildFunc = (void(*)(Script*))buildAddress;
-		buildFunc(this);
-	}
+	loadDLL(dynlib, "D:/Kerzenlicht Renderer/x64/Debug/Runtime.dll");
+	reloadFunctions();
 }
 
 void EXEC::Script::clearIO() { // TODO delete GUI connections
@@ -160,147 +152,249 @@ void EXEC::Script::clearIO() { // TODO delete GUI connections
 	exec_inputs.clear();
 	exec_outputs.clear();
 
-	in = new PORT::Exec_I_Port(this, "0");
-	exec_inputs["0"] = in;
+	in = new PORT::Exec_I_Port(this, 0);
+	exec_inputs["I Exec"] = in;
 
-	out = new PORT::Exec_O_Port(this, "0");
-	exec_outputs["0"] = out;
+	out = new PORT::Exec_O_Port(this, 0);
+	exec_outputs["O Exec"] = out;
 
 	inputs.push_back(in);
 	outputs.push_back(out);
 }
 
-void EXEC::Script::exec(const string& slot_id) {
+void EXEC::Script::exec(const uint16& slot_id) {
 	if (execFunc) execFunc(this);
 	outputs[0]->exec();
 }
 
-Data EXEC::Script::getData(const string& slot_id) const {
+Data EXEC::Script::getData(const uint16& slot_id) const {
 	if (getDataFunc) return getDataFunc(this, slot_id);
 	return Data();
 }
 
-Data EXEC::Script::getInputData(const string& slot_id) const {
-	auto it = data_inputs.find(slot_id);
+Data EXEC::Script::getInputData(const string& map_name) const {
+	auto it = data_inputs.find(map_name);
 	if (it != data_inputs.end())
-		return data_inputs.at(slot_id)->getData();
+		return data_inputs.at(map_name)->getData();
 	return Data();
 }
 
-CLASS::NODE::EXEC::Tick::Tick() {
-	type = CLASS::NODE::Type::EXEC;
-	sub_type = ETOU(CLASS::NODE::EXEC::Type::TICK);
+EXEC::Tick::Tick() {
+	type = NODE::Type::EXEC;
+	sub_type = ETOU(Type::TICK);
 
-	delta = new double(16.666666666);
+	delta = new dvec1(FPS_60);
 
-	port_tick = new PORT::Exec_O_Port(this, "0");
-	port_delta = new PORT::Data_O_Port(this, "1",  DATA::Type::DOUBLE);
+	port_tick  = new PORT::Exec_O_Port(this, 0);
+	port_delta = new PORT::Data_O_Port(this, 1,  DATA::Type::DOUBLE);
 
 	outputs.push_back(port_tick);
 	outputs.push_back(port_delta);
 }
 
-void CLASS::NODE::EXEC::Tick::exec(const string& slot_id) {
+void EXEC::Tick::exec(const uint16& slot_id) {
 	port_tick->exec();
 }
 
-Data CLASS::NODE::EXEC::Tick::getData(const string& slot_id) const {
+Data EXEC::Tick::getData(const uint16& slot_id) const {
 	return Data(*delta, DATA::Type::DOUBLE);
 }
 
-CLASS::NODE::LINK::Get::Get() {
-	type = CLASS::NODE::Type::LINK;
-	sub_type = ETOU(CLASS::NODE::LINK::Type::GET);
+LINK::Get::Get() {
+	type = NODE::Type::LINK;
+	sub_type = ETOU(Type::GET);
+	micro_type = GET::Type::NONE;
 
-	port_pointer = new PORT::Data_I_Port(this, "0", DATA::Type::ANY);
-	port_output = new PORT::Data_O_Port(this, "0", DATA::Type::ANY);
+	i_pointer = new PORT::Data_I_Port(this, 0, DATA::Type::ANY);
+	
+	o_value   = new PORT::Data_O_Port(this, 0, DATA::Type::ANY);
 
-	inputs.push_back(port_pointer);
-	outputs.push_back(port_output);
+	inputs.push_back(i_pointer);
+	outputs.push_back(o_value);
 }
 
-CLASS::NODE::Data CLASS::NODE::LINK::Get::getData(const string& slot_id) const {
+LINK::Set::Set() {
+	type = NODE::Type::LINK;
+	sub_type = ETOU(Type::SET);
+	micro_type = SET::Type::NONE;
+
+	i_exec    = new PORT::Exec_I_Port(this, 0);
+	i_pointer = new PORT::Data_I_Port(this, 1, DATA::Type::ANY);
+	i_value   = new PORT::Data_I_Port(this, 2, DATA::Type::ANY);
+
+	o_exec    = new PORT::Exec_O_Port(this, 0);
+	o_value   = new PORT::Data_O_Port(this, 1, DATA::Type::ANY);
+
+	inputs.push_back(i_exec);
+	inputs.push_back(i_pointer);
+	inputs.push_back(i_value);
+	outputs.push_back(o_exec);
+	outputs.push_back(o_value);
+}
+
+LINK::GET::Field::Field() {
+	field = "";
+}
+
+Data LINK::GET::Field::getData(const uint16& slot_id) const {
 	return NODE::Data();
 }
 
-CLASS::NODE::LINK::Set::Set() {
-	type = CLASS::NODE::Type::LINK;
-	sub_type = ETOU(CLASS::NODE::LINK::Type::SET);
-
-	port_pointer = new PORT::Data_I_Port(this, "0", DATA::Type::ANY);
-	port_value   = new PORT::Data_I_Port(this, "1", DATA::Type::ANY);
-	port_exec_i  = new PORT::Exec_I_Port(this, "0");
-	port_exec_o  = new PORT::Exec_O_Port(this, "0");
-
-	inputs.push_back(port_exec_i);
-	inputs.push_back(port_pointer);
-	outputs.push_back(port_exec_o);
+LINK::SET::Euler_Rotation_X::Euler_Rotation_X() {
+	i_pointer->data_type = DATA::Type::OBJECT;
+	i_value->data_type = DATA::Type::DOUBLE;
+	o_value->data_type = DATA::Type::DOUBLE;
 }
 
-void CLASS::NODE::LINK::Set::exec(const string& slot_id) {
-	CLASS::NODE::Data data = port_pointer->getData();
-	switch (data.type) {
-		case CLASS::NODE::DATA::Type::OBJECT: {
-			any_cast<CLASS::Object*>(data.data)->transform = any_cast<Transform>(port_value->getData().data);
+void LINK::SET::Euler_Rotation_X::exec(const uint16& slot_id) {
+	Data pointer_ref = i_pointer->getData();
+	Data value_ref = i_value->getData();
+	switch (pointer_ref.type) {
+		case DATA::Type::OBJECT: {
+			if (value_ref.type == DATA::Type::DOUBLE) {
+				any_cast<Object*>(pointer_ref.data)->transform.euler_rotation.x += any_cast<double>(value_ref.data);
+				//cout << any_cast<Object*>(pointer_ref.data)->name << " Euler Rot X = " << any_cast<Object*>(pointer_ref.data)->transform.euler_rotation.x << endl;
+			}
+			else if (value_ref.type == DATA::Type::UINT) {
+				any_cast<Object*>(pointer_ref.data)->transform.euler_rotation.x += static_cast<double>(any_cast<uint64>(value_ref.data));
+				//cout << any_cast<Object*>(pointer_ref.data)->name << " Euler Rot X = " << any_cast<Object*>(pointer_ref.data)->transform.euler_rotation.x << endl;
+			}
 			break;
 		}
 	}
-	port_exec_o->exec();
 }
 
-CLASS::NODE::Data CLASS::NODE::LINK::Set::getData(const string& slot_id) const {
-	return NODE::Data();
+LINK::SET::Field::Field() {
+	field = "";
 }
 
-CLASS::NODE::LINK::Pointer::Pointer() {
-	type = CLASS::NODE::Type::LINK;
-	sub_type = ETOU(CLASS::NODE::LINK::Type::POINTER);
+void LINK::SET::Field::exec(const uint16& slot_id) {
+	Data pointer_ref = i_pointer->getData();
+	Data value_ref = i_value->getData();
+	switch (pointer_ref.type) {
+		case DATA::Type::OBJECT: {
+			switch (value_ref.type) {
+				case DATA::Type::TRANSFORM: {
+					auto object = any_cast<Object*>(pointer_ref.data);
+					auto transform = any_cast<Transform>(value_ref.data);
+
+					if      (field == "")
+						object->transform = transform;
+
+					else if (field == "pos")
+						object->transform.position = transform.position;
+					else if (field == "euler_rot")
+						object->transform.euler_rotation = transform.euler_rotation;
+					else if (field == "scale")
+						object->transform.scale = transform.scale;
+
+					else if (field == "pos.x")
+						object->transform.position.x = transform.position.x;
+					else if (field == "pos.y")
+						object->transform.position.y = transform.position.y;
+					else if (field == "pos.z")
+						object->transform.position.z = transform.position.z;
+
+					else if (field == "euler_rot.x")
+						object->transform.euler_rotation.x = transform.euler_rotation.x;
+					else if (field == "euler_rot.y")
+						object->transform.euler_rotation.y = transform.euler_rotation.y;
+					else if (field == "euler_rot.z")
+						object->transform.euler_rotation.z = transform.euler_rotation.z;
+
+					else if (field == "scale.x")
+						object->transform.scale.x = transform.scale.x;
+					else if (field == "scale.y")
+						object->transform.scale.y = transform.scale.y;
+					else if (field == "scale.z")
+						object->transform.scale.z = transform.scale.z;
+					break;
+				}
+			}
+			break;
+		}
+	}
+	o_exec->exec();
+}
+
+LINK::Pointer::Pointer() {
+	type = NODE::Type::LINK;
+	sub_type = ETOU(Type::POINTER);
 	pointer_type = DATA::Type::NONE;
 	pointer = nullptr;
 
-	port = new PORT::Data_O_Port(this, "0", DATA::Type::ANY);
-	outputs.push_back(port);
+	o_pointer = new PORT::Data_O_Port(this, 0, DATA::Type::ANY);
+
+	outputs.push_back(o_pointer);
 }
 
-CLASS::NODE::Data CLASS::NODE::LINK::Pointer::getData(const string& slot_id) const {
+Data LINK::Pointer::getData(const uint16& slot_id) const {
 	switch (pointer_type) {
-		case DATA::Type::SCENE: return NODE::Data(static_cast<Scene*>(pointer), DATA::Type::SCENE);
-		case DATA::Type::OBJECT: return NODE::Data(static_cast<Object*>(pointer), DATA::Type::OBJECT);
+		case DATA::Type::SCENE:
+			return NODE::Data(static_cast<Scene*>(pointer), DATA::Type::SCENE);
+		case DATA::Type::OBJECT:
+			return NODE::Data(static_cast<Object*>(pointer), DATA::Type::OBJECT);
 	}
 	return NODE::Data();
 }
 
-CLASS::NODE::MATH::MATH::MATH() {
-	type = CLASS::NODE::Type::MATH;
-	sub_type = ETOU(CLASS::NODE::MATH::Type::ADD);
+MATH::MATH::MATH() {
+	type = NODE::Type::MATH;
+	sub_type = ETOU(Type::ADD);
 
-	inputs .push_back(in_a  = new PORT::Data_I_Port(this, "0", DATA::Type::ANY));
-	inputs .push_back(in_b  = new PORT::Data_I_Port(this, "1", DATA::Type::ANY));
-	outputs.push_back(out_a = new PORT::Data_O_Port(this, "0", DATA::Type::ANY));
-}
+	i_value_a   = new PORT::Data_I_Port(this, 0, DATA::Type::ANY);
+	i_value_b   = new PORT::Data_I_Port(this, 1, DATA::Type::ANY);
 
-CLASS::NODE::Data CLASS::NODE::MATH::Add::getData(const string& slot_id) const {
-	return in_a->getData() + in_b->getData();
-}
-CLASS::NODE::Data CLASS::NODE::MATH::Sub::getData(const string& slot_id) const {
-	return in_a->getData() - in_b->getData();
-}
-CLASS::NODE::Data CLASS::NODE::MATH::Mul::getData(const string& slot_id) const {
-	return in_a->getData() * in_b->getData();
-}
-CLASS::NODE::Data CLASS::NODE::MATH::Div::getData(const string& slot_id) const {
-	return in_a->getData() / in_b->getData();
+	o_value_res = new PORT::Data_O_Port(this, 0, DATA::Type::ANY);
+
+	inputs.push_back(i_value_a);
+	inputs.push_back(i_value_b);
+	outputs.push_back(o_value_res);
 }
 
-CLASS::NODE::UTIL::View::View() {
-	type = CLASS::NODE::Type::UTIL;
-	sub_type = ETOU(CLASS::NODE::UTIL::Type::VIEW);
+Data MATH::Add::getData(const uint16& slot_id) const {
+	return i_value_a->getData() + i_value_b->getData();
+}
+Data MATH::Sub::getData(const uint16& slot_id) const {
+	return i_value_a->getData() - i_value_b->getData();
+}
+Data MATH::Mul::getData(const uint16& slot_id) const {
+	return i_value_a->getData() * i_value_b->getData();
+}
+Data MATH::Div::getData(const uint16& slot_id) const {
+	return i_value_a->getData() / i_value_b->getData();
+}
 
-	port = new PORT::Data_I_Port(this, "0", DATA::Type::ANY);
-	port->default_value = Data(0, DATA::Type::INT);
+UTIL::Convert::Convert() {
+	type = NODE::Type::UTIL;
+	sub_type = ETOU(Type::CONVERT);
+
+	i_value = new PORT::Data_I_Port(this, 0, DATA::Type::ANY);
+
+	o_value = new PORT::Data_O_Port(this, 0, DATA::Type::ANY);
+
+	inputs.push_back(i_value);
+	outputs.push_back(o_value);
+}
+
+CLASS::NODE::UTIL::CONVERT::Uint_To_Double::Uint_To_Double() {
+	i_value->data_type = DATA::Type::UINT;
+	o_value->data_type = DATA::Type::DOUBLE;
+}
+
+Data CLASS::NODE::UTIL::CONVERT::Uint_To_Double::getData(const uint16& slot_id) const {
+	return Data(static_cast<double>(any_cast<uint64>(i_value->getData().data)), DATA::Type::DOUBLE);
+}
+
+UTIL::View::View() {
+	type = NODE::Type::UTIL;
+	sub_type = ETOU(Type::VIEW);
+
+	port = new PORT::Data_I_Port(this, 0, DATA::Type::ANY);
+
 	inputs.push_back(port);
 }
 
-CLASS::NODE::Data CLASS::NODE::UTIL::View::getData(const string& slot_id) const {
+Data UTIL::View::getData(const uint16& slot_id) const {
 	return port->getData();
 }

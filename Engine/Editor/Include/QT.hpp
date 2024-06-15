@@ -143,8 +143,8 @@ namespace GUI {
 	};
 
 	struct Tree_Item : QTreeWidgetItem {
+		Tree_Item(Tree_Item* parent, const QString& label, const uint& level = 1, const map<uint, QString>& data = {});
 		Tree_Item(Tree* parent = nullptr, const QString& label = "", const uint& level = 0);
-		Tree_Item(Tree_Item* parent, const QString& label, const uint& level = 0);
 		~Tree_Item();
 
 		void clear();

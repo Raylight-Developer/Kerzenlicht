@@ -59,6 +59,7 @@ namespace GUI {
 			uint8 fps_counter;
 			chrono::steady_clock::time_point fps_measure;
 
+			uint64 frame_counter;
 			chrono::steady_clock::time_point last_delta;
 			dvec1 delta;
 

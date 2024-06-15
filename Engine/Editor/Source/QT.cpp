@@ -272,11 +272,13 @@ GUI::Tree_Item::Tree_Item(GUI::Tree* parent, const QString& label, const uint& l
 	setData(0, 500, level);
 }
 
-GUI::Tree_Item::Tree_Item(GUI::Tree_Item* parent, const QString& label, const uint& level) :
+GUI::Tree_Item::Tree_Item(Tree_Item* parent, const QString& label, const uint& level, const map<uint, QString>& data) :
 	QTreeWidgetItem(parent)
 {
 	setText(0, label);
 	setData(0, 500, level);
+	for (const auto& [key, value] : data)
+		setData(0, key, value);
 }
 
 GUI::Tree_Item::~Tree_Item() {
@@ -407,19 +409,14 @@ void GUI::Floating_Toggle::mouseMoveEvent(QMouseEvent* event) {
 
 void BranchDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const {
 	QStyleOptionViewItem opt = option;
-	if (index.data(500) == 1) {
-		opt.rect.adjust(opt.rect.height() + 4, 0, 0, 0); // Indentation for Grand-Children
-		QStyledItemDelegate::paint(painter, opt, index);
-	}
-	else { // Indentation for Children
-		opt.rect.adjust(opt.rect.height() - 6, 0, 0, 0);
-		QStyledItemDelegate::paint(painter, opt, index);
 
-		QStyleOptionViewItem branch;
-		branch.rect = QRect(0, option.rect.y()+2, option.rect.height()-4, option.rect.height()-4);
-		branch.state = option.state;
-		const QWidget* widget = option.widget;
-		QStyle* style = widget ? widget->style() : static_cast<QApplication*>(QCoreApplication::instance())->style();
-		style->drawPrimitive(QStyle::PE_IndicatorBranch, &branch, painter, widget);
-	}
+	opt.rect.adjust(opt.rect.height() - 6 + 8 * index.data(500).toInt(), 0, 0, 0);
+	QStyledItemDelegate::paint(painter, opt, index);
+
+	QStyleOptionViewItem branch;
+	branch.rect = QRect(8 * index.data(500).toInt(), option.rect.y() + 2 , option.rect.height()-4, option.rect.height()-4);
+	branch.state = option.state;
+	const QWidget* widget = option.widget;
+	QStyle* style = widget ? widget->style() : static_cast<QApplication*>(QCoreApplication::instance())->style();
+	style->drawPrimitive(QStyle::PE_IndicatorBranch, &branch, painter, widget);
 }

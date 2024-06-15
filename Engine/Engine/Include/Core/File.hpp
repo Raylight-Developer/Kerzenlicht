@@ -64,8 +64,8 @@ namespace CLASS {
 		Log_Console* log;
 		File(Log_Console* log = nullptr);
 
-		void f_loadFile(const string& file_path);
-		void f_saveFile(const string& file_path);
+		void   f_loadFile(const string& file_path);
+		void   f_saveFile(const string& file_path);
 		string f_printFile();
 
 		void              f_loadHeader     (const vector<vector<string>>& token_data);

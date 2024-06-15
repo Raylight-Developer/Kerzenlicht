@@ -7,11 +7,17 @@
 ┌Node-Trees( 1 )
  ┌Node-Tree [ 0 ]
   ┌Nodes
-   #Node :: EXEC :: Tick [ 0 ] ( -110 0 )
+   #Node :: EXEC :: Tick [ 0 ] ( -120 0 )
+   #Node :: LINK :: SET :: TRANSFORM :: EULER_ROTATION :: X [ 1 ] ( 120 0 )
+   #Node :: LINK :: Pointer [ 2 ] ( -120 100 )
+   #Node :: LINK :: Pointer [ 3 ] ( -120 200 )
+   #Node :: LINK :: Pointer [ 4 ] ( -120 300 )
   └Nodes
   ┌Build-E
+   0 0 1 0
   └Build-E
   ┌Build-D
+   0 1 1 2
   └Build-D
  └Node-Tree
 └Node-Trees
@@ -98,4 +104,9 @@
  ┌Object-Node
   2 0
  └Object-Node
+ ┌Node-Pointer
+  0 2 1
+  0 3 2
+  0 4 0
+ └Node-Pointer
 └Build-Steps

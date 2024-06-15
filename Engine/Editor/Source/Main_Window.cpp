@@ -21,7 +21,7 @@ GUI::WORKSPACE::Main_Window::Main_Window(GUI::Application* app) :
 	*log << log_msg;
 
 	file = new CLASS::File(log);
-	file->f_loadFile("./Resources/Assets/Default.krz");
+	file->f_loadFile("./Resources/Assets/Save.krz");
 
 	Workspace_Manager* ws_1 = new Workspace_Manager(this, log, file, Workspace_Type::NODE_EDITOR);
 	Workspace_Manager* ws_2 = new Workspace_Manager(this, log, file, Workspace_Type::SHELF);
@@ -39,7 +39,8 @@ GUI::WORKSPACE::Main_Window::Main_Window(GUI::Application* app) :
 	addDockWidget(Qt::DockWidgetArea::LeftDockWidgetArea, ws_1);
 	addDockWidget(Qt::DockWidgetArea::RightDockWidgetArea, ws_3);
 
-	log->showNormal();
+	log->show();
+	log->resize(600, 400);
 	showMaximized();
 
 	log_msg.clear() << ENDL << HTML_GREEN << "Fully Initialized" << HTML_RESET;

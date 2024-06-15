@@ -48,18 +48,12 @@ namespace GUI {
 			Node(QGraphicsItem* parent = nullptr);
 			~Node();
 
-			virtual void onDataTypeSet(const CLASS::NODE::DATA::Type& type) {};
-			virtual void onDataTypeUnset() {};
-			virtual void onPortConnect(Port* port, Connection* connection) {};
-			virtual void onPortDisconnect(Port* port) {};
-
 			void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget = nullptr) override;
 			QRectF boundingRect() const override { return rect; };
 		};
 		struct Port : QGraphicsItem {
 			Node* node; // ref
-			uint16 index;
-			string slot_id;
+			uint16 slot_id;
 
 			QRectF rect;
 			QColor color;
@@ -67,9 +61,6 @@ namespace GUI {
 			CLASS::NODE::PORT::Type type;
 
 			Port(Node* node);
-
-			void onConnect(Connection* connection);
-			void onDisconnect();
 
 			void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget = nullptr) override;
 			QRectF boundingRect() const override;
@@ -83,9 +74,10 @@ namespace GUI {
 
 				CLASS::NODE::DATA::Type any_data_type;
 
-				Data_I_Port(Node* parent, const uint16& index, const QString& label, const string& slot_id, const CLASS::NODE::DATA::Type& type, const CLASS::NODE::DATA::Modifier& modifier = CLASS::NODE::DATA::Modifier::SINGLE);
+				Data_I_Port(Node* parent, const uint16& slot_id, const QString& label, const CLASS::NODE::DATA::Type& type, const CLASS::NODE::DATA::Modifier& modifier = CLASS::NODE::DATA::Modifier::SINGLE);
 				~Data_I_Port();
 
+				void setDataType(const CLASS::NODE::DATA::Type& type);
 				void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget = nullptr) override;
 			};
 
@@ -97,16 +89,17 @@ namespace GUI {
 
 				CLASS::NODE::DATA::Type any_data_type;
 
-				Data_O_Port(Node* parent, const uint16& index, const QString& label, const string& slot_id, const CLASS::NODE::DATA::Type& type, const CLASS::NODE::DATA::Modifier& modifier = CLASS::NODE::DATA::Modifier::SINGLE);
+				Data_O_Port(Node* parent, const uint16& slot_id, const QString& label, const CLASS::NODE::DATA::Type& type, const CLASS::NODE::DATA::Modifier& modifier = CLASS::NODE::DATA::Modifier::SINGLE);
 				~Data_O_Port();
 
+				void setDataType(const CLASS::NODE::DATA::Type& type);
 				void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget = nullptr) override;
 			};
 
 			struct Exec_I_Port : Port {
 				vector<Connection*> incoming_connections; // ref
 
-				Exec_I_Port(Node* parent, const uint16& index, const QString& label, const string& slot_id);
+				Exec_I_Port(Node* parent, const uint16& slot_id, const QString& label);
 				~Exec_I_Port();
 
 				void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget = nullptr) override;
@@ -115,7 +108,7 @@ namespace GUI {
 			struct Exec_O_Port : Port {
 				Connection* connection; // src
 
-				Exec_O_Port(Node* parent, const uint16& index, const QString& label, const string& slot_id);
+				Exec_O_Port(Node* parent, const uint16& slot_id, const QString& label);
 				~Exec_O_Port();
 
 				void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget = nullptr) override;

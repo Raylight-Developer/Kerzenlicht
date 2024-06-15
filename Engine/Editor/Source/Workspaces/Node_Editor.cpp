@@ -2,9 +2,9 @@
 
 #include "Workspaces/Manager.hpp"
 
-GUI::WORKSPACE::Workspace_Node_Editor::Workspace_Node_Editor(Workspace_Manager* i_parent) :
-	GUI::Linear_Contents(i_parent, QBoxLayout::Direction::TopToBottom),
-	parent(i_parent),
+GUI::WORKSPACE::Workspace_Node_Editor::Workspace_Node_Editor(Workspace_Manager* parent) :
+	GUI::Linear_Contents(parent, QBoxLayout::Direction::TopToBottom),
+	parent(parent),
 	file(parent->file)
 {
 	viewport = new Node_Viewport(this);
@@ -23,8 +23,12 @@ GUI::WORKSPACE::Workspace_Node_Editor::Workspace_Node_Editor(Workspace_Manager* 
 	addWidget(splitter);
 
 	parent->file->active_object->addCallback(this, [this]() { viewport->f_objectChanged(file->active_object->ptr); });
-	connect(compile, &GUI::Button::pressed, [this]() {
+	connect(compile, &GUI::Button::pressed, [this, parent]() {
 		if (viewport->active_node_tree and file->active_object->ptr) {
+			Lace log_msg;
+			log_msg << ENDL << HTML_MAGENTA << "[Compilation]" << HTML_RESET << " Compiling Nodes...";
+			*parent->log << log_msg;
+
 			file->nodes.erase(std::find(file->nodes.begin(), file->nodes.end(), file->active_object->ptr->nodes));
 
 			auto it = file->node_map.find(file->active_object->ptr->nodes);
@@ -38,7 +42,10 @@ GUI::WORKSPACE::Workspace_Node_Editor::Workspace_Node_Editor(Workspace_Manager* 
 			file->active_object->ptr->nodes = node;
 			file->nodes.push_back(node);
 			file->node_map[node] = viewport->active_node_tree;
-			cout << "Compiled Nodes" << endl;
+
+			log_msg.clear() << ENDL << HTML_GREEN << "[Compilation]" << HTML_RESET << " Compiled Nodes";
+			log_msg.clear() << ENDL << file->f_printFile();
+			*parent->log << log_msg;
 		}
 	});
 }
@@ -61,12 +68,14 @@ GUI::WORKSPACE::Node_Viewport::Node_Viewport(Workspace_Node_Editor* parent) :
 }
 
 GUI::WORKSPACE::Node_Viewport::~Node_Viewport() {
-	for (auto item : scene->items()) if (dynamic_cast<GUI::NODE::Node*>(item)) scene->removeItem(item);
+	for (auto item : scene->items())
+		if (dynamic_cast<GUI::NODE::Node*>(item)) scene->removeItem(item);
 	parent->file->active_object->callbacks.erase(this);
 }
 
 void GUI::WORKSPACE::Node_Viewport::f_objectChanged(CLASS::Object* object) {
-	for (auto item: scene->items()) if (dynamic_cast<GUI::NODE::Node*>(item)) scene->removeItem(item);
+	for (auto item: scene->items())
+		if (dynamic_cast<GUI::NODE::Node*>(item)) scene->removeItem(item);
 	if (object) {
 		active_node_tree = parent->file->node_map[object->nodes];
 		for (auto node : parent->file->node_map[object->nodes]->nodes)
@@ -113,57 +122,46 @@ void GUI::WORKSPACE::Node_Viewport::drawBackground(QPainter* painter, const QRec
 }
 
 void GUI::WORKSPACE::Node_Viewport::mouseReleaseEvent(QMouseEvent* event) {
-	if (event->button() == Qt::MouseButton::MiddleButton) {
+	if (event->button() == Qt::MouseButton::MiddleButton)
 		pan = false;
-	}
-	if (event->button() == Qt::MouseButton::RightButton) {
+	if (event->button() == Qt::MouseButton::RightButton)
 		moving = false;
-	}
 	if (event->button() == Qt::MouseButton::LeftButton) {
 		if (connecting) {
 			if (auto item = scene->itemAt(mapToScene(event->pos()), transform())) {
 				if (auto drop_port = dynamic_cast<GUI::NODE::PORT::Data_I_Port*>(item)) {
 					if (!drop_port->connection) {
 						if (auto source_port = dynamic_cast<GUI::NODE::PORT::Data_O_Port*>(connection->port_l)) {
-							if (source_port->data_type == drop_port->data_type
-								or source_port->data_type == CLASS::NODE::DATA::Type::ANY
-								or drop_port->data_type == CLASS::NODE::DATA::Type::ANY
-							) {
-								if (drop_port->connection) delete drop_port->connection;
-								drop_port->connection = new GUI::NODE::Connection(source_port, drop_port);
-								source_port->outgoing_connections.push_back(drop_port->connection);
-							}
+							if (drop_port->connection)
+								delete drop_port->connection;
+							drop_port->connection = new GUI::NODE::Connection(source_port, drop_port);
+							source_port->outgoing_connections.push_back(drop_port->connection);
 						}
 					}
 				}
 				else if (auto drop_port = dynamic_cast<GUI::NODE::PORT::Data_O_Port*>(item)) {
 					bool exists = false;
-					for (auto conn : drop_port->outgoing_connections) {
+					for (auto conn : drop_port->outgoing_connections)
 						if (conn->port_l == connection->port_l)
 							exists = true;
-					}
 					if (!exists) {
 						if (auto source_port = dynamic_cast<GUI::NODE::PORT::Data_I_Port*>(connection->port_l)) {
-							if (source_port->data_type == drop_port->data_type
-								or source_port->data_type == CLASS::NODE::DATA::Type::ANY
-								or drop_port->data_type == CLASS::NODE::DATA::Type::ANY
-							) {
-								if (source_port->connection) delete source_port->connection;
-								source_port->connection = new GUI::NODE::Connection(drop_port, source_port);
-								drop_port->outgoing_connections.push_back(source_port->connection);
-							}
+							if (source_port->connection)
+								delete source_port->connection;
+							source_port->connection = new GUI::NODE::Connection(drop_port, source_port);
+							drop_port->outgoing_connections.push_back(source_port->connection);
 						}
 					}
 				}
 				else if (auto drop_port = dynamic_cast<GUI::NODE::PORT::Exec_I_Port*>(item)) {
 					bool exists = false;
-					for (auto conn : drop_port->incoming_connections) {
+					for (auto conn : drop_port->incoming_connections)
 						if (conn->port_l == connection->port_l)
 							exists = true;
-					}
 					if (!exists) {
 						if (auto source_port = dynamic_cast<GUI::NODE::PORT::Exec_O_Port*>(connection->port_l)) {
-							if (source_port->connection) delete source_port->connection;
+							if (source_port->connection)
+								delete source_port->connection;
 							source_port->connection = new GUI::NODE::Connection(source_port, drop_port);
 							drop_port->incoming_connections.push_back(source_port->connection);
 						}
@@ -172,7 +170,8 @@ void GUI::WORKSPACE::Node_Viewport::mouseReleaseEvent(QMouseEvent* event) {
 				else if (auto drop_port = dynamic_cast<GUI::NODE::PORT::Exec_O_Port*>(item)) {
 					if (!drop_port->connection) {
 						if (auto source_port = dynamic_cast<GUI::NODE::PORT::Exec_I_Port*>(connection->port_l)) {
-							if (drop_port->connection) delete drop_port->connection;
+							if (drop_port->connection)
+								delete drop_port->connection;
 							drop_port->connection = new GUI::NODE::Connection(drop_port, source_port);
 							source_port->incoming_connections.push_back(drop_port->connection);
 						}
@@ -227,8 +226,6 @@ void GUI::WORKSPACE::Node_Viewport::mouseMoveEvent(QMouseEvent* event) {
 
 					delete port_r->connection;
 					port_r->connection = nullptr;
-					port_l->node->onPortDisconnect(port_l);
-					port_r->node->onPortDisconnect(port_r);
 				}
 			}
 			else if (auto port_l = dynamic_cast<GUI::NODE::PORT::Data_O_Port*>(item)) {
@@ -238,8 +235,6 @@ void GUI::WORKSPACE::Node_Viewport::mouseMoveEvent(QMouseEvent* event) {
 		
 					delete port_r->connection;
 					port_r->connection = nullptr;
-					port_l->node->onPortDisconnect(port_l);
-					port_r->node->onPortDisconnect(port_r);
 				}
 			}
 			else if (auto port_r = dynamic_cast<GUI::NODE::PORT::Exec_I_Port*>(item)) {
@@ -249,8 +244,6 @@ void GUI::WORKSPACE::Node_Viewport::mouseMoveEvent(QMouseEvent* event) {
 		
 					delete port_l->connection;
 					port_l->connection = nullptr;
-					port_l->node->onPortDisconnect(port_l);
-					port_r->node->onPortDisconnect(port_r);
 				}
 			}
 			else if (auto port_l = dynamic_cast<GUI::NODE::PORT::Exec_O_Port*>(item)) {
@@ -260,8 +253,6 @@ void GUI::WORKSPACE::Node_Viewport::mouseMoveEvent(QMouseEvent* event) {
 		
 					delete port_l->connection;
 					port_l->connection = nullptr;
-					port_l->node->onPortDisconnect(port_l);
-					port_r->node->onPortDisconnect(port_r);
 				}
 			}
 		}
@@ -278,12 +269,10 @@ void GUI::WORKSPACE::Node_Viewport::mouseMoveEvent(QMouseEvent* event) {
 			move_selection->setPos(f_roundToNearest(delta.x(), 10.0), f_roundToNearest(delta.y(), 10.0));
 		}
 		if (connecting) {
-			if (connection->port_l) {
+			if (connection->port_l)
 				connection->updateR(mapToScene(event->pos()));
-			}
-			else {
+			else
 				connection->updateL(mapToScene(event->pos()));
-			}
 			connection->update();
 		}
 	}
@@ -316,51 +305,82 @@ void GUI::WORKSPACE::Node_Viewport::wheelEvent(QWheelEvent* event) {
 	const QPointF delta = newPos - oldPos;
 	translate(delta.x(), delta.y());
 }
-void GUI::WORKSPACE::Node_Viewport::dragMoveEvent(QDragMoveEvent* event) {
-	if (event->mimeData()->hasFormat("NODE")) {
-		event->acceptProposedAction();
-	}
-}
 
 void GUI::WORKSPACE::Node_Viewport::dropEvent(QDropEvent* event) {
 	const dvec2 drop_pos = f_roundToNearest(p_to_d(mapToScene(event->position().toPoint())), 10.0);
 	if (event->mimeData()->hasText() and active_node_tree) {
 		if (event->mimeData()->text() == "NODE") {
-			QByteArray itemData = event->mimeData()->data("NODE");
-			QDataStream dataStream(&itemData, QIODevice::ReadOnly);
-			QString text;
-			dataStream >> text;
+			QByteArray itemDataType = event->mimeData()->data("Type");
+			QDataStream dataStreamType(&itemDataType, QIODevice::ReadOnly);
+			QString type;
+			dataStreamType >> type;
 
+			QByteArray itemDataSubType = event->mimeData()->data("SubType");
+			QDataStream dataStreamSubType(&itemDataSubType, QIODevice::ReadOnly);
+			QString sub_type;
+			dataStreamSubType >> sub_type;
 
-			if (text == "Tick") {
-				event->acceptProposedAction();
-				auto node = new GUI::NODE::EXEC::Tick(drop_pos);
-				active_node_tree->nodes.push_back(node);
-				scene->addItem(node);
+			if (type == "EXEC") {
+				if (sub_type == "Counter") {
+					event->acceptProposedAction();
+					auto node = new GUI::NODE::EXEC::Counter(drop_pos);
+					active_node_tree->nodes.push_back(node);
+					scene->addItem(node);
+					return;
+				}
+				if (sub_type == "Script") {
+					event->acceptProposedAction();
+					auto node = new GUI::NODE::EXEC::Script(drop_pos);
+					active_node_tree->nodes.push_back(node);
+					scene->addItem(node);
+					return;
+				}
+				if (sub_type == "Tick") {
+					event->acceptProposedAction();
+					auto node = new GUI::NODE::EXEC::Tick(drop_pos);
+					active_node_tree->nodes.push_back(node);
+					scene->addItem(node);
+					return;
+				}
 			}
-			if (text == "Add") {
-				event->acceptProposedAction();
-				auto node = new GUI::NODE::MATH::Add(drop_pos);
-				active_node_tree->nodes.push_back(node);
-				scene->addItem(node);
+			if (type == "MATH") {
+				if (sub_type == "Add") {
+					event->acceptProposedAction();
+					auto node = new GUI::NODE::MATH::Add(drop_pos);
+					active_node_tree->nodes.push_back(node);
+					scene->addItem(node);
+					return;
+				}
+				if (sub_type == "Sub") {
+					event->acceptProposedAction();
+					auto node = new GUI::NODE::MATH::Sub(drop_pos);
+					active_node_tree->nodes.push_back(node);
+					scene->addItem(node);
+					return;
+				}
+				if (sub_type == "Mul") {
+					event->acceptProposedAction();
+					auto node = new GUI::NODE::MATH::Mul(drop_pos);
+					active_node_tree->nodes.push_back(node);
+					scene->addItem(node);
+					return;
+				}
+				if (sub_type == "Div") {
+					event->acceptProposedAction();
+					auto node = new GUI::NODE::MATH::Div(drop_pos);
+					active_node_tree->nodes.push_back(node);
+					scene->addItem(node);
+					return;
+				}
 			}
-			if (text == "Sub") {
-				event->acceptProposedAction();
-				auto node = new GUI::NODE::MATH::Sub(drop_pos);
-				active_node_tree->nodes.push_back(node);
-				scene->addItem(node);
-			}
-			if (text == "Mul") {
-				event->acceptProposedAction();
-				auto node = new GUI::NODE::MATH::Mul(drop_pos);
-				active_node_tree->nodes.push_back(node);
-				scene->addItem(node);
-			}
-			if (text == "Div") {
-				event->acceptProposedAction();
-				auto node = new GUI::NODE::MATH::Div(drop_pos);
-				active_node_tree->nodes.push_back(node);
-				scene->addItem(node);
+			if (type == "LINK") {
+				if (sub_type == "SET_Transform_Euler_Rot_X") {
+					event->acceptProposedAction();
+					auto node = new GUI::NODE::LINK::SET::Euler_Rotation_X(drop_pos);
+					active_node_tree->nodes.push_back(node);
+					scene->addItem(node);
+					return;
+				}
 			}
 		}
 		else if (event->mimeData()->text() == "OBJECT") {
@@ -378,6 +398,7 @@ void GUI::WORKSPACE::Node_Viewport::dropEvent(QDropEvent* event) {
 			node->pointer_type = CLASS::NODE::DATA::Type::OBJECT;
 			active_node_tree->nodes.push_back(node);
 			scene->addItem(node);
+			return;
 		}
 	}
 }
@@ -386,10 +407,7 @@ GUI::WORKSPACE::Node_Shelf::Node_Shelf(Workspace_Node_Editor* parent) :
 	Tree(parent)
 {
 	setDragEnabled(true);
-	setDragDropMode(QAbstractItemView::DragDropMode::DragOnly);
-
-	setMinimumWidth(100);
-	setMaximumWidth(200);
+	setDragDropMode(QAbstractItemView::DragDropMode::DragDrop);
 
 	auto tree_constraint = new Tree_Item(this, "Constraint");
 	auto tree_generate   = new Tree_Item(this, "Generate");
@@ -400,32 +418,44 @@ GUI::WORKSPACE::Node_Shelf::Node_Shelf(Workspace_Node_Editor* parent) :
 	auto tree_link       = new Tree_Item(this, "Link");
 	auto tree_util       = new Tree_Item(this, "Util");
 
-	auto exec_sequence = new Tree_Item(tree_exec, "Sequence", 1);
-	auto exec_counter  = new Tree_Item(tree_exec, "Counter",  1);
-	auto exec_script   = new Tree_Item(tree_exec, "Script",   1);
-	auto exec_start    = new Tree_Item(tree_exec, "Start",    1);
-	auto exec_timer    = new Tree_Item(tree_exec, "Timer",    1);
-	auto exec_tick     = new Tree_Item(tree_exec, "Tick",     1);
-	auto exec_for      = new Tree_Item(tree_exec, "For",      1);
+	new Tree_Item(tree_exec, "Sequence", 1, { { 1000, "EXEC" }, { 1001, "Sequence" } });
+	new Tree_Item(tree_exec, "Counter",  1, { { 1000, "EXEC" }, { 1001, "Counter" } });
+	new Tree_Item(tree_exec, "Script",   1, { { 1000, "EXEC" }, { 1001, "Script" } });
+	new Tree_Item(tree_exec, "Start",    1, { { 1000, "EXEC" }, { 1001, "Start" } });
+	new Tree_Item(tree_exec, "Timer",    1, { { 1000, "EXEC" }, { 1001, "Timer" } });
+	new Tree_Item(tree_exec, "Tick",     1, { { 1000, "EXEC" }, { 1001, "Tick" } });
+	new Tree_Item(tree_exec, "For",      1, { { 1000, "EXEC" }, { 1001, "For" } });
 	
-	auto math_add  = new Tree_Item(tree_math, "Add",  1);
-	auto math_sub  = new Tree_Item(tree_math, "Sub",  1);
-	auto math_mul  = new Tree_Item(tree_math, "Mul",  1);
-	auto math_div  = new Tree_Item(tree_math, "Div",  1);
-	auto math_pow  = new Tree_Item(tree_math, "Pow",  1);
-	auto math_sqrt = new Tree_Item(tree_math, "Sqrt", 1);
+	new Tree_Item(tree_math, "Add",  1, { { 1000, "MATH" }, { 1001, "Add" } });
+	new Tree_Item(tree_math, "Sub",  1, { { 1000, "MATH" }, { 1001, "Sub" } });
+	new Tree_Item(tree_math, "Mul",  1, { { 1000, "MATH" }, { 1001, "Mul" } });
+	new Tree_Item(tree_math, "Div",  1, { { 1000, "MATH" }, { 1001, "Div" } });
+
+	auto tree_link_set                       = new Tree_Item(tree_link                        , "Set"           , 1, { { 1000, "LINK" }, { 1001, "SET_Field" } });
+	auto tree_link_set_transform             = new Tree_Item(tree_link_set                    , "Transform"     , 2, { { 1000, "LINK" }, { 1001, "SET_Transform" } });
+	auto tree_link_set_transform_euler_rot   = new Tree_Item(tree_link_set_transform          , "Euler Rotation", 3, { { 1000, "LINK" }, { 1001, "SET_Transform_Euler_Rot" } });
+	auto tree_link_set_transform_euler_rot_x = new Tree_Item(tree_link_set_transform_euler_rot, "X"             , 4, { { 1000, "LINK" }, { 1001, "SET_Transform_Euler_Rot_X" } });
+}
+
+void GUI::WORKSPACE::Node_Viewport::dragMoveEvent(QDragMoveEvent* event) {
+	event->acceptProposedAction();
 }
 
 void GUI::WORKSPACE::Node_Shelf::startDrag(Qt::DropActions actions) {
-	QTreeWidgetItem* temp = currentItem();
-	if (temp) {
-		QByteArray itemData;
-		QDataStream dataStream(&itemData, QIODevice::WriteOnly);
-		dataStream << temp->text(0);
+	if (QTreeWidgetItem* temp = currentItem()) {
 
 		QMimeData* mimeData = new QMimeData;
 		mimeData->setText("NODE");
-		mimeData->setData("NODE", itemData);
+
+		QByteArray type;
+		QDataStream dataStreamType(&type, QIODevice::WriteOnly);
+		dataStreamType << temp->data(0, 1000).toString();
+		mimeData->setData("Type", type);
+		
+		QByteArray subtype;
+		QDataStream dataStreamSubtype(&subtype, QIODevice::WriteOnly);
+		dataStreamSubtype << temp->data(0, 1001).toString();
+		mimeData->setData("SubType", subtype);
 
 		QDrag* drag = new QDrag(this);
 		drag->setMimeData(mimeData);

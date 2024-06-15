@@ -1,5 +1,4 @@
 #include "Core/Lace.hpp"
-#include "Lace.hpp"
 
 Lace::Lace() :
 	character("\t")
@@ -84,9 +83,8 @@ Lace& Lace::operator-=(const uint16& value) {
 }
 
 Lace& Lace::clear() {
-	data.clear();
+	data = stringstream();
 	current_tab = 0;
-
 	return *this;
 }
 

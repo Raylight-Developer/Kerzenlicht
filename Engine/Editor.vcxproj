@@ -220,7 +220,7 @@
     </Link>
     <PreLinkEvent />
     <PreLinkEvent>
-      <Command>"$(VC_ExecutablePath_x64)\lib.exe" /out:"$(OutDir)$(ProjectName).lib" "$(IntermediateOutputPath)*.obj"</Command>
+      <Command>"$(VC_ExecutablePath_x64)\lib.exe" /out:"$(OutDir)Kerzenlicht Renderer.lib" "$(IntermediateOutputPath)*.obj"</Command>
     </PreLinkEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">

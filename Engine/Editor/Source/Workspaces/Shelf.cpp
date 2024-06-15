@@ -6,8 +6,6 @@ GUI::WORKSPACE::Workspace_Shelf::Workspace_Shelf(Workspace_Manager* parent) :
 	GUI::Linear_Contents(parent, QBoxLayout::Direction::TopToBottom),
 	parent(parent)
 {
-	parent->setMaximumWidth(400);
-
 	tree = new Shelf(this);
 	objects = new Tree_Item(tree, "Objects");
 	object_data = new Tree_Item(tree, "Data");

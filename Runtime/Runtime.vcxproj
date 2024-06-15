@@ -15,9 +15,9 @@
     <ClCompile Include="Include\pch.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Include\DLL.hpp" />
-    <ClInclude Include="Include\framework.hpp" />
-    <ClInclude Include="Include\pch.hpp" />
+    <ClInclude Include="Include\DLL.h" />
+    <ClInclude Include="Include\framework.h" />
+    <ClInclude Include="Include\pch.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{73c40b0d-92a0-4d74-a91a-d5fcb10ce06b}</ProjectGuid>

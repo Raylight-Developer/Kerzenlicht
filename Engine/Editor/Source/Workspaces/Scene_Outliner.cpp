@@ -6,7 +6,6 @@ GUI::WORKSPACE::Workspace_Scene_Outliner::Workspace_Scene_Outliner(Workspace_Man
 	GUI::Linear_Contents(parent, QBoxLayout::Direction::TopToBottom),
 	parent(parent)
 {
-
 	tree = new GUI::Tree(this);
 	tree->setDragEnabled(true);
 	tree->setDragDropMode(QAbstractItemView::DragDropMode::DragDrop);

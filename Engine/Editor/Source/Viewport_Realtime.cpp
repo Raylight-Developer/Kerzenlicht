@@ -27,6 +27,10 @@ GUI::WORKSPACE::Viewport_Realtime::Viewport_Realtime(Workspace_Viewport* parent,
 	fps_counter = 0;
 	fps_measure = chrono::steady_clock::now();
 
+	frame_counter = 0;
+	last_delta = fps_measure;
+	delta = FPS_60;
+
 	setObjectName("Viewport_Realtime");
 }
 
@@ -114,7 +118,7 @@ void GUI::WORKSPACE::Viewport_Realtime::f_uploadData() {
 	triangles.clear();
 	triangle_map.clear();
 	for (CLASS::Object* object : file->active_scene->ptr->objects) {
-		object->f_compileMatrix(file->active_scene->ptr);
+		object->f_compileMatrix();
 		vector <VIEWPORT_REALTIME::Triangle>  temp;
 		if (object->data->type == CLASS::OBJECT::DATA::Type::MESH) {
 			const CLASS::OBJECT::DATA::Mesh* mesh = object->data->getMesh();
@@ -131,7 +135,9 @@ void GUI::WORKSPACE::Viewport_Realtime::f_uploadData() {
 		}
 		else if (object->data->type == CLASS::OBJECT::DATA::Type::GROUP) {
 			const CLASS::OBJECT::DATA::Group* group = object->data->getGroup();
-			for (const CLASS::Object* sub_object : group->objects) {
+			for (CLASS::Object* sub_object : group->objects) {
+				sub_object->f_compileMatrix();
+				sub_object->transform_matrix *= object->transform_matrix;
 				if (sub_object->data->type == CLASS::OBJECT::DATA::Type::MESH) {
 					const CLASS::OBJECT::DATA::Mesh* mesh = sub_object->data->getMesh();
 					for (const CLASS::OBJECT::DATA::MESH::Face* face : mesh->faces) {
@@ -163,14 +169,16 @@ void GUI::WORKSPACE::Viewport_Realtime::f_updateTick() {
 		fps_measure = chrono::steady_clock::now();
 		fps_counter = 0;
 	}
-	delta = chrono::duration_cast<std::chrono::milliseconds>(chrono::steady_clock::now() - last_delta).count() / 1000.0;
+	if (frame_counter != 0) delta = chrono::duration_cast<std::chrono::milliseconds>(chrono::steady_clock::now() - last_delta).count() / 1000.0;
 	last_delta = chrono::steady_clock::now();
 	for (const CLASS::Object* object : file->active_scene->ptr->objects)
-		if (object->nodes) object->nodes->exec(&delta);
+		if (object->nodes)
+			object->nodes->exec(&delta);
 	//for (auto [key, workspace] : parent->parent->parent->workspaces) // TODO optimize with callbacks or other method
 	//	if (workspace->type == Workspace_Type::NODE_EDITOR)
 	//		static_cast<Workspace_Node_Editor*>(workspace->workspace)->viewport->update();
-	f_uploadData();
+	frame_counter++;
+	f_updateFrame();
 }
 
 void GUI::WORKSPACE::Viewport_Realtime::f_updateFrame() {
@@ -218,7 +226,7 @@ void GUI::WORKSPACE::Viewport_Realtime::initializeGL() {
 	glViewport(0, 0, resolution.x, resolution.y);
 
 	f_pipeline();
-	f_uploadData();
+	last_delta = chrono::steady_clock::now();
 }
 
 void GUI::WORKSPACE::Viewport_Realtime::paintGL() {
@@ -270,7 +278,7 @@ void GUI::WORKSPACE::Viewport_Realtime::resizeGL(int w, int h) {
 	);
 
 	glViewport(0, 0, resolution.x, resolution.y);
-	update();
+	//update();
 }
 
 bool GUI::WORKSPACE::VIEWPORT_REALTIME::f_rayTriangleIntersection(const Ray& ray, const Triangle& tri, dvec1& ray_length) {
