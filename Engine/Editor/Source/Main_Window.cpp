@@ -10,13 +10,17 @@ GUI::WORKSPACE::App::App(int argc, char* argv[]) :
 GUI::WORKSPACE::Main_Window::Main_Window(GUI::Application* app) :
 	GUI::Window(),
 	app(app),
-	log(new Lace())
+	log(new Log_Console(this))
 {
 	mouse_pressed = false;
 	key_pressed = false;
 	setWindowIcon(QPixmap("./Resources/Icon.png"));
 
-	file = new CLASS::File();
+	Lace log_msg;
+	log_msg << "Kerzenlicht 1.0.0 Initialized";
+	*log << log_msg;
+
+	file = new CLASS::File(log);
 	file->f_loadFile("./Resources/Assets/Default.krz");
 
 	Workspace_Manager* ws_1 = new Workspace_Manager(this, log, file, Workspace_Type::NODE_EDITOR);
@@ -35,9 +39,11 @@ GUI::WORKSPACE::Main_Window::Main_Window(GUI::Application* app) :
 	addDockWidget(Qt::DockWidgetArea::LeftDockWidgetArea, ws_1);
 	addDockWidget(Qt::DockWidgetArea::RightDockWidgetArea, ws_3);
 
+	log->showNormal();
 	showMaximized();
 
-	*log << "Kerzenlicht 1.0.0 Initialized";
+	log_msg.clear() << ENDL << HTML_GREEN << "Fully Initialized" << HTML_RESET;
+	*log << log_msg;
 }
 
 bool GUI::WORKSPACE::Main_Window::eventFilter(QObject* object, QEvent* event) {

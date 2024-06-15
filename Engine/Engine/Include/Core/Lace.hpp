@@ -56,6 +56,7 @@ struct Lace { //------------Utility for string manipulation------------
 	Lace& operator+= (const uint16& value);
 	Lace& operator-= (const uint16& value);
 
+	Lace& clear();
 	string str() const;
 
 	// Feed directly

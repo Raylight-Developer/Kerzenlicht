@@ -4,7 +4,7 @@
 #include "Workspaces/Manager.hpp"
 #include "Main_Window.hpp"
 
-GUI::WORKSPACE::Viewport_Realtime::Viewport_Realtime(Workspace_Viewport* parent, Lace* log, CLASS::File* file) :
+GUI::WORKSPACE::Viewport_Realtime::Viewport_Realtime(Workspace_Viewport* parent, Log_Console* log, CLASS::File* file) :
 	QOpenGLWindow(),
 	parent(parent),
 	log(log),
@@ -166,7 +166,7 @@ void GUI::WORKSPACE::Viewport_Realtime::f_updateTick() {
 	delta = chrono::duration_cast<std::chrono::milliseconds>(chrono::steady_clock::now() - last_delta).count() / 1000.0;
 	last_delta = chrono::steady_clock::now();
 	for (const CLASS::Object* object : file->active_scene->ptr->objects)
-		object->nodes->exec(&delta);
+		if (object->nodes) object->nodes->exec(&delta);
 	//for (auto [key, workspace] : parent->parent->parent->workspaces) // TODO optimize with callbacks or other method
 	//	if (workspace->type == Workspace_Type::NODE_EDITOR)
 	//		static_cast<Workspace_Node_Editor*>(workspace->workspace)->viewport->update();

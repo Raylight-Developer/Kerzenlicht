@@ -70,13 +70,9 @@ namespace CLASS {
 
 				void exec(const string& slot_id) override;
 			};
-			struct Script : Node {
+			struct Script : private Node {
 				Script();
-				string script_id;
 				map<string, Data> internal_data;
-
-				PORT::Exec_I_Port* in;
-				PORT::Exec_O_Port* out;
 
 				unordered_map<string, PORT::Data_I_Port*> data_inputs;
 				unordered_map<string, PORT::Data_O_Port*> data_outputs;
@@ -90,21 +86,22 @@ namespace CLASS {
 				virtual void addExecInput (const string& slot_id);
 				virtual void addExecOutput(const string& slot_id);
 				virtual void clearIO();
-				void reloadFunctions();
-				void reloadDll();
 
 			private:
-				GUI::Value_Input* script_identifier;
-				GUI::Button* reload;
-
+				string script_id;
 				HINSTANCE dynlib;
+				PORT::Exec_I_Port* in;
+				PORT::Exec_O_Port* out;
+
+				Data (*getDataFunc)(const Script*, const string&);
+				void (*buildFunc)(Script*);
+				void (*execFunc)(Script*);
 
 				void exec(const string& slot_id) override;
 				Data getData(const string& slot_id) const override;
 
-				void (*execFunc)(Script*);
-				Data (*getDataFunc)(const Script*, const string&);
-				void (*buildFunc)(Script*);
+				void reloadFunctions();
+				void reloadDll();
 			};
 			struct Timer : Node {
 				QTimer timer;

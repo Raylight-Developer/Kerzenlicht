@@ -1,5 +1,7 @@
 ﻿#include "Core/File.hpp"
 
+#include "Log_Console.hpp"
+
 CLASS::Scene::Scene() {
 	objects = vector<CLASS::Object*>();
 	active_camera = nullptr;
@@ -9,7 +11,9 @@ CLASS::Scene::Scene() {
 CLASS::Scene::~Scene() {
 }
 
-CLASS::File::File() {
+CLASS::File::File(Log_Console* log) :
+	log(log)
+{
 	nodes = vector<CLASS::Node_Tree*>();
 	object_data = vector<CLASS::OBJECT::Data*>();
 	materials = vector<CLASS::Material*>();
@@ -58,32 +62,51 @@ void CLASS::File::f_loadFile(const string& file_path) {
 				}
 				else {
 					if      (is_processing == Parse_Type::BUILD_STEPS and tokens[0] == "└Build-Steps") {
+						Lace log_msg;
+						log_msg << ENDL << HTML_GREEN << "[Loading File]" << HTML_RESET << " Reading Build...";
+						*log << log_msg;
 						is_processing = Parse_Type::NONE;
 						f_loadBuild(data);
-						cout << ANSI_GREEN << "[Loading]" << ANSI_RESET <<" Build Complete" << endl;
 					}
 					else if (is_processing == Parse_Type::NODE_TREE and tokens[0] == "└Node-Tree") {
+						Lace log_msg;
+						log_msg << ENDL << HTML_BLUE << "[Loading File]" << HTML_RESET << " Reading Node-Tree...";
+						*log << log_msg;
 						is_processing = Parse_Type::NONE;
 						nodes.push_back(f_loadNodeTree(data));
 					}
 					else if (is_processing == Parse_Type::MATERIAL and tokens[0] == "└Material") {
+						Lace log_msg;
+						log_msg << ENDL << HTML_BLUE << "[Loading File]" << HTML_RESET << " Reading Material...";
+						*log << log_msg;
 						is_processing = Parse_Type::NONE;
 						materials.push_back(f_loadMaterial(data));
 					}
 					else if (is_processing == Parse_Type::HEADER and tokens[0] == "└Header") {
+						Lace log_msg;
+						log_msg << ENDL << HTML_MAGENTA << "[Loading File]" << HTML_RESET << " Loading: " << file_path << "...";
+						*log << log_msg;
 						is_processing = Parse_Type::NONE;
-						cout << ANSI_CYAN << "[Loading]" << ANSI_RESET << " Loading: " << file_path << "..." << endl;
 						f_loadHeader(data);
 					}
 					else if (is_processing == Parse_Type::OBJECT and tokens[0] == "└Object") {
+						Lace log_msg;
+						log_msg << ENDL << HTML_BLUE << "[Loading File]" << HTML_RESET << " Reading Object...";
+						*log << log_msg;
 						is_processing = Parse_Type::NONE;
 						objects.push_back(f_loadObject(data));
 					}
 					else if (is_processing == Parse_Type::SCENE and tokens[0] == "└Scene") {
+						Lace log_msg;
+						log_msg << ENDL << HTML_BLUE << "[Loading File]" << HTML_RESET << " Reading Scene...";
+						*log << log_msg;
 						is_processing = Parse_Type::NONE;
 						scenes.push_back(f_loadScene(data));
 					}
 					else if (is_processing == Parse_Type::DATA and tokens[0] == "└Data") {
+						Lace log_msg;
+						log_msg << ENDL << HTML_BLUE << "[Loading File]" << HTML_RESET << " Reading Data...";
+						*log << log_msg;
 						is_processing = Parse_Type::NONE;
 						object_data.push_back(f_loadData(data));
 					}
@@ -94,7 +117,11 @@ void CLASS::File::f_loadFile(const string& file_path) {
 			}
 		}
 	}
-	else cout << ANSI_RED << ANSI_BOLD << "[Loading]" << ANSI_RESET << " Error Opening File: " << file_path << endl;
+	else {
+		Lace log_msg;
+		log_msg << ENDL << HTML_RED << "[Loading File]" << HTML_RESET << " Error Opening File: " << file_path;
+		*log << log_msg;
+	}
 }
 
 void CLASS::File::f_loadHeader(const vector<vector<string>>& token_data) {

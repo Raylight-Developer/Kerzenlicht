@@ -241,7 +241,7 @@ GUI::Text_Edit::Text_Edit(QWidget* parent) :
 }
 
 GUI::Text_Stream::Text_Stream(QWidget* parent) :
-	QTextBrowser(parent)
+	QTextEdit(parent)
 {
 	setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 	setAttribute(Qt::WidgetAttribute::WA_StyledBackground);

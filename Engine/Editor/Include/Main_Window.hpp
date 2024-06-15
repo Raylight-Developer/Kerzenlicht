@@ -8,7 +8,13 @@
 
 #include "Workspaces/Manager.hpp"
 #include "Workspaces/Header.hpp"
+#include "Log_Console.hpp"
 
+// FWD DECL OTHER
+
+// FWD DECL THIS
+
+// DECL
 namespace GUI {
 	namespace WORKSPACE {
 		struct Workspace_Manager;
@@ -22,8 +28,9 @@ namespace GUI {
 
 		struct Main_Window : GUI::Window {
 			GUI::Application* app;
+			Log_Console* log;
 			CLASS::File* file;
-			Lace* log;
+
 			map<string, Workspace_Manager*> workspaces;
 
 			bool mouse_pressed;

@@ -43,7 +43,7 @@
     <ClInclude Include="Engine\Include\Rendering\Material.hpp" />
     <ClInclude Include="Editor\Include\Workspaces\File_View.hpp" />
     <ClInclude Include="Editor\Include\Workspaces\Header.hpp" />
-    <ClInclude Include="Editor\Include\Workspaces\Log.hpp" />
+    <ClInclude Include="Editor\Include\Log_Console.hpp" />
     <ClInclude Include="Editor\Include\Workspaces\Manager.hpp" />
     <ClInclude Include="Editor\Include\Workspaces\Scene_Outliner.hpp" />
     <ClInclude Include="Editor\Include\Workspaces\Properties.hpp" />
@@ -83,7 +83,7 @@
     <ClCompile Include="Editor\Source\Workspaces\API.cpp" />
     <ClCompile Include="Editor\Source\Workspaces\File_View.cpp" />
     <ClCompile Include="Editor\Source\Workspaces\Header.cpp" />
-    <ClCompile Include="Editor\Source\Workspaces\Log.cpp" />
+    <ClCompile Include="Editor\Source\Log_Console.cpp" />
     <ClCompile Include="Editor\Source\Workspaces\Manager.cpp" />
     <ClCompile Include="Editor\Source\Workspaces\Scene_Outliner.cpp" />
     <ClCompile Include="Editor\Source\Workspaces\Properties.cpp" />
@@ -141,12 +141,12 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'" Label="QtSettings">
     <QtInstall>6.5.1_msvc2019_64</QtInstall>
-    <QtModules>core;gui;widgets;opengl;openglwidgets</QtModules>
+    <QtModules>core;gui;widgets;opengl;openglwidgets;</QtModules>
     <QtBuildConfig>debug</QtBuildConfig>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'" Label="QtSettings">
     <QtInstall>6.7.1_msvc2019_64</QtInstall>
-    <QtModules>core;gui;widgets;opengl;openglwidgets</QtModules>
+    <QtModules>core;gui;widgets;opengl;openglwidgets;</QtModules>
     <QtBuildConfig>release</QtBuildConfig>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />

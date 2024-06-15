@@ -36,7 +36,7 @@ namespace GUI {
 
 		struct Workspace_Viewport : GUI::Linear_Contents {
 			Workspace_Manager* parent;
-			Lace* log;
+			Log_Console* log;
 			CLASS::File* file;
 
 			Viewport_CPU_Renderer* viewport_cpu_renderer;
@@ -48,7 +48,7 @@ namespace GUI {
 
 			void f_systemInfo();
 
-			Workspace_Viewport(Workspace_Manager* parent, Lace* log, CLASS::File* file);
+			Workspace_Viewport(Workspace_Manager* parent, Log_Console* log, CLASS::File* file);
 			~Workspace_Viewport();
 		};
 
@@ -66,7 +66,7 @@ namespace GUI {
 			Q_OBJECT
 		public:
 			Workspace_Viewport* parent;
-			Lace* log;
+			Log_Console* log;
 			CLASS::File* file;
 
 			uvec2 display_resolution;
@@ -84,7 +84,7 @@ namespace GUI {
 
 			CPU_Renderer* cpu_renderer;
 
-			Viewport_CPU_Renderer(Workspace_Viewport* parent, Lace* log, CLASS::File* file);
+			Viewport_CPU_Renderer(Workspace_Viewport* parent, Log_Console* log, CLASS::File* file);
 
 			void f_pipeline();
 			void f_cpuDisplayRender();
@@ -99,7 +99,7 @@ namespace GUI {
 
 		struct Viewport_GPU_Renderer : QOpenGLWindow, protected QOpenGLFunctions_4_5_Core {
 			Workspace_Viewport* parent;
-			Lace* log;
+			Log_Console* log;
 			CLASS::File* file;
 
 			dvec1 downsampling;
@@ -120,7 +120,7 @@ namespace GUI {
 			GLuint fullscreen_quad_VBO;
 			GLuint fullscreen_quad_EBO;
 
-			Viewport_GPU_Renderer(Workspace_Viewport* parent, Lace* log, CLASS::File* file);
+			Viewport_GPU_Renderer(Workspace_Viewport* parent, Log_Console* log, CLASS::File* file);
 
 			void f_pipeline();
 			void f_uploadData();

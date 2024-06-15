@@ -1,6 +1,6 @@
 #include "Workspaces/Manager.hpp"
 
-GUI::WORKSPACE::Workspace_Manager::Workspace_Manager(Main_Window* parent, Lace* log, CLASS::File* file, const Workspace_Type& type):
+GUI::WORKSPACE::Workspace_Manager::Workspace_Manager(Main_Window* parent, Log_Console* log, CLASS::File* file, const Workspace_Type& type):
 	GUI::Dock(parent),
 	parent(parent),
 	log(log),
@@ -14,7 +14,7 @@ GUI::WORKSPACE::Workspace_Manager::Workspace_Manager(Main_Window* parent, Lace* 
 	setWindowTitle("Workspace");
 }
 
-GUI::WORKSPACE::Workspace_Dock_Header::Workspace_Dock_Header(Workspace_Manager* parent, Lace* log, CLASS::File* file, const Workspace_Type& type) :
+GUI::WORKSPACE::Workspace_Dock_Header::Workspace_Dock_Header(Workspace_Manager* parent, Log_Console* log, CLASS::File* file, const Workspace_Type& type) :
 	GUI::Linear_Contents(parent, QBoxLayout::Direction::LeftToRight),
 	parent(parent),
 	log(log),
@@ -102,10 +102,6 @@ void GUI::WORKSPACE::Workspace_Dock_Header::f_initWorkspacesMenu() {
 	file_view->setText(" Object Nodes");
 	connect(file_view, &GUI::Button::clicked, [this]() {f_setWorkspace(Workspace_Type::NODE_EDITOR); });
 
-	log->setIcon(QIcon("./Resources/Workspaces/Log.png"));
-	log->setText(" Log");
-	connect(log, &GUI::Button::clicked, [this]() {f_setWorkspace(Workspace_Type::LOG); });
-
 	shelf->setIcon(QIcon("./Resources/Workspaces/Outliner.png"));
 	shelf->setText(" Outliner");
 	connect(shelf, &GUI::Button::clicked, [this]() {f_setWorkspace(Workspace_Type::SHELF); });
@@ -124,7 +120,6 @@ void GUI::WORKSPACE::Workspace_Dock_Header::f_initWorkspacesMenu() {
 
 	layout->addWidget(api);
 	layout->addWidget(file_view);
-	layout->addWidget(log);
 	layout->addWidget(scene_outliner);
 	layout->addWidget(properties);
 	layout->addWidget(viewport);
@@ -151,14 +146,6 @@ void GUI::WORKSPACE::Workspace_Dock_Header::f_setWorkspace(const Workspace_Type&
 			parent->workspace = new Workspace_Node_Editor(parent);
 			parent->setWidget(parent->workspace);
 			floating_workspace_toggle->setText("Object Nodes");
-			break;
-		}
-		case (Workspace_Type::LOG): {
-			parent->setWindowTitle("Log");
-			change_workspace_type->setIcon(QIcon("./Resources/Workspaces/Log.png"));
-			parent->workspace = new Workspace_Log(parent, log);
-			parent->setWidget(parent->workspace);
-			floating_workspace_toggle->setText("Log");
 			break;
 		}
 		case (Workspace_Type::SHELF): {

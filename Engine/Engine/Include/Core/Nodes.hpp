@@ -44,11 +44,12 @@ namespace CLASS {
 namespace CLASS {
 	struct Node_Tree {
 		vector<Node*> nodes;      // src
-		vector<Node*> variables;  // ref
+
 		vector<Node*> references; // ref
+		vector<Node*> variables;  // ref
 		NODE::EXEC::Tick* tick;   // ref
 
-		Node_Tree() {};
+		Node_Tree();
 		Node_Tree(const GUI::NODE::Node_Tree* gui_tree);
 		~Node_Tree();
 
@@ -62,7 +63,7 @@ namespace CLASS {
 		vector<NODE::Port*> inputs;  // src
 		vector<NODE::Port*> outputs; // src
 
-		Node() {};
+		Node();
 		~Node();
 
 		virtual void exec(const string& slot_id) {}
@@ -70,6 +71,7 @@ namespace CLASS {
 	};
 	namespace NODE {
 		enum struct Type {
+			NONE,
 			CONSTRAINT,
 			GENERATE,
 			PHYSICS,
@@ -81,7 +83,7 @@ namespace CLASS {
 		};
 		namespace DATA {
 			enum struct Type {
-				EMPTY,
+				NONE,
 				ANY,
 				STRING, DOUBLE, BOOL, UINT, INT,
 				MAT2, MAT3, MAT4, UMAT2, UMAT3, UMAT4, IMAT2, IMAT3, IMAT4,
@@ -119,11 +121,13 @@ namespace CLASS {
 		};
 		namespace PORT {
 			enum struct Type {
+				NONE,
 				DATA_I,
 				DATA_O,
 				EXEC_I,
 				EXEC_O
 			};
+			// TODO (maybe) for faster use typename T and make variants of for example Math nodes for each type e.g. float, vec3, etc. and discard std::any use
 			struct Data_I_Port : Port {
 				Data_O_Port* connection; // ref
 				Data default_value;

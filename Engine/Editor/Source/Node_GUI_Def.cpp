@@ -1,5 +1,7 @@
 #include "Node_GUI_Def.hpp"
 
+#include "Object/Object.hpp"
+
 GUI::NODE::EXEC::Tick::Tick(const ivec2& pos) {
 	label = "Tick Update";
 	type = CLASS::NODE::Type::EXEC;
@@ -19,12 +21,27 @@ GUI::NODE::LINK::Pointer::Pointer(const ivec2& pos) {
 	type = CLASS::NODE::Type::LINK;
 	sub_type = ETOU(CLASS::NODE::LINK::Type::POINTER);
 
+	pointer_type = CLASS::NODE::DATA::Type::NONE;
+	pointer = nullptr;
+
 	rect = QRectF(-100, -20, 200, 40);
 	rect.moveTo(QPointF(pos.x, pos.y));
 
-	outputs.push_back(new PORT::Data_O_Port(this, 1, "Pointer", "0", CLASS::NODE::DATA::Type::ANY));
+	outputs.push_back(new PORT::Data_O_Port(this, 0, "Pointer", "0", CLASS::NODE::DATA::Type::ANY));
 
 	rect.setHeight(40 + max(inputs.size(), outputs.size()) * 20);
+}
+
+void GUI::NODE::LINK::Pointer::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) {
+	Node::paint(painter, option, widget);
+	if (pointer) {
+		painter->setBrush(QColor(25, 25, 25));
+		painter->drawRoundedRect(QRectF(rect.topLeft() + QPointF(4, 30), QSize(120, 20)), 5, 5);
+
+		painter->setPen(Qt::white);
+		if (pointer_type == CLASS::NODE::DATA::Type::OBJECT)
+			painter->drawText(QRectF(rect.topLeft() + QPointF(14, 30), QSize(100, 20)), Qt::AlignLeft, QString::fromStdString(static_cast<CLASS::Object*>(pointer)->name));
+	}
 }
 
 GUI::NODE::MATH::MATH::MATH(const ivec2& pos) {
@@ -33,9 +50,13 @@ GUI::NODE::MATH::MATH::MATH(const ivec2& pos) {
 	rect = QRectF(-100, -20, 200, 40);
 	rect.moveTo(QPointF(pos.x, pos.y));
 
-	inputs. push_back(in_a  = new PORT::Data_I_Port(this, 0, "A", "0", CLASS::NODE::DATA::Type::ANY));
-	inputs. push_back(in_b  = new PORT::Data_I_Port(this, 1, "B", "1", CLASS::NODE::DATA::Type::ANY));
-	outputs.push_back(out_a = new PORT::Data_O_Port(this, 0, "R", "0", CLASS::NODE::DATA::Type::ANY));
+	in_a  = new PORT::Data_I_Port(this, 0, "A", "0", CLASS::NODE::DATA::Type::ANY);
+	in_b  = new PORT::Data_I_Port(this, 1, "B", "1", CLASS::NODE::DATA::Type::ANY);
+	out_a = new PORT::Data_O_Port(this, 0, "R", "0", CLASS::NODE::DATA::Type::ANY);
+
+	inputs. push_back(in_a);
+	inputs. push_back(in_b);
+	outputs.push_back(out_a);
 
 	data_type = CLASS::NODE::DATA::Type::ANY;
 
@@ -90,7 +111,10 @@ void GUI::NODE::MATH::MATH::onPortConnect(Port* port, Connection* connection) {
 void GUI::NODE::MATH::MATH::onPortDisconnect(Port* port) {
 	if (!in_a->connection and !in_b->connection and out_a->outgoing_connections.empty()) {
 		onDataTypeUnset();
-		// TODO cascade Unset if there are no hard-defined types in graph
+		// TODO cascade Unset if there are no hard-defined types in connection graph
+		/*
+			idea: check if node is right-most AKA has no outputs or left-most aka has no inputs, go downstream / upstream and check
+		*/
 	}
 }
 

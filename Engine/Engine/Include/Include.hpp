@@ -185,15 +185,4 @@ inline ulvec4 str_to_ul(const string& val_1, const string& val_2, const string& 
 #define MAX_DIST    dvec1(10000.0)
 #define EPSILON     dvec1(0.00001)
 
-#define ANSI_RESET   "\033[0m"
-#define ANSI_BLACK   "\033[30m"
-#define ANSI_RED     "\033[31m"
-#define ANSI_GREEN   "\033[32m"
-#define ANSI_YELLOW  "\033[33m"
-#define ANSI_BLUE    "\033[34m"
-#define ANSI_MAGENTA "\033[35m"
-#define ANSI_CYAN    "\033[36m"
-#define ANSI_WHITE   "\033[37m"
-#define ANSI_BOLD    "\033[1m"
-
 #define ETOU static_cast<uint16>

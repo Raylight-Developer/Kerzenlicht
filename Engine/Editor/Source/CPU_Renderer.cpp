@@ -2,7 +2,7 @@
 
 #include "Workspaces/Viewport.hpp"
 
-CPU_Renderer::CPU_Renderer(GUI::WORKSPACE::Viewport_CPU_Renderer* viewport, Lace* log, CLASS::File* file) :
+CPU_Renderer::CPU_Renderer(GUI::WORKSPACE::Viewport_CPU_Renderer* viewport, Log_Console * log, CLASS::File* file) :
 	QThread(),
 	viewport      (viewport),
 	kernel        (Render_Kernel(viewport, file)),
@@ -22,10 +22,11 @@ void CPU_Renderer::run() {
 	//for (CLASS::Object* object : file->objects) {
 	//	object->f_compileMatrix(file->active_scene->ptr);
 	//}
+	Lace log_msg;
 
 	clock_t start_time = clock();
 	clock_t delta_time = clock();
-	*log << NL() << "CPU Rendering:";
+	log_msg << NL() << "CPU Rendering:";
 
 	const uint32 step_count = 6U; // 4 = 16 | 6 = 64 | 8 = 256 | 10 = 1024 | 12 = 4096
 	const uint32 step_stop = 2U;
@@ -36,7 +37,7 @@ void CPU_Renderer::run() {
 	for (uint i = 0; i <= steps.size() - step_stop; i++) {
 		uint32 update = 0U;
 		if (i == 0) {
-			*log << NL() << "    Rendering Start Step: " << steps[0];
+			log_msg << NL() << "    Rendering Start Step: " << steps[0];
 			const uint32 step_size = steps[0];
 			const uint32 draw_size = steps[0];
 			for (uint x = 0; x < resolution.x; x += step_size) {
@@ -46,13 +47,13 @@ void CPU_Renderer::run() {
 				}
 			}
 			clock_t now_time = clock();
-			*log << NL() << "        (" << ((double)(now_time - delta_time) / CLOCKS_PER_SEC) << ")s";
+			log_msg << NL() << "        (" << ((double)(now_time - delta_time) / CLOCKS_PER_SEC) << ")s";
 			delta_time = now_time;
 			emit f_cpuUpdateRender(render_pixmap);
 			msleep(d_to_u(pow(steps[0] + 16U, 0.55)));
 		}
 		else if (i == steps.size()) {
-			*log << NL() << "    Rendering End Step: 1";
+			log_msg << NL() << "    Rendering End Step: 1";
 			for (uint x = 1U; x < resolution.x; x += 2U) {
 				for (uint y = 0U; y < resolution.y; y += 2U) {
 					const dvec3 color_a = kernel.f_renderPixel(x, y);
@@ -71,11 +72,11 @@ void CPU_Renderer::run() {
 				update++;
 			}
 			clock_t now_time = clock();
-			*log << "\r        (" << ((double)(now_time - delta_time) / CLOCKS_PER_SEC) << ")s";
+			log_msg << "\r        (" << ((double)(now_time - delta_time) / CLOCKS_PER_SEC) << ")s";
 			delta_time = now_time;
 		}
 		else {
-			*log << NL() << "    Rendering Step: " << steps[i];
+			log_msg << NL() << "    Rendering Step: " << steps[i];
 			const uint32 step_size = steps[i];
 			const uint32 draw_size = steps[i];
 			const uint32 sleep = d_to_u(pow(steps[i] + 16U, 0.55));
@@ -98,13 +99,13 @@ void CPU_Renderer::run() {
 				update += update_step;
 			}
 			clock_t now_time = clock();
-			*log << "        (" << ((double)(now_time - delta_time) / CLOCKS_PER_SEC) << ")s";
+			log_msg << "        (" << ((double)(now_time - delta_time) / CLOCKS_PER_SEC) << ")s";
 			delta_time = now_time;
 		}
 	}
 	emit f_cpuUpdateRender(render_pixmap);
-	*log << NL() << "--------------------------RENDER FINISHED--------------------------";
-	*log << NL() << "Total Render Time: (" << ((double)(clock() - start_time) / CLOCKS_PER_SEC) << ")s";
+	log_msg << NL() << "--------------------------RENDER FINISHED--------------------------";
+	log_msg << NL() << "Total Render Time: (" << ((double)(clock() - start_time) / CLOCKS_PER_SEC) << ")s";
 }
 
 void CPU_Renderer::f_drawPixel(const uint32& x, const uint32& y, const dvec4& color) {

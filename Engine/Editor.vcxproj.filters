@@ -80,7 +80,7 @@
     <ClCompile Include="Editor\Source\Workspaces\File_View.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Editor\Source\Workspaces\Log.cpp">
+    <ClCompile Include="Editor\Source\Log_Console.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Editor\Source\Workspaces\Manager.cpp">
@@ -183,7 +183,7 @@
     <ClInclude Include="Editor\Include\Workspaces\Header.hpp">
       <Filter>Header Files\GUI</Filter>
     </ClInclude>
-    <ClInclude Include="Editor\Include\Workspaces\Log.hpp">
+    <ClInclude Include="Editor\Include\Log_Console.hpp">
       <Filter>Header Files\GUI</Filter>
     </ClInclude>
     <ClInclude Include="Editor\Include\Workspaces\Manager.hpp">

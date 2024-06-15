@@ -24,6 +24,7 @@ void EXEC::Timer::exec(const string& slot_id) {
 EXEC::Counter::Counter() {
 	type = CLASS::NODE::Type::EXEC;
 	sub_type = ETOU(CLASS::NODE::EXEC::Type::COUNTER);
+
 	count = 0;
 
 	PORT::Exec_I_Port* value = new PORT::Exec_I_Port(this, "0");
@@ -38,10 +39,12 @@ EXEC::Sequence::Sequence() {
 	type = CLASS::NODE::Type::EXEC;
 	sub_type = ETOU(CLASS::NODE::EXEC::Type::SEQUENCE);
 
-	PORT::Exec_I_Port* in = new PORT::Exec_I_Port(this, "0");
-	inputs.push_back(in);
+	count = 0;
 
+	PORT::Exec_I_Port* in = new PORT::Exec_I_Port(this, "0");
 	PORT::Exec_O_Port* out = new PORT::Exec_O_Port(this, "0");
+
+	inputs.push_back(in);
 	outputs.push_back(out);
 }
 
@@ -56,12 +59,17 @@ EXEC::Script::Script() {
 	sub_type = ETOU(CLASS::NODE::EXEC::Type::SCRIPT);
 	script_id = "Script_ID";
 
+	getDataFunc = nullptr;
+	buildFunc = nullptr;
+	execFunc = nullptr;
+
 	in = new PORT::Exec_I_Port(this, "0");
 	exec_inputs["0"] = in;
-	inputs.push_back(in);
 
 	out = new PORT::Exec_O_Port(this, "0");
 	exec_outputs["0"] = out;
+
+	inputs.push_back(in);
 	outputs.push_back(out);
 
 	loadDLL(dynlib, "DLL.dll");
@@ -86,28 +94,24 @@ void EXEC::Script::addDataInput(const string& slot_id, const DATA::Type& type, c
 	PORT::Data_I_Port* value = new PORT::Data_I_Port(this, slot_id, type, modifier);
 	data_inputs[slot_id] = value;
 	inputs.push_back(value);
-	
 };
 
 void EXEC::Script::addDataOutput(const string& slot_id, const DATA::Type& type, const DATA::Modifier& modifier) {
 	PORT::Data_O_Port* value = new PORT::Data_O_Port(this, slot_id, type, modifier);
 	data_outputs[slot_id] = value;
 	outputs.push_back(value);
-	
 };
 
 void EXEC::Script::addExecInput(const string& slot_id) {
 	PORT::Exec_I_Port* value = new PORT::Exec_I_Port(this, slot_id);
 	exec_inputs[slot_id] = value;
 	inputs.push_back(value);
-	
 };
 
 void EXEC::Script::addExecOutput(const string& slot_id) {
 	PORT::Exec_O_Port* value = new PORT::Exec_O_Port(this, slot_id);
 	exec_outputs[slot_id] = value;
 	outputs.push_back(value);
-	
 };
 
 void EXEC::Script::reloadFunctions() {
@@ -158,10 +162,11 @@ void EXEC::Script::clearIO() { // TODO delete GUI connections
 
 	in = new PORT::Exec_I_Port(this, "0");
 	exec_inputs["0"] = in;
-	inputs.push_back(in);
 
 	out = new PORT::Exec_O_Port(this, "0");
 	exec_outputs["0"] = out;
+
+	inputs.push_back(in);
 	outputs.push_back(out);
 }
 
@@ -185,9 +190,13 @@ Data EXEC::Script::getInputData(const string& slot_id) const {
 CLASS::NODE::EXEC::Tick::Tick() {
 	type = CLASS::NODE::Type::EXEC;
 	sub_type = ETOU(CLASS::NODE::EXEC::Type::TICK);
+
+	delta = new double(16.666666666);
+
 	port_tick = new PORT::Exec_O_Port(this, "0");
-	outputs.push_back(port_tick);
 	port_delta = new PORT::Data_O_Port(this, "1",  DATA::Type::DOUBLE);
+
+	outputs.push_back(port_tick);
 	outputs.push_back(port_delta);
 }
 
@@ -246,7 +255,7 @@ CLASS::NODE::Data CLASS::NODE::LINK::Set::getData(const string& slot_id) const {
 CLASS::NODE::LINK::Pointer::Pointer() {
 	type = CLASS::NODE::Type::LINK;
 	sub_type = ETOU(CLASS::NODE::LINK::Type::POINTER);
-	pointer_type = DATA::Type::EMPTY;
+	pointer_type = DATA::Type::NONE;
 	pointer = nullptr;
 
 	port = new PORT::Data_O_Port(this, "0", DATA::Type::ANY);

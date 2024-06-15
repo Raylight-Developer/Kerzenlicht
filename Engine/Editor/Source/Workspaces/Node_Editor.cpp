@@ -125,9 +125,14 @@ void GUI::WORKSPACE::Node_Viewport::mouseReleaseEvent(QMouseEvent* event) {
 				if (auto drop_port = dynamic_cast<GUI::NODE::PORT::Data_I_Port*>(item)) {
 					if (!drop_port->connection) {
 						if (auto source_port = dynamic_cast<GUI::NODE::PORT::Data_O_Port*>(connection->port_l)) {
-							if (drop_port->connection) delete drop_port->connection;
-							drop_port->connection = new GUI::NODE::Connection(source_port, drop_port);
-							source_port->outgoing_connections.push_back(drop_port->connection);
+							if (source_port->data_type == drop_port->data_type
+								or source_port->data_type == CLASS::NODE::DATA::Type::ANY
+								or drop_port->data_type == CLASS::NODE::DATA::Type::ANY
+							) {
+								if (drop_port->connection) delete drop_port->connection;
+								drop_port->connection = new GUI::NODE::Connection(source_port, drop_port);
+								source_port->outgoing_connections.push_back(drop_port->connection);
+							}
 						}
 					}
 				}
@@ -139,9 +144,14 @@ void GUI::WORKSPACE::Node_Viewport::mouseReleaseEvent(QMouseEvent* event) {
 					}
 					if (!exists) {
 						if (auto source_port = dynamic_cast<GUI::NODE::PORT::Data_I_Port*>(connection->port_l)) {
-							if (source_port->connection) delete source_port->connection;
-							source_port->connection = new GUI::NODE::Connection(drop_port, source_port);
-							drop_port->outgoing_connections.push_back(source_port->connection);
+							if (source_port->data_type == drop_port->data_type
+								or source_port->data_type == CLASS::NODE::DATA::Type::ANY
+								or drop_port->data_type == CLASS::NODE::DATA::Type::ANY
+							) {
+								if (source_port->connection) delete source_port->connection;
+								source_port->connection = new GUI::NODE::Connection(drop_port, source_port);
+								drop_port->outgoing_connections.push_back(source_port->connection);
+							}
 						}
 					}
 				}
@@ -313,6 +323,7 @@ void GUI::WORKSPACE::Node_Viewport::dragMoveEvent(QDragMoveEvent* event) {
 }
 
 void GUI::WORKSPACE::Node_Viewport::dropEvent(QDropEvent* event) {
+	const dvec2 drop_pos = f_roundToNearest(p_to_d(mapToScene(event->position().toPoint())), 10.0);
 	if (event->mimeData()->hasText() and active_node_tree) {
 		if (event->mimeData()->text() == "NODE") {
 			QByteArray itemData = event->mimeData()->data("NODE");
@@ -320,7 +331,6 @@ void GUI::WORKSPACE::Node_Viewport::dropEvent(QDropEvent* event) {
 			QString text;
 			dataStream >> text;
 
-			const dvec2 drop_pos = f_roundToNearest(p_to_d(mapToScene(event->position().toPoint())), 10.0);
 
 			if (text == "Tick") {
 				event->acceptProposedAction();
@@ -354,13 +364,20 @@ void GUI::WORKSPACE::Node_Viewport::dropEvent(QDropEvent* event) {
 			}
 		}
 		else if (event->mimeData()->text() == "OBJECT") {
+			event->acceptProposedAction();
+
 			QByteArray byteArray = event->mimeData()->data("OBJECT");
 			QDataStream stream(&byteArray, QIODevice::ReadOnly);
 			qulonglong ptr;
 			stream >> ptr;
 			
 			auto object = reinterpret_cast<CLASS::Object*>(ptr);
-			cout << object->name << endl;
+
+			auto node = new GUI::NODE::LINK::Pointer(drop_pos);
+			node->pointer = object;
+			node->pointer_type = CLASS::NODE::DATA::Type::OBJECT;
+			active_node_tree->nodes.push_back(node);
+			scene->addItem(node);
 		}
 	}
 }
@@ -374,7 +391,6 @@ GUI::WORKSPACE::Node_Shelf::Node_Shelf(Workspace_Node_Editor* parent) :
 	setMinimumWidth(100);
 	setMaximumWidth(200);
 
-	
 	auto tree_constraint = new Tree_Item(this, "Constraint");
 	auto tree_generate   = new Tree_Item(this, "Generate");
 	auto tree_physics    = new Tree_Item(this, "Physics");

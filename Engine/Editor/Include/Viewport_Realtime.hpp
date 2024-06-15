@@ -37,7 +37,7 @@ namespace GUI {
 
 		struct Viewport_Realtime : QOpenGLWindow, protected QOpenGLFunctions_4_5_Core {
 			Workspace_Viewport* parent;
-			Lace* log;
+			Log_Console* log;
 			CLASS::File* file;
 
 			uvec2 resolution;
@@ -62,7 +62,7 @@ namespace GUI {
 			chrono::steady_clock::time_point last_delta;
 			dvec1 delta;
 
-			Viewport_Realtime(Workspace_Viewport* parent, Lace* log, CLASS::File* file);
+			Viewport_Realtime(Workspace_Viewport* parent, Log_Console* log, CLASS::File* file);
 
 			void f_pipeline();
 			void f_uploadData();

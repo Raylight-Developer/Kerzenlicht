@@ -40,7 +40,7 @@ GUI::WORKSPACE::Timeline::Timeline(Workspace_Viewport* parent, CLASS::File* file
 	addWidget(current_frame);
 }
 
-GUI::WORKSPACE::Workspace_Viewport::Workspace_Viewport(Workspace_Manager* parent, Lace* log, CLASS::File* file) :
+GUI::WORKSPACE::Workspace_Viewport::Workspace_Viewport(Workspace_Manager* parent, Log_Console* log, CLASS::File* file) :
 	GUI::Linear_Contents(parent, QBoxLayout::Direction::TopToBottom),
 	parent(parent),
 	log(log),
@@ -85,13 +85,15 @@ void GUI::WORKSPACE::Workspace_Viewport::f_systemInfo() {
 	status.dwLength = sizeof(status);
 	GlobalMemoryStatusEx(&status);
 
-	*log << "System:" << NL();
-	*log << "    Total physical RAM: " << (double)(status.ullTotalPhys / (1024.0 * 1024.0 * 1024.0)) << " GB  (" << status.ullTotalPhys / (1024 * 1024) << " MB)" << NL();
-	*log << "CPU:" << NL();
-	*log << "    Threads: " << thread::hardware_concurrency() << NL();
+	Lace log_msg;
+	log_msg << ENDL << "System:";
+	log_msg << ENDL << "    Total physical RAM: " << (double)(status.ullTotalPhys / (1024.0 * 1024.0 * 1024.0)) << " GB  (" << status.ullTotalPhys / (1024 * 1024) << " MB)";
+	log_msg << ENDL << "CPU:";
+	log_msg << ENDL << "    Threads: " << thread::hardware_concurrency();
+	*log << log_msg;
 }
 
-GUI::WORKSPACE::Viewport_CPU_Renderer::Viewport_CPU_Renderer(Workspace_Viewport* parent, Lace* log, CLASS::File* file) :
+GUI::WORKSPACE::Viewport_CPU_Renderer::Viewport_CPU_Renderer(Workspace_Viewport* parent, Log_Console* log, CLASS::File* file) :
 	QOpenGLWindow(),
 	parent(parent),
 	log(log),
@@ -220,7 +222,7 @@ void GUI::WORKSPACE::Viewport_CPU_Renderer::resizeGL(int w, int h) {
 	glViewport(0, 0, display_resolution.x, display_resolution.y);
 }
 
-GUI::WORKSPACE::Viewport_GPU_Renderer::Viewport_GPU_Renderer(Workspace_Viewport* parent, Lace* log, CLASS::File* file) :
+GUI::WORKSPACE::Viewport_GPU_Renderer::Viewport_GPU_Renderer(Workspace_Viewport* parent, Log_Console* log, CLASS::File* file) :
 	QOpenGLWindow(),
 	parent(parent),
 	log(log),

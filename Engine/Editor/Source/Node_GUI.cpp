@@ -1,11 +1,24 @@
 #include "Node_GUI.hpp"
 
+GUI::NODE::Node_Tree::Node_Tree() {
+	nodes = {};
+
+	references = {};
+	variables = {};
+}
+
 GUI::NODE::Node_Tree::~Node_Tree() {
 	for (Node* node : nodes) delete node;
 }
 
-GUI::NODE::Node::Node() {
+GUI::NODE::Node::Node(QGraphicsItem* parent) :
+	QGraphicsItem(parent)
+{
 	setZValue(1);
+	type = CLASS::NODE::Type::NONE;
+	sub_type = 0;
+	outputs = {};
+	inputs = {};
 }
 
 void GUI::NODE::Node::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) {
@@ -24,6 +37,8 @@ GUI::NODE::Port::Port(Node* node) :
 	node(node)
 {
 	setZValue(10);
+	index = 0;
+	type = CLASS::NODE::PORT::Type::NONE;
 }
 
 GUI::NODE::Node::~Node() {
@@ -87,7 +102,9 @@ GUI::NODE::PORT::Data_I_Port::Data_I_Port(Node* parent, const uint16& index, con
 	this->label = label;
 	this->index = index;
 
+	this->any_data_type = CLASS::NODE::DATA::Type::NONE;
 	this->connection = nullptr;
+
 	rect = QRectF(node->rect.topLeft().x() - 5, node->rect.topLeft().y() + 35 + index * 20, 10, 10);
 	color = typeColor(type);
 }
@@ -124,7 +141,9 @@ GUI::NODE::PORT::Data_O_Port::Data_O_Port(Node* parent, const uint16& index, con
 	this->label = label;
 	this->index = index;
 
+	this->any_data_type = CLASS::NODE::DATA::Type::NONE;
 	this->outgoing_connections = {};
+
 	rect = QRectF(node->rect.topRight().x() - 5, node->rect.topLeft().y() + 35 + index * 20, 10, 10);
 	color = typeColor(type);
 }
@@ -223,7 +242,7 @@ GUI::NODE::Connection::Connection(Port* port_l, Port* port_r) :
 	pos_l = mapFromItem(port_l, port_l->boundingRect().center());
 	pos_r = mapFromItem(port_l, port_l->boundingRect().center());
 
-	data_type = CLASS::NODE::DATA::Type::EMPTY;
+	data_type = CLASS::NODE::DATA::Type::NONE;
 	color = QColor(255, 255, 255);
 
 

@@ -132,7 +132,7 @@ namespace GUI {
 		~Text_Edit() {};
 	};
 
-	struct Text_Stream : QTextBrowser {
+	struct Text_Stream : QTextEdit {
 		Text_Stream(QWidget* parent = nullptr);
 		~Text_Stream() {};
 	};

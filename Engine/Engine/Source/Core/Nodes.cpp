@@ -5,7 +5,18 @@
 #include "Node_GUI.hpp"
 #include "Node_GUI_Def.hpp"
 
-CLASS::Node_Tree::Node_Tree(const GUI::NODE::Node_Tree* gui_tree) {
+CLASS::Node_Tree::Node_Tree() :
+	tick(nullptr)
+{
+	nodes = {};
+
+	references = {};
+	variables = {};
+}
+
+CLASS::Node_Tree::Node_Tree(const GUI::NODE::Node_Tree* gui_tree) :
+	tick(nullptr)
+{
 	unordered_map<GUI::NODE::Node*, Node*> node_map;
 
 	for (GUI::NODE::Node* gui_node : gui_tree->nodes) {
@@ -17,6 +28,19 @@ CLASS::Node_Tree::Node_Tree(const GUI::NODE::Node_Tree* gui_tree) {
 						nodes.push_back(node);
 						node_map[gui_node] = node;
 						tick = node;
+						break;
+					}
+				}
+				break;
+			}
+			case NODE::Type::LINK: {
+				switch (static_cast<NODE::LINK::Type>(gui_node->sub_type)) {
+					case NODE::LINK::Type::POINTER: {
+						auto node = new NODE::LINK::Pointer();
+						node->pointer_type = static_cast<GUI::NODE::LINK::Pointer*>(gui_node)->pointer_type;
+						node->pointer = static_cast<GUI::NODE::LINK::Pointer*>(gui_node)->pointer;
+						nodes.push_back(node);
+						node_map[gui_node] = node;
 						break;
 					}
 				}
@@ -101,6 +125,11 @@ void CLASS::Node_Tree::exec(const dvec1* delta) const {
 	}
 }
 
+CLASS::Node::Node() {
+	type = NODE::Type::NONE;
+	sub_type = 0;
+}
+
 CLASS::Node::~Node() {
 	for (CLASS::NODE::Port* port : inputs) delete port;
 	for (CLASS::NODE::Port* port : outputs) delete port;
@@ -112,7 +141,7 @@ CLASS::NODE::Data CLASS::Node::getData(const string& slot_id) const {
 
 CLASS::NODE::Data::Data() {
 	data = nullptr;
-	type = DATA::Type::EMPTY;
+	type = DATA::Type::NONE;
 	modifier = DATA::Modifier::SINGLE;
 }
 
@@ -252,7 +281,7 @@ void CLASS::NODE::PORT::Exec_O_Port::exec() const {
 
 QColor typeColor(const CLASS::NODE::DATA::Type& type) {
 	switch (type) {
-		case CLASS::NODE::DATA::Type::EMPTY:  return QColor(  0,  0,  0);
+		case CLASS::NODE::DATA::Type::NONE:  return QColor(  0,  0,  0);
 		case CLASS::NODE::DATA::Type::ANY:    return QColor(150,150,150);
 		case CLASS::NODE::DATA::Type::STRING: return QColor(215,155,135);
 		case CLASS::NODE::DATA::Type::DOUBLE: return QColor( 95,230, 95);

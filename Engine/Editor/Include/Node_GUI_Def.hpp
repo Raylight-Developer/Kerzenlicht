@@ -32,7 +32,12 @@ namespace GUI {
 		}
 		namespace LINK {
 			struct Pointer : Node {
+				CLASS::NODE::DATA::Type pointer_type;
+				void* pointer;
+
 				Pointer(const ivec2& pos);
+
+				void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget = nullptr) override;
 			};
 		}
 		namespace MATH {

@@ -27,9 +27,11 @@ namespace GUI {
 	namespace NODE {
 		struct Node_Tree {
 			vector<Node*> nodes;      // src
-			vector<Node*> variables;  // ref
-			vector<Node*> references; // ref
 
+			vector<Node*> references; // ref
+			vector<Node*> variables;  // ref
+
+			Node_Tree();
 			~Node_Tree();
 		};
 		struct Node : QGraphicsItem {
@@ -43,7 +45,7 @@ namespace GUI {
 
 			unordered_map<string, any> internal_data;
 
-			Node();
+			Node(QGraphicsItem* parent = nullptr);
 			~Node();
 
 			virtual void onDataTypeSet(const CLASS::NODE::DATA::Type& type) {};
@@ -51,9 +53,8 @@ namespace GUI {
 			virtual void onPortConnect(Port* port, Connection* connection) {};
 			virtual void onPortDisconnect(Port* port) {};
 
-			QRectF boundingRect() const override { return rect; };
 			void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget = nullptr) override;
-			void paintDefault(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget);
+			QRectF boundingRect() const override { return rect; };
 		};
 		struct Port : QGraphicsItem {
 			Node* node; // ref
@@ -70,15 +71,15 @@ namespace GUI {
 			void onConnect(Connection* connection);
 			void onDisconnect();
 
-			QRectF boundingRect() const override;
 			void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget = nullptr) override;
+			QRectF boundingRect() const override;
 		};
 		namespace PORT {
 			struct Data_I_Port : Port {
 				Connection* connection; // src
 
-				CLASS::NODE::DATA::Type data_type;
 				CLASS::NODE::DATA::Modifier modifier;
+				CLASS::NODE::DATA::Type data_type;
 
 				CLASS::NODE::DATA::Type any_data_type;
 
@@ -91,8 +92,8 @@ namespace GUI {
 			struct Data_O_Port : Port {
 				vector<Connection*> outgoing_connections; // ref
 
-				CLASS::NODE::DATA::Type data_type;
 				CLASS::NODE::DATA::Modifier modifier;
+				CLASS::NODE::DATA::Type data_type;
 
 				CLASS::NODE::DATA::Type any_data_type;
 
@@ -131,8 +132,8 @@ namespace GUI {
 
 			Connection(Port* port_l, Port* port_r);
 
-			QRectF boundingRect() const override;
 			void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget = nullptr) override;
+			QRectF boundingRect() const override;
 
 			void updateL(const QPointF& point);
 			void updateR(const QPointF& point);

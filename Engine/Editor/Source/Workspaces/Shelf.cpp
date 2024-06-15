@@ -22,7 +22,7 @@ GUI::WORKSPACE::Workspace_Shelf::Workspace_Shelf(Workspace_Manager* parent) :
 	addWidget(tree);
 }
 
-GUI::WORKSPACE::Shelf::Shelf(Workspace_Shelf* parent) : // weird graphical error as if it were the older tristate
+GUI::WORKSPACE::Shelf::Shelf(Workspace_Shelf* parent) :
 	Tree(parent)
 {
 	setDragEnabled(true);
@@ -31,7 +31,7 @@ GUI::WORKSPACE::Shelf::Shelf(Workspace_Shelf* parent) : // weird graphical error
 
 void GUI::WORKSPACE::Shelf::startDrag(Qt::DropActions actions) {
 	QTreeWidgetItem* temp = currentItem();
-	if (temp) {
+	if (temp and temp->data(0, 500).toInt() > 0) {
 		QByteArray byteArray;
 		QDataStream stream(&byteArray, QIODevice::WriteOnly);
 		stream << temp->data(0, 1000).toULongLong();

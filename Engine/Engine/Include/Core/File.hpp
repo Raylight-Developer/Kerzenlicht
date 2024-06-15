@@ -14,8 +14,12 @@
 
 #include "Rendering/Material.hpp"
 
+// FWD DECL OTHER
+
+struct Log_Console;
+
 // FWD DECL THIS
-namespace CLASS{
+namespace CLASS {
 	struct File;  // Contains All Data For The Editor
 	struct Scene; // Contains All Data For The Engine
 }
@@ -57,7 +61,8 @@ namespace CLASS {
 
 		string version;
 
-		File();
+		Log_Console* log;
+		File(Log_Console* log = nullptr);
 
 		void f_loadFile(const string& file_path);
 		void f_saveFile(const string& file_path);
