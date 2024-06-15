@@ -29,24 +29,16 @@ extern "C" {
 		node->addExecOutput(0, "O Exec");
 		node->addDataOutput(1, "O Value", DATA::Type::DOUBLE);
 
-		node->data_inputs[0]->default_value = Data(2.5, DATA::Type::DOUBLE);
+		node->data_inputs["I Value"]->default_value = Data(2.5, DATA::Type::DOUBLE);
 	}
 
 	EXPORT void Script_ID_exec(EXEC::Script* node) {
-		random_device rd;
-		mt19937 gen(rd());
-
-		uniform_int_distribution<> dis(-1000, 0);
-		node->internal_data["internal value"] = Data(static_cast<double>(dis(gen)), DATA::Type::DOUBLE);
 		node->exec_outputs["O Exec"]->exec();
 	}
 
 	EXPORT Data Script_ID_getData(const EXEC::Script* node, const uint16& port_request) {
 		if (port_request == 1) {
-			auto it = node->internal_data.find("internal value");
-			if (it != node->internal_data.end())
-				return it->second;
+			return node->data_inputs.at("I Value")->getData() * Data(2.5);
 		}
-		return Data();
 	}
 }

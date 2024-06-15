@@ -280,6 +280,11 @@ Lace& Lace::operator<<(const QPointF& value) {
 	return *this;
 }
 
+Lace& Lace::operator<<(const QString& value) {
+	data << " " << value.toStdString();
+	return *this;
+}
+
 Lace& Lace::operator>> (const bool& value) {
 	data << " " << value;
 	return *this;

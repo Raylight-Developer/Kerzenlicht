@@ -69,15 +69,6 @@ EXEC::Script::Script() {
 	buildFunc = nullptr;
 	execFunc = nullptr;
 
-	in = new PORT::Exec_I_Port(this, 0);
-	exec_inputs["0"] = in;
-
-	out = new PORT::Exec_O_Port(this, 0);
-	exec_outputs["0"] = out;
-
-	inputs.push_back(in);
-	outputs.push_back(out);
-
 	loadDLL(dynlib, "D:/Kerzenlicht Renderer/x64/Debug/Runtime.dll");
 
 	FARPROC execAddress = GetProcAddress(dynlib, (script_id + "_exec").c_str());
@@ -142,24 +133,15 @@ void EXEC::Script::reloadDll() {
 }
 
 void EXEC::Script::clearIO() { // TODO delete GUI connections
-	for (auto it = inputs.begin() + 1; it != inputs.end(); ++it) { delete* it; }
-	inputs.erase(inputs.begin() + 1, inputs.end());
-	for (auto it = outputs.begin() + 1; it != outputs.end(); ++it) { delete* it; }
-	outputs.erase(outputs.begin() + 1, outputs.end());
+	for (auto it = inputs.begin(); it != inputs.end(); ++it) { delete* it; }
+	inputs.erase(inputs.begin(), inputs.end());
+	for (auto it = outputs.begin(); it != outputs.end(); ++it) { delete* it; }
+	outputs.erase(outputs.begin(), outputs.end());
 
 	data_inputs.clear();
 	data_outputs.clear();
 	exec_inputs.clear();
 	exec_outputs.clear();
-
-	in = new PORT::Exec_I_Port(this, 0);
-	exec_inputs["I Exec"] = in;
-
-	out = new PORT::Exec_O_Port(this, 0);
-	exec_outputs["O Exec"] = out;
-
-	inputs.push_back(in);
-	outputs.push_back(out);
 }
 
 void EXEC::Script::exec(const uint16& slot_id) {

@@ -99,6 +99,7 @@ struct Lace { //------------Utility for string manipulation------------
 	Lace& operator<< (const dmat4& value);
 
 	Lace& operator<< (const QPointF& value);
+	Lace& operator<< (const QString& value);
 
 	// Feed Single Units With Space Before
 	Lace& operator>> (const bool& value);

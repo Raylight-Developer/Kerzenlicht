@@ -103,6 +103,7 @@ namespace CLASS {
 
 			Data();
 			Data(const any& data, const DATA::Type& type, const DATA::Modifier& modifier = DATA::Modifier::SINGLE);
+			Data(const dvec1& data);
 
 			Data operator+(const Data& other);
 			Data operator-(const Data& other);

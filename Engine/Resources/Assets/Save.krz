@@ -6,18 +6,24 @@
 └Materials
 ┌Node-Trees( 1 )
  ┌Node-Tree [ 0 ]
-  ┌Nodes
+  ┌Nodes( 6 )
    #Node :: EXEC :: Tick [ 0 ] ( -120 0 )
-   #Node :: LINK :: SET :: TRANSFORM :: EULER_ROTATION :: X [ 1 ] ( 120 0 )
+   #Node :: LINK :: SET :: TRANSFORM :: EULER_ROTATION :: X [ 1 ] ( 360 0 )
    #Node :: LINK :: Pointer [ 2 ] ( -120 100 )
    #Node :: LINK :: Pointer [ 3 ] ( -120 200 )
    #Node :: LINK :: Pointer [ 4 ] ( -120 300 )
+   ┌Node :: EXEC :: Script [ 5 ] ( 120 -20 )
+    Script_ID
+   └Node
   └Nodes
   ┌Build-E
-   0 0 1 0
+   5 0 1 0
+   0 0 5 0
   └Build-E
   ┌Build-D
-   0 1 1 2
+   0 1 5 1
+   5 1 1 2
+   4 0 1 1
   └Build-D
  └Node-Tree
 └Node-Trees

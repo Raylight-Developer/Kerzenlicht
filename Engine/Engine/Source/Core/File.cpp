@@ -141,6 +141,17 @@ CLASS::Node_Tree* CLASS::File::f_loadNodeTree(const vector<vector<string>>& toke
 		}
 		else if (tokens[0] == "└Node") {
 			is_processing = false;
+			if (read_data[0][2] == "EXEC") {
+				if (read_data[0][4] == "Script") {
+					auto node = new NODE::EXEC::Script();
+					auto gui_node = new GUI::NODE::EXEC::Script(str_to_i(read_data[0][9], read_data[0][10]));
+					gui_node->script_identifier->setText(QString::fromStdString(f_join(read_data[1])));
+					node_tree->nodes.push_back(node);
+					gui_node_tree->nodes.push_back(gui_node);
+				}
+			}
+			//for (const vector<string>& sub_tokens : read_data) {
+			//}
 		}
 		else if (tokens[0] == "#Node") {
 			CLASS::Node* node;
@@ -607,7 +618,7 @@ void CLASS::File::f_saveNodeTree(Lace& lace, CLASS::Node_Tree* data, const uint6
 	uint64 j = 0;
 	lace NL << "┌Node-Tree [ " << i << " ]";
 	lace A
-	lace NL << "┌Nodes";
+	lace NL << "┌Nodes( " << data->nodes.size() << " )";
 	lace A
 	for (const GUI::NODE::Node* node : node_map[data]->nodes) {
 		switch (node->type) {
@@ -621,12 +632,18 @@ void CLASS::File::f_saveNodeTree(Lace& lace, CLASS::Node_Tree* data, const uint6
 			}
 			case NODE::Type::EXEC: {
 				switch (static_cast<NODE::EXEC::Type>(node->sub_type)) {
-					case NODE::EXEC::Type::TICK: {
-						lace NL << "#Node :: EXEC :: Tick [ " << j++ << " ] ( " << node->rect.topLeft() << " )";
-						break;
-					}
 					case NODE::EXEC::Type::COUNTER: {
 						lace NL << "#Node :: EXEC :: Counter [ " << j++ << " ] ( " << node->rect.topLeft() << " )";
+						break;
+					}
+					case NODE::EXEC::Type::SCRIPT: {
+						lace NL << "┌Node :: EXEC :: Script [ " << j++ << " ] ( " << node->rect.topLeft() << " )";
+						lace NL SP static_cast<const GUI::NODE::EXEC::Script*>(node)->script_identifier->text();
+						lace NL << "└Node";
+						break;
+					}
+					case NODE::EXEC::Type::TICK: {
+						lace NL << "#Node :: EXEC :: Tick [ " << j++ << " ] ( " << node->rect.topLeft() << " )";
 						break;
 					}
 				}

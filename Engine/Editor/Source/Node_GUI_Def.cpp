@@ -29,7 +29,7 @@ GUI::NODE::EXEC::Script::Script(const ivec2& pos) {
 	type = CLASS::NODE::Type::EXEC;
 	sub_type = ETOU(CLASS::NODE::EXEC::Type::COUNTER);
 
-	rect = QRectF(-140, -20, 240, 40);
+	rect = QRectF(-100, -20, 200, 40);
 	rect.moveTo(QPointF(pos.x, pos.y));
 
 	QGraphicsProxyWidget* proxyWidget_id = new QGraphicsProxyWidget(this);
@@ -69,25 +69,29 @@ void EXEC::Script::clearIO() {
 void EXEC::Script::addDataInput(const uint16& slot_id, const string& label, const CLASS::NODE::DATA::Type& type, const CLASS::NODE::DATA::Modifier& modifier) {
 	PORT::Data_I_Port* value = new PORT::Data_I_Port(this, slot_id, QString::fromStdString(label), type, modifier);
 	inputs.push_back(value);
-	rect.setHeight(40 + max(inputs.size(), outputs.size()) * 20);
+	value->rect.moveTopLeft(value->rect.topLeft() + QPointF(0, 20));
+	rect.setHeight(60 + max(inputs.size(), outputs.size()) * 20);
 };
 
 void EXEC::Script::addDataOutput(const uint16& slot_id, const string& label, const CLASS::NODE::DATA::Type& type, const CLASS::NODE::DATA::Modifier& modifier) {
 	PORT::Data_O_Port* value = new PORT::Data_O_Port(this, slot_id, QString::fromStdString(label), type, modifier);
 	outputs.push_back(value);
-	rect.setHeight(40 + max(inputs.size(), outputs.size()) * 20);
+	value->rect.moveTopLeft(value->rect.topLeft() + QPointF(0, 20));
+	rect.setHeight(60 + max(inputs.size(), outputs.size()) * 20);
 };
 
 void EXEC::Script::addExecInput(const uint16& slot_id, const string& label) {
 	PORT::Exec_I_Port* value = new PORT::Exec_I_Port(this, slot_id, QString::fromStdString(label));
 	inputs.push_back(value);
-	rect.setHeight(40 + max(inputs.size(), outputs.size()) * 20);
+	value->rect.moveTopLeft(value->rect.topLeft() + QPointF(0, 20));
+	rect.setHeight(60 + max(inputs.size(), outputs.size()) * 20);
 };
 
 void EXEC::Script::addExecOutput(const uint16& slot_id, const string& label) {
 	PORT::Exec_O_Port* value = new PORT::Exec_O_Port(this, slot_id, QString::fromStdString(label));
 	outputs.push_back(value);
-	rect.setHeight(40 + max(inputs.size(), outputs.size()) * 20);
+	value->rect.moveTopLeft(value->rect.topLeft() + QPointF(0, 20));
+	rect.setHeight(60 + max(inputs.size(), outputs.size()) * 20);
 };
 
 void EXEC::Script::reloadFunctions() {

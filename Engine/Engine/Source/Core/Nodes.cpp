@@ -169,6 +169,13 @@ CLASS::NODE::Data::Data(const any& data, const DATA::Type& type, const DATA::Mod
 	modifier(modifier)
 {}
 
+CLASS::NODE::Data::Data(const dvec1& data) :
+	data(data)
+{
+	type = DATA::Type::DOUBLE;
+	modifier = DATA::Modifier::SINGLE;
+}
+
 CLASS::NODE::Data CLASS::NODE::Data::operator+(const Data & other) {
 	if (type == other.type) {
 		switch (type) {
@@ -180,7 +187,7 @@ CLASS::NODE::Data CLASS::NODE::Data::operator+(const Data & other) {
 CLASS::NODE::Data CLASS::NODE::Data::operator-(const Data& other) {
 	if (type == other.type) {
 		switch (type) {
-		case DATA::Type::DOUBLE: return Data(any_cast<dvec1>(data) - any_cast<dvec1>(other.data), type);
+			case DATA::Type::DOUBLE: return Data(any_cast<dvec1>(data) - any_cast<dvec1>(other.data), type);
 		}
 	}
 	return Data();
@@ -189,7 +196,7 @@ CLASS::NODE::Data CLASS::NODE::Data::operator-(const Data& other) {
 CLASS::NODE::Data CLASS::NODE::Data::operator*(const Data& other) {
 	if (type == other.type) {
 		switch (type) {
-		case DATA::Type::DOUBLE: return Data(any_cast<dvec1>(data) * any_cast<dvec1>(other.data), type);
+			case DATA::Type::DOUBLE: return Data(any_cast<dvec1>(data) * any_cast<dvec1>(other.data), type);
 		}
 	}
 	return Data();
@@ -198,7 +205,7 @@ CLASS::NODE::Data CLASS::NODE::Data::operator*(const Data& other) {
 CLASS::NODE::Data CLASS::NODE::Data::operator/(const Data& other) {
 	if (type == other.type) {
 		switch (type) {
-		case DATA::Type::DOUBLE: return Data(any_cast<dvec1>(data) / any_cast<dvec1>(other.data), type);
+			case DATA::Type::DOUBLE: return Data(any_cast<dvec1>(data) / any_cast<dvec1>(other.data), type);
 		}
 	}
 	return Data();

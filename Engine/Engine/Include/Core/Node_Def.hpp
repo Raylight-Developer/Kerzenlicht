@@ -80,7 +80,7 @@ namespace CLASS {
 
 				void exec(const uint16& slot_id = 0) override;
 			};
-			struct Script : private Node {
+			struct Script : Node {
 				unordered_map<string, PORT::Data_I_Port*> data_inputs;
 				unordered_map<string, PORT::Data_O_Port*> data_outputs;
 				unordered_map<string, PORT::Exec_I_Port*> exec_inputs;
@@ -99,9 +99,6 @@ namespace CLASS {
 				virtual void clearIO();
 
 			private:
-				PORT::Exec_I_Port* in;
-				PORT::Exec_O_Port* out;
-
 				string script_id;
 				HINSTANCE dynlib;
 
