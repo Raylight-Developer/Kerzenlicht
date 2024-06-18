@@ -5,9 +5,10 @@ Log_Console::Log_Console(Window* parent) :
 	parent(parent)
 {
 	gui_log = new GUI::Text_Stream(this);
+	lace << "<pre>";
 
-	gui_log->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
-	gui_log->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+	gui_log->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+	gui_log->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
 	gui_log->setWordWrapMode(QTextOption::NoWrap);
 
 	gui_log->setHtml(QString::fromStdString(R"(
@@ -25,12 +26,21 @@ Log_Console::Log_Console(Window* parent) :
 	setCentralWidget(gui_log);
 }
 
-Log_Console& Log_Console::operator<<(const Lace& value) {
-	gui_log->insertHtml(QString::fromStdString(value.str()));
-	return *this;
-}
-
 void Log_Console::closeEvent(QCloseEvent* event) {
 	parent->close();
-	event->accept();
+}
+
+void Log_Console::flush() {
+	lace << "</pre>";
+	gui_log->insertHtml(QString::fromStdString(lace.str()));
+	cout << QString::fromStdString(lace.str())
+		.replace(ENDL, "\n")
+		.replace(HTML_RESET, "")
+		.replace(HTML_RED, "")
+		.replace(HTML_BLUE, "")
+		.replace(HTML_GREEN, "")
+		.replace(HTML_MAGENTA, "")
+		.toStdString();
+	lace.clear();
+	lace << "<pre>";
 }

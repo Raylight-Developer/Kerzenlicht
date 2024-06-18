@@ -21,9 +21,7 @@ GUI::WORKSPACE::Main_Window::Main_Window(GUI::Application* app) :
 	setWindowTitle("Kerzenlicht");
 	setWindowIcon(QPixmap("./Resources/Icon.png"));
 
-	Lace log_msg;
-	log_msg << "Kerzenlicht 1.0.0 Initialized";
-	*LOG << log_msg;
+	*LOG << "Kerzenlicht 1.0.0 Initialized"; FLUSH
 
 	file->f_loadFile("./Resources/Assets/Save.krz");
 
@@ -47,8 +45,7 @@ GUI::WORKSPACE::Main_Window::Main_Window(GUI::Application* app) :
 	log->resize(600, 400);
 	showMaximized();
 
-	log_msg.clear() << ENDL << HTML_GREEN << "Fully Initialized" << HTML_RESET;
-	*LOG << log_msg;
+	*LOG << ENDL << HTML_GREEN << "Fully Initialized" << HTML_RESET; FLUSH
 }
 
 bool GUI::WORKSPACE::Main_Window::eventFilter(QObject* object, QEvent* event) {
@@ -81,8 +78,16 @@ bool GUI::WORKSPACE::Main_Window::eventFilter(QObject* object, QEvent* event) {
 
 void GUI::WORKSPACE::Main_Window::closeEvent(QCloseEvent* event) {
 	QMessageBox::StandardButton reply;
-	reply = QMessageBox::question(this, "Save Changes", "Save Changes:", QMessageBox::Yes | QMessageBox::No);
+	reply = QMessageBox::question(this, "Exit And Save Changes", "Exit And Save Changes:", QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
 
-	if (reply == QMessageBox::Yes) file->f_saveFile("./Resources/Assets/Save.krz");
-	event->accept();
+	if (reply == QMessageBox::Yes) {
+		file->f_saveFile("./Resources/Assets/Save.krz");
+		event->accept();
+	}
+	else if (reply == QMessageBox::No) {
+		event->accept();
+	}
+	else {
+		event->ignore();
+	}
 }

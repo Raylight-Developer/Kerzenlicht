@@ -32,3 +32,6 @@ private:
 
 #define LOG Session::getInstance().getLog()
 #define FILE Session::getInstance().getFile()
+#define FLUSH Session::getInstance().getLog()->flush();
+#define COUT_S Lace lace; lace <<
+#define COUT_E ; cout << lace.str();

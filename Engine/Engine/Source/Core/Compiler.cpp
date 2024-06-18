@@ -1,15 +1,19 @@
 #include "Core/Compiler.hpp"
 
+#include "Log_Console.hpp"
+#include "Core/Session.hpp"
+
 void loadDLL(HINSTANCE& dynlib, const string& libfile) {
 	wstring stemp = wstring(libfile.begin(), libfile.end());
 	LPCWSTR file_path = stemp.c_str();
-	cout << "Loading [" << libfile << "]..." << endl;
+	*LOG << ENDL << HTML_MAGENTA << "[DLL]" << HTML_RESET << " Loading: " << libfile << "..."; FLUSH
 	dynlib = LoadLibrary(file_path);
 	if (!dynlib) {
-		const DWORD errorCode = GetLastError();
-		cerr << "LoadLibrary failed with error code:  " << errorCode << endl;
+		const uint32 errorCode = static_cast<uint32>(GetLastError());
+		*LOG << ENDL << HTML_RED << "[DLL]" << HTML_RESET << "LoadLibrary failed with error code:  " << errorCode; FLUSH
 		exit(EXIT_FAILURE);
 	}
+	*LOG << ENDL << HTML_GREEN << "[DLL]" << HTML_RESET << " Loaded"; FLUSH
 }
 
 void recompileDLL(HINSTANCE& dynlib, const string& libfile) {

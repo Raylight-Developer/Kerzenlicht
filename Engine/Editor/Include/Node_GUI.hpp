@@ -8,6 +8,8 @@
 #include "Core/Nodes.hpp"
 #include "Core/Node_Def.hpp"
 
+// FWD DECL OTHER
+
 // FWD DECL THIS
 namespace GUI {
 	namespace NODE {

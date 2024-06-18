@@ -24,9 +24,7 @@ GUI::WORKSPACE::Workspace_Node_Editor::Workspace_Node_Editor(Workspace_Manager* 
 	FILE->active_object->addCallback(this, [this]() { viewport->f_objectChanged(file->active_object->ptr); });
 	connect(compile, &GUI::Button::pressed, [this, parent]() {
 		if (viewport->active_node_tree and file->active_object->ptr) {
-			Lace log_msg;
-			log_msg << ENDL << HTML_MAGENTA << "[Compilation]" << HTML_RESET << " Compiling Nodes...";
-			*LOG << log_msg;
+			*LOG << ENDL << HTML_MAGENTA << "[Compilation]" << HTML_RESET << " Compiling Nodes...";
 
 			file->nodes.erase(std::find(file->nodes.begin(), file->nodes.end(), file->active_object->ptr->nodes));
 
@@ -42,8 +40,7 @@ GUI::WORKSPACE::Workspace_Node_Editor::Workspace_Node_Editor(Workspace_Manager* 
 			file->nodes.push_back(node);
 			file->node_map[node] = viewport->active_node_tree;
 
-			log_msg.clear() << ENDL << HTML_GREEN << "[Compilation]" << HTML_RESET << " Compiled Nodes";
-			*LOG << log_msg;
+			*LOG << ENDL << HTML_GREEN << "[Compilation]" << HTML_RESET << " Compiled Nodes";
 		}
 	});
 }

@@ -38,67 +38,67 @@ GUI::WORKSPACE::Workspace_API::Workspace_API(Workspace_Manager* parent) :
 }
 
 void GUI::WORKSPACE::Workspace_API::f_editCode() {
-	//Py::scoped_interpreter guard{};
-	//try {
-	//	Py::module sys = Py::module::import("sys");
-	//	Py::module os = Py::module::import("os");
-	//
-	//	Py::object _stdout = sys.attr("stdout");
-	//	Py::object _stderr = sys.attr("stderr");
-	//	auto stringio = Py::module::import("io").attr("StringIO");
-	//	Py::object _stdout_buffer = stringio();
-	//	Py::object _stderr_buffer = stringio();
-	//	sys.attr("stdout") = _stdout_buffer;
-	//	sys.attr("stderr") = _stderr_buffer;
-	//
-	//	Py::exec("os.startfile('D:/Kerzenlicht Renderer/Engine/Resources/Python/Runtime.py')");
-	//}
-	//catch (...) {
-	//}
+	Py::scoped_interpreter guard{};
+	try {
+		Py::module sys = Py::module::import("sys");
+		Py::module os = Py::module::import("os");
+	
+		Py::object _stdout = sys.attr("stdout");
+		Py::object _stderr = sys.attr("stderr");
+		auto stringio = Py::module::import("io").attr("StringIO");
+		Py::object _stdout_buffer = stringio();
+		Py::object _stderr_buffer = stringio();
+		sys.attr("stdout") = _stdout_buffer;
+		sys.attr("stderr") = _stderr_buffer;
+	
+		Py::exec("os.startfile('D:/Kerzenlicht Renderer/Engine/Resources/Python/Runtime.py')");
+	}
+	catch (...) {
+	}
 }
 
 void GUI::WORKSPACE::Workspace_API::f_executeCode() {
-	//Py::scoped_interpreter guard{};
-	//try {
-	//	Py::module sys = Py::module::import("sys");
-	//	Py::module os = Py::module::import("os");
-	//	Py::module Kerz = Py::module::import("KL");
-	//
-	//	Py::dict Globals = Py::globals();
-	//	Globals["window"] = Py::cast(parent->parent);
-	//
-	//	Py::object _stdout = sys.attr("stdout");
-	//	Py::object _stderr = sys.attr("stderr");
-	//	auto stringio = Py::module::import("io").attr("StringIO");
-	//	Py::object _stdout_buffer = stringio();
-	//	Py::object _stderr_buffer = stringio();
-	//	sys.attr("stdout") = _stdout_buffer;
-	//	sys.attr("stderr") = _stderr_buffer;
-	//
-	//	Py::exec("exec(open('D:/Kerzenlicht Renderer/Engine/Resources/Python/Runtime.py', 'r').read())");
-	//
-	//	_stdout_buffer.attr("seek")(0);
-	//	_stderr_buffer.attr("seek")(0);
-	//
-	//	string Out = Py::str(_stdout_buffer.attr("read")());
-	//	string Err = Py::str(_stderr_buffer.attr("read")());
-	//
-	//	if (Err.size() == 0) {
-	//		console_output->setText(QString::fromStdString(Out));
-	//		console_output_history->setText(console_output_history->toPlainText() + "╠══[" + QString::fromStdString(to_string(history_counter)) + "]══════════╣\n" + QString::fromStdString(Out + "\n"));
-	//	}
-	//	else {
-	//		console_output->setText(QString::fromStdString(Out + "!! Error !!\n" + Err));
-	//		console_output_history->setText(console_output_history->toPlainText() + "╠══[" + QString::fromStdString(to_string(history_counter)) + "]══════════╣\n" + QString::fromStdString(Out + "!! Error !!\n" + Err + "\n"));
-	//	}
-	//}
-	//catch (const exception& e) {
-	//	Lace Err;
-	//	Err << "Error occurred: " << e.what();
-	//	console_output->setText(QString::fromStdString(Err.str()));
-	//	console_output_history->setText(console_output_history->toPlainText() + "╠══[" + QString::fromStdString(to_string(history_counter)) + "]══════════╣\n" + QString::fromStdString(Err.str() + "\n"));
-	//}
-	//history_counter++;
+	Py::scoped_interpreter guard{};
+	try {
+		Py::module sys = Py::module::import("sys");
+		Py::module os = Py::module::import("os");
+		Py::module Kerz = Py::module::import("KL");
+	
+		Py::dict Globals = Py::globals();
+		Globals["window"] = Py::cast(parent->parent);
+	
+		Py::object _stdout = sys.attr("stdout");
+		Py::object _stderr = sys.attr("stderr");
+		auto stringio = Py::module::import("io").attr("StringIO");
+		Py::object _stdout_buffer = stringio();
+		Py::object _stderr_buffer = stringio();
+		sys.attr("stdout") = _stdout_buffer;
+		sys.attr("stderr") = _stderr_buffer;
+	
+		Py::exec("exec(open('D:/Kerzenlicht Renderer/Engine/Resources/Python/Runtime.py', 'r').read())");
+	
+		_stdout_buffer.attr("seek")(0);
+		_stderr_buffer.attr("seek")(0);
+	
+		string Out = Py::str(_stdout_buffer.attr("read")());
+		string Err = Py::str(_stderr_buffer.attr("read")());
+	
+		if (Err.size() == 0) {
+			console_output->setText(QString::fromStdString(Out));
+			console_output_history->setText(console_output_history->toPlainText() + "╠══[" + QString::fromStdString(to_string(history_counter)) + "]══════════╣\n" + QString::fromStdString(Out + "\n"));
+		}
+		else {
+			console_output->setText(QString::fromStdString(Out + "!! Error !!\n" + Err));
+			console_output_history->setText(console_output_history->toPlainText() + "╠══[" + QString::fromStdString(to_string(history_counter)) + "]══════════╣\n" + QString::fromStdString(Out + "!! Error !!\n" + Err + "\n"));
+		}
+	}
+	catch (const exception& e) {
+		Lace Err;
+		Err << "Error occurred: " << e.what();
+		console_output->setText(QString::fromStdString(Err.str()));
+		console_output_history->setText(console_output_history->toPlainText() + "╠══[" + QString::fromStdString(to_string(history_counter)) + "]══════════╣\n" + QString::fromStdString(Err.str() + "\n"));
+	}
+	history_counter++;
 }
 
 void GUI::WORKSPACE::Workspace_API::keyPressEvent(QKeyEvent* event) {

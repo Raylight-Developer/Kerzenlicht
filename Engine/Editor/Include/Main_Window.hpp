@@ -7,9 +7,9 @@
 #include "Core/File.hpp"
 #include "Core/Session.hpp"
 
+#include "Log_Console.hpp"
 #include "Workspaces/Manager.hpp"
 #include "Workspaces/Header.hpp"
-#include "Log_Console.hpp"
 
 // FWD DECL OTHER
 

@@ -1,4 +1,4 @@
-#include "Workspaces/Viewport.hpp"
+﻿#include "Workspaces/Viewport.hpp"
 
 #include "Workspaces/Manager.hpp"
 
@@ -83,12 +83,14 @@ void GUI::WORKSPACE::Workspace_Viewport::f_systemInfo() {
 	status.dwLength = sizeof(status);
 	GlobalMemoryStatusEx(&status);
 
-	Lace log_msg;
-	log_msg << ENDL << "System:";
-	log_msg << ENDL << "    Total physical RAM: " << (double)(status.ullTotalPhys / (1024.0 * 1024.0 * 1024.0)) << " GB  (" << status.ullTotalPhys / (1024 * 1024) << " MB)";
-	log_msg << ENDL << "CPU:";
-	log_msg << ENDL << "    Threads: " << thread::hardware_concurrency();
-	*LOG << log_msg;
+	*LOG
+	<< ENDL << "┌"
+	<< ENDL << "│  System"
+	<< ENDL << "│    Total physical RAM: " << uint(ceil((double)(status.ullTotalPhys / (1024.0 * 1024.0 * 1024.0)))) << "GB - " << status.ullTotalPhys / (1024 * 1024) << "MB"
+	<< ENDL << "│  CPU"
+	<< ENDL << "│    Threads: " << thread::hardware_concurrency()
+	<< ENDL << "│  GPU"
+	<< ENDL << "└";
 }
 
 GUI::WORKSPACE::Viewport_CPU_Renderer::Viewport_CPU_Renderer(Workspace_Viewport* parent) :
