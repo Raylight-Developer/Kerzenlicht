@@ -27,7 +27,7 @@ EXEC::Counter::Counter(const ivec2& pos) {
 GUI::NODE::EXEC::Script::Script(const ivec2& pos) {
 	label = "Script";
 	type = CLASS::NODE::Type::EXEC;
-	sub_type = ETOU(CLASS::NODE::EXEC::Type::COUNTER);
+	sub_type = ETOU(CLASS::NODE::EXEC::Type::SCRIPT);
 
 	rect = QRectF(-100, -20, 200, 40);
 	rect.moveTo(QPointF(pos.x, pos.y));

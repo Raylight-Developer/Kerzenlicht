@@ -2,14 +2,12 @@
 
 #include "Workspaces/Viewport.hpp"
 
-CPU_Renderer::CPU_Renderer(GUI::WORKSPACE::Viewport_CPU_Renderer* viewport, Log_Console * log, CLASS::File* file) :
+CPU_Renderer::CPU_Renderer(GUI::WORKSPACE::Viewport_CPU_Renderer* viewport) :
 	QThread(),
 	viewport      (viewport),
-	kernel        (Render_Kernel(viewport, file)),
+	kernel        (Render_Kernel(viewport)),
 	render_pixmap (nullptr),
-	resolution    (viewport->render_resolution),
-	file          (file),
-	log           (log)
+	resolution    (viewport->render_resolution)
 {
 	render_pixmap = new float[resolution.x * resolution.y * 4U];
 

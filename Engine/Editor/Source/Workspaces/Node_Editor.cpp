@@ -4,8 +4,7 @@
 
 GUI::WORKSPACE::Workspace_Node_Editor::Workspace_Node_Editor(Workspace_Manager* parent) :
 	GUI::Linear_Contents(parent, QBoxLayout::Direction::TopToBottom),
-	parent(parent),
-	file(parent->file)
+	parent(parent)
 {
 	viewport = new Node_Viewport(this);
 	shelf = new Node_Shelf(this);
@@ -22,12 +21,12 @@ GUI::WORKSPACE::Workspace_Node_Editor::Workspace_Node_Editor(Workspace_Manager* 
 	addWidget(header);
 	addWidget(splitter);
 
-	parent->file->active_object->addCallback(this, [this]() { viewport->f_objectChanged(file->active_object->ptr); });
+	FILE->active_object->addCallback(this, [this]() { viewport->f_objectChanged(file->active_object->ptr); });
 	connect(compile, &GUI::Button::pressed, [this, parent]() {
 		if (viewport->active_node_tree and file->active_object->ptr) {
 			Lace log_msg;
 			log_msg << ENDL << HTML_MAGENTA << "[Compilation]" << HTML_RESET << " Compiling Nodes...";
-			*parent->log << log_msg;
+			*LOG << log_msg;
 
 			file->nodes.erase(std::find(file->nodes.begin(), file->nodes.end(), file->active_object->ptr->nodes));
 
@@ -44,8 +43,7 @@ GUI::WORKSPACE::Workspace_Node_Editor::Workspace_Node_Editor(Workspace_Manager* 
 			file->node_map[node] = viewport->active_node_tree;
 
 			log_msg.clear() << ENDL << HTML_GREEN << "[Compilation]" << HTML_RESET << " Compiled Nodes";
-			log_msg.clear() << ENDL << file->f_printFile();
-			*parent->log << log_msg;
+			*LOG << log_msg;
 		}
 	});
 }

@@ -169,11 +169,20 @@ CLASS::NODE::Data::Data(const any& data, const DATA::Type& type, const DATA::Mod
 	modifier(modifier)
 {}
 
-CLASS::NODE::Data::Data(const dvec1& data) :
-	data(data)
-{
-	type = DATA::Type::DOUBLE;
-	modifier = DATA::Modifier::SINGLE;
+CLASS::NODE::Data::Data(const string& data) : data(data) {
+	modifier = DATA::Modifier::SINGLE; type = DATA::Type::STRING;
+}
+CLASS::NODE::Data::Data(const dvec1& data) : data(data) {
+	modifier = DATA::Modifier::SINGLE; type = DATA::Type::DOUBLE;
+}
+CLASS::NODE::Data::Data(const bool& data) : data(data) {
+	modifier = DATA::Modifier::SINGLE; type = DATA::Type::BOOL;
+}
+CLASS::NODE::Data::Data(const uint64& data) : data(data) {
+	modifier = DATA::Modifier::SINGLE; type = DATA::Type::UINT;
+}
+CLASS::NODE::Data::Data(const int64& data) : data(data) {
+	modifier = DATA::Modifier::SINGLE; type = DATA::Type::INT;
 }
 
 CLASS::NODE::Data CLASS::NODE::Data::operator+(const Data & other) {

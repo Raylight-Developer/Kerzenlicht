@@ -25,6 +25,7 @@ namespace CLASS {
 		OBJECT::Data* data;
 		Object* parent;
 		Transform transform;
+		Transform node_transform;
 		vector<Material*> materials;
 
 		bool viewport_visibility;

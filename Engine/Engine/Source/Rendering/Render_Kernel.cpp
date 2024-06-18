@@ -2,11 +2,10 @@
 
 #include "Workspaces/Viewport.hpp"
 
-Render_Kernel::Render_Kernel(GUI::WORKSPACE::Viewport_CPU_Renderer* viewport, CLASS::File* file) :
+Render_Kernel::Render_Kernel(GUI::WORKSPACE::Viewport_CPU_Renderer* viewport) :
 	resolution(viewport->render_resolution),
 	aspect_ratio(viewport->render_aspect_ratio),
-	inv_aspect_ratio(1.0 / aspect_ratio),
-	file(file)
+	inv_aspect_ratio(1.0 / aspect_ratio)
 {}
 
 dvec3 Render_Kernel::f_renderPixel(const dvec1& x, const dvec1& y) {

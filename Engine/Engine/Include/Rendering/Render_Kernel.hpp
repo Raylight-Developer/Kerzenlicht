@@ -72,9 +72,8 @@ struct Render_Kernel {
 	const dvec1 aspect_ratio;
 	const dvec1 inv_aspect_ratio;
 	const uvec2 resolution;
-	CLASS::File* file;
 
-	Render_Kernel(GUI::WORKSPACE::Viewport_CPU_Renderer* viewport, CLASS::File* file);
+	Render_Kernel(GUI::WORKSPACE::Viewport_CPU_Renderer* viewport);
 
 	// Init
 	dvec3 f_renderPixel(const dvec1& x, const dvec1& y);

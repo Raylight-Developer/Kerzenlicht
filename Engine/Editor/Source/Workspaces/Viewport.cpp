@@ -2,10 +2,9 @@
 
 #include "Workspaces/Manager.hpp"
 
-GUI::WORKSPACE::Timeline::Timeline(Workspace_Viewport* parent, CLASS::File* file) :
+GUI::WORKSPACE::Timeline::Timeline(Workspace_Viewport* parent) :
 	GUI::Linear_Contents(parent, QBoxLayout::Direction::LeftToRight),
-	parent(parent),
-	file(file)
+	parent(parent)
 {
 	slider = new GUI::Slider(this);
 	slider->setRange(0, 240);
@@ -21,7 +20,7 @@ GUI::WORKSPACE::Timeline::Timeline(Workspace_Viewport* parent, CLASS::File* file
 
 	connect(slider, &GUI::Slider::valueChanged, [this, current_frame](int value) {
 		current_frame->setText(QString::number(value));
-		this->file->active_scene->ptr->current_frame = value;
+		FILE->active_scene->ptr->current_frame = value;
 
 		if (this->parent->viewport_gpu_renderer) this->parent->viewport_gpu_renderer->f_updateFrame();
 		if (this->parent->viewport_realtime) this->parent->viewport_realtime->f_updateFrame();
@@ -41,28 +40,26 @@ GUI::WORKSPACE::Timeline::Timeline(Workspace_Viewport* parent, CLASS::File* file
 	addWidget(info);
 }
 
-GUI::WORKSPACE::Workspace_Viewport::Workspace_Viewport(Workspace_Manager* parent, Log_Console* log, CLASS::File* file) :
+GUI::WORKSPACE::Workspace_Viewport::Workspace_Viewport(Workspace_Manager* parent) :
 	GUI::Linear_Contents(parent, QBoxLayout::Direction::TopToBottom),
-	parent(parent),
-	log(log),
-	file(file)
+	parent(parent)
 {
 	f_systemInfo();
 
 	const Type type = Type::REALTIME;
 	switch (type) {
 		case Type::REALTIME: {
-			viewport_realtime = new Viewport_Realtime(this, log, file);
+			viewport_realtime = new Viewport_Realtime(this);
 			container = QWidget::createWindowContainer(viewport_realtime);
 			break;
 		}
 		case Type::CPU: {
-			viewport_cpu_renderer = new Viewport_CPU_Renderer(this, log, file);
+			viewport_cpu_renderer = new Viewport_CPU_Renderer(this);
 			container = QWidget::createWindowContainer(viewport_cpu_renderer);
 			break;
 		}
 		case Type::GPU: {
-			viewport_gpu_renderer = new Viewport_GPU_Renderer(this, log, file);
+			viewport_gpu_renderer = new Viewport_GPU_Renderer(this);
 			container = QWidget::createWindowContainer(viewport_gpu_renderer);
 			break;
 		}
@@ -70,7 +67,7 @@ GUI::WORKSPACE::Workspace_Viewport::Workspace_Viewport(Workspace_Manager* parent
 	container->setSizePolicy(QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Expanding);
 	container->setContentsMargins(0, 0, 0, 0);
 
-	timeline = new Timeline(this, file);
+	timeline = new Timeline(this);
 
 	GUI::Splitter* splitter = new GUI::Splitter(this, true);
 	splitter->addWidget(container);
@@ -91,14 +88,12 @@ void GUI::WORKSPACE::Workspace_Viewport::f_systemInfo() {
 	log_msg << ENDL << "    Total physical RAM: " << (double)(status.ullTotalPhys / (1024.0 * 1024.0 * 1024.0)) << " GB  (" << status.ullTotalPhys / (1024 * 1024) << " MB)";
 	log_msg << ENDL << "CPU:";
 	log_msg << ENDL << "    Threads: " << thread::hardware_concurrency();
-	*log << log_msg;
+	*LOG << log_msg;
 }
 
-GUI::WORKSPACE::Viewport_CPU_Renderer::Viewport_CPU_Renderer(Workspace_Viewport* parent, Log_Console* log, CLASS::File* file) :
+GUI::WORKSPACE::Viewport_CPU_Renderer::Viewport_CPU_Renderer(Workspace_Viewport* parent) :
 	QOpenGLWindow(),
 	parent(parent),
-	log(log),
-	file(file),
 	display_resolution(uvec2(3840U, 2160U)),
 	render_resolution(uvec2(3840U, 2160U)),
 	display_aspect_ratio(16.0 / 9.0),
@@ -207,7 +202,7 @@ void GUI::WORKSPACE::Viewport_CPU_Renderer::initializeGL() {
 
 	f_pipeline();
 
-	cpu_renderer = new CPU_Renderer(this, log, file);
+	cpu_renderer = new CPU_Renderer(this);
 	connect(cpu_renderer, &CPU_Renderer::f_cpuUpdateRender, this, &Viewport_CPU_Renderer::f_cpuUpdateRender, Qt::ConnectionType::QueuedConnection);
 	cpu_renderer->start();
 }
@@ -223,11 +218,9 @@ void GUI::WORKSPACE::Viewport_CPU_Renderer::resizeGL(int w, int h) {
 	glViewport(0, 0, display_resolution.x, display_resolution.y);
 }
 
-GUI::WORKSPACE::Viewport_GPU_Renderer::Viewport_GPU_Renderer(Workspace_Viewport* parent, Log_Console* log, CLASS::File* file) :
+GUI::WORKSPACE::Viewport_GPU_Renderer::Viewport_GPU_Renderer(Workspace_Viewport* parent) :
 	QOpenGLWindow(),
 	parent(parent),
-	log(log),
-	file(file),
 	downsampling(2.0),
 	display_resolution(uvec2(3840U, 2160U)),
 	render_resolution(d_to_u(u_to_d(display_resolution) / downsampling)),

@@ -4,11 +4,9 @@
 #include "Workspaces/Manager.hpp"
 #include "Main_Window.hpp"
 
-GUI::WORKSPACE::Viewport_Realtime::Viewport_Realtime(Workspace_Viewport* parent, Log_Console* log, CLASS::File* file) :
+GUI::WORKSPACE::Viewport_Realtime::Viewport_Realtime(Workspace_Viewport* parent) :
 	QOpenGLWindow(),
 	parent(parent),
-	log(log),
-	file(file),
 	resolution(uvec2(3840U, 2160U)),
 	aspect_ratio(16.0 / 9.0)
 {
@@ -117,7 +115,7 @@ void GUI::WORKSPACE::Viewport_Realtime::f_pipeline() {
 void GUI::WORKSPACE::Viewport_Realtime::f_uploadData() {
 	triangles.clear();
 	triangle_map.clear();
-	for (CLASS::Object* object : file->active_scene->ptr->objects) {
+	for (CLASS::Object* object : FILE->active_scene->ptr->objects) {
 		object->f_compileMatrix();
 		vector <VIEWPORT_REALTIME::Triangle>  temp;
 		if (object->data->type == CLASS::OBJECT::DATA::Type::MESH) {
@@ -171,7 +169,7 @@ void GUI::WORKSPACE::Viewport_Realtime::f_updateTick() {
 	}
 	if (frame_counter != 0) delta = chrono::duration_cast<std::chrono::milliseconds>(chrono::steady_clock::now() - last_delta).count() / 1000.0;
 	last_delta = chrono::steady_clock::now();
-	for (const CLASS::Object* object : file->active_scene->ptr->objects)
+	for (const CLASS::Object* object : FILE->active_scene->ptr->objects)
 		if (object->nodes)
 			object->nodes->exec(&delta);
 	//for (auto [key, workspace] : parent->parent->parent->workspaces) // TODO optimize with callbacks or other method
@@ -187,15 +185,15 @@ void GUI::WORKSPACE::Viewport_Realtime::f_updateFrame() {
 }
 
 void GUI::WORKSPACE::Viewport_Realtime::f_selectObject(const dvec2& uv) {
-	CLASS::OBJECT::DATA::Camera* camera = file->default_camera->data->getCamera();
-	camera->f_compile(file->active_scene->ptr, file->default_camera);
+	CLASS::OBJECT::DATA::Camera* camera = FILE->default_camera->data->getCamera();
+	camera->f_compile(FILE->active_scene->ptr, FILE->default_camera);
 	const VIEWPORT_REALTIME::Ray ray = VIEWPORT_REALTIME::Ray(
-		d_to_f(file->default_camera->transform.position),
+		d_to_f(FILE->default_camera->transform.position),
 		d_to_f(normalize(
 			camera->projection_center
 			+ (camera->projection_u * uv.x)
 			+ (camera->projection_v * uv.y)
-			- file->default_camera->transform.position
+			- FILE->default_camera->transform.position
 		))
 	);
 
@@ -213,10 +211,10 @@ void GUI::WORKSPACE::Viewport_Realtime::f_selectObject(const dvec2& uv) {
 		}
 	}
 	if (closest) {
-		file->active_object->set(closest);
+		FILE->active_object->set(closest);
 	}
 	else {
-		file->active_object->set(nullptr);
+		FILE->active_object->set(nullptr);
 	}
 }
 
@@ -233,11 +231,11 @@ void GUI::WORKSPACE::Viewport_Realtime::paintGL() {
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	f_updateTick();
-	CLASS::OBJECT::DATA::Camera* camera = file->default_camera->data->getCamera();
-	camera->f_compile(file->active_scene->ptr, file->default_camera);
+	CLASS::OBJECT::DATA::Camera* camera = FILE->default_camera->data->getCamera();
+	camera->f_compile(FILE->active_scene->ptr, FILE->default_camera);
 
 	glUseProgram(compute_shader_program);
-	glUniform3dv(glGetUniformLocation(compute_shader_program, "camera_pos"),  1, value_ptr(file->default_camera->transform.position));
+	glUniform3dv(glGetUniformLocation(compute_shader_program, "camera_pos"),  1, value_ptr(FILE->default_camera->transform.position));
 	glUniform3dv(glGetUniformLocation(compute_shader_program, "camera_p_uv"), 1, value_ptr(camera->projection_center));
 	glUniform3dv(glGetUniformLocation(compute_shader_program, "camera_p_u"),  1, value_ptr(camera->projection_u));
 	glUniform3dv(glGetUniformLocation(compute_shader_program, "camera_p_v"),  1, value_ptr(camera->projection_v));

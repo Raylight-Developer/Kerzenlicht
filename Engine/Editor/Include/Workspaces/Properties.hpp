@@ -5,6 +5,7 @@
 #include "GUI.hpp"
 
 #include "Core/File.hpp"
+#include "Core/Session.hpp"
 
 namespace GUI {
 	namespace WORKSPACE {

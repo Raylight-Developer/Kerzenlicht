@@ -3,8 +3,9 @@
 #include "Include.hpp"
 #include "QT.hpp"
 
-#include "Core/File.hpp"
 #include "Core/Lace.hpp"
+#include "Core/File.hpp"
+#include "Core/Session.hpp"
 
 #include "Workspaces/Manager.hpp"
 #include "Workspaces/Header.hpp"

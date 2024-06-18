@@ -5,6 +5,8 @@
 
 #include "Core/Ops.hpp"
 #include "Core/File.hpp"
+#include "Core/Session.hpp"
+
 #include "Core/Node_Def.hpp"
 
 #include "Node_GUI.hpp"

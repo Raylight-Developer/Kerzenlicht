@@ -2,11 +2,17 @@
 
 #include "Include.hpp"
 
+#undef LOG
+#undef FILE
+
 #include <qopenglfunctions_4_5_core.h>
 #include <QtOpenGLWidgets>
 #include <QtWidgets>
 #include <QtCore>
 #include <QtGui>
+
+#undef LOG
+#undef FILE
 
 namespace GUI {
 	// Base Classes

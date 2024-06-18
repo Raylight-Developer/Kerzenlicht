@@ -1,24 +1,20 @@
 #include "Workspaces/Manager.hpp"
 
-GUI::WORKSPACE::Workspace_Manager::Workspace_Manager(Main_Window* parent, Log_Console* log, CLASS::File* file, const Workspace_Type& type):
+GUI::WORKSPACE::Workspace_Manager::Workspace_Manager(Main_Window* parent, const Workspace_Type& type):
 	GUI::Dock(parent),
 	parent(parent),
-	log(log),
-	file(file),
 	type(type)
 {
 	workspace = new GUI::Linear_Contents(this, QBoxLayout::Direction::TopToBottom);
 
-	titlebar = new Workspace_Dock_Header(this, log, file, type);
+	titlebar = new Workspace_Dock_Header(this, type);
 	setTitleBarWidget(titlebar);
 	setWindowTitle("Workspace");
 }
 
-GUI::WORKSPACE::Workspace_Dock_Header::Workspace_Dock_Header(Workspace_Manager* parent, Log_Console* log, CLASS::File* file, const Workspace_Type& type) :
+GUI::WORKSPACE::Workspace_Dock_Header::Workspace_Dock_Header(Workspace_Manager* parent, const Workspace_Type& type) :
 	GUI::Linear_Contents(parent, QBoxLayout::Direction::LeftToRight),
-	parent(parent),
-	log(log),
-	file(file)
+	parent(parent)
 {
 	//Expand_Collapse_Toggle->setParent(parent->parent);
 	floating_workspace_toggle = new GUI::Floating_Toggle(this);
@@ -175,7 +171,7 @@ void GUI::WORKSPACE::Workspace_Dock_Header::f_setWorkspace(const Workspace_Type&
 		case (Workspace_Type::VIEWPORT): {
 			parent->setWindowTitle("Viewport");
 			change_workspace_type->setIcon(QIcon("./Resources/Workspaces/Viewport.png"));
-			parent->workspace = new Workspace_Viewport(parent, log, file);
+			parent->workspace = new Workspace_Viewport(parent);
 			parent->setWidget(parent->workspace);
 			floating_workspace_toggle->setText("Viewport");
 			break;
@@ -242,7 +238,7 @@ void GUI::WORKSPACE::Workspace_Dock_Header::f_closeDock() {
 }
 
 void GUI::WORKSPACE::Workspace_Dock_Header::f_addDockClick() {
-	Workspace_Manager* dock = new Workspace_Manager(parent->parent, log, file, Workspace_Type::NONE);
+	Workspace_Manager* dock = new Workspace_Manager(parent->parent, Workspace_Type::NONE);
 	parent->parent->addDockWidget(Qt::TopDockWidgetArea, dock);
 	dock->setFloating(true);
 	dynamic_cast<Workspace_Dock_Header*>(dock->titlebar)->expand_settings->setChecked(true);
@@ -251,7 +247,7 @@ void GUI::WORKSPACE::Workspace_Dock_Header::f_addDockClick() {
 }
 
 void GUI::WORKSPACE::Workspace_Dock_Header::f_addDockTabClick() {
-	Workspace_Manager* dock = new Workspace_Manager(parent->parent, log, file, Workspace_Type::NONE);
+	Workspace_Manager* dock = new Workspace_Manager(parent->parent, Workspace_Type::NONE);
 	parent->parent->tabifyDockWidget(parent, dock);
 }
 

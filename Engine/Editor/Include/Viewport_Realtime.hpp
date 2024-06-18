@@ -3,8 +3,9 @@
 #include "Include.hpp"
 #include "QT.hpp"
 
-#include "Core/File.hpp"
 #include "Core/Ops.hpp"
+#include "Core/File.hpp"
+#include "Core/Session.hpp"
 
 // FWD DECL OTHER
 namespace GUI {
@@ -37,8 +38,6 @@ namespace GUI {
 
 		struct Viewport_Realtime : QOpenGLWindow, protected QOpenGLFunctions_4_5_Core {
 			Workspace_Viewport* parent;
-			Log_Console* log;
-			CLASS::File* file;
 
 			uvec2 resolution;
 			dvec1 aspect_ratio;
@@ -63,7 +62,7 @@ namespace GUI {
 			chrono::steady_clock::time_point last_delta;
 			dvec1 delta;
 
-			Viewport_Realtime(Workspace_Viewport* parent, Log_Console* log, CLASS::File* file);
+			Viewport_Realtime(Workspace_Viewport* parent);
 
 			void f_pipeline();
 			void f_uploadData();

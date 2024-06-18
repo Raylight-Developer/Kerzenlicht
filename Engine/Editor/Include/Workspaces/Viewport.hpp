@@ -3,8 +3,9 @@
 #include "Include.hpp"
 #include "QT.hpp"
 
-#include "Core/File.hpp"
 #include "Core/Ops.hpp"
+#include "Core/File.hpp"
+#include "Core/Session.hpp"
 
 #include "CPU_Renderer.hpp"
 #include "Viewport_Realtime.hpp"
@@ -16,12 +17,11 @@ namespace GUI {
 		struct Workspace_Viewport;
 		struct Timeline : GUI::Linear_Contents {
 			Workspace_Viewport* parent;
-			CLASS::File* file;
 
 			GUI::Label* info;
 			GUI::Slider* slider;
 
-			Timeline(Workspace_Viewport* parent, CLASS::File* file);
+			Timeline(Workspace_Viewport* parent);
 		};
 
 		struct Viewport_Realtime;
@@ -36,8 +36,6 @@ namespace GUI {
 
 		struct Workspace_Viewport : GUI::Linear_Contents {
 			Workspace_Manager* parent;
-			Log_Console* log;
-			CLASS::File* file;
 
 			Viewport_CPU_Renderer* viewport_cpu_renderer;
 			Viewport_GPU_Renderer* viewport_gpu_renderer;
@@ -48,7 +46,7 @@ namespace GUI {
 
 			void f_systemInfo();
 
-			Workspace_Viewport(Workspace_Manager* parent, Log_Console* log, CLASS::File* file);
+			Workspace_Viewport(Workspace_Manager* parent);
 			~Workspace_Viewport();
 		};
 
@@ -66,8 +64,6 @@ namespace GUI {
 			Q_OBJECT
 		public:
 			Workspace_Viewport* parent;
-			Log_Console* log;
-			CLASS::File* file;
 
 			uvec2 display_resolution;
 			dvec1 display_aspect_ratio;
@@ -84,7 +80,7 @@ namespace GUI {
 
 			CPU_Renderer* cpu_renderer;
 
-			Viewport_CPU_Renderer(Workspace_Viewport* parent, Log_Console* log, CLASS::File* file);
+			Viewport_CPU_Renderer(Workspace_Viewport* parent);
 
 			void f_pipeline();
 			void f_cpuDisplayRender();
@@ -99,8 +95,6 @@ namespace GUI {
 
 		struct Viewport_GPU_Renderer : QOpenGLWindow, protected QOpenGLFunctions_4_5_Core {
 			Workspace_Viewport* parent;
-			Log_Console* log;
-			CLASS::File* file;
 
 			dvec1 downsampling;
 			uvec2 display_resolution;
@@ -120,7 +114,7 @@ namespace GUI {
 			GLuint fullscreen_quad_VBO;
 			GLuint fullscreen_quad_EBO;
 
-			Viewport_GPU_Renderer(Workspace_Viewport* parent, Log_Console* log, CLASS::File* file);
+			Viewport_GPU_Renderer(Workspace_Viewport* parent);
 
 			void f_pipeline();
 			void f_uploadData();

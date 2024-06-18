@@ -40,5 +40,6 @@ extern "C" {
 		if (port_request == 1) {
 			return node->data_inputs.at("I Value")->getData() * Data(2.5);
 		}
+		return Data();
 	}
 }

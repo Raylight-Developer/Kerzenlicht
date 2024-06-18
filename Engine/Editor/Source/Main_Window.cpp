@@ -10,22 +10,26 @@ GUI::WORKSPACE::App::App(int argc, char* argv[]) :
 GUI::WORKSPACE::Main_Window::Main_Window(GUI::Application* app) :
 	GUI::Window(),
 	app(app),
-	log(new Log_Console(this))
+	log(new Log_Console(this)),
+	file(new CLASS::File()),
+	mouse_pressed(false),
+	key_pressed(false)
 {
-	mouse_pressed = false;
-	key_pressed = false;
+	Session::getInstance().setLog(log);
+	Session::getInstance().setFile(file);
+
+	setWindowTitle("Kerzenlicht");
 	setWindowIcon(QPixmap("./Resources/Icon.png"));
 
 	Lace log_msg;
 	log_msg << "Kerzenlicht 1.0.0 Initialized";
-	*log << log_msg;
+	*LOG << log_msg;
 
-	file = new CLASS::File(log);
 	file->f_loadFile("./Resources/Assets/Save.krz");
 
-	Workspace_Manager* ws_1 = new Workspace_Manager(this, log, file, Workspace_Type::NODE_EDITOR);
-	Workspace_Manager* ws_2 = new Workspace_Manager(this, log, file, Workspace_Type::SHELF);
-	Workspace_Manager* ws_3 = new Workspace_Manager(this, log, file, Workspace_Type::VIEWPORT);
+	Workspace_Manager* ws_1 = new Workspace_Manager(this, Workspace_Type::NODE_EDITOR);
+	Workspace_Manager* ws_2 = new Workspace_Manager(this, Workspace_Type::SHELF);
+	Workspace_Manager* ws_3 = new Workspace_Manager(this, Workspace_Type::VIEWPORT);
 
 	workspaces["1"] = ws_1;
 	workspaces["2"] = ws_2;
@@ -44,7 +48,7 @@ GUI::WORKSPACE::Main_Window::Main_Window(GUI::Application* app) :
 	showMaximized();
 
 	log_msg.clear() << ENDL << HTML_GREEN << "Fully Initialized" << HTML_RESET;
-	*log << log_msg;
+	*LOG << log_msg;
 }
 
 bool GUI::WORKSPACE::Main_Window::eventFilter(QObject* object, QEvent* event) {

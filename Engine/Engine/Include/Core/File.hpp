@@ -61,8 +61,7 @@ namespace CLASS {
 
 		string version;
 
-		Log_Console* log;
-		File(Log_Console* log = nullptr);
+		File();
 
 		void   f_loadFile(const string& file_path);
 		void   f_saveFile(const string& file_path);

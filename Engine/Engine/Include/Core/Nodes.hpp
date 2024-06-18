@@ -88,7 +88,7 @@ namespace CLASS {
 				STRING, DOUBLE, BOOL, UINT, INT,
 				MAT2, MAT3, MAT4, UMAT2, UMAT3, UMAT4, IMAT2, IMAT3, IMAT4,
 				VEC2, VEC3, VEC4, UVEC2, UVEC3, UVEC4, IVEC2, IVEC3, IVEC4,
-				TRANSFORM, TEXTURE, OBJECT, SCENE, DATA,
+				TRANSFORM, TEXTURE, OBJECT, SCENE, DATA
 			};
 			enum struct Modifier {
 				SINGLE,
@@ -103,7 +103,11 @@ namespace CLASS {
 
 			Data();
 			Data(const any& data, const DATA::Type& type, const DATA::Modifier& modifier = DATA::Modifier::SINGLE);
+			Data(const string& data);
 			Data(const dvec1& data);
+			Data(const bool& data);
+			Data(const uint64& data);
+			Data(const int64& data);
 
 			Data operator+(const Data& other);
 			Data operator-(const Data& other);

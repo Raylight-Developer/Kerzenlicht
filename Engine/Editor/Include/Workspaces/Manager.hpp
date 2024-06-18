@@ -4,6 +4,7 @@
 #include "QT.hpp"
 
 #include "Core/File.hpp"
+#include "Core/Session.hpp"
 
 #include "Main_Window.hpp"
 
@@ -32,20 +33,16 @@ namespace GUI {
 
 		struct Workspace_Manager : GUI::Dock {
 			Main_Window* parent;
-			Log_Console* log;
-			CLASS::File* file;
 
 			GUI::Linear_Contents* workspace;
 			Workspace_Dock_Header* titlebar;
 			Workspace_Type type;
 
-			Workspace_Manager(Main_Window* parent, Log_Console* log, CLASS::File* file, const Workspace_Type& type = Workspace_Type::NONE);
+			Workspace_Manager(Main_Window* parent, const Workspace_Type& type = Workspace_Type::NONE);
 		};
 
 		struct Workspace_Dock_Header : GUI::Linear_Contents {
 			Workspace_Manager* parent;
-			Log_Console* log;
-			CLASS::File* file;
 
 			GUI::Floating_Toggle* floating_workspace_toggle;
 			GUI::Button* change_workspace_type;
@@ -59,7 +56,7 @@ namespace GUI {
 			GUI::Menu* close_confirmation;
 			QByteArray floating_geometry_storage;
 
-			Workspace_Dock_Header(Workspace_Manager* parent, Log_Console* log, CLASS::File* file, const Workspace_Type& type);
+			Workspace_Dock_Header(Workspace_Manager* parent, const Workspace_Type& type);
 
 			void f_initWorkspacesMenu();
 			void f_selectWorkspaceTypeClick();

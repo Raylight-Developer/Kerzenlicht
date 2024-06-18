@@ -22,6 +22,7 @@
     <ClInclude Include="Editor\Include\Node_GUI_Def.hpp" />
     <ClInclude Include="Resources\Documentation\Layout.hpp" />
     <ClInclude Include="Editor\Include\Workspaces\Shelf.hpp" />
+    <ClInclude Include="Engine\Include\Core\Session.hpp" />
     <QtMoc Include="Editor\Include\GUI.hpp" />
     <ClInclude Include="Engine\Include\Object\Object.hpp" />
     <ClInclude Include="Engine\Include\Object\Data.hpp" />
@@ -103,6 +104,7 @@
     <ClCompile Include="Editor\Source\Workspaces\Shelf.cpp" />
     <ClCompile Include="Engine\Source\OpenGL\Main_Viewport.cpp" />
     <ClCompile Include="Editor\Source\Node_GUI_Def.cpp" />
+    <ClCompile Include="Engine\Source\Core\Session.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Shaders\CPU_Shader.frag" />

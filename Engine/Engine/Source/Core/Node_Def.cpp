@@ -234,12 +234,10 @@ void LINK::SET::Euler_Rotation_X::exec(const uint16& slot_id) {
 	switch (pointer_ref.type) {
 		case DATA::Type::OBJECT: {
 			if (value_ref.type == DATA::Type::DOUBLE) {
-				any_cast<Object*>(pointer_ref.data)->transform.euler_rotation.x += any_cast<double>(value_ref.data);
-				//cout << any_cast<Object*>(pointer_ref.data)->name << " Euler Rot X = " << any_cast<Object*>(pointer_ref.data)->transform.euler_rotation.x << endl;
+				any_cast<Object*>(pointer_ref.data)->node_transform.euler_rotation.x += any_cast<double>(value_ref.data);
 			}
 			else if (value_ref.type == DATA::Type::UINT) {
-				any_cast<Object*>(pointer_ref.data)->transform.euler_rotation.x += static_cast<double>(any_cast<uint64>(value_ref.data));
-				//cout << any_cast<Object*>(pointer_ref.data)->name << " Euler Rot X = " << any_cast<Object*>(pointer_ref.data)->transform.euler_rotation.x << endl;
+				any_cast<Object*>(pointer_ref.data)->node_transform.euler_rotation.x += static_cast<double>(any_cast<uint64>(value_ref.data));
 			}
 			break;
 		}

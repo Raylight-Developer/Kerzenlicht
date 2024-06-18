@@ -202,7 +202,7 @@ CLASS::Transform CLASS::Transform::operator*(const dvec1& other) const {
 	return result;
 }
 
-dmat4 CLASS::Transform::f_compile() {
+dmat4 CLASS::Transform::f_compile() const {
 	const dmat4 translation_matrix = glm::translate(dmat4(1.0), position);
 	const dmat4 scale_matrix = glm::scale(dmat4(1.0), scale);
 	dmat4 rotation_matrix = dmat4(1.0);

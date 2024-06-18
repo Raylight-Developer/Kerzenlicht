@@ -25,7 +25,7 @@ Log_Console::Log_Console(Window* parent) :
 	setCentralWidget(gui_log);
 }
 
-Log_Console& Log_Console::operator<< (const Lace& value) {
+Log_Console& Log_Console::operator<<(const Lace& value) {
 	gui_log->insertHtml(QString::fromStdString(value.str()));
 	return *this;
 }
