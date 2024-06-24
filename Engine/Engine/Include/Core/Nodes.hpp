@@ -59,6 +59,7 @@ namespace CLASS {
 	struct Node {
 		NODE::Type type;
 		uint16 sub_type;
+		ivec2 pos;
 
 		vector<NODE::Port*> inputs;  // src
 		vector<NODE::Port*> outputs; // src
@@ -93,7 +94,8 @@ namespace CLASS {
 			enum struct Modifier {
 				SINGLE,
 				VECTOR,
-				MAP
+				MAP,
+				POINTER
 			};
 		}
 		struct Data {

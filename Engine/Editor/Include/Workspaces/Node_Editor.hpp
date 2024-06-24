@@ -37,7 +37,6 @@ namespace GUI {
 	namespace WORKSPACE {
 		struct Workspace_Node_Editor : GUI::Linear_Contents {
 			Workspace_Manager* parent;
-			CLASS::File* file;
 
 			Node_Viewport* viewport;
 			Node_Shelf* shelf;

@@ -25,12 +25,14 @@ CLASS::Node_Tree::Node_Tree(const GUI::NODE::Node_Tree* gui_tree) :
 				switch (static_cast<NODE::EXEC::Type>(gui_node->sub_type)) {
 					case NODE::EXEC::Type::COUNTER: {
 						auto node = new NODE::EXEC::Counter();
+						node->pos = ivec2(gui_node->rect.topLeft().x(), gui_node->rect.topLeft().y());
 						nodes.push_back(node);
 						node_map[gui_node] = node;
 						break;
 					}
 					case NODE::EXEC::Type::TICK: {
 						auto node = new NODE::EXEC::Tick();
+						node->pos = ivec2(gui_node->rect.topLeft().x(), gui_node->rect.topLeft().y());
 						nodes.push_back(node);
 						node_map[gui_node] = node;
 						tick = node;
@@ -43,6 +45,7 @@ CLASS::Node_Tree::Node_Tree(const GUI::NODE::Node_Tree* gui_tree) :
 				switch (static_cast<NODE::LINK::Type>(gui_node->sub_type)) {
 					case NODE::LINK::Type::POINTER: {
 						auto node = new NODE::LINK::Pointer();
+						node->pos = ivec2(gui_node->rect.topLeft().x(), gui_node->rect.topLeft().y());
 						node->pointer_type = static_cast<GUI::NODE::LINK::Pointer*>(gui_node)->pointer_type;
 						node->pointer = static_cast<GUI::NODE::LINK::Pointer*>(gui_node)->pointer;
 						nodes.push_back(node);
@@ -50,9 +53,10 @@ CLASS::Node_Tree::Node_Tree(const GUI::NODE::Node_Tree* gui_tree) :
 						break;
 					}
 					case NODE::LINK::Type::SET: {
-						switch (static_cast<GUI::NODE::LINK::Set*>(gui_node)->micro_type) {
+						switch (static_cast<GUI::NODE::LINK::Set*>(gui_node)->mini_type) {
 							case NODE::LINK::SET::Type::EULER_ROTATION_X: {
 								auto node = new NODE::LINK::SET::Euler_Rotation_X();
+								node->pos = ivec2(gui_node->rect.topLeft().x(), gui_node->rect.topLeft().y());
 								nodes.push_back(node);
 								node_map[gui_node] = node;
 								break;
@@ -66,24 +70,28 @@ CLASS::Node_Tree::Node_Tree(const GUI::NODE::Node_Tree* gui_tree) :
 				switch (static_cast<NODE::MATH::Type>(gui_node->sub_type)) {
 					case NODE::MATH::Type::ADD: {
 						auto node = new NODE::MATH::Add();
+						node->pos = ivec2(gui_node->rect.topLeft().x(), gui_node->rect.topLeft().y());
 						nodes.push_back(node);
 						node_map[gui_node] = node;
 						break;
 					}
 					case NODE::MATH::Type::SUB: {
 						auto node = new NODE::MATH::Sub();
+						node->pos = ivec2(gui_node->rect.topLeft().x(), gui_node->rect.topLeft().y());
 						nodes.push_back(node);
 						node_map[gui_node] = node;
 						break;
 					}
 					case NODE::MATH::Type::MUL: {
 						auto node = new NODE::MATH::Mul();
+						node->pos = ivec2(gui_node->rect.topLeft().x(), gui_node->rect.topLeft().y());
 						nodes.push_back(node);
 						node_map[gui_node] = node;
 						break;
 					}
 					case NODE::MATH::Type::DIV: {
 						auto node = new NODE::MATH::Div();
+						node->pos = ivec2(gui_node->rect.topLeft().x(), gui_node->rect.topLeft().y());
 						nodes.push_back(node);
 						node_map[gui_node] = node;
 						break;
@@ -146,6 +154,7 @@ void CLASS::Node_Tree::exec(const dvec1* delta) const {
 CLASS::Node::Node() {
 	type = NODE::Type::NONE;
 	sub_type = 0;
+	pos = ivec2(0);
 }
 
 CLASS::Node::~Node() {

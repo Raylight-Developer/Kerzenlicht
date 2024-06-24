@@ -169,7 +169,7 @@ LINK::Set::Set(const ivec2& pos) {
 	label = "Set";
 	type = CLASS::NODE::Type::LINK;
 	sub_type = ETOU(CLASS::NODE::LINK::Type::SET);
-	micro_type = CLASS::NODE::LINK::SET::Type::NONE;
+	mini_type = CLASS::NODE::LINK::SET::Type::NONE;
 
 	rect = QRectF(-100, -20, 200, 40);
 	rect.moveTo(QPointF(pos.x, pos.y));
@@ -194,7 +194,7 @@ LINK::SET::Euler_Rotation_X::Euler_Rotation_X(const ivec2& pos) :
 	Set(pos)
 {
 	label = "Set Euler Rotation X";
-	micro_type = CLASS::NODE::LINK::SET::Type::EULER_ROTATION_X;
+	mini_type = CLASS::NODE::LINK::SET::Type::EULER_ROTATION_X;
 
 	i_pointer->setDataType(CLASS::NODE::DATA::Type::OBJECT);
 	i_value->setDataType(CLASS::NODE::DATA::Type::DOUBLE);

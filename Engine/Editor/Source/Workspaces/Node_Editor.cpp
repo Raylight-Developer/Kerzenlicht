@@ -21,24 +21,24 @@ GUI::WORKSPACE::Workspace_Node_Editor::Workspace_Node_Editor(Workspace_Manager* 
 	addWidget(header);
 	addWidget(splitter);
 
-	FILE->active_object->addCallback(this, [this]() { viewport->f_objectChanged(file->active_object->ptr); });
+	FILE->active_object->addCallback(this, [this]() { viewport->f_objectChanged(FILE->active_object->ptr); });
 	connect(compile, &GUI::Button::pressed, [this, parent]() {
-		if (viewport->active_node_tree and file->active_object->ptr) {
+		if (viewport->active_node_tree and FILE->active_object->ptr) {
 			*LOG << ENDL << HTML_MAGENTA << "[Compilation]" << HTML_RESET << " Compiling Nodes...";
 
-			file->nodes.erase(std::find(file->nodes.begin(), file->nodes.end(), file->active_object->ptr->nodes));
+			FILE->nodes.erase(std::find(FILE->nodes.begin(), FILE->nodes.end(), FILE->active_object->ptr->nodes));
 
-			auto it = file->node_map.find(file->active_object->ptr->nodes);
-			if (it != file->node_map.end()) {
-				file->node_map.erase(it);
+			auto it = FILE->node_map.find(FILE->active_object->ptr->nodes);
+			if (it != FILE->node_map.end()) {
+				FILE->node_map.erase(it);
 			}
 
-			delete file->active_object->ptr->nodes;
+			delete FILE->active_object->ptr->nodes;
 
 			auto node = new CLASS::Node_Tree(viewport->active_node_tree);
-			file->active_object->ptr->nodes = node;
-			file->nodes.push_back(node);
-			file->node_map[node] = viewport->active_node_tree;
+			FILE->active_object->ptr->nodes = node;
+			FILE->nodes.push_back(node);
+			FILE->node_map[node] = viewport->active_node_tree;
 
 			*LOG << ENDL << HTML_GREEN << "[Compilation]" << HTML_RESET << " Compiled Nodes";
 		}
@@ -65,15 +65,15 @@ GUI::WORKSPACE::Node_Viewport::Node_Viewport(Workspace_Node_Editor* parent) :
 GUI::WORKSPACE::Node_Viewport::~Node_Viewport() {
 	for (auto item : scene->items())
 		if (dynamic_cast<GUI::NODE::Node*>(item)) scene->removeItem(item);
-	parent->file->active_object->callbacks.erase(this);
+	FILE->active_object->callbacks.erase(this);
 }
 
 void GUI::WORKSPACE::Node_Viewport::f_objectChanged(CLASS::Object* object) {
 	for (auto item: scene->items())
 		if (dynamic_cast<GUI::NODE::Node*>(item)) scene->removeItem(item);
 	if (object) {
-		active_node_tree = parent->file->node_map[object->nodes];
-		for (auto node : parent->file->node_map[object->nodes]->nodes)
+		active_node_tree = FILE->node_map[object->nodes];
+		for (auto node : FILE->node_map[object->nodes]->nodes)
 			scene->addItem(node);
 	}
 	else active_node_tree = nullptr;

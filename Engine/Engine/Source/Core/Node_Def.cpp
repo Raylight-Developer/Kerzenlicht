@@ -185,7 +185,7 @@ Data EXEC::Tick::getData(const uint16& slot_id) const {
 LINK::Get::Get() {
 	type = NODE::Type::LINK;
 	sub_type = ETOU(Type::GET);
-	micro_type = GET::Type::NONE;
+	mini_type = GET::Type::NONE;
 
 	i_pointer = new PORT::Data_I_Port(this, 0, DATA::Type::ANY);
 	
@@ -198,7 +198,7 @@ LINK::Get::Get() {
 LINK::Set::Set() {
 	type = NODE::Type::LINK;
 	sub_type = ETOU(Type::SET);
-	micro_type = SET::Type::NONE;
+	mini_type = SET::Type::NONE;
 
 	i_exec    = new PORT::Exec_I_Port(this, 0);
 	i_pointer = new PORT::Data_I_Port(this, 1, DATA::Type::ANY);
@@ -223,6 +223,8 @@ Data LINK::GET::Field::getData(const uint16& slot_id) const {
 }
 
 LINK::SET::Euler_Rotation_X::Euler_Rotation_X() {
+	mini_type = SET::Type::EULER_ROTATION_X;
+
 	i_pointer->data_type = DATA::Type::OBJECT;
 	i_value->data_type = DATA::Type::DOUBLE;
 	o_value->data_type = DATA::Type::DOUBLE;
@@ -345,9 +347,9 @@ Data MATH::Div::getData(const uint16& slot_id) const {
 	return i_value_a->getData() / i_value_b->getData();
 }
 
-UTIL::Convert::Convert() {
+UTIL::Cast::Cast() {
 	type = NODE::Type::UTIL;
-	sub_type = ETOU(Type::CONVERT);
+	sub_type = ETOU(Type::CAST);
 
 	i_value = new PORT::Data_I_Port(this, 0, DATA::Type::ANY);
 
@@ -357,12 +359,12 @@ UTIL::Convert::Convert() {
 	outputs.push_back(o_value);
 }
 
-CLASS::NODE::UTIL::CONVERT::Uint_To_Double::Uint_To_Double() {
+CLASS::NODE::UTIL::CAST::Uint_To_Double::Uint_To_Double() {
 	i_value->data_type = DATA::Type::UINT;
 	o_value->data_type = DATA::Type::DOUBLE;
 }
 
-Data CLASS::NODE::UTIL::CONVERT::Uint_To_Double::getData(const uint16& slot_id) const {
+Data CLASS::NODE::UTIL::CAST::Uint_To_Double::getData(const uint16& slot_id) const {
 	return Data(static_cast<double>(any_cast<uint64>(i_value->getData().data)), DATA::Type::DOUBLE);
 }
 

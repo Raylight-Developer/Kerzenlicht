@@ -1,5 +1,3 @@
-#include "GUI/Main_Window.hpp"
-
 // Core/Lace.hpp ----------------------------------------------------------------------------------
 struct Lace;
 struct Trace;
@@ -13,12 +11,13 @@ namespace CLASS {
 	struct Node_Tree;
 	namespace NODE {
 		enum struct Type {
-			CONSTRAINT, GENERATE, PHYSICS, MODIFY, EXEC, MATH, LINK, UTIL
+			NONE, CONSTRAINT, GENERATE, PHYSICS, MODIFY, EXEC, MATH, LINK, UTIL
 		};
 		struct Data;
 		namespace DATA {
 			enum struct Type {
 				NONE,
+				ANY,
 				STRING, DOUBLE, BOOL, UINT, INT,
 				MAT2, MAT3, MAT4, UMAT2, UMAT3, UMAT4, IMAT2, IMAT3, IMAT4,
 				VEC2, VEC3, VEC4, UVEC2, UVEC3, UVEC4, IVEC2, IVEC3, IVEC4,
@@ -31,11 +30,13 @@ namespace CLASS {
 			};
 		}
 		struct Port;
-		struct Connection;
-		struct Data_I_Port;
-		struct Data_O_Port;
-		struct Exec_I_Port;
-		struct Exec_O_Port;
+		namespace PORT {
+			enum struct Type { NONE, DATA_I, DATA_O, EXEC_I, EXEC_O };
+			struct Data_I_Port;
+			struct Data_O_Port;
+			struct Exec_I_Port;
+			struct Exec_O_Port;
+		}
 // Core/Node_Def.hpp ------------------------------------------------------------------------------
 		namespace CONSTRAINT {
 			enum struct Type { PARENT };
@@ -61,10 +62,19 @@ namespace CLASS {
 			enum struct Type { RAMP, MAP, ADD, DIV, MUL, SUB };
 		}
 		namespace LINK {
-			enum struct Type { VARIABLE, POINTER, SELF };
+			enum struct Type { VARIABLE, POINTER, SELF, GET, SET };
+			namespace GET {
+				enum struct Type { NONE, EULER_ROTATION_X, EULER_ROTATION_Y, EULER_ROTATION_Z, FIELD };
+			}
+			namespace SET {
+				enum struct Type { NONE, EULER_ROTATION_X, EULER_ROTATION_Y, EULER_ROTATION_Z, FIELD };
+			}
 		}
 		namespace UTIL {
-			enum struct Type { SWITCH, BREAK, MAKE, VIEW };
+			enum struct Type { COLLAPSE, EXPAND, SWITCH, CAST, VIEW };
+			namespace CAST {
+				enum struct Type { UINT_TO_DOUBLE };
+			}
 		}
 	};
 // Object/Object.hpp ------------------------------------------------------------------------------

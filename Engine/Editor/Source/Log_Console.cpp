@@ -34,6 +34,8 @@ void Log_Console::flush() {
 	lace << "</pre>";
 	gui_log->insertHtml(QString::fromStdString(lace.str()));
 	cout << QString::fromStdString(lace.str())
+		.replace("<pre>", "")
+		.replace("</pre>", "")
 		.replace(ENDL, "\n")
 		.replace(HTML_RESET, "")
 		.replace(HTML_RED, "")

@@ -81,6 +81,7 @@ namespace CLASS {
 				void exec(const uint16& slot_id = 0) override;
 			};
 			struct Script : Node {
+				string script_id;
 				unordered_map<string, PORT::Data_I_Port*> data_inputs;
 				unordered_map<string, PORT::Data_O_Port*> data_outputs;
 				unordered_map<string, PORT::Exec_I_Port*> exec_inputs;
@@ -99,7 +100,6 @@ namespace CLASS {
 				virtual void clearIO();
 
 			private:
-				string script_id;
 				HINSTANCE dynlib;
 
 				Data (*getDataFunc)(const Script*, const uint16&);
@@ -160,7 +160,7 @@ namespace CLASS {
 			};
 		}
 		namespace LINK {
-			enum struct Type { VARIABLE, POINTER, GET, SET };
+			enum struct Type { VARIABLE, POINTER, SELF, GET, SET };
 			struct Pointer : Node {
 				PORT::Data_O_Port* o_pointer;
 
@@ -175,7 +175,7 @@ namespace CLASS {
 				PORT::Data_I_Port* i_pointer;
 				PORT::Data_O_Port* o_value;
 
-				GET::Type micro_type;
+				GET::Type mini_type;
 
 				Get();
 			};
@@ -187,7 +187,7 @@ namespace CLASS {
 				PORT::Exec_I_Port* i_exec;
 				PORT::Exec_O_Port* o_exec;
 
-				SET::Type micro_type;
+				SET::Type mini_type;
 
 				Set();
 			};
@@ -218,40 +218,40 @@ namespace CLASS {
 			}
 		}
 		namespace UTIL {
-			enum struct Type { CONVERT, SWITCH, BREAK, MAKE, VIEW };
-			struct Convert : Node {
+			enum struct Type { COLLAPSE, EXPAND, SWITCH, CAST, VIEW };
+			struct Cast : Node {
 				PORT::Data_I_Port* i_value;
 				PORT::Data_O_Port* o_value;
 
-				Convert();
+				Cast();
 			};
-			namespace CONVERT {
+			namespace CAST {
 				enum struct Type { UINT_TO_DOUBLE };
-				struct Uint_To_Double : Convert {
+				struct Uint_To_Double : Cast {
 					Uint_To_Double();
 
 					NODE::Data getData(const uint16& slot_id) const override;
 				};
 			}
-			struct Break : Node {
+			struct Expand : Node {
 				PORT::Data_I_Port* port;
 
-				Break();
+				Expand();
 
 				NODE::Data getData(const uint16& slot_id) const override;
 			};
-			namespace BREAK {
+			namespace EXPAND {
 				enum struct Type { };
 
 			}
-			struct Make : Node {
+			struct Collapse : Node {
 				PORT::Data_O_Port* port;
 
-				Make();
+				Collapse();
 
 				NODE::Data getData(const uint16& slot_id) const override;
 			};
-			namespace MAKE {
+			namespace COLLAPSE {
 				enum struct Type { };
 
 			}

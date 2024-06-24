@@ -78,7 +78,7 @@ namespace GUI {
 				PORT::Exec_I_Port* i_exec;
 				PORT::Exec_O_Port* o_exec;
 
-				CLASS::NODE::LINK::SET::Type micro_type;
+				CLASS::NODE::LINK::SET::Type mini_type;
 
 				Set(const ivec2& pos);
 			};
