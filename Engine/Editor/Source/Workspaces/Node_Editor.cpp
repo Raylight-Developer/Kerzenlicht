@@ -29,9 +29,8 @@ GUI::WORKSPACE::Workspace_Node_Editor::Workspace_Node_Editor(Workspace_Manager* 
 			FILE->nodes.erase(std::find(FILE->nodes.begin(), FILE->nodes.end(), FILE->active_object->ptr->nodes));
 
 			auto it = FILE->node_map.find(FILE->active_object->ptr->nodes);
-			if (it != FILE->node_map.end()) {
+			if (it != FILE->node_map.end())
 				FILE->node_map.erase(it);
-			}
 
 			delete FILE->active_object->ptr->nodes;
 
@@ -40,7 +39,7 @@ GUI::WORKSPACE::Workspace_Node_Editor::Workspace_Node_Editor(Workspace_Manager* 
 			FILE->nodes.push_back(node);
 			FILE->node_map[node] = viewport->active_node_tree;
 
-			*LOG << ENDL << HTML_GREEN << "[Compilation]" << HTML_RESET << " Compiled Nodes";
+			*LOG << ENDL << HTML_GREEN << "[Compilation]" << HTML_RESET << " Compiled Nodes"; // TODO Not printing :( ?
 		}
 	});
 }
@@ -125,13 +124,11 @@ void GUI::WORKSPACE::Node_Viewport::mouseReleaseEvent(QMouseEvent* event) {
 		if (connecting) {
 			if (auto item = scene->itemAt(mapToScene(event->pos()), transform())) {
 				if (auto drop_port = dynamic_cast<GUI::NODE::PORT::Data_I_Port*>(item)) {
-					if (!drop_port->connection) {
-						if (auto source_port = dynamic_cast<GUI::NODE::PORT::Data_O_Port*>(connection->port_l)) {
-							if (drop_port->connection)
-								delete drop_port->connection;
-							drop_port->connection = new GUI::NODE::Connection(source_port, drop_port);
-							source_port->outgoing_connections.push_back(drop_port->connection);
-						}
+					if (auto source_port = dynamic_cast<GUI::NODE::PORT::Data_O_Port*>(connection->port_l)) {
+						if (drop_port->connection)
+							delete drop_port->connection;
+						drop_port->connection = new GUI::NODE::Connection(source_port, drop_port);
+						source_port->outgoing_connections.push_back(drop_port->connection);
 					}
 				}
 				else if (auto drop_port = dynamic_cast<GUI::NODE::PORT::Data_O_Port*>(item)) {
@@ -163,13 +160,11 @@ void GUI::WORKSPACE::Node_Viewport::mouseReleaseEvent(QMouseEvent* event) {
 					}
 				}
 				else if (auto drop_port = dynamic_cast<GUI::NODE::PORT::Exec_O_Port*>(item)) {
-					if (!drop_port->connection) {
-						if (auto source_port = dynamic_cast<GUI::NODE::PORT::Exec_I_Port*>(connection->port_l)) {
-							if (drop_port->connection)
-								delete drop_port->connection;
-							drop_port->connection = new GUI::NODE::Connection(drop_port, source_port);
-							source_port->incoming_connections.push_back(drop_port->connection);
-						}
+					if (auto source_port = dynamic_cast<GUI::NODE::PORT::Exec_I_Port*>(connection->port_l)) {
+						if (drop_port->connection)
+							delete drop_port->connection;
+						drop_port->connection = new GUI::NODE::Connection(drop_port, source_port);
+						source_port->incoming_connections.push_back(drop_port->connection);
 					}
 				}
 			}

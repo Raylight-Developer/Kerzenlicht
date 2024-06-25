@@ -29,6 +29,7 @@ struct Log_Console : GUI::Window { // TODO separate for editor and non-QT runtim
 	template <typename T>
 	Log_Console& operator<<(const T& value) {
 		lace << value;
+		gui_log->verticalScrollBar()->setValue(gui_log->verticalScrollBar()->maximum());
 		return *this;
 	};
 };

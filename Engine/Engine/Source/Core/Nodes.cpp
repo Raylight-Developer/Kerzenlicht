@@ -23,6 +23,14 @@ CLASS::Node_Tree::Node_Tree(const GUI::NODE::Node_Tree* gui_tree) :
 		switch (gui_node->type) {
 			case NODE::Type::EXEC: {
 				switch (static_cast<NODE::EXEC::Type>(gui_node->sub_type)) {
+					case NODE::EXEC::Type::SCRIPT: {
+						auto node = new NODE::EXEC::Script();
+						node->pos = ivec2(gui_node->rect.topLeft().x(), gui_node->rect.topLeft().y());
+						node->script_id = static_cast<GUI::NODE::EXEC::Script*>(gui_node)->script_identifier->text().toStdString();
+						nodes.push_back(node);
+						node_map[gui_node] = node;
+						break;
+					}
 					case NODE::EXEC::Type::COUNTER: {
 						auto node = new NODE::EXEC::Counter();
 						node->pos = ivec2(gui_node->rect.topLeft().x(), gui_node->rect.topLeft().y());
@@ -112,7 +120,7 @@ CLASS::Node_Tree::Node_Tree(const GUI::NODE::Node_Tree* gui_tree) :
 							for (auto port_l : node_map[cast_port->connection->port_l->node]->outputs) {
 								if (port_l->slot_id == cast_port->connection->port_l->slot_id) {
 									static_cast<NODE::PORT::Data_I_Port*>(port_r)->connection = static_cast<NODE::PORT::Data_O_Port*>(port_l);
-									cout << "Connect Data L_Node[" << getKeyByValue(node_map, port_l->node)->label.toStdString() << "] : " << port_l->slot_id << " To R_Node[" << gui_node->label.toStdString() << "] : " << port_r->slot_id << endl;
+									//cout << "Connect Data L_Node[" << getKeyByValue(node_map, port_l->node)->label.toStdString() << "] : " << port_l->slot_id << " To R_Node[" << gui_node->label.toStdString() << "] : " << port_r->slot_id << endl;
 								}
 							}
 						}
@@ -129,7 +137,7 @@ CLASS::Node_Tree::Node_Tree(const GUI::NODE::Node_Tree* gui_tree) :
 							for (auto port_r : node_map[cast_port->connection->port_r->node]->inputs) {
 								if (port_r->slot_id == cast_port->connection->port_r->slot_id) {
 									static_cast<NODE::PORT::Exec_O_Port*>(port_l)->connection = static_cast<NODE::PORT::Exec_I_Port*>(port_r);
-									cout << "Connect Exec L_Node[" << gui_node->label.toStdString() << "] : " << port_l->slot_id << " To R_Node[" << getKeyByValue(node_map, port_r->node)->label.toStdString() << "] : " << port_r->slot_id << endl;
+									//cout << "Connect Exec L_Node[" << gui_node->label.toStdString() << "] : " << port_l->slot_id << " To R_Node[" << getKeyByValue(node_map, port_r->node)->label.toStdString() << "] : " << port_r->slot_id << endl;
 								}
 							}
 						}

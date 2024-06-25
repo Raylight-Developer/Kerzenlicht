@@ -1,9 +1,12 @@
 #include "Log_Console.hpp"
 
 Log_Console::Log_Console(Window* parent) :
-	GUI::Window(parent),
+	GUI::Window(),
 	parent(parent)
 {
+	setWindowTitle("Kerzenlicht Log");
+	setWindowIcon(QPixmap("./Resources/Icon.png"));
+
 	gui_log = new GUI::Text_Stream(this);
 	lace << "<pre>";
 
