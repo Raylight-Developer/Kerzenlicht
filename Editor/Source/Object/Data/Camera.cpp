@@ -3,13 +3,13 @@
 #include "Object/Object.hpp"
 #include "Core/File.hpp"
 
-CLASS::OBJECT::DATA::Camera::Camera() {
+CLASS::OBJECT::DATA::GPU_Camera::GPU_Camera() {
 	focal_angle  = 50.0;
 	focal_length = 0.05;
 	sensor_size  = 0.036;
 }
 
-void CLASS::OBJECT::DATA::Camera::f_compile(CLASS::Scene* scene, CLASS::Object* object) {
+void CLASS::OBJECT::DATA::GPU_Camera::f_compile(CLASS::Scene* scene, CLASS::Object* object) {
 	const dmat4 matrix = glm::yawPitchRoll(object->transform.euler_rotation.y * DEG_RAD, object->transform.euler_rotation.x * DEG_RAD, object->transform.euler_rotation.z * DEG_RAD);
 	const dvec3 x_vector = matrix[0];
 	const dvec3 y_vector = matrix[1];

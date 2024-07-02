@@ -52,6 +52,9 @@
     <ClCompile Include="Include\External\imgui-1.90\imgui_widgets.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Rendering\Gpu_Scene.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\External\stb_image.h">
@@ -94,6 +97,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Include\External\imgui-1.90\imconfig.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Rendering\Gpu_Scene.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

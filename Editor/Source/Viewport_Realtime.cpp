@@ -185,7 +185,7 @@ void GUI::WORKSPACE::Viewport_Realtime::f_updateFrame() {
 }
 
 void GUI::WORKSPACE::Viewport_Realtime::f_selectObject(const dvec2& uv) {
-	CLASS::OBJECT::DATA::Camera* camera = FILE->default_camera->data->getCamera();
+	CLASS::OBJECT::DATA::GPU_Camera* camera = FILE->default_camera->data->getCamera();
 	camera->f_compile(FILE->active_scene->ptr, FILE->default_camera);
 	const VIEWPORT_REALTIME::Ray ray = VIEWPORT_REALTIME::Ray(
 		d_to_f(FILE->default_camera->transform.position),
@@ -231,7 +231,7 @@ void GUI::WORKSPACE::Viewport_Realtime::paintGL() {
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	f_updateTick();
-	CLASS::OBJECT::DATA::Camera* camera = FILE->default_camera->data->getCamera();
+	CLASS::OBJECT::DATA::GPU_Camera* camera = FILE->default_camera->data->getCamera();
 	camera->f_compile(FILE->active_scene->ptr, FILE->default_camera);
 
 	glUseProgram(compute_shader_program);

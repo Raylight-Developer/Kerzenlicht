@@ -11,3 +11,4 @@ Resources/Testing.blend
 /Test Tiny/DLL/Debug
 Engine/Editor.vcxproj.user
 Runtime/Runtime.vcxproj.user
+Editor/Editor.vcxproj.user

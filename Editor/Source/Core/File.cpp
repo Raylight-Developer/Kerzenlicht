@@ -25,7 +25,7 @@ CLASS::File::File() {
 	default_camera = new Object();
 	default_camera->transform.position = dvec3(2.5, 1.5, 2.5);
 	default_camera->transform.euler_rotation = dvec3(15, 225, 0);
-	default_camera->data = new OBJECT::Data(OBJECT::DATA::Type::CAMERA, new OBJECT::DATA::Camera());
+	default_camera->data = new OBJECT::Data(OBJECT::DATA::Type::CAMERA, new OBJECT::DATA::GPU_Camera());
 
 	version = "ERROR";
 }
@@ -322,7 +322,7 @@ CLASS::OBJECT::Data* CLASS::File::f_loadSkeleton(const vector<vector<string>>& t
 
 CLASS::OBJECT::Data* CLASS::File::f_loadCamera(const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map) {
 	CLASS::OBJECT::Data* data = new CLASS::OBJECT::Data();
-	CLASS::OBJECT::DATA::Camera* camera = new CLASS::OBJECT::DATA::Camera();
+	CLASS::OBJECT::DATA::GPU_Camera* camera = new CLASS::OBJECT::DATA::GPU_Camera();
 	data->name = f_join(token_data[0], " ", 6);
 	data->type = CLASS::OBJECT::DATA::Type::CAMERA;
 	data->data = camera;
@@ -822,7 +822,7 @@ void CLASS::File::f_saveSkeleton(Lace& lace, const CLASS::OBJECT::Data* data, co
 }
 
 void CLASS::File::f_saveCamera(Lace& lace, const CLASS::OBJECT::Data* data, const uint64& i) {
-	const CLASS::OBJECT::DATA::Camera* camera = static_cast<CLASS::OBJECT::DATA::Camera*>(data->data);
+	const CLASS::OBJECT::DATA::GPU_Camera* camera = static_cast<CLASS::OBJECT::DATA::GPU_Camera*>(data->data);
 	lace NL "┌Data :: Camera [ " << i << " ] " << data->name;
 	lace A
 	lace NL reinterpret_cast<uint64>(data);

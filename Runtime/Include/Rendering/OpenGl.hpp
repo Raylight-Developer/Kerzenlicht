@@ -67,19 +67,25 @@ struct VBO {
 	void f_delete();
 };
 
+enum struct Shader_Program_Type {
+	FRAGMENT,
+	COMPUTE
+};
+
 struct Shader_Program {
 	GLuint ID;
-	string frag_source;
+	string source;
 	string program_name;
+	Shader_Program_Type type;
 
-	Shader_Program(const string& i_name = "") { ID = 0; program_name = i_name; };
+	Shader_Program() {};
+	Shader_Program(const string& name, const Shader_Program_Type& type) : type(type) { ID = 0; program_name = name; };
 
 	void f_compile();
 	void f_checkCompilation(const GLuint& i_shader, const string& i_shader_name);
 
 	string f_loadFromFile(const string& i_filename);
-
-	void f_init(const char* i_fragmentFile);
+	void f_init(const string& i_filename);
 	void f_activate();
 	void f_delete();
 };

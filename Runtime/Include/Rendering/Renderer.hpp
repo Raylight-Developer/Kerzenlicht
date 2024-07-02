@@ -17,14 +17,20 @@ struct Renderer {
 	vector<GLfloat> vertices;
 	vector<GLuint> faces;
 
+	vec1  display_aspect_ratio;
+	vec1  render_aspect_ratio;
+	uvec2 display_resolution;
+	uvec2 render_resolution;
+
 	double runtime;
 	uint32 frame_counter;
 	uint32 frame_count;
 	uint64 runframe;
-	uvec2  resolution;
-	bool   reset;
 
-	Camera camera;
+	bool recompile;
+	bool reset;
+
+	GPU_Camera camera;
 
 	double camera_move_sensitivity;
 	double camera_view_sensitivity;
@@ -33,8 +39,8 @@ struct Renderer {
 
 	clock_t last_time;
 	clock_t current_time;
-	double window_time;
-	double frame_time;
+	double  window_time;
+	double  frame_time;
 
 	VAO main_vao;
 	VBO main_vbo;
@@ -57,6 +63,7 @@ struct Renderer {
 	void f_systemInfo();
 
 	void f_pipeline();
+	void f_dataTransfer();
 
 	void f_guiLoop();
 	void f_gameLoop();

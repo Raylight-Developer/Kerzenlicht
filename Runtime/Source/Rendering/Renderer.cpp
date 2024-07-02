@@ -15,15 +15,22 @@ Renderer::Renderer() {
 	runtime = 0.0;
 	frame_counter = 0;
 	runframe = 0;
-	resolution = uvec2(1920, 1080);
+
+	display_resolution = uvec2(3840U, 2160U);
+	display_aspect_ratio = 16.0f / 9.0f;
+
+	render_resolution = uvec2(1920U, 1080U);
+	render_aspect_ratio = 16.0f / 9.0f;
+
+	recompile = false;
 	reset = false;
 
-	camera = Camera();
+	camera = GPU_Camera();
 
 	camera_move_sensitivity = 0.15;
 	camera_view_sensitivity = 0.075;
 	keys = vector(348, false);
-	last_mouse = dvec2(resolution) / 2.0;
+	last_mouse = dvec2(display_resolution) / 2.0;
 
 	last_time = 0;
 	current_time = 0;
@@ -37,9 +44,9 @@ Renderer::Renderer() {
 	acc_tex = FBT();
 	raw_fbo = FBO();
 	acc_fbo = FBO();
-	raw_fp = Shader_Program("Raw");
-	acc_fp = Shader_Program("Acc");
-	pp_fp  = Shader_Program("PP");
+	raw_fp = Shader_Program("Raw", Shader_Program_Type::FRAGMENT);
+	acc_fp = Shader_Program("Acc", Shader_Program_Type::FRAGMENT);
+	pp_fp  = Shader_Program("PP" , Shader_Program_Type::FRAGMENT);
 }
 
 
@@ -68,7 +75,14 @@ void Renderer::f_initGlfw() {
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	window = glfwCreateWindow(resolution.x, resolution.y, "Runtime", NULL, NULL);
+	GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+	const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+
+	display_resolution = uvec2(mode->width, mode->height);
+	display_aspect_ratio = (vec1)display_resolution.x / display_resolution.y;
+	last_mouse = glm::dvec2(display_resolution) / 2.0;
+
+	window = glfwCreateWindow(display_resolution.x, display_resolution.y, "Runtime", NULL, NULL);
 
 	Image icon = Image();
 	if (icon.f_load("./Resources/Icon.png")) {
@@ -86,7 +100,7 @@ void Renderer::f_initGlfw() {
 
 	glfwMakeContextCurrent(window);
 	glfwSwapInterval(false); // V-Sync
-	gladLoadGL();
+	gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
 
 	glfwSetWindowUserPointer(window, this);
 
@@ -130,6 +144,14 @@ void Renderer::f_systemInfo() {
 		" y:" << work_grp_size[1] <<
 		" z:" << work_grp_size[2] << endl;
 
+	GLint totalMemoryKB = 0;
+	//glGetIntegerv(GL_GPU_MEMORY_INFO_TOTAL_AVAILABLE_MEMORY_NVX, &totalMemoryKB);
+	GLint currentMemoryKB = 0;
+	//glGetIntegerv(GL_GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX, &currentMemoryKB);
+	
+	cout << "Total GPU Memory: " << totalMemoryKB << " KB\n";
+	cout << "Available GPU Memory: " << currentMemoryKB << " KB\n";
+
 	GLint work_grp_inv;
 	glGetIntegerv(GL_MAX_COMPUTE_WORK_GROUP_INVOCATIONS, &work_grp_inv);
 	cout << "Max invocations count per work group: " << work_grp_inv << endl;
@@ -148,7 +170,7 @@ void Renderer::f_systemInfo() {
 }
 
 void Renderer::f_pipeline() {
-	glViewport(0, 0, resolution.x , resolution.y);
+	glViewport(0, 0, display_resolution.x , display_resolution.y);
 
 	raw_fp.f_init("./Resources/Shaders/Raw.glsl");
 	acc_fp.f_init("./Resources/Shaders/Acc.glsl");
@@ -167,13 +189,77 @@ void Renderer::f_pipeline() {
 
 	raw_fbo.f_init();
 	raw_fbo.f_bind();
-	raw_tex.f_init(resolution);
+	raw_tex.f_init(display_resolution);
 	raw_fbo.f_unbind();
 
 	acc_fbo.f_init();
 	acc_fbo.f_bind();
-	acc_tex.f_init(resolution);
+	acc_tex.f_init(display_resolution);
 	acc_fbo.f_unbind();
+}
+
+void Renderer::f_dataTransfer() {
+	//GPU_Scene gpu_data =  GPU_data();
+	//
+	//GLuint gpu_compute_program;
+	//GLuint material_buffer;
+	//GLuint light_buffer;
+	//GLuint vertex_buffer;
+	//GLuint triangle_buffer;
+	//GLuint mesh_buffer;
+	//GLuint spline_handle_buffer;
+	//GLuint spline_buffer;
+	//GLuint curve_buffer;
+	//GLuint bvh_buffer;
+	//
+	//GLint ssboMaxSize;
+	//glGetIntegerv(GL_MAX_SHADER_STORAGE_BLOCK_SIZE, &ssboMaxSize);
+	//gpu_data.printInfo(ssboMaxSize);
+	//
+	//glGenBuffers(1, &material_buffer);
+	//glBindBuffer(GL_SHADER_STORAGE_BUFFER, material_buffer);
+	//glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPU_Material) * gpu_data.materials.size(), gpu_data.materials.data(), GL_STATIC_DRAW);
+	//glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, material_buffer);
+	//
+	//glGenBuffers(1, &light_buffer);
+	//glBindBuffer(GL_SHADER_STORAGE_BUFFER, light_buffer);
+	//glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPU_Light) * gpu_data.lights.size(), gpu_data.lights.data(), GL_STATIC_DRAW);
+	//glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, light_buffer);
+	//
+	//glGenBuffers(1, &spline_handle_buffer);
+	//glBindBuffer(GL_SHADER_STORAGE_BUFFER, spline_handle_buffer);
+	//glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPU_Spline_Point) * gpu_data.spline_controls.size(), gpu_data.spline_controls.data(), GL_STATIC_DRAW);
+	//glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, spline_handle_buffer);
+	//
+	//glGenBuffers(1, &spline_buffer);
+	//glBindBuffer(GL_SHADER_STORAGE_BUFFER, spline_buffer);
+	//glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPU_Spline) * gpu_data.splines.size(), gpu_data.splines.data(), GL_STATIC_DRAW);
+	//glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 4, spline_buffer);
+	//
+	//glGenBuffers(1, &curve_buffer);
+	//glBindBuffer(GL_SHADER_STORAGE_BUFFER, curve_buffer);
+	//glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPU_Curve) * gpu_data.curves.size(), gpu_data.curves.data(), GL_STATIC_DRAW);
+	//glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 5, curve_buffer);
+	//
+	//glGenBuffers(1, &vertex_buffer);
+	//glBindBuffer(GL_SHADER_STORAGE_BUFFER, vertex_buffer);
+	//glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPU_Vertex) * gpu_data.vertices.size(), gpu_data.vertices.data(), GL_STATIC_DRAW);
+	//glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 6, vertex_buffer);
+	//
+	//glGenBuffers(1, &triangle_buffer);
+	//glBindBuffer(GL_SHADER_STORAGE_BUFFER, triangle_buffer);
+	//glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPU_Triangle) * gpu_data.triangles.size(), gpu_data.triangles.data(), GL_STATIC_DRAW);
+	//glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 7, triangle_buffer);
+	//
+	//glGenBuffers(1, &mesh_buffer);
+	//glBindBuffer(GL_SHADER_STORAGE_BUFFER, mesh_buffer);
+	//glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPU_Mesh) * gpu_data.meshes.size(), gpu_data.meshes.data(), GL_STATIC_DRAW);
+	//glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 8, mesh_buffer);
+	//
+	//glGenBuffers(1, &bvh_buffer);
+	//glBindBuffer(GL_SHADER_STORAGE_BUFFER, bvh_buffer);
+	//glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPU_BVH) * gpu_data.bvh_nodes.size(), gpu_data.bvh_nodes.data(), GL_STATIC_DRAW);
+	//glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 9, bvh_buffer);
 }
 
 void Renderer::f_guiLoop() {
@@ -224,6 +310,7 @@ void Renderer::f_gameLoop() {
 		reset = true;
 		runframe = 0;
 	}
+	camera.f_compile();
 }
 
 void Renderer::f_displayLoop() {
@@ -251,7 +338,7 @@ void Renderer::f_displayLoop() {
 
 		glUniform1f (glGetUniformLocation(raw_fp.ID, "runtime"), GLfloat(runtime));
 		glUniform1ui(glGetUniformLocation(raw_fp.ID, "runframe"), GLuint(runframe));
-		glUniform2fv(glGetUniformLocation(raw_fp.ID, "resolution"), 1, value_ptr(vec2(resolution)));
+		glUniform2fv(glGetUniformLocation(raw_fp.ID, "resolution"), 1, value_ptr(vec2(display_resolution)));
 
 		glUniform3fv(glGetUniformLocation(raw_fp.ID, "camera_pos"), 1, value_ptr(vec3(camera.position)));
 		glUniform3fv(glGetUniformLocation(raw_fp.ID, "camera_z"), 1, value_ptr(vec3(camera.z_vector)));
@@ -315,11 +402,11 @@ void Renderer::f_recompile() {
 	pp_fp.f_compile();
 
 	raw_fbo.f_bind();
-	raw_tex.f_resize(resolution);
+	raw_tex.f_resize(display_resolution);
 	raw_fbo.f_unbind();
 
 	acc_fbo.f_bind();
-	acc_tex.f_resize(resolution);
+	acc_tex.f_resize(display_resolution);
 	acc_fbo.f_unbind();
 
 	//camera = Camera();
@@ -331,8 +418,8 @@ void Renderer::f_recompile() {
 void Renderer::framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 	Renderer* instance = static_cast<Renderer*>(glfwGetWindowUserPointer(window));
 	glViewport(0, 0, width, height);
-	instance->resolution.x = width;
-	instance->resolution.y = height;
+	instance->display_resolution.x = width;
+	instance->display_resolution.y = height;
 	instance->runframe = 0;
 	instance->runtime = glfwGetTime();
 
@@ -402,7 +489,7 @@ void Renderer::key_callback(GLFWwindow* window, int key, int scancode, int actio
 		instance->f_recompile();
 	}
 	if (key == GLFW_KEY_C && action == GLFW_PRESS) {
-		instance->camera = Camera();
+		instance->camera = GPU_Camera();
 		instance->reset = true;
 		instance->runframe = 0;
 	}

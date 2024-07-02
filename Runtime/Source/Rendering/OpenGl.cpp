@@ -117,8 +117,8 @@ void VBO::f_delete() {
 	glDeleteBuffers(1, &ID);
 }
 
-void Shader_Program::f_init(const char* i_fragmentFile) {
-	frag_source = i_fragmentFile;
+void Shader_Program::f_init(const string& i_fragmentFile) {
+	source = i_fragmentFile;
 	f_compile();
 }
 
@@ -126,7 +126,7 @@ void Shader_Program::f_compile() {
 	glDeleteProgram(ID);
 
 	string vertexCode = f_loadFromFile("./resources/Shaders/vert.glsl");
-	string fragmentCode = f_loadFromFile(frag_source);
+	string fragmentCode = f_loadFromFile(source);
 
 	const char* vertexSource = vertexCode.c_str();
 	const char* fragmentSource = fragmentCode.c_str();
