@@ -7,20 +7,11 @@
     <Filter Include="Header Files">
       <UniqueIdentifier>{4d567220-9fe9-4e46-9066-3ab50f3fd179}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Shared">
-      <UniqueIdentifier>{a2e4e6f8-0dd8-4817-b543-fa03d06228bc}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Include\pch.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Include\Lace.cpp">
-      <Filter>Shared</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Include\Ops.cpp">
-      <Filter>Shared</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -32,15 +23,6 @@
     </ClInclude>
     <ClInclude Include="Include\DLL.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Include\Include.hpp">
-      <Filter>Shared</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Include\Lace.hpp">
-      <Filter>Shared</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Include\Ops.hpp">
-      <Filter>Shared</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

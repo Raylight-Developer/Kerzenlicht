@@ -31,7 +31,9 @@
 #include <set>
 
 #ifdef COMPILE_RUNTIME
+
 	#include <glad/glad.h>
+
 #endif
 
 #include <glm/glm.hpp>

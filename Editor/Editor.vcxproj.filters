@@ -116,12 +116,6 @@
     <ClCompile Include="Source\Workspaces\Shelf.cpp" />
     <ClCompile Include="Source\Node_GUI_Def.cpp" />
     <ClCompile Include="Source\Core\Session.cpp" />
-    <ClCompile Include="..\Include\Lace.cpp">
-      <Filter>Shared</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Include\Ops.cpp">
-      <Filter>Shared</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\Object\Data\Camera.hpp">
@@ -230,15 +224,6 @@
     <ClInclude Include="Include\Workspaces\Shelf.hpp" />
     <ClInclude Include="Include\Node_GUI_Def.hpp" />
     <ClInclude Include="Include\Core\Session.hpp" />
-    <ClInclude Include="..\Include\Include.hpp">
-      <Filter>Shared</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Include\Lace.hpp">
-      <Filter>Shared</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Include\Ops.hpp">
-      <Filter>Shared</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Source Files">
@@ -279,9 +264,6 @@
     </Filter>
     <Filter Include="Header Files\CORE">
       <UniqueIdentifier>{86f2e4c0-34c0-460a-b4b4-2334b89f122e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Shared">
-      <UniqueIdentifier>{1e468fb9-bf16-4c7c-86f7-703446dcb1a1}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

@@ -11,15 +11,10 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\Include\Lace.cpp" />
-    <ClCompile Include="..\Include\Ops.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Include\pch.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\Include\Include.hpp" />
-    <ClInclude Include="..\Include\Lace.hpp" />
-    <ClInclude Include="..\Include\Ops.hpp" />
     <ClInclude Include="Include\DLL.h" />
     <ClInclude Include="Include\framework.h" />
     <ClInclude Include="Include\pch.h" />
@@ -66,10 +61,10 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(ProjectDir)\Include;$(SolutionDir)\Include;$(SolutionDir)\Editor\Include;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)\Include;$(SolutionDir)\Shared\Source;$(SolutionDir)\Editor\Include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(SolutionDir)\Engine\Engine\Include;$(SolutionDir)\Engine\Editor\Include;$(ProjectDir)\Include;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)\Include;$(SolutionDir)\Shared\Source;$(SolutionDir)\Editor\Include;$(IncludePath)</IncludePath>
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Label="Vcpkg" />
@@ -125,7 +120,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(OutDir);C:\Programs\Coding\Lib\python 3.11\libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>opengl32.lib;python311.lib;Kerzenlicht Renderer.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Editor.lib;Shared.lib;opengl32.lib;python311.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -148,7 +143,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(OutDir);C:\Programs\Coding\Lib\python 3.11\libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>opengl32.lib;python311.lib;Kerzenlicht Renderer.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Editor.lib;Shared.lib;opengl32.lib;python311.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

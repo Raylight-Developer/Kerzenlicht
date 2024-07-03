@@ -11,9 +11,6 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\Include\Include.hpp" />
-    <ClInclude Include="..\Include\Lace.hpp" />
-    <ClInclude Include="..\Include\Ops.hpp" />
     <ClInclude Include="Include\Core\Compiler.hpp" />
     <ClInclude Include="Include\Workspaces\Node_Editor.hpp" />
     <ClInclude Include="Include\Viewport_Realtime.hpp" />
@@ -57,8 +54,6 @@
     <QtMoc Include="Include\CPU_Renderer.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\Include\Lace.cpp" />
-    <ClCompile Include="..\Include\Ops.cpp" />
     <ClCompile Include="Source\Core\Node_Def.cpp" />
     <ClCompile Include="Source\Core\Compiler.cpp" />
     <ClCompile Include="Source\Core\Nodes.cpp" />
@@ -153,10 +148,10 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(ProjectDir)\Include;$(SolutionDir)\Include;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)\Include;$(SolutionDir)\Shared\Source;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(ProjectDir)\Engine\Include;$(ProjectDir)\Editor\Include;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)\Include;$(SolutionDir)\Shared\Source;$(IncludePath)</IncludePath>
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Label="Vcpkg" />
@@ -212,12 +207,12 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\Programs\Coding\Lib\python 3.11\libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>opengl32.lib;python311.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(OutDir);C:\Programs\Coding\Lib\python 3.11\libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Shared.lib;opengl32.lib;python311.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreLinkEvent />
     <PreLinkEvent>
-      <Command>"$(VC_ExecutablePath_x64)\lib.exe" /out:"$(OutDir)Kerzenlicht Renderer.lib" "$(IntermediateOutputPath)*.obj"</Command>
+      <Command>"$(VC_ExecutablePath_x64)\lib.exe" /out:"$(OutDir)\Editor.lib" "$(IntermediateOutputPath)*.obj"</Command>
     </PreLinkEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -240,12 +235,12 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\Programs\Coding\Lib\glfw-3.3.8\lib-vc2022;C:\Programs\Coding\Lib\python 3.11\libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>glfw3.lib;opengl32.lib;python311.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(OutDir);C:\Programs\Coding\Lib\python 3.11\libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Shared.lib;opengl32.lib;python311.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreLinkEvent />
     <PreLinkEvent>
-      <Command>"$(VC_ExecutablePath_x64)\lib.exe" /out:"$(OutDir)$(ProjectName).lib" "$(IntermediateOutputPath)*.obj"</Command>
+      <Command>"$(VC_ExecutablePath_x64)\lib.exe" /out:"$(OutDir)\Editor.lib" "$(IntermediateOutputPath)*.obj"</Command>
     </PreLinkEvent>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

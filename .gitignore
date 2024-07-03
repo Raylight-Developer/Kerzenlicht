@@ -13,3 +13,4 @@ Engine/Editor.vcxproj.user
 Runtime/Runtime.vcxproj.user
 Editor/Editor.vcxproj.user
 Scripting/Scripting.vcxproj.user
+Shared/Shared.vcxproj.user
