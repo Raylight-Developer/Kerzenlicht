@@ -31,8 +31,10 @@
 #include <set>
 
 #ifdef COMPILE_RUNTIME
-
 	#include <glad/glad.h>
+#endif
+
+#ifdef COMPILE_EDITOR
 
 #endif
 

@@ -5,7 +5,7 @@
 #include "Camera.hpp"
 #include "Cpu_Scene.hpp"
 
-struct GPU_Data;
+struct GPU_Scene;
 
 struct alignas(16) GPU_Material;
 
@@ -21,9 +21,9 @@ struct alignas(16) GPU_Mesh;
 
 struct alignas(16) GPU_BVH;
 
-GPU_Data f_parseGPUData(const CPU_Scene& cpu_data);
+GPU_Scene f_parseGPUData(const CPU_Scene& cpu_data);
 
-struct GPU_Data {
+struct GPU_Scene {
 	Camera                camera;
 	vector<GPU_Material>      materials;
 	vector<GPU_Light>         lights;
@@ -35,7 +35,7 @@ struct GPU_Data {
 	vector<GPU_Mesh>          meshes;
 	vector<GPU_BVH>           bvh_nodes;
 
-	GPU_Data(
+	GPU_Scene(
 		const Camera&                camera          = Camera(),
 		const vector<GPU_Material>&      materials       = {},
 		const vector<GPU_Light>&         lights          = {},
@@ -150,8 +150,8 @@ struct alignas(16) GPU_Spline_Point {
 };
 struct alignas(16) GPU_Spline {
 	uvec2 handle_pointer;
-	uint32 padding_a = 0U;
-	uint32 padding_b = 0U;
+	uint padding_a = 0U;
+	uint padding_b = 0U;
 
 	GPU_Spline(
 		const uvec2& handle_pointer = uvec2(0U)
@@ -161,8 +161,8 @@ struct alignas(16) GPU_Spline {
 };
 struct alignas(16) GPU_Curve {
 	uvec2 spline_pointer;
-	uint32 padding_a = 0U;
-	uint32 padding_b = 0U;
+	uint padding_a = 0U;
+	uint padding_b = 0U;
 
 	GPU_Curve(
 		const uvec2& spline_pointer = uvec2(0U)
@@ -190,12 +190,12 @@ struct alignas(16) GPU_Triangle {
 	vec2  uv_a;
 	vec2  uv_b;
 	vec2  uv_c;
-	uint32 padding_a = 0U;
-	uint32 padding_b = 0U;
+	uint padding_a = 0U;
+	uint padding_b = 0U;
 
 	GPU_Triangle(
 		const uvec3&  vertex_pointer   = uvec3(0U),
-		const uint32& material_pointer = 0U,
+		const uint& material_pointer = 0U,
 		const vec3& normal_a = vec3(0.0f),
 		const vec3& normal_b = vec3(0.0f),
 		const vec3& normal_c = vec3(0.0f),
@@ -215,8 +215,8 @@ struct alignas(16) GPU_Triangle {
 };
 struct alignas(16) GPU_Mesh {
 	uvec2 triangle_pointer;
-	uint32 padding_a = 0U;
-	uint32 padding_b = 0U;
+	uint padding_a = 0U;
+	uint padding_b = 0U;
 
 	GPU_Mesh(
 		const uvec2& triangle_pointer = uvec2(0U)
@@ -226,17 +226,17 @@ struct alignas(16) GPU_Mesh {
 };
 
 struct alignas(16) GPU_BVH {
-	vec3   p_min;
-	uint32 child_a;
-	vec3   p_max;
-	uint32 child_b;
+	vec3 p_min;
+	uint child_a;
+	vec3 p_max;
+	uint child_b;
 
-	uint32 mesh_pointer;
-	uint32 leaf;
-	uint32 padding_a = 0U;
-	uint32 padding_b = 0U;
+	uint mesh_pointer;
+	uint leaf;
+	uint padding_a = 0U;
+	uint padding_b = 0U;
 
-	GPU_BVH(const vec3& p_min, const vec3& p_max, const uint32& pointer_a, const uint32& pointer_b, const uint32& mesh_pointer, const bool& leaf) :
+	GPU_BVH(const vec3& p_min, const vec3& p_max, const uint& pointer_a, const uint& pointer_b, const uint& mesh_pointer, const bool& leaf) :
 		p_min(p_min), p_max(p_max), child_a(pointer_a), child_b(pointer_b), mesh_pointer(mesh_pointer), leaf(leaf)
 	{}
 };

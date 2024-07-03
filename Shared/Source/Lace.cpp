@@ -1,7 +1,6 @@
 #include "Lace.hpp"
 
 #if defined(COMPILE_EDITOR) || defined(COMPILE_SCRIPTING)
-
 	Lace& Lace::operator<<(const QPointF& value) {
 		data << value.x() << " " << value.y();
 		return *this;
@@ -11,7 +10,6 @@
 		data << " " << value.toStdString();
 		return *this;
 	}
-
 #endif
 
 Lace::Lace() :

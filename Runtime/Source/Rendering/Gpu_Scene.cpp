@@ -1,6 +1,6 @@
 #include "Rendering/Gpu_Scene.hpp"
 
-GPU_Data f_parseGPUData(const CPU_Scene& cpu_data) {
+GPU_Scene f_parseGPUData(const CPU_Scene& cpu_data) {
 	vector<GPU_Material>      materials;
 
 	vector<GPU_Light>         lights;
@@ -72,10 +72,10 @@ GPU_Data f_parseGPUData(const CPU_Scene& cpu_data) {
 			));
 		}
 		meshes.push_back(GPU_Mesh(uvec2(size_tris, size_tris + triangles.size())));
-		bvh_nodes.push_back(GPU_BVH(mesh.second.bvh.p_min, mesh.second.bvh.p_max, 0U, 0U, meshes.size(), true));
+		bvh_nodes.push_back(GPU_BVH(mesh.second.bvh.p_min, mesh.second.bvh.p_max, 0U, 0U, uint(meshes.size()), true));
 	}
 
-	return GPU_Data(
+	return GPU_Scene(
 		cpu_data.camera,
 		materials,
 		lights,
@@ -89,7 +89,7 @@ GPU_Data f_parseGPUData(const CPU_Scene& cpu_data) {
 	);
 }
 
-void GPU_Data::print() const {
+void GPU_Scene::print() const {
 	Lace data;
 	data << "Materials" << NL();
 	for (const GPU_Material& mat : materials) {
@@ -134,7 +134,7 @@ void GPU_Data::print() const {
 	cout << data.str();
 }
 
-void GPU_Data::printInfo(const uint64& max_size) const {
+void GPU_Scene::printInfo(const uint64& max_size) const {
 	cout << "GPU Data:" << endl;
 	cout << fixed << setprecision(4) << "    Materials             : " << static_cast<double>(sizeof(GPU_Material)     * materials.size()) / (1024.0 * 1024.0)       << "mb  | " << static_cast<double>(sizeof(GPU_Material)     * materials.size()) / 1024.0       << "kb  | " << sizeof(GPU_Material)     * materials.size()       << "b" << endl;
 	cout << fixed << setprecision(4) << "    Lights                : " << static_cast<double>(sizeof(GPU_Light)        * lights.size()) / (1024.0 * 1024.0)          << "mb  | " << static_cast<double>(sizeof(GPU_Light)        * lights.size()) / 1024.0          << "kb  | " << sizeof(GPU_Light)        * lights.size()          << "b" << endl;

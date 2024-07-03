@@ -25,6 +25,13 @@ void FBO::f_init(const GLuint& texture) {
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
+void FBO::f_init(const FBT& texture) {
+	glGenFramebuffers(1, &ID);
+	glBindFramebuffer(GL_FRAMEBUFFER, ID);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture.ID, 0);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
 void FBO::f_bind() {
 	glBindFramebuffer(GL_FRAMEBUFFER, ID);
 }
@@ -130,7 +137,7 @@ void Shader_Program::f_compile() {
 
 	switch (type) {
 		case Shader_Program_Type::FRAGMENT: {
-			const string vertexCode = f_loadFromFile("./resources/Shaders/vert.glsl");
+			const string vertexCode = f_loadFromFile("./resources/Shaders/vert.vert");
 			const string fragmentCode = f_loadFromFile(source);
 
 			const char* vertexSource = vertexCode.c_str();
@@ -201,6 +208,10 @@ void Shader_Program::f_checkCompilation(const GLuint& i_shader, const string& i_
 }
 
 Image::Image() {
+	data = 0;
+	width = 0;
+	height = 0;
+	data_type = GL_UNSIGNED_BYTE;
 }
 
 #define STB_IMAGE_IMPLEMENTATION

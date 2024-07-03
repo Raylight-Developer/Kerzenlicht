@@ -9,6 +9,7 @@
 
 #include "OpenGL.hpp"
 
+#include "Gpu_Scene.hpp"
 #include "Camera.hpp"
 
 struct Renderer {
@@ -17,14 +18,14 @@ struct Renderer {
 	vector<GLfloat> vertices;
 	vector<GLuint> faces;
 
-	vec1  display_aspect_ratio;
-	vec1  render_aspect_ratio;
+	dvec1 display_aspect_ratio;
+	dvec1 render_aspect_ratio;
 	uvec2 display_resolution;
 	uvec2 render_resolution;
 
-	double runtime;
-	uint32 frame_counter;
-	uint32 frame_count;
+	dvec1  runtime;
+	uint   frame_counter;
+	uint   frame_count;
 	uint64 runframe;
 
 	bool recompile;
@@ -32,15 +33,15 @@ struct Renderer {
 
 	Camera camera;
 
-	double camera_move_sensitivity;
-	double camera_view_sensitivity;
+	dvec1 camera_move_sensitivity;
+	dvec1 camera_view_sensitivity;
 	vector<bool> keys;
 	dvec2  last_mouse;
 
 	clock_t last_time;
 	clock_t current_time;
-	double  window_time;
-	double  frame_time;
+	dvec1  window_time;
+	dvec1  frame_time;
 
 	VAO main_vao;
 	VBO main_vbo;
@@ -75,8 +76,8 @@ struct Renderer {
 	void f_recompile();
 
 	static void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-	static void cursor_position_callback(GLFWwindow* window, double xpos, double ypos);
+	static void cursor_position_callback(GLFWwindow* window, dvec1 xpos, dvec1 ypos);
 	static void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
-	static void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
+	static void scroll_callback(GLFWwindow* window, dvec1 xoffset, dvec1 yoffset);
 	static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 };

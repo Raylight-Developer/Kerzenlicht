@@ -26,6 +26,7 @@ struct FBO {
 	FBO() { ID = 0; };
 
 	void f_init(const GLuint& texture);
+	void f_init(const FBT& texture);
 	void f_bind();
 	void f_unbind();
 	void f_delete();

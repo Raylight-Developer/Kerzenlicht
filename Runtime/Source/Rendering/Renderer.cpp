@@ -1,11 +1,13 @@
 #include "Rendering/Renderer.hpp"
 
 Renderer::Renderer() {
+	window = nullptr;
+
 	vertices = {
 		-1.0f, -1.0f, 0.0f, 0.0f,
-		 1.0f, -1.0f, 1.0f, 0.0f,
-		 1.0f,  1.0f, 1.0f, 1.0f,
 		-1.0f,  1.0f, 0.0f, 1.0f,
+		 1.0f,  1.0f, 1.0f, 1.0f,
+		 1.0f, -1.0f, 1.0f, 0.0f,
 	};
 	faces = {
 		0, 1, 2,
@@ -14,13 +16,14 @@ Renderer::Renderer() {
 
 	runtime = 0.0;
 	frame_counter = 0;
+	frame_count = 0;
 	runframe = 0;
 
 	display_resolution = uvec2(3840U, 2160U);
-	display_aspect_ratio = 16.0f / 9.0f;
+	display_aspect_ratio = u_to_d(display_resolution.x) / u_to_d(display_resolution.y);
 
 	render_resolution = uvec2(1920U, 1080U);
-	render_aspect_ratio = 16.0f / 9.0f;
+	render_aspect_ratio = u_to_d(render_resolution.x) / u_to_d(render_resolution.y);
 
 	recompile = false;
 	reset = false;
@@ -79,7 +82,7 @@ void Renderer::f_initGlfw() {
 	const GLFWvidmode* mode = glfwGetVideoMode(monitor);
 
 	display_resolution = uvec2(mode->width, mode->height);
-	display_aspect_ratio = (vec1)display_resolution.x / display_resolution.y;
+	display_aspect_ratio = u_to_d(display_resolution.x) / u_to_d(display_resolution.y);
 	last_mouse = glm::dvec2(display_resolution) / 2.0;
 
 	window = glfwCreateWindow(display_resolution.x, display_resolution.y, "Runtime", NULL, NULL);
@@ -172,9 +175,9 @@ void Renderer::f_systemInfo() {
 void Renderer::f_pipeline() {
 	glViewport(0, 0, display_resolution.x , display_resolution.y);
 
-	raw_fp.f_init("./Resources/Shaders/Raw.glsl");
-	acc_fp.f_init("./Resources/Shaders/Acc.glsl");
-	pp_fp.f_init("./Resources/Shaders/PP.glsl");
+	raw_fp.f_init("./Resources/Shaders/Raw.frag");
+	acc_fp.f_init("./Resources/Shaders/Acc.frag");
+	pp_fp .f_init("./Resources/Shaders/PP.frag");
 
 	main_vao.f_init();
 	main_vao.f_bind();
@@ -187,75 +190,77 @@ void Renderer::f_pipeline() {
 	main_vbo.f_unbind();
 	main_ebo.f_unbind();
 
-	raw_tex.f_init(display_resolution);
-	raw_fbo.f_init(raw_tex.ID);
+	raw_tex.f_init(render_resolution);
+	raw_fbo.f_init(raw_tex);
 
-	acc_tex.f_init(display_resolution);
-	acc_fbo.f_init(acc_tex.ID);
+	acc_tex.f_init(render_resolution);
+	acc_fbo.f_init(acc_tex);
 }
 
 void Renderer::f_dataTransfer() {
-	//GPU_Scene gpu_data =  GPU_data();
-	//
-	//GLuint gpu_compute_program;
-	//GLuint material_buffer;
-	//GLuint light_buffer;
-	//GLuint vertex_buffer;
-	//GLuint triangle_buffer;
-	//GLuint mesh_buffer;
-	//GLuint spline_handle_buffer;
-	//GLuint spline_buffer;
-	//GLuint curve_buffer;
-	//GLuint bvh_buffer;
-	//
-	//GLint ssboMaxSize;
-	//glGetIntegerv(GL_MAX_SHADER_STORAGE_BLOCK_SIZE, &ssboMaxSize);
-	//gpu_data.printInfo(ssboMaxSize);
-	//
-	//glGenBuffers(1, &material_buffer);
-	//glBindBuffer(GL_SHADER_STORAGE_BUFFER, material_buffer);
-	//glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPU_Material) * gpu_data.materials.size(), gpu_data.materials.data(), GL_STATIC_DRAW);
-	//glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, material_buffer);
-	//
-	//glGenBuffers(1, &light_buffer);
-	//glBindBuffer(GL_SHADER_STORAGE_BUFFER, light_buffer);
-	//glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPU_Light) * gpu_data.lights.size(), gpu_data.lights.data(), GL_STATIC_DRAW);
-	//glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, light_buffer);
-	//
-	//glGenBuffers(1, &spline_handle_buffer);
-	//glBindBuffer(GL_SHADER_STORAGE_BUFFER, spline_handle_buffer);
-	//glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPU_Spline_Point) * gpu_data.spline_controls.size(), gpu_data.spline_controls.data(), GL_STATIC_DRAW);
-	//glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, spline_handle_buffer);
-	//
-	//glGenBuffers(1, &spline_buffer);
-	//glBindBuffer(GL_SHADER_STORAGE_BUFFER, spline_buffer);
-	//glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPU_Spline) * gpu_data.splines.size(), gpu_data.splines.data(), GL_STATIC_DRAW);
-	//glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 4, spline_buffer);
-	//
-	//glGenBuffers(1, &curve_buffer);
-	//glBindBuffer(GL_SHADER_STORAGE_BUFFER, curve_buffer);
-	//glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPU_Curve) * gpu_data.curves.size(), gpu_data.curves.data(), GL_STATIC_DRAW);
-	//glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 5, curve_buffer);
-	//
-	//glGenBuffers(1, &vertex_buffer);
-	//glBindBuffer(GL_SHADER_STORAGE_BUFFER, vertex_buffer);
-	//glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPU_Vertex) * gpu_data.vertices.size(), gpu_data.vertices.data(), GL_STATIC_DRAW);
-	//glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 6, vertex_buffer);
-	//
-	//glGenBuffers(1, &triangle_buffer);
-	//glBindBuffer(GL_SHADER_STORAGE_BUFFER, triangle_buffer);
-	//glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPU_Triangle) * gpu_data.triangles.size(), gpu_data.triangles.data(), GL_STATIC_DRAW);
-	//glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 7, triangle_buffer);
-	//
-	//glGenBuffers(1, &mesh_buffer);
-	//glBindBuffer(GL_SHADER_STORAGE_BUFFER, mesh_buffer);
-	//glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPU_Mesh) * gpu_data.meshes.size(), gpu_data.meshes.data(), GL_STATIC_DRAW);
-	//glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 8, mesh_buffer);
-	//
-	//glGenBuffers(1, &bvh_buffer);
-	//glBindBuffer(GL_SHADER_STORAGE_BUFFER, bvh_buffer);
-	//glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPU_BVH) * gpu_data.bvh_nodes.size(), gpu_data.bvh_nodes.data(), GL_STATIC_DRAW);
-	//glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 9, bvh_buffer);
+	CPU_Scene cpu_data = f_parseCPUData();
+	GPU_Scene gpu_data = f_parseGPUData(cpu_data);
+	gpu_data.print();
+	
+	GLuint gpu_compute_program;
+	GLuint material_buffer;
+	GLuint light_buffer;
+	GLuint vertex_buffer;
+	GLuint triangle_buffer;
+	GLuint mesh_buffer;
+	GLuint spline_handle_buffer;
+	GLuint spline_buffer;
+	GLuint curve_buffer;
+	GLuint bvh_buffer;
+	
+	GLint ssboMaxSize;
+	glGetIntegerv(GL_MAX_SHADER_STORAGE_BLOCK_SIZE, &ssboMaxSize);
+	gpu_data.printInfo(ssboMaxSize);
+	
+	glGenBuffers(1, &material_buffer);
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, material_buffer);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPU_Material) * gpu_data.materials.size(), gpu_data.materials.data(), GL_STATIC_DRAW);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, material_buffer);
+	
+	glGenBuffers(1, &light_buffer);
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, light_buffer);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPU_Light) * gpu_data.lights.size(), gpu_data.lights.data(), GL_STATIC_DRAW);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, light_buffer);
+	
+	glGenBuffers(1, &spline_handle_buffer);
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, spline_handle_buffer);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPU_Spline_Point) * gpu_data.spline_controls.size(), gpu_data.spline_controls.data(), GL_STATIC_DRAW);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, spline_handle_buffer);
+	
+	glGenBuffers(1, &spline_buffer);
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, spline_buffer);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPU_Spline) * gpu_data.splines.size(), gpu_data.splines.data(), GL_STATIC_DRAW);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 4, spline_buffer);
+	
+	glGenBuffers(1, &curve_buffer);
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, curve_buffer);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPU_Curve) * gpu_data.curves.size(), gpu_data.curves.data(), GL_STATIC_DRAW);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 5, curve_buffer);
+	
+	glGenBuffers(1, &vertex_buffer);
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, vertex_buffer);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPU_Vertex) * gpu_data.vertices.size(), gpu_data.vertices.data(), GL_STATIC_DRAW);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 6, vertex_buffer);
+	
+	glGenBuffers(1, &triangle_buffer);
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, triangle_buffer);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPU_Triangle) * gpu_data.triangles.size(), gpu_data.triangles.data(), GL_STATIC_DRAW);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 7, triangle_buffer);
+	
+	glGenBuffers(1, &mesh_buffer);
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, mesh_buffer);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPU_Mesh) * gpu_data.meshes.size(), gpu_data.meshes.data(), GL_STATIC_DRAW);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 8, mesh_buffer);
+	
+	glGenBuffers(1, &bvh_buffer);
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, bvh_buffer);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPU_BVH) * gpu_data.bvh_nodes.size(), gpu_data.bvh_nodes.data(), GL_STATIC_DRAW);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 9, bvh_buffer);
 }
 
 void Renderer::f_guiLoop() {
@@ -331,14 +336,21 @@ void Renderer::f_displayLoop() {
 		glClear(GL_COLOR_BUFFER_BIT);
 		raw_fp.f_activate();
 
+		glClear(GL_COLOR_BUFFER_BIT);
+		glUseProgram(raw_fp.ID);
+		glBindImageTexture(0, raw_tex.ID, 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
+
+		glUniform2ui(glGetUniformLocation(raw_fp.ID, "display_resolution"), display_resolution.x, display_resolution.y);
+		glUniform2ui(glGetUniformLocation(raw_fp.ID, "render_resolution"), render_resolution.x, render_resolution.y);
+		glUniform1f (glGetUniformLocation(raw_fp.ID, "display_aspect_ratio"), d_to_f(display_aspect_ratio));
+		glUniform1f (glGetUniformLocation(raw_fp.ID, "render_aspect_ratio"), d_to_f(render_aspect_ratio));
+
 		glUniform1f (glGetUniformLocation(raw_fp.ID, "runtime"), GLfloat(runtime));
 		glUniform1ui(glGetUniformLocation(raw_fp.ID, "runframe"), GLuint(runframe));
-		glUniform2fv(glGetUniformLocation(raw_fp.ID, "resolution"), 1, value_ptr(vec2(display_resolution)));
 
-		glUniform1f (glGetUniformLocation(raw_fp.ID, "aspect_ratio"), GLfloat(render_aspect_ratio));
 		glUniform3fv(glGetUniformLocation(raw_fp.ID, "camera_pos"), 1, value_ptr(vec3(camera.position)));
-		glUniform3fv(glGetUniformLocation(raw_fp.ID, "camera_z"), 1, value_ptr(vec3(camera.z_vector)));
-		glUniform3fv(glGetUniformLocation(raw_fp.ID, "camera_y"), 1, value_ptr(vec3(camera.y_vector)));
+		glUniform3fv(glGetUniformLocation(raw_fp.ID, "camera_yvec"), 1, value_ptr(vec3(camera.y_vector)));
+		glUniform3fv(glGetUniformLocation(raw_fp.ID, "camera_zvec"), 1, value_ptr(vec3(camera.z_vector)));
 		glUniform1i (glGetUniformLocation(raw_fp.ID, "reset"), reset);
 		acc_tex.f_bind(GL_TEXTURE1);
 		glUniform1i (glGetUniformLocation(raw_fp.ID, "last_frame"), 1);
@@ -367,7 +379,6 @@ void Renderer::f_displayLoop() {
 		acc_tex.f_unbind();
 		acc_fbo.f_unbind();
 
-
 		pp_fp.f_activate();
 
 		acc_tex.f_bind(GL_TEXTURE0);
@@ -377,7 +388,7 @@ void Renderer::f_displayLoop() {
 
 		frame_counter++;
 		runframe++;
-		reset = false;
+		if (reset) reset = false;
 
 		if (window_time > 1.0) {
 			frame_count = frame_counter;
@@ -397,14 +408,6 @@ void Renderer::f_recompile() {
 	acc_fp.f_compile();
 	pp_fp.f_compile();
 
-	raw_fbo.f_bind();
-	raw_tex.f_resize(display_resolution);
-	raw_fbo.f_unbind();
-
-	acc_fbo.f_bind();
-	acc_tex.f_resize(display_resolution);
-	acc_fbo.f_unbind();
-
 	//camera = Camera();
 	reset = true;
 	runframe = 0;
@@ -416,16 +419,9 @@ void Renderer::framebuffer_size_callback(GLFWwindow* window, int width, int heig
 	glViewport(0, 0, width, height);
 	instance->display_resolution.x = width;
 	instance->display_resolution.y = height;
+	instance->display_aspect_ratio = u_to_d(instance->display_resolution.x) / u_to_d(instance->display_resolution.y);
 	instance->runframe = 0;
 	instance->runtime = glfwGetTime();
-
-	instance->raw_fbo.f_bind();
-	instance->raw_tex.f_resize(uvec2(width, height));
-	instance->raw_fbo.f_unbind();
-
-	instance->acc_fbo.f_bind();
-	instance->acc_tex.f_resize(uvec2(width, height));
-	instance->acc_fbo.f_unbind();
 }
 
 void Renderer::cursor_position_callback(GLFWwindow* window, double xpos, double ypos) {

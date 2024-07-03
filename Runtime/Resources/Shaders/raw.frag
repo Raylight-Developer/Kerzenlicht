@@ -1,20 +1,23 @@
 #version 460 core
 
+uniform uvec2 display_resolution;
+uniform uvec2 render_resolution;
+uniform float display_aspect_ratio;
+uniform float render_aspect_ratio;
+
 uniform float runtime;
 uniform uint  runframe;
-uniform vec2  resolution;
 
 uniform vec3  camera_pos;
-uniform vec3  camera_z;
-uniform vec3  camera_y;
+uniform vec3  camera_yvec;
+uniform vec3  camera_zvec;
 uniform bool  reset;
 
 uniform sampler2D last_frame;
 uniform sampler2D block_textures;
 uniform sampler2D environment_texture;
 
-in vec2 fragCoord;
-in vec2 fragTexCoord;
+in vec2 uv_coords;
 
 out vec4 fragColor;
 
@@ -426,9 +429,9 @@ vec3 f_Radiance(in Ray r){
 }
 
 Ray f_CameraRay(vec2 uv) {
-	vec3 projection_center = camera_pos + 0.05 * camera_z;
-	vec3 projection_u = normalize(cross(camera_z, camera_y)) * 0.036;
-	vec3 projection_v = normalize(cross(projection_u, camera_z)) * (0.036 / 1.0);
+	vec3 projection_center = camera_pos + 0.05 * camera_zvec;
+	vec3 projection_u = normalize(cross(camera_zvec, camera_yvec)) * 0.036;
+	vec3 projection_v = normalize(cross(projection_u, camera_zvec)) * (0.036 / 1.0);
 	return Ray(camera_pos, normalize(projection_center + (projection_u * uv.x) + (projection_v * uv.y) - camera_pos) );
 }
 
@@ -436,8 +439,8 @@ Ray f_CameraRay(vec2 uv) {
 void main() {
 	if (runframe < SAMPLES) {
 		rng_initialize(gl_FragCoord.xy, runframe);
-		const vec2 uv = (gl_FragCoord.xy - 1.0 - resolution.xy /2.0) / max(resolution.x, resolution.y);
-		const vec2 pixel_size = 1/ resolution.xy;
+		const vec2 uv = (gl_FragCoord.xy - 1.0 - render_resolution.xy /2.0) / max(render_resolution.x, render_resolution.y);
+		const vec2 pixel_size = 1/ render_resolution.xy;
 
 		vec3 col;
 		for (int x = 0; x < SPP; x++) {
@@ -450,6 +453,6 @@ void main() {
 		fragColor = vec4(col, 1);
 	}
 	else {
-		fragColor = texture(last_frame, fragTexCoord);
+		fragColor = texture(last_frame, uv_coords);
 	}
 }

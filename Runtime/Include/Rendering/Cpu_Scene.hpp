@@ -117,14 +117,14 @@ struct BVH {
 };
 
 struct Empty {
-	vec3 position;
-	vec3 rotation;
-	vec3 scale;
+	dvec3 position;
+	dvec3 rotation;
+	dvec3 scale;
 
 	Empty(
-		const vec3& position,
-		const vec3& rotation,
-		const vec3& scale
+		const dvec3& position,
+		const dvec3& rotation,
+		const dvec3& scale
 	) :
 		position(position),
 		rotation(rotation),
@@ -133,12 +133,12 @@ struct Empty {
 };
 
 struct Light {
-	vec3  color;
+	dvec3  color;
 	float power;
 
 	Light(
-		const vec3&  color = vec3(1.0f),
-		const float& power = 1.0f
+		const dvec3&  color = dvec3(1.0),
+		const float& power = 1.0
 	) :
 		color(color),
 		power(power)
@@ -146,12 +146,12 @@ struct Light {
 };
 
 struct Curve_Point {
-	vec3 pos;
-	vec1 radius;
+	dvec3 pos;
+	dvec1 radius;
 
 	Curve_Point(
-		const vec3& pos,
-		const vec1& radius
+		const dvec3& pos,
+		const dvec1& radius
 	) :
 		pos(pos),
 		radius(radius)

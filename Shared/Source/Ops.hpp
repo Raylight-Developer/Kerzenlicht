@@ -12,15 +12,14 @@ string f_remove(const string& input, const string& remove);
 string f_replace(const string& input, const string& old_str, const string& new_str);
 string f_strip(const string& str);
 
-//io
+// I/O
 string f_loadFromFile(const string& file_path);
-
 
 // Opengl
 string f_processSubShader(const string& file_path);
 string f_preprocessShader(const string& file_path);
 
-//Math
+// Math
 namespace CLASS {
 	enum struct Rotation_Type {
 		QUATERNION,
