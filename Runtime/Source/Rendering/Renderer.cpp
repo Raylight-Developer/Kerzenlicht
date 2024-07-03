@@ -311,12 +311,6 @@ void Renderer::f_displayLoop() {
 	glTextureParameteri(render_result, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTextureStorage2D(render_result, 1, GL_RGBA32F, render_resolution.x, render_resolution.y);
 
-	GLuint framebuffer;
-	glGenFramebuffers(1, &framebuffer);
-	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, render_result, 0);
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
 	// Previous Frame
 	GLuint previous_frame;
 	glCreateTextures(GL_TEXTURE_2D, 1, &previous_frame);
@@ -326,8 +320,8 @@ void Renderer::f_displayLoop() {
 	glTextureParameteri(previous_frame, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTextureStorage2D(previous_frame, 1, GL_RGBA32F, render_resolution.x, render_resolution.y);
 
-	GLuint display_program = f_fragmentShaderProgram("Shader");
-	GLuint compute_program = f_computeShaderProgram("Shader");
+	GLuint accumulate_program = f_computeShaderProgram("Accumulation");
+	GLuint compute_program = f_computeShaderProgram("Render");
 	GLuint post_program = f_fragmentShaderProgram("Post");
 
 	const uvec3 compute_layout = uvec3(
@@ -350,30 +344,28 @@ void Renderer::f_displayLoop() {
 		glUniform1ui(glGetUniformLocation(compute_program, "frame_count"), runframe);
 		glUniform2ui(glGetUniformLocation(compute_program, "resolution"), render_resolution.x, render_resolution.y);
 		glUniform1f (glGetUniformLocation(compute_program, "runtime"), d_to_f(runtime));
-		glBindImageTexture(0,render_result, 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
+		glBindImageTexture(0, render_result, 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
 		glDispatchCompute(compute_layout.x, compute_layout.y, compute_layout.z);
 		
-		glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
-		glUseProgram(display_program);
-		glUniform1f (glGetUniformLocation(display_program, "display_aspect_ratio"), d_to_f(display_aspect_ratio));
-		glUniform1f (glGetUniformLocation(display_program, "render_aspect_ratio"), d_to_f(render_aspect_ratio));
-		glUniform1ui(glGetUniformLocation(display_program, "frame_count"), runframe);
-		glBindTextureUnit(0, render_result);
-		glBindTextureUnit(1, previous_frame);
-		glUniform1i (glGetUniformLocation(display_program, "render_tex"), 0);
-		glUniform1i (glGetUniformLocation(display_program, "previous_frame_tex"), 1);
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		
-		std::swap(render_result, previous_frame);
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, render_result, 0);
+		glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+
+		glUseProgram(accumulate_program);
+		glUniform1ui(glGetUniformLocation(accumulate_program, "frame_count"), runframe);
+		glUniform2ui(glGetUniformLocation(accumulate_program, "resolution"), render_resolution.x, render_resolution.y);
+		glBindImageTexture(0, render_result , 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
+		glBindImageTexture(1, previous_frame, 0, GL_FALSE, 0, GL_READ_ONLY, GL_RGBA32F);
+		glDispatchCompute(compute_layout.x, compute_layout.y, compute_layout.z);
+
+		glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 
 		glUseProgram(post_program);
 		glUniform1f (glGetUniformLocation(post_program, "display_aspect_ratio"), d_to_f(display_aspect_ratio));
 		glUniform1f (glGetUniformLocation(post_program, "render_aspect_ratio"), d_to_f(render_aspect_ratio));
-		glUniform1i(glGetUniformLocation(post_program, "accumulated_tex"), 0);
+		glUniform1i(glGetUniformLocation(post_program, "render"), 0);
 		glBindTextureUnit(0, render_result);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+		std::swap(render_result, previous_frame);
 
 		frame_counter++;
 		runframe++;

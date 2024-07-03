@@ -9,7 +9,6 @@ uniform float runtime;
 
 void main() {
 	ivec2 work_id = ivec2(gl_GlobalInvocationID.xy);
-	ivec2 resolution = imageSize(render_tex);
 	vec2 uv = work_id / vec2(resolution);
 
 	vec4 color = vec4(uv.x , 0.0, uv.y, 1.0);

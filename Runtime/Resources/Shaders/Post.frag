@@ -1,10 +1,13 @@
 #version 460 core
 
-uniform sampler2D accumulated_tex;
+uniform float display_aspect_ratio;
+uniform float render_aspect_ratio;
+
+uniform sampler2D render;
 
 in vec2 uv_coords;
 out vec4 color_out;
 
 void main() {
-	color_out = texture(accumulated_tex, uv_coords);
+	color_out = texture(render, uv_coords);
 }
