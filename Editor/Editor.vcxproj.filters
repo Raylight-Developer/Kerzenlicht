@@ -1,12 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="Source\Core\Ops.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Core\Lace.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Core\File.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -122,6 +116,12 @@
     <ClCompile Include="Source\Workspaces\Shelf.cpp" />
     <ClCompile Include="Source\Node_GUI_Def.cpp" />
     <ClCompile Include="Source\Core\Session.cpp" />
+    <ClCompile Include="..\Include\Lace.cpp">
+      <Filter>Shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Include\Ops.cpp">
+      <Filter>Shared</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\Object\Data\Camera.hpp">
@@ -206,13 +206,7 @@
     <ClInclude Include="Include\Viewport_Realtime.hpp">
       <Filter>Header Files\GUI</Filter>
     </ClInclude>
-    <ClInclude Include="Include\Core\Lace.hpp">
-      <Filter>Header Files\CORE</Filter>
-    </ClInclude>
     <ClInclude Include="Include\Core\Nodes.hpp">
-      <Filter>Header Files\CORE</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Core\Ops.hpp">
       <Filter>Header Files\CORE</Filter>
     </ClInclude>
     <ClInclude Include="Include\Core\Python_API.hpp">
@@ -236,7 +230,15 @@
     <ClInclude Include="Include\Workspaces\Shelf.hpp" />
     <ClInclude Include="Include\Node_GUI_Def.hpp" />
     <ClInclude Include="Include\Core\Session.hpp" />
-    <ClInclude Include="Include\Include.hpp" />
+    <ClInclude Include="..\Include\Include.hpp">
+      <Filter>Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\Lace.hpp">
+      <Filter>Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\Ops.hpp">
+      <Filter>Shared</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Source Files">
@@ -277,6 +279,9 @@
     </Filter>
     <Filter Include="Header Files\CORE">
       <UniqueIdentifier>{86f2e4c0-34c0-460a-b4b4-2334b89f122e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shared">
+      <UniqueIdentifier>{1e468fb9-bf16-4c7c-86f7-703446dcb1a1}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

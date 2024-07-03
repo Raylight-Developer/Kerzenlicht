@@ -1,6 +1,6 @@
 #include "GUI.hpp"
 
-#include "Core/Ops.hpp"
+#include "Ops.hpp"
 
 GUI::Int_Slider::Int_Slider(QWidget* parent) :
 	Slider(parent)

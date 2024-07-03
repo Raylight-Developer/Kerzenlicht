@@ -2,7 +2,7 @@
 
 #include "Include.hpp"
 
-#include "Core/Ops.hpp"
+#include "Ops.hpp"
 #include "Core/Node_Def.hpp"
 
 #include "Data.hpp"

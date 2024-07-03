@@ -8,17 +8,17 @@ using namespace CLASS;
 
 PYBIND11_EMBEDDED_MODULE(KL, Module) {
 	Py::class_<Lace>(Module, "Lace")
-		.def(Py::f_init<>())
+		.def(Py::init<>())
 		.def("str", &Lace::str);
 
 	Py::class_<Scene>(Module, "Scene")
-		.def(Py::f_init<>())
+		.def(Py::init<>())
 		.def_readwrite("active_camera", & Scene::active_camera)
 		.def_readwrite("current_frame", & Scene::current_frame)
 		.def_readwrite("objects", & Scene::objects);
 
 	Py::class_<File>(Module, "File")
-		.def(Py::f_init<>())
+		.def(Py::init<>())
 		.def_readwrite("object_data", &File::object_data)
 		.def_readwrite("materials", &File::materials)
 		.def_readwrite("objects", &File::objects)

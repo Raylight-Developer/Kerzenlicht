@@ -2,7 +2,7 @@
 
 #include "Include.hpp"
 
-#ifdef COMPILE_EDITOR
+#ifdef COMPILE_EDITOR || COMPILE_SCRIPTING
 	#include "QT.hpp"
 #endif
 
@@ -63,6 +63,12 @@ struct Lace { //------------Utility for string manipulation------------
 	string str() const;
 
 	// Feed directly
+	
+#ifdef COMPILE_EDITOR || COMPILE_SCRIPTING
+	Lace& operator<< (const QPointF& value);
+	Lace& operator<< (const QString& value);
+#endif
+
 	Lace& operator<< (const bool& value);
 	Lace& operator<< (const char* value);
 	Lace& operator<< (const string& value);
@@ -101,10 +107,6 @@ struct Lace { //------------Utility for string manipulation------------
 	Lace& operator<< (const dmat3& value);
 	Lace& operator<< (const dmat4& value);
 
-#ifdef COMPILE_EDITOR
-	Lace& operator<< (const QPointF& value);
-	Lace& operator<< (const QString& value);
-#endif
 	// Feed Single Units With Space Before
 	Lace& operator>> (const bool& value);
 	Lace& operator>> (const char* value);

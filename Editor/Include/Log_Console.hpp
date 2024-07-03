@@ -3,7 +3,7 @@
 #include "Include.hpp"
 #include "QT.hpp"
 
-#include "Core/Lace.hpp"
+#include "Lace.hpp"
 
 #define ENDL "<br>"
 

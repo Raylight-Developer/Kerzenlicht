@@ -1,5 +1,17 @@
 #include "Lace.hpp"
 
+#ifdef COMPILE_EDITOR || COMPILE_SCRIPTING
+	Lace& Lace::operator<<(const QPointF& value) {
+		data << value.x() << " " << value.y();
+		return *this;
+	}
+
+	Lace& Lace::operator<<(const QString& value) {
+		data << " " << value.toStdString();
+		return *this;
+	}
+#endif
+
 Lace::Lace() :
 	character("\t")
 {
@@ -274,18 +286,6 @@ Lace& Lace::operator<<(const dmat4& value) {
 		 << value[3][0] << " " << value[3][1] << " " << value[3][2] << " " << value[3][3];
 	return *this;
 }
-
-#ifdef COMPILE_EDITOR
-	Lace& Lace::operator<<(const QPointF& value) {
-		data << value.x() << " " << value.y();
-		return *this;
-	}
-
-	Lace& Lace::operator<<(const QString& value) {
-		data << " " << value.toStdString();
-		return *this;
-	}
-#endif
 
 Lace& Lace::operator>> (const bool& value) {
 	data << " " << value;

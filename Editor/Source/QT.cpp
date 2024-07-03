@@ -1,6 +1,6 @@
 #include "QT.hpp"
 
-#include "Core/Ops.hpp"
+#include "Ops.hpp"
 
 GUI::Application::Application(int argc, char* argv[]) :
 	QApplication(argc, argv)

@@ -3,7 +3,7 @@
 #include "Include.hpp"
 #include "QT.hpp"
 
-#include "Core/Ops.hpp"
+#include "Ops.hpp"
 #include "Core/File.hpp"
 #include "Core/Session.hpp"
 
