@@ -104,7 +104,7 @@ namespace CLASS {
 				struct Bone;
 			}
 // Object/Data/Camera.hpp -------------------------------------------------------------------------
-			struct GPU_Camera;
+			struct Camera;
 // Object/Data/Volume.hpp -------------------------------------------------------------------------
 			struct Volume;
 			namespace VOLUME {

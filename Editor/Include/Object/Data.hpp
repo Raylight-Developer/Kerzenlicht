@@ -46,7 +46,7 @@ namespace CLASS::OBJECT {
 
 		DATA::Atmosphere* getAtmosphere() const { return static_cast<DATA::Atmosphere*>(data); };
 		DATA::Primitive* getPrimitive()   const { return static_cast<DATA::Primitive*>(data); };
-		DATA::GPU_Camera* getCamera()         const { return static_cast<DATA::GPU_Camera*>(data); };
+		DATA::Camera* getCamera()         const { return static_cast<DATA::Camera*>(data); };
 		DATA::Volume* getVolume()         const { return static_cast<DATA::Volume*>(data); };
 		DATA::Curve* getCurve()           const { return static_cast<DATA::Curve*>(data); };
 		DATA::Empty* getEmpty()           const { return static_cast<DATA::Empty*>(data); };

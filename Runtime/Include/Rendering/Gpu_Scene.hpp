@@ -3,6 +3,7 @@
 #include "Include.hpp"
 
 #include "Camera.hpp"
+#include "Cpu_Scene.hpp"
 
 struct GPU_Data;
 
@@ -20,8 +21,10 @@ struct alignas(16) GPU_Mesh;
 
 struct alignas(16) GPU_BVH;
 
+GPU_Data f_parseGPUData(const CPU_Scene& cpu_data);
+
 struct GPU_Data {
-	GPU_Camera                camera;
+	Camera                camera;
 	vector<GPU_Material>      materials;
 	vector<GPU_Light>         lights;
 	vector<GPU_Spline_Point>  spline_controls;
@@ -33,7 +36,7 @@ struct GPU_Data {
 	vector<GPU_BVH>           bvh_nodes;
 
 	GPU_Data(
-		const GPU_Camera&                camera          = GPU_Camera(),
+		const Camera&                camera          = Camera(),
 		const vector<GPU_Material>&      materials       = {},
 		const vector<GPU_Light>&         lights          = {},
 		const vector<GPU_Spline_Point>&  spline_controls = {},
@@ -55,6 +58,9 @@ struct GPU_Data {
 		meshes         (meshes),
 		bvh_nodes      (bvh_nodes)
 	{}
+
+	void print() const;
+	void printInfo(const uint64& max_size) const;
 };
 
 struct alignas(16) GPU_Material {

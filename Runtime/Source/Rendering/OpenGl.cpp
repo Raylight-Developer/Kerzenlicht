@@ -18,8 +18,11 @@ void EBO::f_delete() {
 	glDeleteBuffers(1, &ID);
 }
 
-void FBO::f_init() {
+void FBO::f_init(const GLuint& texture) {
 	glGenFramebuffers(1, &ID);
+	glBindFramebuffer(GL_FRAMEBUFFER, ID);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture, 0);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 void FBO::f_bind() {
@@ -42,7 +45,7 @@ void FBT::f_init(const uvec2& i_size) {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, ID, 0);
+	//glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, ID, 0);
 
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
@@ -57,7 +60,7 @@ void FBT::f_resize(const uvec2& i_size) {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, new_ID, 0);
+	//glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, new_ID, 0);
 
 	glBindTexture(GL_TEXTURE_2D, 0);
 	ID = new_ID;
@@ -117,52 +120,57 @@ void VBO::f_delete() {
 	glDeleteBuffers(1, &ID);
 }
 
-void Shader_Program::f_init(const string& i_fragmentFile) {
-	source = i_fragmentFile;
+void Shader_Program::f_init(const string& filename) {
+	source = filename;
 	f_compile();
 }
 
 void Shader_Program::f_compile() {
 	glDeleteProgram(ID);
 
-	string vertexCode = f_loadFromFile("./resources/Shaders/vert.glsl");
-	string fragmentCode = f_loadFromFile(source);
+	switch (type) {
+		case Shader_Program_Type::FRAGMENT: {
+			const string vertexCode = f_loadFromFile("./resources/Shaders/vert.glsl");
+			const string fragmentCode = f_loadFromFile(source);
 
-	const char* vertexSource = vertexCode.c_str();
-	const char* fragmentSource = fragmentCode.c_str();
+			const char* vertexSource = vertexCode.c_str();
+			const char* fragmentSource = fragmentCode.c_str();
 
-	GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vertexShader, 1, &vertexSource, NULL);
-	glCompileShader(vertexShader);
-	f_checkCompilation(vertexShader, "VERTEX " + program_name);
+			GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
+			glShaderSource(vertexShader, 1, &vertexSource, NULL);
+			glCompileShader(vertexShader);
+			f_checkCompilation(vertexShader, "VERTEX " + program_name);
 
-	GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fragmentShader, 1, &fragmentSource, NULL);
-	glCompileShader(fragmentShader);
-	f_checkCompilation(fragmentShader, "FRAGMENT " + program_name);
+			GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+			glShaderSource(fragmentShader, 1, &fragmentSource, NULL);
+			glCompileShader(fragmentShader);
+			f_checkCompilation(fragmentShader, "FRAGMENT " + program_name);
 
-	ID = glCreateProgram();
-	glAttachShader(ID, vertexShader);
-	glAttachShader(ID, fragmentShader);
-	glLinkProgram(ID);
-	f_checkCompilation(ID, "PROGRAM " + program_name);
+			ID = glCreateProgram();
+			glAttachShader(ID, vertexShader);
+			glAttachShader(ID, fragmentShader);
+			glLinkProgram(ID);
+			f_checkCompilation(ID, "PROGRAM " + program_name);
 
-	glDeleteShader(vertexShader);
-	glDeleteShader(fragmentShader);
-}
+			glDeleteShader(vertexShader);
+			glDeleteShader(fragmentShader);
+			break;
+		}
+		case Shader_Program_Type::COMPUTE: {
+			const string compute_code = f_preprocessShader("./Resources/Shaders/Shader.comp");
+			//cerr << compute_code;
+			const char* compute_code_cstr = compute_code.c_str();
+			GLuint comp_shader = glCreateShader(GL_COMPUTE_SHADER);
+			glShaderSource(comp_shader, 1, &compute_code_cstr, NULL);
+			glCompileShader(comp_shader);
+			f_checkCompilation(comp_shader, "Compute Shader");
 
-string Shader_Program::f_loadFromFile(const string& i_filename) {
-	ifstream in(i_filename, ios::binary);
-	if (in) {
-		string contents;
-		in.seekg(0, ios::end);
-		contents.resize(in.tellg());
-		in.seekg(0, ios::beg);
-		in.read(&contents[0], contents.size());
-		in.close();
-		return(contents);
+			ID = glCreateProgram();
+			glAttachShader(ID, comp_shader);
+			glLinkProgram(ID);
+			break;
+		}
 	}
-	throw(errno);
 }
 
 void Shader_Program::f_activate() {

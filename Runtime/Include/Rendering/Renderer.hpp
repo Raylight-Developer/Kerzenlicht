@@ -30,7 +30,7 @@ struct Renderer {
 	bool recompile;
 	bool reset;
 
-	GPU_Camera camera;
+	Camera camera;
 
 	double camera_move_sensitivity;
 	double camera_view_sensitivity;
@@ -45,10 +45,13 @@ struct Renderer {
 	VAO main_vao;
 	VBO main_vbo;
 	EBO main_ebo;
+
 	FBT raw_tex;
 	FBT acc_tex;
+
 	FBO raw_fbo;
 	FBO acc_fbo;
+
 	Shader_Program raw_fp;
 	Shader_Program acc_fp;
 	Shader_Program pp_fp;

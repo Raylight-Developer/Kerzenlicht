@@ -2,7 +2,7 @@
 
 #include "Include.hpp"
 
-struct GPU_Camera {
+struct Camera {
 	uint16 width;
 	uint16 height;
 
@@ -16,15 +16,9 @@ struct GPU_Camera {
 	dvec3 y_vector;
 	dvec3 z_vector;
 
-	dvec3 projection_center;
-	dvec3 projection_u;
-	dvec3 projection_v;
+	Camera();
 
-	GPU_Camera();
-
-	void f_move(const double& i_x, const double& i_y, const double& i_z, const double& i_speed);
-	void f_rotate(const double& i_yaw, const double& i_pitch);
-	dmat4 f_getViewMatrix();
+	void f_move(const double& x, const double& y, const double& z, const double& speed);
+	void f_rotate(const double& yaw, const double& pitch);
 	void f_compileVectors();
-	void f_compile();
 };

@@ -44,16 +44,16 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(ProjectDir)\Include;$(SolutionDir)\Editor\Include;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)\Include;$(SolutionDir)\Include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(ProjectDir)\Include;$(SolutionDir)\Editor\Include;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)\Include;$(SolutionDir)\Include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;COMPILE_RUNTIME;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(ProjectDir)\Include\External\imgui-1.90;C:\Programs\Coding\Lib\glad;C:\Programs\Coding\Lib\glm 0.9.9.8;C:\Programs\Coding\Lib\glfw-3.3.8\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
@@ -72,7 +72,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;COMPILE_RUNTIME;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
@@ -88,6 +88,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\Include\Lace.cpp" />
+    <ClCompile Include="..\Include\Ops.cpp" />
+    <ClCompile Include="Source\Rendering\Cpu_Scene.cpp" />
     <ClCompile Include="Source\Rendering\Gpu_Scene.cpp" />
     <ClCompile Include="Include\External\imgui-1.90\backends\imgui_impl_glfw.cpp" />
     <ClCompile Include="Include\External\imgui-1.90\backends\imgui_impl_opengl3.cpp" />
@@ -104,6 +107,10 @@
     <ClCompile Include="Source\Rendering\Renderer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\Include\Include.hpp" />
+    <ClInclude Include="..\Include\Lace.hpp" />
+    <ClInclude Include="..\Include\Ops.hpp" />
+    <ClInclude Include="Include\Rendering\Cpu_Scene.hpp" />
     <ClInclude Include="Include\Rendering\Gpu_Scene.hpp" />
     <ClInclude Include="Include\Camera.hpp" />
     <ClInclude Include="Include\External\imgui-1.90\backends\imgui_impl_glfw.h" />
@@ -115,7 +122,6 @@
     <ClInclude Include="Include\External\imgui-1.90\imstb_textedit.h" />
     <ClInclude Include="Include\External\imgui-1.90\imstb_truetype.h" />
     <ClInclude Include="Include\External\stb_image.h" />
-    <ClInclude Include="Include\Include.hpp" />
     <ClInclude Include="Include\Operators.hpp" />
     <ClInclude Include="Include\Rendering\Renderer.hpp" />
     <ClInclude Include="Include\Rendering\OpenGl.hpp" />

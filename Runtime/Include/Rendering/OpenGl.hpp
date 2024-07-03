@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Include.hpp"
+#include "Ops.hpp"
 
 struct EBO;
 struct FBO;
@@ -24,7 +25,7 @@ struct FBO {
 
 	FBO() { ID = 0; };
 
-	void f_init();
+	void f_init(const GLuint& texture);
 	void f_bind();
 	void f_unbind();
 	void f_delete();
@@ -78,13 +79,12 @@ struct Shader_Program {
 	string program_name;
 	Shader_Program_Type type;
 
-	Shader_Program() {};
+	Shader_Program() { ID = 0; type = Shader_Program_Type::FRAGMENT; program_name = ""; };
 	Shader_Program(const string& name, const Shader_Program_Type& type) : type(type) { ID = 0; program_name = name; };
 
 	void f_compile();
 	void f_checkCompilation(const GLuint& i_shader, const string& i_shader_name);
 
-	string f_loadFromFile(const string& i_filename);
 	void f_init(const string& i_filename);
 	void f_activate();
 	void f_delete();

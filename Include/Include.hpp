@@ -30,7 +30,9 @@
 #include <map>
 #include <set>
 
-#include <glad/glad.h>
+#ifdef COMPILE_RUNTIME
+	#include <glad/glad.h>
+#endif
 
 #include <glm/glm.hpp>
 #include <glm/gtx/spline.hpp>

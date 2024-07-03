@@ -25,7 +25,7 @@ Renderer::Renderer() {
 	recompile = false;
 	reset = false;
 
-	camera = GPU_Camera();
+	camera = Camera();
 
 	camera_move_sensitivity = 0.15;
 	camera_view_sensitivity = 0.075;
@@ -187,15 +187,11 @@ void Renderer::f_pipeline() {
 	main_vbo.f_unbind();
 	main_ebo.f_unbind();
 
-	raw_fbo.f_init();
-	raw_fbo.f_bind();
 	raw_tex.f_init(display_resolution);
-	raw_fbo.f_unbind();
+	raw_fbo.f_init(raw_tex.ID);
 
-	acc_fbo.f_init();
-	acc_fbo.f_bind();
 	acc_tex.f_init(display_resolution);
-	acc_fbo.f_unbind();
+	acc_fbo.f_init(acc_tex.ID);
 }
 
 void Renderer::f_dataTransfer() {
@@ -310,7 +306,6 @@ void Renderer::f_gameLoop() {
 		reset = true;
 		runframe = 0;
 	}
-	camera.f_compile();
 }
 
 void Renderer::f_displayLoop() {
@@ -340,6 +335,7 @@ void Renderer::f_displayLoop() {
 		glUniform1ui(glGetUniformLocation(raw_fp.ID, "runframe"), GLuint(runframe));
 		glUniform2fv(glGetUniformLocation(raw_fp.ID, "resolution"), 1, value_ptr(vec2(display_resolution)));
 
+		glUniform1f (glGetUniformLocation(raw_fp.ID, "aspect_ratio"), GLfloat(render_aspect_ratio));
 		glUniform3fv(glGetUniformLocation(raw_fp.ID, "camera_pos"), 1, value_ptr(vec3(camera.position)));
 		glUniform3fv(glGetUniformLocation(raw_fp.ID, "camera_z"), 1, value_ptr(vec3(camera.z_vector)));
 		glUniform3fv(glGetUniformLocation(raw_fp.ID, "camera_y"), 1, value_ptr(vec3(camera.y_vector)));
@@ -489,7 +485,7 @@ void Renderer::key_callback(GLFWwindow* window, int key, int scancode, int actio
 		instance->f_recompile();
 	}
 	if (key == GLFW_KEY_C && action == GLFW_PRESS) {
-		instance->camera = GPU_Camera();
+		instance->camera = Camera();
 		instance->reset = true;
 		instance->runframe = 0;
 	}
