@@ -1,0 +1,23 @@
+#version 460
+
+layout(local_size_x = 32, local_size_y = 32, local_size_z = 1) in;
+layout(rgba32f, binding = 0) uniform image2D render_tex;
+
+uniform uint  frame_count;
+uniform uvec2 resolution;
+uniform float runtime;
+
+void main() {
+	ivec2 work_id = ivec2(gl_GlobalInvocationID.xy);
+	ivec2 resolution = imageSize(render_tex);
+	vec2 uv = work_id / vec2(resolution);
+
+	vec4 color = vec4(uv.x , 0.0, uv.y, 1.0);
+
+	float rad = runtime;
+	uv -= 0.5;
+	uv.y = cos(rad)*uv.x + sin(rad) * uv.y;
+	color = mix(vec4(1.0), color, smoothstep(0.0, 0.005, abs(uv.y)));
+
+	imageStore(render_tex, work_id, color);
+}

@@ -3,17 +3,6 @@
 Renderer::Renderer() {
 	window = nullptr;
 
-	vertices = {
-		-1.0f, -1.0f, 0.0f, 0.0f,
-		-1.0f,  1.0f, 0.0f, 1.0f,
-		 1.0f,  1.0f, 1.0f, 1.0f,
-		 1.0f, -1.0f, 1.0f, 0.0f,
-	};
-	faces = {
-		0, 1, 2,
-		2, 3, 0
-	};
-
 	runtime = 0.0;
 	frame_counter = 0;
 	frame_count = 0;
@@ -22,7 +11,7 @@ Renderer::Renderer() {
 	display_resolution = uvec2(3840U, 2160U);
 	display_aspect_ratio = u_to_d(display_resolution.x) / u_to_d(display_resolution.y);
 
-	render_resolution = uvec2(1920U, 1080U);
+	render_resolution = uvec2(1920U, 800U);
 	render_aspect_ratio = u_to_d(render_resolution.x) / u_to_d(render_resolution.y);
 
 	recompile = false;
@@ -39,19 +28,7 @@ Renderer::Renderer() {
 	current_time = 0;
 	window_time = 0.0;
 	frame_time = 0.0;
-
-	main_vao = VAO();
-	main_vbo = VBO();
-	main_ebo = EBO();
-	raw_tex = FBT();
-	acc_tex = FBT();
-	raw_fbo = FBO();
-	acc_fbo = FBO();
-	raw_fp = Shader_Program("Raw", Shader_Program_Type::FRAGMENT);
-	acc_fp = Shader_Program("Acc", Shader_Program_Type::FRAGMENT);
-	pp_fp  = Shader_Program("PP" , Shader_Program_Type::FRAGMENT);
 }
-
 
 void Renderer::f_init() {
 	f_initGlfw();
@@ -147,13 +124,13 @@ void Renderer::f_systemInfo() {
 		" y:" << work_grp_size[1] <<
 		" z:" << work_grp_size[2] << endl;
 
-	GLint totalMemoryKB = 0;
+	//GLint totalMemoryKB = 0;
 	//glGetIntegerv(GL_GPU_MEMORY_INFO_TOTAL_AVAILABLE_MEMORY_NVX, &totalMemoryKB);
-	GLint currentMemoryKB = 0;
+	//GLint currentMemoryKB = 0;
 	//glGetIntegerv(GL_GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX, &currentMemoryKB);
-	
-	cout << "Total GPU Memory: " << totalMemoryKB << " KB\n";
-	cout << "Available GPU Memory: " << currentMemoryKB << " KB\n";
+	//
+	//cout << "Total GPU Memory: " << totalMemoryKB << " KB\n";
+	//cout << "Available GPU Memory: " << currentMemoryKB << " KB\n";
 
 	GLint work_grp_inv;
 	glGetIntegerv(GL_MAX_COMPUTE_WORK_GROUP_INVOCATIONS, &work_grp_inv);
@@ -174,27 +151,6 @@ void Renderer::f_systemInfo() {
 
 void Renderer::f_pipeline() {
 	glViewport(0, 0, display_resolution.x , display_resolution.y);
-
-	raw_fp.f_init("./Resources/Shaders/Raw.frag");
-	acc_fp.f_init("./Resources/Shaders/Acc.frag");
-	pp_fp .f_init("./Resources/Shaders/PP.frag");
-
-	main_vao.f_init();
-	main_vao.f_bind();
-	main_vbo.f_init(vertices.data(), vertices.size() * sizeof(float));
-	main_ebo.f_init(faces.data(), faces.size() * sizeof(float));
-	main_vao.f_linkVBO(main_vbo, 0, 2, GL_FLOAT, 4 * sizeof(GLfloat), (void*)0);
-	main_vao.f_linkVBO(main_vbo, 1, 2, GL_FLOAT, 4 * sizeof(GLfloat), (void*)(2 * sizeof(float)));
-
-	main_vao.f_unbind();
-	main_vbo.f_unbind();
-	main_ebo.f_unbind();
-
-	raw_tex.f_init(render_resolution);
-	raw_fbo.f_init(raw_tex);
-
-	acc_tex.f_init(render_resolution);
-	acc_fbo.f_init(acc_tex);
 }
 
 void Renderer::f_dataTransfer() {
@@ -274,6 +230,7 @@ void Renderer::f_guiLoop() {
 	ImGui::Begin("Info");
 	ImGui::Text((to_string(1.0/static_cast<double>(frame_count)) + "ms").c_str());
 	ImGui::Text((to_string(frame_count) + "fps").c_str());
+	ImGui::Text((to_string(runframe) + "frames").c_str());
 	ImGui::End();
 
 	ImGui::Render();
@@ -314,13 +271,72 @@ void Renderer::f_gameLoop() {
 }
 
 void Renderer::f_displayLoop() {
-	Texture background_tex = Texture();
-	background_tex.f_init("./Resources/Bg.jpg");
+	const GLfloat vertices[16] = {
+		-1.0f, -1.0f, 0.0f, 0.0f,
+		-1.0f,  1.0f, 0.0f, 1.0f,
+		1.0f,  1.0f, 1.0f, 1.0f,
+		1.0f, -1.0f, 1.0f, 0.0f,
+	};
+	const GLuint indices[6] = {
+		0, 1, 2,
+		2, 3, 0
+	};
 
-	Texture blocks_tex = Texture();
-	blocks_tex.f_init("./Resources/Blocks.png");
+	// Display Quad
+	GLuint VAO, VBO, EBO;
+	glCreateVertexArrays(1, &VAO);
+	glCreateBuffers(1, &VBO);
+	glCreateBuffers(1, &EBO);
 
-	glClearColor(0, 0, 0, 1);
+	glNamedBufferData(VBO, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	glNamedBufferData(EBO, sizeof(indices), indices, GL_STATIC_DRAW);
+
+	glEnableVertexArrayAttrib(VAO, 0);
+	glVertexArrayAttribBinding(VAO, 0, 0);
+	glVertexArrayAttribFormat(VAO, 0, 2, GL_FLOAT, GL_FALSE, 0);
+
+	glEnableVertexArrayAttrib(VAO, 1);
+	glVertexArrayAttribBinding(VAO, 1, 0);
+	glVertexArrayAttribFormat(VAO, 1, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GLfloat));
+
+	glVertexArrayVertexBuffer(VAO, 0, VBO, 0, 4 * sizeof(GLfloat));
+	glVertexArrayElementBuffer(VAO, EBO);
+
+	// Compute Output
+	GLuint render_result;
+	glCreateTextures(GL_TEXTURE_2D, 1, &render_result);
+	glTextureParameteri(render_result, GL_TEXTURE_MIN_FILTER, GL_NEAREST); // GL_NEAREST for raw pixels
+	glTextureParameteri(render_result, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTextureParameteri(render_result, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTextureParameteri(render_result, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTextureStorage2D(render_result, 1, GL_RGBA32F, render_resolution.x, render_resolution.y);
+
+	GLuint framebuffer;
+	glGenFramebuffers(1, &framebuffer);
+	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, render_result, 0);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	// Previous Frame
+	GLuint previous_frame;
+	glCreateTextures(GL_TEXTURE_2D, 1, &previous_frame);
+	glTextureParameteri(previous_frame, GL_TEXTURE_MIN_FILTER, GL_NEAREST); // GL_NEAREST for raw pixels
+	glTextureParameteri(previous_frame, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTextureParameteri(previous_frame, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTextureParameteri(previous_frame, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTextureStorage2D(previous_frame, 1, GL_RGBA32F, render_resolution.x, render_resolution.y);
+
+	GLuint display_program = f_fragmentShaderProgram("Shader");
+	GLuint compute_program = f_computeShaderProgram("Shader");
+	GLuint post_program = f_fragmentShaderProgram("Post");
+
+	const uvec3 compute_layout = uvec3(
+		static_cast<uint32>(ceil(static_cast<vec1>(render_resolution.x) / 32.0f)),
+		static_cast<uint32>(ceil(static_cast<vec1>(render_resolution.y) / 32.0f)),
+		1U
+	);
+
+	glBindVertexArray(VAO);
 	while (!glfwWindowShouldClose(window)) {
 		f_gameLoop();
 
@@ -330,60 +346,33 @@ void Renderer::f_displayLoop() {
 		runtime += frame_time;
 		window_time += frame_time;
 
-		main_vao.f_bind();
-
-		raw_fbo.f_bind();
-		glClear(GL_COLOR_BUFFER_BIT);
-		raw_fp.f_activate();
-
-		glClear(GL_COLOR_BUFFER_BIT);
-		glUseProgram(raw_fp.ID);
-		glBindImageTexture(0, raw_tex.ID, 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
-
-		glUniform2ui(glGetUniformLocation(raw_fp.ID, "display_resolution"), display_resolution.x, display_resolution.y);
-		glUniform2ui(glGetUniformLocation(raw_fp.ID, "render_resolution"), render_resolution.x, render_resolution.y);
-		glUniform1f (glGetUniformLocation(raw_fp.ID, "display_aspect_ratio"), d_to_f(display_aspect_ratio));
-		glUniform1f (glGetUniformLocation(raw_fp.ID, "render_aspect_ratio"), d_to_f(render_aspect_ratio));
-
-		glUniform1f (glGetUniformLocation(raw_fp.ID, "runtime"), GLfloat(runtime));
-		glUniform1ui(glGetUniformLocation(raw_fp.ID, "runframe"), GLuint(runframe));
-
-		glUniform3fv(glGetUniformLocation(raw_fp.ID, "camera_pos"), 1, value_ptr(vec3(camera.position)));
-		glUniform3fv(glGetUniformLocation(raw_fp.ID, "camera_yvec"), 1, value_ptr(vec3(camera.y_vector)));
-		glUniform3fv(glGetUniformLocation(raw_fp.ID, "camera_zvec"), 1, value_ptr(vec3(camera.z_vector)));
-		glUniform1i (glGetUniformLocation(raw_fp.ID, "reset"), reset);
-		acc_tex.f_bind(GL_TEXTURE1);
-		glUniform1i (glGetUniformLocation(raw_fp.ID, "last_frame"), 1);
-		blocks_tex.f_bind(GL_TEXTURE3);
-		glUniform1i (glGetUniformLocation(raw_fp.ID, "block_textures"), 3);
-		background_tex.f_bind(GL_TEXTURE2);
-		glUniform1i (glGetUniformLocation(raw_fp.ID, "environment_texture"), 2);
-
+		glUseProgram(compute_program);
+		glUniform1ui(glGetUniformLocation(compute_program, "frame_count"), runframe);
+		glUniform2ui(glGetUniformLocation(compute_program, "resolution"), render_resolution.x, render_resolution.y);
+		glUniform1f (glGetUniformLocation(compute_program, "runtime"), d_to_f(runtime));
+		glBindImageTexture(0,render_result, 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
+		glDispatchCompute(compute_layout.x, compute_layout.y, compute_layout.z);
+		
+		glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+		glUseProgram(display_program);
+		glUniform1f (glGetUniformLocation(display_program, "display_aspect_ratio"), d_to_f(display_aspect_ratio));
+		glUniform1f (glGetUniformLocation(display_program, "render_aspect_ratio"), d_to_f(render_aspect_ratio));
+		glUniform1ui(glGetUniformLocation(display_program, "frame_count"), runframe);
+		glBindTextureUnit(0, render_result);
+		glBindTextureUnit(1, previous_frame);
+		glUniform1i (glGetUniformLocation(display_program, "render_tex"), 0);
+		glUniform1i (glGetUniformLocation(display_program, "previous_frame_tex"), 1);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		
+		std::swap(render_result, previous_frame);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, render_result, 0);
 
-		raw_fbo.f_unbind();
-
-		acc_fbo.f_bind();
-		acc_fp.f_activate();
-
-		glUniform1ui(glGetUniformLocation(acc_fp.ID, "runframe"), GLuint(runframe));
-		glUniform1i (glGetUniformLocation(acc_fp.ID, "reset"), reset);
-		raw_tex.f_bind(GL_TEXTURE0);
-		glUniform1i (glGetUniformLocation(acc_fp.ID, "raw_frame"), 0);
-		acc_tex.f_bind(GL_TEXTURE1);
-		glUniform1i (glGetUniformLocation(acc_fp.ID, "last_frame"), 1);
-
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
-		raw_tex.f_unbind();
-		acc_tex.f_unbind();
-		acc_fbo.f_unbind();
-
-		pp_fp.f_activate();
-
-		acc_tex.f_bind(GL_TEXTURE0);
-		glUniform1i (glGetUniformLocation(pp_fp.ID, "acc_frame"), 0);
-
+		glUseProgram(post_program);
+		glUniform1f (glGetUniformLocation(post_program, "display_aspect_ratio"), d_to_f(display_aspect_ratio));
+		glUniform1f (glGetUniformLocation(post_program, "render_aspect_ratio"), d_to_f(render_aspect_ratio));
+		glUniform1i(glGetUniformLocation(post_program, "accumulated_tex"), 0);
+		glBindTextureUnit(0, render_result);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
 		frame_counter++;
@@ -404,11 +393,6 @@ void Renderer::f_displayLoop() {
 }
 
 void Renderer::f_recompile() {
-	raw_fp.f_compile();
-	acc_fp.f_compile();
-	pp_fp.f_compile();
-
-	//camera = Camera();
 	reset = true;
 	runframe = 0;
 	runtime = glfwGetTime();

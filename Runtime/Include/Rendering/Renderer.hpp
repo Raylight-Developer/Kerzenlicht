@@ -15,9 +15,6 @@
 struct Renderer {
 	GLFWwindow* window;
 
-	vector<GLfloat> vertices;
-	vector<GLuint> faces;
-
 	dvec1 display_aspect_ratio;
 	dvec1 render_aspect_ratio;
 	uvec2 display_resolution;
@@ -42,20 +39,6 @@ struct Renderer {
 	clock_t current_time;
 	dvec1  window_time;
 	dvec1  frame_time;
-
-	VAO main_vao;
-	VBO main_vbo;
-	EBO main_ebo;
-
-	FBT raw_tex;
-	FBT acc_tex;
-
-	FBO raw_fbo;
-	FBO acc_fbo;
-
-	Shader_Program raw_fp;
-	Shader_Program acc_fp;
-	Shader_Program pp_fp;
 
 	Renderer();
 
