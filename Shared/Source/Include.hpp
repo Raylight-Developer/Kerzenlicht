@@ -140,6 +140,11 @@ inline mat2 d_to_f(const dmat2& val) { return static_cast<mat2>(val); }
 inline mat3 d_to_f(const dmat3& val) { return static_cast<mat3>(val); }
 inline mat4 d_to_f(const dmat4& val) { return static_cast<mat4>(val); }
 
+inline vec1 str_to_f(const string& val_1) { return stof(val_1); }
+inline vec2 str_to_f(const string& val_1, const string& val_2) { return vec2(stof(val_1), stof(val_2)); }
+inline vec3 str_to_f(const string& val_1, const string& val_2, const string& val_3) { return vec3(stof(val_1), stof(val_2), stof(val_3)); }
+inline vec4 str_to_f(const string& val_1, const string& val_2, const string& val_3, const string& val_4) { return vec4(stof(val_1), stof(val_2), stof(val_3), stof(val_4)); }
+
 inline dvec1 str_to_d(const string& val_1) { return stod(val_1); }
 inline dvec2 str_to_d(const string& val_1, const string& val_2) { return dvec2(stod(val_1), stod(val_2)); }
 inline dvec3 str_to_d(const string& val_1, const string& val_2, const string& val_3) { return dvec3(stod(val_1), stod(val_2), stod(val_3)); }

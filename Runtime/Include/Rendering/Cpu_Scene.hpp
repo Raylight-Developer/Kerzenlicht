@@ -146,12 +146,12 @@ struct Light {
 };
 
 struct Curve_Point {
-	dvec3 pos;
-	dvec1 radius;
+	vec3 pos;
+	vec1 radius;
 
 	Curve_Point(
-		const dvec3& pos,
-		const dvec1& radius
+		const vec3& pos,
+		const vec1& radius
 	) :
 		pos(pos),
 		radius(radius)

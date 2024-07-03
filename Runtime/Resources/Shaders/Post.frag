@@ -9,5 +9,6 @@ in vec2 uv_coords;
 out vec4 color_out;
 
 void main() {
-	color_out = texture(render, uv_coords);
+	vec4 color = texture(render, uv_coords);
+	color_out = vec4(color.xyz / color.w, 1);
 }

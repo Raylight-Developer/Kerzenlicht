@@ -95,15 +95,15 @@ CPU_Scene f_parseCPUData() {
 void f_parseCamera(const vector<vector<string>>& data, Camera& camera) {
 	for (const vector<string>& tokens : data) {
 		if (tokens[0] == "Position:")
-			camera.position = str_to_d(tokens[2], tokens[3], tokens[4]);
+			camera.position = str_to_f(tokens[2], tokens[3], tokens[4]);
 		if (tokens[0] == "Rotation:")
-			camera.rotation = str_to_d(tokens[2], tokens[3], tokens[4]);
+			camera.rotation = str_to_f(tokens[2], tokens[3], tokens[4]);
 		if (tokens[0] == "Focal-Length:")
-			camera.focal_length = str_to_d(tokens[1]);
+			camera.focal_length = str_to_f(tokens[1]);
 		if (tokens[0] == "Sensor-Size:")
-			camera.sensor_size = str_to_d(tokens[1]);
+			camera.sensor_size = str_to_f(tokens[1]);
 		if (tokens[0] == "FOV:")
-			camera.focal_angle = str_to_d(tokens[1]);
+			camera.focal_angle = str_to_f(tokens[1]);
 	}
 	camera.f_compileVectors();
 }
@@ -114,7 +114,7 @@ void f_parseMaterial(const vector<vector<string>>& data, map<string, Material>& 
 	materials[name] = Material();
 	for (const vector<string>& tokens : data) {
 		if (tokens[0] == "Color:") {
-			materials[name].color = str_to_d(
+			materials[name].color = str_to_f(
 				tokens[2],
 				tokens[3],
 				tokens[4]
@@ -149,8 +149,8 @@ void f_parseCurve(const vector<vector<string>>& data, map<string, Curve>& curves
 			for (const vector<string>& point: sub_data) {
 				spline.push_back(
 					Curve_Point(
-						str_to_d(point[3], point[4], point[5]),
-						str_to_d(point[8])
+						str_to_f(point[3], point[4], point[5]),
+						str_to_f(point[8])
 					)
 				);
 			}
@@ -182,7 +182,7 @@ void f_parseMesh(const vector<vector<string>>& data, map<string, Mesh>& meshes) 
 				for (const vector<string>& sub_line : sub_data) {
 					vertices.push_back(
 						Vertex(
-							str_to_d(
+							str_to_f(
 								sub_line[3],
 								sub_line[4],
 								sub_line[5]
@@ -203,17 +203,17 @@ void f_parseMesh(const vector<vector<string>>& data, map<string, Mesh>& meshes) 
 				for (const vector<string>& sub_line : sub_data) {
 					triangles.push_back(
 						Triangle(
-							str_to_d(
+							str_to_f(
 								sub_line[3],
 								sub_line[4],
 								sub_line[5]
 							),
-							str_to_d(sub_line[10], sub_line[11], sub_line[12]),
-							str_to_d(sub_line[15], sub_line[16], sub_line[17]),
-							str_to_d(sub_line[20], sub_line[21], sub_line[22]),
-							str_to_d(sub_line[28], sub_line[29]),
-							str_to_d(sub_line[32], sub_line[33]),
-							str_to_d(sub_line[36], sub_line[37])
+							str_to_f(sub_line[10], sub_line[11], sub_line[12]),
+							str_to_f(sub_line[15], sub_line[16], sub_line[17]),
+							str_to_f(sub_line[20], sub_line[21], sub_line[22]),
+							str_to_f(sub_line[28], sub_line[29]),
+							str_to_f(sub_line[32], sub_line[33]),
+							str_to_f(sub_line[36], sub_line[37])
 						)
 					);
 				}
