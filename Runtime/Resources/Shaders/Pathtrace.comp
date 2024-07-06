@@ -1,0 +1,49 @@
+//-------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
+Ray f_cameraRay(vec2 uv) {
+	vec3 projection_center = camera_pos + camera_focal_length * camera_zvec;
+	vec3 projection_u = normalize(cross(camera_zvec, camera_yvec)) * camera_sensor_size;
+	vec3 projection_v = normalize(cross(projection_u, camera_zvec)) * camera_sensor_size;
+	return Ray(camera_pos, normalize(projection_center + (projection_u * uv.x) + (projection_v * uv.y) - camera_pos));
+}
+
+vec4 f_environmentTexture(in Ray ray) {
+	ray.direction = eulerToRot(vec3(0,-90,0)) * ray.direction;
+
+	float phi = atan(ray.direction.y, r.direction.x);
+	float theta = acos(ray.direction.z);
+	float u = phi / TWO_PI + 0.5;
+	float v = theta / PI;
+
+	return texture(environment_texture, vec2(u,v)) * HDRI_STRENGTH;
+}
+
+vec4 f_pathTrace(in Ray ray) {
+	vec4 radiance = vec4(0);
+	for (int b = 0; b < RAY_BOUNCES; b++) {
+		Hit hit_data = f_SceneIntersection(ray);
+		if (hit_data.mesh_hit)
+			radiance += f_shade(hit_data, ray);
+		else
+			radiance += f_environmentTexture(ray);
+			break;
+	}
+	return radiance;
+}
+
+vec4 f_render(in vec2 uv) {
+	rng_initialize(gl_FragCoord.xy, frame_count);
+
+	vec4 color;
+	for (uint x = 0; x < samples_per_pixel; x++) {
+		for (uint y = 0; y < samples_per_pixel; y++) {
+			vec2 subpixelUV = uv - (vec2(0.5) * pixel_size) + (vec2(float(x) / float(samples_per_pixel), float(y) / float(samples_per_pixel)) * pixel_size);
+			Ray ray = f_cameraRay(subpixelUV);
+			color += f_pathTrace(ray);
+		}
+	}
+	color /= float(SPP * SPP);
+
+	// Miss
+	return vec4(0);
+}

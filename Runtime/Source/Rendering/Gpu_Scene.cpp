@@ -97,26 +97,25 @@ void GPU_Scene::print() const {
 
 void GPU_Scene::printInfo(const uint64& max_size) const {
 	cout << "GPU Data:" << endl;
-	cout << fixed << setprecision(4) << "    Materials             : " << static_cast<double>(sizeof(GPU_Material)     * materials.size()) / (1024.0 * 1024.0)       << "mb  | " << static_cast<double>(sizeof(GPU_Material)     * materials.size()) / 1024.0       << "kb  | " << sizeof(GPU_Material)     * materials.size()       << "b" << endl;
-	cout << fixed << setprecision(4) << "    Lights                : " << static_cast<double>(sizeof(GPU_Light)        * lights.size()) / (1024.0 * 1024.0)          << "mb  | " << static_cast<double>(sizeof(GPU_Light)        * lights.size()) / 1024.0          << "kb  | " << sizeof(GPU_Light)        * lights.size()          << "b" << endl;
-	cout << fixed << setprecision(4) << "    Spline Control Points : " << static_cast<double>(sizeof(GPU_Spline_Point) * spline_controls.size()) / (1024.0 * 1024.0) << "mb  | " << static_cast<double>(sizeof(GPU_Spline_Point) * spline_controls.size()) / 1024.0 << "kb  | " << sizeof(GPU_Spline_Point) * spline_controls.size() << "b" << endl;
-	cout << fixed << setprecision(4) << "    Splines               : " << static_cast<double>(sizeof(GPU_Spline)       * splines.size()) / (1024.0 * 1024.0)         << "mb  | " << static_cast<double>(sizeof(GPU_Spline)       * splines.size()) / 1024.0         << "kb  | " << sizeof(GPU_Spline)       * splines.size()         << "b" << endl;
-	cout << fixed << setprecision(4) << "    Curves                : " << static_cast<double>(sizeof(GPU_Curve)        * curves.size()) / (1024.0 * 1024.0)          << "mb  | " << static_cast<double>(sizeof(GPU_Curve)        * curves.size()) / 1024.0          << "kb  | " << sizeof(GPU_Curve)        * curves.size()          << "b" << endl;
-	cout << fixed << setprecision(4) << "    Vertices              : " << static_cast<double>(sizeof(GPU_Vertex)       * vertices.size()) / (1024.0 * 1024.0)        << "mb  | " << static_cast<double>(sizeof(GPU_Vertex)       * vertices.size()) / 1024.0        << "kb  | " << sizeof(GPU_Vertex)       * vertices.size()        << "b" << endl;
-	cout << fixed << setprecision(4) << "    Triangles             : " << static_cast<double>(sizeof(GPU_Triangle)     * triangles.size()) / (1024.0 * 1024.0)       << "mb  | " << static_cast<double>(sizeof(GPU_Triangle)     * triangles.size()) / 1024.0       << "kb  | " << sizeof(GPU_Triangle)     * triangles.size()       << "b" << endl;
-	cout << fixed << setprecision(4) << "    Meshes                : " << static_cast<double>(sizeof(GPU_Mesh)         * meshes.size()) / (1024.0 * 1024.0)          << "mb  | " << static_cast<double>(sizeof(GPU_Mesh)         * meshes.size()) / 1024.0          << "kb  | " << sizeof(GPU_Mesh)         * meshes.size()          << "b" << endl;
-	cout << fixed << setprecision(4) << "    BVHs                  : " << static_cast<double>(sizeof(GPU_BVH)          * bvh_nodes.size()) / (1024.0 * 1024.0)       << "mb  | " << static_cast<double>(sizeof(GPU_BVH)          * bvh_nodes.size()) / 1024.0       << "kb  | " << sizeof(GPU_BVH)          * bvh_nodes.size()       << "b" << endl;
-
+	f_printSize("	Materials            ", materials);
+	f_printSize("	Lights               ", lights);
+	f_printSize("	Spline Control Points", spline_controls);
+	f_printSize("	Splines              ", splines);
+	f_printSize("	Curves               ", curves);
+	f_printSize("	Vertices             ", vertices);
+	f_printSize("	Triangles            ", triangles);
+	f_printSize("	Meshes               ", meshes);
+	f_printSize("	BVHs                 ", bvh_nodes);
 	if (
-		sizeof(GPU_Material) * materials.size() > max_size or
-		sizeof(GPU_Light) * lights.size() > max_size or
-		sizeof(GPU_Spline_Point) * spline_controls.size() > max_size or
-		sizeof(GPU_Spline) * splines.size() > max_size or
-		sizeof(GPU_Curve) * curves.size() > max_size or
-		sizeof(GPU_Vertex) * vertices.size() > max_size or
-		sizeof(GPU_Triangle) * triangles.size() > max_size or
-		sizeof(GPU_Mesh) * meshes.size() > max_size or
-		sizeof(GPU_BVH) * bvh_nodes.size() > max_size
-		)
-		throw "GPU out of memory";
+		sizeof(GPU_Material)     * materials.size()       +
+		sizeof(GPU_Light)        * lights.size()          +
+		sizeof(GPU_Spline_Point) * spline_controls.size() +
+		sizeof(GPU_Spline)       * splines.size()         +
+		sizeof(GPU_Curve)        * curves.size()          +
+		sizeof(GPU_Vertex)       * vertices.size()        +
+		sizeof(GPU_Triangle)     * triangles.size()       +
+		sizeof(GPU_Mesh)         * meshes.size()          +
+		sizeof(GPU_BVH)          * bvh_nodes.size() > max_size
+	)
+		throw runtime_error("GPU out of memory");
 }

@@ -1,10 +1,10 @@
-#version 460
-#extension GL_ARB_gpu_shader_int64: enable
-#include "Globals.comp"
+//-------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
+vec4 f_shade(in Hit hit_data, inout Ray ray) {
+	ray.direction = reflect(ray.direction, hit_data.hit_normal);
+	ray.origin = hit_data.hit_pos + ray.direction * EPSILON;
 
-vec4 shadeHit(inout Hit hit) {
-
-	switch (hit.material) {
+	switch (hit_data.material) {
 		case 0: { // Material Name: Gold
 			// Glsl Shader Code OR Generated Code from Material Nodes
 			return vec4(1.0, 0.5, 1.0, 1.0);
@@ -12,6 +12,6 @@ vec4 shadeHit(inout Hit hit) {
 	}
 
 	// ERROR:
-	hit.error = true;
+	hit_data.error = true;
 	return vec4(1, 0, 1, 1);
 }

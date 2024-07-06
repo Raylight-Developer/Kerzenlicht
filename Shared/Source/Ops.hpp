@@ -79,6 +79,11 @@ namespace CLASS {
 }
 // Templates
 template<typename T>
+void f_printSize(const string& label, const vector<T>& value) {
+	cout << fixed << setprecision(2) << label << " | " << static_cast<double>(sizeof(T) * value.size()) / (1024.0 * 1024.0) << "mb | " << static_cast<double>(sizeof(T) * value.size()) / 1024.0 << "kb | " << sizeof(T) * value.size() << "b" << endl;
+};
+
+template<typename T>
 T f_roundToNearest(const T& num, const T& factor) {
 	return round(num / factor) * factor;
 };

@@ -170,7 +170,21 @@ void Renderer::f_dataTransfer() {
 	GLint ssboMaxSize;
 	glGetIntegerv(GL_MAX_SHADER_STORAGE_BLOCK_SIZE, &ssboMaxSize);
 	gpu_data.printInfo(ssboMaxSize);
-	
+
+	const uint numTextures = 0;
+	vector<GLuint> textureIDs = vector<GLuint>(numTextures, 0);
+	for (uint i = 0; i < numTextures; i++) {
+		glGenTextures(1, &textureIDs[i]);
+		glBindTexture(GL_TEXTURE_2D, textureIDs[i] + 2);
+		// Set texture parameters and load image data
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		// Load image data into texture
+		// ... (loading image data code)
+		// Acces in shader:  sampler2D(textureID)
+	}
+	glBindTexture(GL_TEXTURE_2D, 0);
+
 	glGenBuffers(1, &material_buffer);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, material_buffer);
 	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPU_Material) * gpu_data.materials.size(), gpu_data.materials.data(), GL_STATIC_DRAW);
@@ -289,15 +303,15 @@ void Renderer::f_displayLoop() {
 	glNamedBufferData(VBO, sizeof(vertices), vertices, GL_STATIC_DRAW);
 	glNamedBufferData(EBO, sizeof(indices), indices, GL_STATIC_DRAW);
 
-	glEnableVertexArrayAttrib(VAO, 0);
+	glEnableVertexArrayAttrib (VAO, 0);
 	glVertexArrayAttribBinding(VAO, 0, 0);
-	glVertexArrayAttribFormat(VAO, 0, 2, GL_FLOAT, GL_FALSE, 0);
+	glVertexArrayAttribFormat (VAO, 0, 2, GL_FLOAT, GL_FALSE, 0);
 
-	glEnableVertexArrayAttrib(VAO, 1);
+	glEnableVertexArrayAttrib (VAO, 1);
 	glVertexArrayAttribBinding(VAO, 1, 0);
-	glVertexArrayAttribFormat(VAO, 1, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GLfloat));
+	glVertexArrayAttribFormat (VAO, 1, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GLfloat));
 
-	glVertexArrayVertexBuffer(VAO, 0, VBO, 0, 4 * sizeof(GLfloat));
+	glVertexArrayVertexBuffer (VAO, 0, VBO, 0, 4 * sizeof(GLfloat));
 	glVertexArrayElementBuffer(VAO, EBO);
 
 	// Compute Output
@@ -322,8 +336,8 @@ void Renderer::f_displayLoop() {
 	GLuint post_program = f_fragmentShaderProgram("Post");
 
 	const uvec3 compute_layout = uvec3(
-		static_cast<uint32>(ceil(static_cast<vec1>(render_resolution.x) / 32.0f)),
-		static_cast<uint32>(ceil(static_cast<vec1>(render_resolution.y) / 32.0f)),
+		d_to_u(ceil(u_to_d(render_resolution.x) / 32.0)),
+		d_to_u(ceil(u_to_d(render_resolution.y) / 32.0)),
 		1U
 	);
 
@@ -345,6 +359,15 @@ void Renderer::f_displayLoop() {
 		glUniform2ui(glGetUniformLocation(compute_program, "resolution"), render_resolution.x, render_resolution.y);
 		glUniform1f (glGetUniformLocation(compute_program, "runtime"), d_to_f(runtime));
 		glUniform1ui(glGetUniformLocation(compute_program, "reset"), static_cast<GLuint>(reset));
+
+		glUniform3fv(glGetUniformLocation(compute_program, "camera_pos") , 1, value_ptr(d_to_f(camera.position)));
+		glUniform3fv(glGetUniformLocation(compute_program, "camera_xvec"), 1, value_ptr(d_to_f(camera.x_vector)));
+		glUniform3fv(glGetUniformLocation(compute_program, "camera_yvec"), 1, value_ptr(d_to_f(camera.y_vector)));
+		glUniform3fv(glGetUniformLocation(compute_program, "camera_zvec"), 1, value_ptr(d_to_f(camera.z_vector)));
+		glUniform1f (glGetUniformLocation(compute_program, "camera_sensor_size") , d_to_f(camera.sensor_size));
+		glUniform1f (glGetUniformLocation(compute_program, "camera_focal_angle") , d_to_f(camera.focal_angle));
+		glUniform1f (glGetUniformLocation(compute_program, "camera_focal_length"), d_to_f(camera.focal_length));
+
 		glBindImageTexture(0, render_result, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
 		glBindImageTexture(1, raw_render_result, 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
 		glDispatchCompute(compute_layout.x, compute_layout.y, compute_layout.z);
