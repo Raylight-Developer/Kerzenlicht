@@ -1,0 +1,42 @@
+#version 460
+#extension GL_ARB_gpu_shader_int64: enable
+#include "Globals.comp"
+
+layout(local_size_x = 32, local_size_y = 32, local_size_z = 1) in;
+
+layout(rgba32f, binding = 0) uniform image2D render_tex;
+layout(rgba32f, binding = 1) writeonly uniform image2D raw_render_tex;
+
+layout(std430, binding = 2) buffer MaterialDataBuffer {
+	Material materials[];
+};
+layout(std430, binding = 3) buffer LightDataBuffer {
+	Light lights[];
+};
+layout(std430, binding = 4) buffer SplineControlDataBuffer {
+	Spline_Point spline_controls[];
+};
+layout(std430, binding = 5) buffer SplineDataBuffer {
+	Spline splines[];
+};
+layout(std430, binding = 6) buffer CurveDataBuffer {
+	Curve curves[];
+};
+layout(std430, binding = 7) buffer VertexDataBuffer {
+	Vertex vertices[];
+};
+layout(std430, binding = 8) buffer TriangleDataBuffer {
+	Triangle triangles[];
+};
+layout(std430, binding = 9) buffer MeshDataBuffer {
+	Mesh meshes[];
+};
+layout(std430, binding = 10) buffer BVH_Buffer {
+	Bvh bvh_nodes[];
+};
+
+uniform uint64_t frame_count;
+uniform float aspect_ratio;
+uniform uvec2 resolution;
+uniform float runtime;
+uniform bool reset;

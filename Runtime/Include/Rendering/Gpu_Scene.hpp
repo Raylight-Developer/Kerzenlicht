@@ -2,8 +2,10 @@
 
 #include "Include.hpp"
 
+#include "Lace.hpp"
+#include "Ops.hpp"
+
 #include "Camera.hpp"
-#include "Cpu_Scene.hpp"
 
 struct GPU_Scene;
 
@@ -21,10 +23,10 @@ struct alignas(16) GPU_Mesh;
 
 struct alignas(16) GPU_BVH;
 
-GPU_Scene f_parseGPUData(const CPU_Scene& cpu_data);
+GPU_Scene f_parseGPUData(const string& data_file_path, const string& shader_file_path = "");
 
 struct GPU_Scene {
-	Camera                camera;
+	Camera                    camera;
 	vector<GPU_Material>      materials;
 	vector<GPU_Light>         lights;
 	vector<GPU_Spline_Point>  spline_controls;
@@ -36,7 +38,7 @@ struct GPU_Scene {
 	vector<GPU_BVH>           bvh_nodes;
 
 	GPU_Scene(
-		const Camera&                camera          = Camera(),
+		const Camera&                    camera          = Camera(),
 		const vector<GPU_Material>&      materials       = {},
 		const vector<GPU_Light>&         lights          = {},
 		const vector<GPU_Spline_Point>&  spline_controls = {},

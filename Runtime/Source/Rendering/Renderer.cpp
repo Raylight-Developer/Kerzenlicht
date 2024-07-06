@@ -84,11 +84,11 @@ void Renderer::f_initGlfw() {
 
 	glfwSetWindowUserPointer(window, this);
 
-	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-	glfwSetCursorPosCallback(window, cursor_position_callback);
-	glfwSetMouseButtonCallback(window, mouse_button_callback);
-	glfwSetScrollCallback(window, scroll_callback);
-	glfwSetKeyCallback(window, key_callback);
+	glfwSetFramebufferSizeCallback(window, f_framebufferSize);
+	glfwSetMouseButtonCallback(window, f_mouseButton);
+	glfwSetCursorPosCallback(window, f_cursorPos);
+	glfwSetScrollCallback(window, f_scroll);
+	glfwSetKeyCallback(window, f_key);
 }
 
 void Renderer::f_initImGui() {
@@ -154,8 +154,7 @@ void Renderer::f_pipeline() {
 }
 
 void Renderer::f_dataTransfer() {
-	CPU_Scene cpu_data = f_parseCPUData();
-	GPU_Scene gpu_data = f_parseGPUData(cpu_data);
+	GPU_Scene gpu_data = f_parseGPUData("./Resources/Hook.krz");
 	gpu_data.print();
 	
 	GLuint material_buffer;
@@ -175,47 +174,47 @@ void Renderer::f_dataTransfer() {
 	glGenBuffers(1, &material_buffer);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, material_buffer);
 	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPU_Material) * gpu_data.materials.size(), gpu_data.materials.data(), GL_STATIC_DRAW);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, material_buffer);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, material_buffer);
 	
 	glGenBuffers(1, &light_buffer);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, light_buffer);
 	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPU_Light) * gpu_data.lights.size(), gpu_data.lights.data(), GL_STATIC_DRAW);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, light_buffer);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, light_buffer);
 	
 	glGenBuffers(1, &spline_handle_buffer);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, spline_handle_buffer);
 	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPU_Spline_Point) * gpu_data.spline_controls.size(), gpu_data.spline_controls.data(), GL_STATIC_DRAW);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, spline_handle_buffer);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 4, spline_handle_buffer);
 	
 	glGenBuffers(1, &spline_buffer);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, spline_buffer);
 	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPU_Spline) * gpu_data.splines.size(), gpu_data.splines.data(), GL_STATIC_DRAW);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 4, spline_buffer);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 5, spline_buffer);
 	
 	glGenBuffers(1, &curve_buffer);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, curve_buffer);
 	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPU_Curve) * gpu_data.curves.size(), gpu_data.curves.data(), GL_STATIC_DRAW);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 5, curve_buffer);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 6, curve_buffer);
 	
 	glGenBuffers(1, &vertex_buffer);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, vertex_buffer);
 	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPU_Vertex) * gpu_data.vertices.size(), gpu_data.vertices.data(), GL_STATIC_DRAW);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 6, vertex_buffer);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 7, vertex_buffer);
 	
 	glGenBuffers(1, &triangle_buffer);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, triangle_buffer);
 	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPU_Triangle) * gpu_data.triangles.size(), gpu_data.triangles.data(), GL_STATIC_DRAW);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 7, triangle_buffer);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 8, triangle_buffer);
 	
 	glGenBuffers(1, &mesh_buffer);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, mesh_buffer);
 	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPU_Mesh) * gpu_data.meshes.size(), gpu_data.meshes.data(), GL_STATIC_DRAW);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 8, mesh_buffer);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 9, mesh_buffer);
 	
 	glGenBuffers(1, &bvh_buffer);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, bvh_buffer);
 	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPU_BVH) * gpu_data.bvh_nodes.size(), gpu_data.bvh_nodes.data(), GL_STATIC_DRAW);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 9, bvh_buffer);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 10, bvh_buffer);
 }
 
 void Renderer::f_guiLoop() {
@@ -308,7 +307,16 @@ void Renderer::f_displayLoop() {
 	glTextureParameteri(render_result, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTextureParameteri(render_result, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTextureParameteri(render_result, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glTextureStorage2D(render_result, 1, GL_RGBA32F, render_resolution.x, render_resolution.y);
+	glTextureStorage2D (render_result, 1, GL_RGBA32F, render_resolution.x, render_resolution.y);
+	
+	// Compute Output
+	GLuint raw_render_result;
+	glCreateTextures(GL_TEXTURE_2D, 1, &raw_render_result);
+	glTextureParameteri(raw_render_result, GL_TEXTURE_MIN_FILTER, GL_NEAREST); // GL_NEAREST for raw pixels
+	glTextureParameteri(raw_render_result, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTextureParameteri(raw_render_result, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTextureParameteri(raw_render_result, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTextureStorage2D (raw_render_result, 1, GL_RGBA32F, render_resolution.x, render_resolution.y);
 
 	GLuint compute_program = f_computeShaderProgram("Render");
 	GLuint post_program = f_fragmentShaderProgram("Post");
@@ -319,14 +327,16 @@ void Renderer::f_displayLoop() {
 		1U
 	);
 
+	f_dataTransfer();
+
 	glBindVertexArray(VAO);
 	while (!glfwWindowShouldClose(window)) {
 		f_gameLoop();
 
 		current_time = clock();
-		frame_time = float(current_time - last_time) / CLOCKS_PER_SEC;
+		frame_time = dvec1(current_time - last_time) / CLOCKS_PER_SEC;
 		last_time = current_time;
-		runtime += frame_time;
+		runtime = glfwGetTime();
 		window_time += frame_time;
 
 		glUseProgram(compute_program);
@@ -334,12 +344,15 @@ void Renderer::f_displayLoop() {
 		glUniform1f (glGetUniformLocation(compute_program, "aspect_ratio"), d_to_f(render_aspect_ratio));
 		glUniform2ui(glGetUniformLocation(compute_program, "resolution"), render_resolution.x, render_resolution.y);
 		glUniform1f (glGetUniformLocation(compute_program, "runtime"), d_to_f(runtime));
+		glUniform1ui(glGetUniformLocation(compute_program, "reset"), static_cast<GLuint>(reset));
 		glBindImageTexture(0, render_result, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
+		glBindImageTexture(1, raw_render_result, 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
 		glDispatchCompute(compute_layout.x, compute_layout.y, compute_layout.z);
 		
 		glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 
 		glUseProgram(post_program);
+		glClear(GL_COLOR_BUFFER_BIT);
 		glUniform1f(glGetUniformLocation(post_program, "display_aspect_ratio"), d_to_f(display_aspect_ratio));
 		glUniform1f(glGetUniformLocation(post_program, "render_aspect_ratio"), d_to_f(render_aspect_ratio));
 		glUniform1i(glGetUniformLocation(post_program, "render"), 1);
@@ -369,7 +382,7 @@ void Renderer::f_recompile() {
 	runtime = glfwGetTime();
 }
 
-void Renderer::framebuffer_size_callback(GLFWwindow* window, int width, int height) {
+void Renderer::f_framebufferSize(GLFWwindow* window, int width, int height) {
 	Renderer* instance = static_cast<Renderer*>(glfwGetWindowUserPointer(window));
 	glViewport(0, 0, width, height);
 	instance->display_resolution.x = width;
@@ -379,7 +392,7 @@ void Renderer::framebuffer_size_callback(GLFWwindow* window, int width, int heig
 	instance->runtime = glfwGetTime();
 }
 
-void Renderer::cursor_position_callback(GLFWwindow* window, double xpos, double ypos) {
+void Renderer::f_cursorPos(GLFWwindow* window, double xpos, double ypos) {
 	Renderer* instance = static_cast<Renderer*>(glfwGetWindowUserPointer(window));
 	if (instance->keys[GLFW_MOUSE_BUTTON_RIGHT]) {
 		double xoffset = xpos - instance->last_mouse.x;
@@ -393,7 +406,7 @@ void Renderer::cursor_position_callback(GLFWwindow* window, double xpos, double 
 	}
 }
 
-void Renderer::mouse_button_callback(GLFWwindow* window, int button, int action, int mods) {
+void Renderer::f_mouseButton(GLFWwindow* window, int button, int action, int mods) {
 	Renderer* instance = static_cast<Renderer*>(glfwGetWindowUserPointer(window));
 	if (action == GLFW_PRESS) {
 		instance->keys[button] = true;
@@ -415,7 +428,7 @@ void Renderer::mouse_button_callback(GLFWwindow* window, int button, int action,
 	}
 }
 
-void Renderer::scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
+void Renderer::f_scroll(GLFWwindow* window, double xoffset, double yoffset) {
 	Renderer* instance = static_cast<Renderer*>(glfwGetWindowUserPointer(window));
 	if (yoffset < 0) {
 		instance->reset = true;
@@ -429,7 +442,7 @@ void Renderer::scroll_callback(GLFWwindow* window, double xoffset, double yoffse
 	}
 }
 
-void Renderer::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+void Renderer::f_key(GLFWwindow* window, int key, int scancode, int action, int mods) {
 	Renderer* instance = static_cast<Renderer*>(glfwGetWindowUserPointer(window));
 	// Input Handling
 	if (key == GLFW_KEY_R && action == GLFW_PRESS) {

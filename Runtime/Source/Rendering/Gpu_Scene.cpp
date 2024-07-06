@@ -1,82 +1,43 @@
 #include "Rendering/Gpu_Scene.hpp"
 
-GPU_Scene f_parseGPUData(const CPU_Scene& cpu_data) {
+GPU_Scene f_parseGPUData(const string& data_file_path, const string& shader_file_path) {
+	Camera                    camera;
 	vector<GPU_Material>      materials;
-
 	vector<GPU_Light>         lights;
-
 	vector<GPU_Spline_Point>  spline_controls;
 	vector<GPU_Spline>        splines;
 	vector<GPU_Curve>         curves;
-
 	vector<GPU_Vertex>        vertices;
 	vector<GPU_Triangle>      triangles;
 	vector<GPU_Mesh>          meshes;
-
 	vector<GPU_BVH>           bvh_nodes;
 
-	for (const pair<string, Material>& material : cpu_data.materials) {
-		materials.push_back(GPU_Material(
-			material.second.color
-		));
-	}
+	ifstream data_file(data_file_path, ios::binary);
+	if (data_file.is_open()) {
+		vector<vector<string>> data = vector<vector<string>>();
+		string line;
 
-	for (const pair<string, Light>& light : cpu_data.lights) {
-		lights.push_back(GPU_Light(
-			light.second.color
-		));
-	}
-
-	for (const pair<string, Curve>& curve : cpu_data.curves) {
-		const size_t size_splines = splines.size();
-
-		for (const vector<Curve_Point>& spline : curve.second.splines) {
-			const size_t size_points = spline_controls.size();
-
-			for (const Curve_Point& handle : spline) {
-				spline_controls.push_back(GPU_Spline_Point(
-					handle.pos,
-					handle.radius
-				));
+		while (getline(data_file, line)) {
+			vector<string> tokens = f_split(line);
+			if (!tokens.empty()) {
 			}
-
-			splines.push_back(GPU_Spline(
-				uvec2(size_points, size_points + spline_controls.size())
-			));
 		}
-		curves.push_back(GPU_Curve(
-			uvec2(size_splines, size_splines + splines.size())
-		));
 	}
 
-	for (const pair<string, Mesh>& mesh : cpu_data.meshes) {
-		const size_t size_tris = triangles.size();
-		const size_t size_verts = vertices.size();
+	ifstream shader_file(shader_file_path, ios::binary);
+	if (shader_file.is_open()) {
+		vector<vector<string>> data = vector<vector<string>>();
+		string line;
 
-		for (const Triangle& triangle : mesh.second.triangles) {
-			triangles.push_back(GPU_Triangle(
-				triangle.vertex_pointer + uvec1(size_verts),
-				0U,
-				triangle.normal_a,
-				triangle.normal_b,
-				triangle.normal_c,
-				triangle.uv_a,
-				triangle.uv_b,
-				triangle.uv_c
-
-			));
+		while (getline(shader_file, line)) {
+			vector<string> tokens = f_split(line);
+			if (!tokens.empty()) {
+			}
 		}
-		for (const Vertex& vertex : mesh.second.vertices) {
-			vertices.push_back(GPU_Vertex(
-				vertex.position
-			));
-		}
-		meshes.push_back(GPU_Mesh(uvec2(size_tris, size_tris + triangles.size())));
-		bvh_nodes.push_back(GPU_BVH(mesh.second.bvh.p_min, mesh.second.bvh.p_max, 0U, 0U, uint(meshes.size()), true));
 	}
 
 	return GPU_Scene(
-		cpu_data.camera,
+		camera,
 		materials,
 		lights,
 		spline_controls,

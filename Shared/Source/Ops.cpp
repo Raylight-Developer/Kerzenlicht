@@ -78,7 +78,7 @@ string f_loadFromFile(const string& file_path) {
 		in.close();
 		return contents;
 	}
-	throw(errno);
+	throw runtime_error(to_string(errno));
 }
 
 string f_processSubShader(const string& file_path) {
@@ -90,13 +90,14 @@ string f_processSubShader(const string& file_path) {
 		while (std::getline(in, line)) {
 			size_t includePos = line.find("#include");
 			size_t versionPos = line.find("#version");
-			if (includePos == std::string::npos && versionPos == std::string::npos) {
+			size_t extensionPos = line.find("#extension");
+			if (includePos == std::string::npos && versionPos == std::string::npos && extensionPos == std::string::npos) {
 				output << line << endl;
 			}
 		}
 		return output.str();
 	}
-	throw(errno);
+	throw runtime_error(to_string(errno));
 }
 
 string f_preprocessShader(const string& file_path) {
@@ -122,7 +123,7 @@ string f_preprocessShader(const string& file_path) {
 		}
 		return output.str();
 	}
-	throw(errno);
+	throw runtime_error(to_string(errno));
 }
 
 CLASS::Transform::Transform(const dvec3& position, const dvec3& rotation, const dvec3& scale, const Rotation_Type& type) :

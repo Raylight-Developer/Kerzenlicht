@@ -57,6 +57,7 @@ GLuint f_computeShaderProgram(const string& file_path) {
 	GLuint compute_program;
 
 	const string compute_code = f_preprocessShader("./Resources/Shaders/" + file_path + ".comp");
+	//cout << compute_code << endl;
 	const char* compute_code_cstr = compute_code.c_str();
 	GLuint comp_shader = glCreateShader(GL_COMPUTE_SHADER);
 	glShaderSource(comp_shader, 1, &compute_code_cstr, NULL);

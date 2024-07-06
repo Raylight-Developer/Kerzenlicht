@@ -88,7 +88,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Source\Rendering\Cpu_Scene.cpp" />
     <ClCompile Include="Source\Rendering\Gpu_Scene.cpp" />
     <ClCompile Include="Include\External\imgui-1.90\backends\imgui_impl_glfw.cpp" />
     <ClCompile Include="Include\External\imgui-1.90\backends\imgui_impl_opengl3.cpp" />
@@ -105,7 +104,6 @@
     <ClCompile Include="Source\Rendering\Renderer.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Include\Rendering\Cpu_Scene.hpp" />
     <ClInclude Include="Include\Rendering\Gpu_Scene.hpp" />
     <ClInclude Include="Include\Camera.hpp" />
     <ClInclude Include="Include\External\imgui-1.90\backends\imgui_impl_glfw.h" />

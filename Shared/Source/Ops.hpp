@@ -132,5 +132,5 @@ K getKeyByValue(const unordered_map<K, V>& map, const V& value) {
 			return pair.first;
 		}
 	}
-	throw out_of_range("Value not found in unordered_map");
+	throw runtime_error("Value not found in unordered_map");
 }
