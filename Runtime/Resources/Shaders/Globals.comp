@@ -1,82 +1,23 @@
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
-struct Material {
-	vec3  albedo;
-	float alpha;
-	// 16
-	vec3  emission;
-	float roughness;
-	// 32
-	float metallic;
-	float subsurface;
-	float sheen;
-	float clear_coat;
-	// 48
-};
-
-struct Light {
-	vec3  color;
-	float power;
-	// 16
-};
-
-struct Spline_Point {
-	vec3  position;
-	float radius;
-	// 16
-};
-struct Spline {
-	uvec2 handle_pointer;
-	uvec2 padding;
-	// 16
-};
-struct Curve {
-	uvec2 spline_pointer;
-	uvec2 padding;
-	// 16
-};
-
-struct Vertex {
-	vec3 position;
-	uint padding;
-	// 16;
-};
 struct Triangle {
-	uvec3 vertex_pointer;
-	uint  material_pointer;
-	// 16
-	vec4  normal_a;
-	// 32
-	vec4  normal_b;
-	// 48
-	vec4  normal_c;
-	// 64
-	vec2  uv_a;
-	vec2  uv_b;
-	// 80
-	vec2  uv_c;
-	uvec2 padding;
-	// 96
-};
-struct Mesh {
-	uvec2 triangle_pointer;
-	uvec2 padding;
-	// 16
+	vec3 pos_a;
+	vec3 normal_a;
+	vec2 uv_a; // 32
+	vec3 pos_b;
+	vec3 normal_b;
+	vec2 uv_b; // 64
+	vec3 pos_c;
+	vec3 normal_c;
+	vec2 uv_c; // 96
 };
 
 struct Bvh {
-	vec3  p_min;
-	uint  child_a;
-	// 16
-	vec3  p_max;
-	uint  child_b;
-	// 32
-	uint  mesh_pointer;
-	uint  leaf;
-	uvec2 padding_a;
-	// 48
+	vec3 p_min;
+	uint pointer;   // 16
+	vec3 p_max;
+	uint tri_count; // 32 // If == 0, pointer leads to other Bvh Node, else leads to Triangle Start Index
 };
-
 // INTERNAL ---------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
 struct Ray {
@@ -89,41 +30,15 @@ struct Hit {
 	float t_dist;
 	bool  inside;
 	bool  mesh_hit;
-	bool  spline_hit;
 
 	uint  bvh_depth;
 
 	vec3  hit_pos;
 	vec3  hit_normal;
 	vec3  uvw;
-	vec3  normal_a;
-	vec3  normal_b;
-	vec3  normal_c;
-	vec2  uv_a;
-	vec2  uv_b;
-	vec2  uv_c;
-	uint  material;
+
+	Triangle hit_tri;
 };
-struct Hit_State {
-	int   depth;
-	float eta;
-
-	vec3 position;
-	vec3 normal;
-	vec3 ffnormal;
-	vec3 tangent;
-	vec3 bitangent;
-	vec2 texCoord;
-
-	bool isEmitter;
-	bool specularBounce;
-	bool isSubsurface;
-
-	uint     matID;
-	Material mat;
-};
-
-
 // DEFINITIONS ------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
 #define TWO_PI   6.28318530718

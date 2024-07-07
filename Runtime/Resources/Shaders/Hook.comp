@@ -4,12 +4,12 @@ vec4 f_shade(in Hit hit_data, inout Ray ray) {
 	ray.direction = reflect(ray.direction, hit_data.hit_normal);
 	ray.origin = hit_data.hit_pos + ray.direction * EPSILON;
 
-	switch (hit_data.material) {
-		case 0: { // Material Name: Gold
+	//switch (hit_data.material) {
+	//	case 0: { // Material Name: Gold
 			// Glsl Shader Code OR Generated Code from Material Nodes
-			return vec4(1.0, 0.5, 1.0, 1.0);
-		}
-	}
+			return vec4(1.0, 1.0, 1.0, 1.0);
+	//	}
+	//};
 
 	// ERROR:
 	hit_data.error = true;

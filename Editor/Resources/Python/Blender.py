@@ -81,44 +81,38 @@ class Kerzenlicht_Bridge(bpy.types.Operator):
 
 		for j, data_b in enumerate(data.vertices):
 			vert: bpy.types.MeshVertex = data_b
-			self.KL.append(f"   {j} ( {-vert.co.x} {vert.co.z} {vert.co.y} )")
+			self.KL.append(f"   {j} {-vert.co.x} {vert.co.z} {vert.co.y}")
 
 		self.KL.append("  └Vertices")
+		self.KL.append(f"  ┌Normals( {len(data.polygons)} )")
+
+		uv_layer = data.uv_layers.active.data
+		for j, data_b in enumerate(data.polygons):
+			poly: bpy.types.MeshPolygon = data_b
+			normals = " ".join([f"{-nor.x} {nor.z} {nor.y}" for nor in [data.vertices[index].normal for index in poly.vertices]])
+			self.KL.append(f"   {j} {normals}")
+
+		self.KL.append("  └Normals")
+		self.KL.append(f"  ┌UVs( {len(data.polygons)} )")
+
+		uv_layer = data.uv_layers.active.data
+		for j, data_b in enumerate(data.polygons):
+			poly: bpy.types.MeshPolygon = data_b
+			uvs = " ".join([f"{uv_layer[loop_index].uv.x} {uv_layer[loop_index].uv.y}" for loop_index in range(poly.loop_start, poly.loop_start + poly.loop_total)])
+			self.KL.append(f"   {j} {uvs}")
+
+		self.KL.append("  └UVs")
 		self.KL.append(f"  ┌Faces( {len(data.polygons)} )")
 
 		uv_layer = data.uv_layers.active.data
-
-		#face_data = {"ID":[], "Face_Count":[], "Vertices":[], "Normals":[], "UVs":[]}
-
 		for j, data_b in enumerate(data.polygons):
 			poly: bpy.types.MeshPolygon = data_b
 			vertices = " ".join([str(index) for index in poly.vertices])
 			normals = " ".join([f"{-nor.x} {nor.z} {nor.y}" for nor in [data.vertices[index].normal for index in poly.vertices]])
 			uvs = " ".join([f"{uv_layer[loop_index].uv.x} {uv_layer[loop_index].uv.y}" for loop_index in range(poly.loop_start, poly.loop_start + poly.loop_total)])
 
-			self.KL.append(f"   {j} < {len(poly.vertices)} > [ " + vertices + " ] | [ " + normals + " ] | [ " + uvs + " ]")
+			self.KL.append(f"   {j} {len(poly.vertices)} {vertices}")
 
-			#face = {
-			#	"ID":         j,
-			#	"Face_Count": len(poly.vertices),
-			#	"Vertices":   vertices,
-			#	"Normals":    normals,
-			#	"UVs":        uvs
-			#}
-			#for key, value in face_data.items():
-			#	value.append(face[key])
-
-		#table = pd.DataFrame.from_dict(face_data)
-#
-		#grouped = table.groupby('Face_Count')
-		#def modify_group(group):
-		#	group['Vertices'] = align(group['Vertices'])
-		#	group["Normals"]  = align(group["Normals"])
-		#	group["UVs"]      = align(group["UVs"])
-		#	return group
-		#grouped = grouped.apply(modify_group)
-#
-		#self.KL.append(tabulate(grouped, headers='keys', tablefmt='plain', showindex=False))
 		self.KL.append("  └Faces")
 
 		self.KL.append(f" └Data :: Mesh")

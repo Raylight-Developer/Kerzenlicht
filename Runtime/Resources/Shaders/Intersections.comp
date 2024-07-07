@@ -62,65 +62,94 @@ vec3 f_barycentricCoords(in vec3 hit_pos, in vec3 vertex_a, in vec3 vertex_b, in
 //-------------------------------------------------------------------------------------------------
 Hit f_SceneIntersection(in Ray ray) {
 	Hit hit_data;
+	hit_data.error = false;
 	hit_data.bvh_depth = 0;
 	hit_data.mesh_hit = false;
-	hit_data.spline_hit = false;
 
 	hit_data.t_dist = MAX_DIST;
 	float t_dist = MAX_DIST;
 	float bvh_t_length = MAX_DIST;
 	float bvh_ray_length = MAX_DIST;
 
-	Ray bvh_ray = Ray(ray.origin, 1.0 / ray.direction);
+//	Ray bvh_ray = Ray(ray.origin, 1.0 / ray.direction);
+//
+//	for (uint i = 0; i < bvh_nodes.length(); i++) {
+//		if (f_rayBvhIntersection(
+//			bvh_ray,
+//			bvh_nodes[i],
+//			bvh_ray_length
+//		)) {
+//			if(bvh_ray_length < bvh_t_length && bvh_ray_length > EPSILON) {
+//				hit_data.bvh_depth++;
+//				for (uint j = meshes[i].triangle_pointer.x; j < meshes[i].triangle_pointer.y; j++) {
+//					uvec3 indices = triangles[j].vertex_pointer;
+//					vec3 vertA = vertices[indices.x].position.xyz;
+//					vec3 vertB = vertices[indices.y].position.xyz;
+//					vec3 vertC = vertices[indices.z].position.xyz;
+//
+//					if (f_rayTriangleIntersection(
+//						ray,
+//						vertA,
+//						vertB,
+//						vertC,
+//						t_dist
+//					)) {
+//						if(t_dist < hit_data.t_dist && t_dist > EPSILON) {
+//							hit_data.t_dist = t_dist;
+//							hit_data.pos = ray.origin + ray.direction * t_dist;
+//							hit_data.inside = false;
+//							hit_data.mesh_hit = true;
+//							hit_data.spline_hit = false;
+//
+//							bvh_t_length = bvh_ray_length;
+//
+//							hit_data.uvw = f_barycentricCoords(
+//								hit_data.pos,
+//								vertA,
+//								vertB,
+//								vertC
+//							);
+//							
+//							hit_data.normal_a = triangles[j].normal_a.xyz;
+//							hit_data.normal_b = triangles[j].normal_b.xyz;
+//							hit_data.normal_c = triangles[j].normal_c.xyz;
+//
+//							hit_data.material = triangles[j].material_pointer;
+//						}
+//					}
+//				}
+//			}
+//		}
+//	}
+for (uint i = 0; i < triangles.length(); i++) {
+	Triangle tri = triangles[i];
+	if (f_rayTriangleIntersection(
+		ray,
+		tri.pos_a,
+		tri.pos_b,
+		tri.pos_c,
+		t_dist
+	)) {
+		if(t_dist < hit_data.t_dist && t_dist > EPSILON) {
+			hit_data.t_dist = t_dist;
+			hit_data.pos = ray.origin + ray.direction * t_dist;
+			hit_data.inside = false;
+			hit_data.mesh_hit = true;
 
-	for (uint i = 0; i < bvh_nodes.length(); i++) {
-		if (f_rayBvhIntersection(
-			bvh_ray,
-			bvh_nodes[i],
-			bvh_ray_length
-		)) {
-			if(bvh_ray_length < bvh_t_length && bvh_ray_length > EPSILON) {
-				hit_data.bvh_depth++;
-				for (uint j = meshes[i].triangle_pointer.x; j < meshes[i].triangle_pointer.y; j++) {
-					uvec3 indices = triangles[j].vertex_pointer;
-					vec3 vertA = vertices[indices.x].position.xyz;
-					vec3 vertB = vertices[indices.y].position.xyz;
-					vec3 vertC = vertices[indices.z].position.xyz;
+			bvh_t_length = bvh_ray_length;
 
-					if (f_rayTriangleIntersection(
-						ray,
-						vertA,
-						vertB,
-						vertC,
-						t_dist
-					)) {
-						if(t_dist < hit_data.t_dist && t_dist > EPSILON) {
-							hit_data.t_dist = t_dist;
-							hit_data.pos = ray.origin + ray.direction * t_dist;
-							hit_data.inside = false;
-							hit_data.mesh_hit = true;
-							hit_data.spline_hit = false;
+			vec3 uvw = f_barycentricCoords(
+				hit_data.pos,
+				tri.pos_a,
+				tri.pos_b,
+				tri.pos_c
+			);
 
-							bvh_t_length = bvh_ray_length;
-
-							hit_data.uvw = f_barycentricCoords(
-								hit_data.pos,
-								vertA,
-								vertB,
-								vertC
-							);
-							
-							hit_data.normal_a = triangles[j].normal_a.xyz;
-							hit_data.normal_b = triangles[j].normal_b.xyz;
-							hit_data.normal_c = triangles[j].normal_c.xyz;
-
-							hit_data.material = triangles[j].material_pointer;
-						}
-					}
-				}
-			}
+			hit_data.hit_tri = tri;
+			hit_data.hit_normal = uvw.x * tri.normal_a + uvw.y * tri.normal_b + uvw.z * tri.normal_c;
 		}
 	}
+}
 
 	return hit_data;
 }

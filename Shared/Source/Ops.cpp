@@ -92,7 +92,9 @@ string f_processSubShader(const string& file_path) {
 			size_t versionPos = line.find("#version");
 			size_t extensionPos = line.find("#extension");
 			if (includePos == std::string::npos && versionPos == std::string::npos && extensionPos == std::string::npos) {
-				output << line << endl;
+				const string stripped = f_strip(line);
+				if (stripped.substr(0, 2) != "//" and line.size() > 0)
+					output << line << endl;
 			}
 		}
 		return output.str();
@@ -119,7 +121,10 @@ string f_preprocessShader(const string& file_path) {
 					}
 				}
 			}
-			output << line << endl;
+
+			const string stripped = f_strip(line);
+			if (stripped.substr(0, 2) != "//" and line.size() > 0)
+				output << line << endl;
 		}
 		return output.str();
 	}

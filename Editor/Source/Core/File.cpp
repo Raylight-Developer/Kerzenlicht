@@ -401,7 +401,7 @@ CLASS::OBJECT::Data* CLASS::File::f_loadMesh(const vector<vector<string>>& token
 		else if (tokens[0] == "└Vertices") {
 			is_processing = false;
 			for (const vector<string>& token_data : read_data) {
-				mesh->vertices.push_back(new CLASS::OBJECT::DATA::MESH::Vertex(str_to_d(token_data[2], token_data[3], token_data[4])));
+				mesh->vertices.push_back(new CLASS::OBJECT::DATA::MESH::Vertex(str_to_d(token_data[1], token_data[2], token_data[3])));
 			}
 		}
 		else if (tokens[0] == "└Faces") {

@@ -154,81 +154,82 @@ void Renderer::f_pipeline() {
 }
 
 void Renderer::f_dataTransfer() {
-	GPU_Scene gpu_data = f_parseGPUData("./Resources/Hook.krz");
-	gpu_data.print();
+	GPU_Scene* gpu_data = new GPU_Scene("./Resources/Ganyu.krz", "");
+	//gpu_data->print();
+	Session::getInstance().setScene(gpu_data);
 	
-	GLuint material_buffer;
-	GLuint light_buffer;
-	GLuint vertex_buffer;
 	GLuint triangle_buffer;
-	GLuint mesh_buffer;
-	GLuint spline_handle_buffer;
-	GLuint spline_buffer;
-	GLuint curve_buffer;
 	GLuint bvh_buffer;
+	//GLuint material_buffer;
+	//GLuint light_buffer;
+	//GLuint vertex_buffer;
+	//GLuint mesh_buffer;
+	//GLuint spline_handle_buffer;
+	//GLuint spline_buffer;
+	//GLuint curve_buffer;
 	
 	GLint ssboMaxSize;
 	glGetIntegerv(GL_MAX_SHADER_STORAGE_BLOCK_SIZE, &ssboMaxSize);
-	gpu_data.printInfo(ssboMaxSize);
+	gpu_data->printInfo(ssboMaxSize);
 
-	const uint numTextures = 0;
-	vector<GLuint> textureIDs = vector<GLuint>(numTextures, 0);
-	for (uint i = 0; i < numTextures; i++) {
-		glGenTextures(1, &textureIDs[i]);
-		glBindTexture(GL_TEXTURE_2D, textureIDs[i] + 2);
-		// Set texture parameters and load image data
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		// Load image data into texture
-		// ... (loading image data code)
-		// Acces in shader:  sampler2D(textureID)
-	}
-	glBindTexture(GL_TEXTURE_2D, 0);
+	//const uint numTextures = 0;
+	//vector<GLuint> textureIDs = vector<GLuint>(numTextures, 0);
+	//for (uint i = 0; i < numTextures; i++) {
+	//	glGenTextures(1, &textureIDs[i]);
+	//	glBindTexture(GL_TEXTURE_2D, textureIDs[i] + 2);
+	//	// Set texture parameters and load image data
+	//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	//	// Load image data into texture
+	//	// ... (loading image data code)
+	//	// Acces in shader:  sampler2D(textureID)
+	//}
+	//glBindTexture(GL_TEXTURE_2D, 0);
 
-	glGenBuffers(1, &material_buffer);
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, material_buffer);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPU_Material) * gpu_data.materials.size(), gpu_data.materials.data(), GL_STATIC_DRAW);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, material_buffer);
-	
-	glGenBuffers(1, &light_buffer);
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, light_buffer);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPU_Light) * gpu_data.lights.size(), gpu_data.lights.data(), GL_STATIC_DRAW);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, light_buffer);
-	
-	glGenBuffers(1, &spline_handle_buffer);
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, spline_handle_buffer);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPU_Spline_Point) * gpu_data.spline_controls.size(), gpu_data.spline_controls.data(), GL_STATIC_DRAW);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 4, spline_handle_buffer);
-	
-	glGenBuffers(1, &spline_buffer);
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, spline_buffer);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPU_Spline) * gpu_data.splines.size(), gpu_data.splines.data(), GL_STATIC_DRAW);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 5, spline_buffer);
-	
-	glGenBuffers(1, &curve_buffer);
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, curve_buffer);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPU_Curve) * gpu_data.curves.size(), gpu_data.curves.data(), GL_STATIC_DRAW);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 6, curve_buffer);
-	
-	glGenBuffers(1, &vertex_buffer);
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, vertex_buffer);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPU_Vertex) * gpu_data.vertices.size(), gpu_data.vertices.data(), GL_STATIC_DRAW);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 7, vertex_buffer);
-	
 	glGenBuffers(1, &triangle_buffer);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, triangle_buffer);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPU_Triangle) * gpu_data.triangles.size(), gpu_data.triangles.data(), GL_STATIC_DRAW);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 8, triangle_buffer);
-	
-	glGenBuffers(1, &mesh_buffer);
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, mesh_buffer);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPU_Mesh) * gpu_data.meshes.size(), gpu_data.meshes.data(), GL_STATIC_DRAW);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 9, mesh_buffer);
-	
+	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPU_Triangle) * gpu_data->triangles.size(), gpu_data->triangles.data(), GL_STATIC_DRAW);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, triangle_buffer);
+
 	glGenBuffers(1, &bvh_buffer);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, bvh_buffer);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPU_BVH) * gpu_data.bvh_nodes.size(), gpu_data.bvh_nodes.data(), GL_STATIC_DRAW);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 10, bvh_buffer);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPU_BVH) * gpu_data->bvh_nodes.size(), gpu_data->bvh_nodes.data(), GL_STATIC_DRAW);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, bvh_buffer);
+
+	//glGenBuffers(1, &material_buffer);
+	//glBindBuffer(GL_SHADER_STORAGE_BUFFER, material_buffer);
+	//glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPU_Material) * gpu_data.materials.size(), gpu_data.materials.data(), GL_STATIC_DRAW);
+	//glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, material_buffer);
+	//
+	//glGenBuffers(1, &light_buffer);
+	//glBindBuffer(GL_SHADER_STORAGE_BUFFER, light_buffer);
+	//glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPU_Light) * gpu_data.lights.size(), gpu_data.lights.data(), GL_STATIC_DRAW);
+	//glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, light_buffer);
+	//
+	//glGenBuffers(1, &spline_handle_buffer);
+	//glBindBuffer(GL_SHADER_STORAGE_BUFFER, spline_handle_buffer);
+	//glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPU_Spline_Point) * gpu_data.spline_controls.size(), gpu_data.spline_controls.data(), GL_STATIC_DRAW);
+	//glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 4, spline_handle_buffer);
+	//
+	//glGenBuffers(1, &spline_buffer);
+	//glBindBuffer(GL_SHADER_STORAGE_BUFFER, spline_buffer);
+	//glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPU_Spline) * gpu_data.splines.size(), gpu_data.splines.data(), GL_STATIC_DRAW);
+	//glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 5, spline_buffer);
+	//
+	//glGenBuffers(1, &curve_buffer);
+	//glBindBuffer(GL_SHADER_STORAGE_BUFFER, curve_buffer);
+	//glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPU_Curve) * gpu_data.curves.size(), gpu_data.curves.data(), GL_STATIC_DRAW);
+	//glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 6, curve_buffer);
+	//
+	//glGenBuffers(1, &vertex_buffer);
+	//glBindBuffer(GL_SHADER_STORAGE_BUFFER, vertex_buffer);
+	//glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPU_Vertex) * gpu_data.vertices.size(), gpu_data.vertices.data(), GL_STATIC_DRAW);
+	//glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 7, vertex_buffer);
+	//
+	//glGenBuffers(1, &mesh_buffer);
+	//glBindBuffer(GL_SHADER_STORAGE_BUFFER, mesh_buffer);
+	//glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPU_Mesh) * gpu_data.meshes.size(), gpu_data.meshes.data(), GL_STATIC_DRAW);
+	//glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 9, mesh_buffer);
 }
 
 void Renderer::f_guiLoop() {
@@ -359,6 +360,9 @@ void Renderer::f_displayLoop() {
 		glUniform2ui(glGetUniformLocation(compute_program, "resolution"), render_resolution.x, render_resolution.y);
 		glUniform1f (glGetUniformLocation(compute_program, "runtime"), d_to_f(runtime));
 		glUniform1ui(glGetUniformLocation(compute_program, "reset"), static_cast<GLuint>(reset));
+
+		glUniform1ui(glGetUniformLocation(compute_program, "ray_bounces"), static_cast<GLuint>(1U));
+		glUniform1ui(glGetUniformLocation(compute_program, "samples_per_pixel"), static_cast<GLuint>(1U));
 
 		glUniform3fv(glGetUniformLocation(compute_program, "camera_pos") , 1, value_ptr(d_to_f(camera.position)));
 		glUniform3fv(glGetUniformLocation(compute_program, "camera_xvec"), 1, value_ptr(d_to_f(camera.x_vector)));
