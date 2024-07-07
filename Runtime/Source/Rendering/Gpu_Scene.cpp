@@ -294,6 +294,9 @@ void GPU_Scene::f_loadMesh(const vector<vector<string>>& token_data, map<uint64,
 			read_data.push_back(tokens);
 		}
 	}
+	BVH_Builder bvh_build = BVH_Builder(triangles);
+	bvh_nodes = bvh_build.node_list;
+	triangles = bvh_build.triangles;
 }
 
 void GPU_Scene::f_loadSfx(const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map) {
@@ -322,8 +325,40 @@ Lace GPU_Triangle::print() const {
 	return lace;
 }
 
+void GPU_BVH::f_growToInclude(const vec3& min, const vec3& max) {
+	p_min.x = min.x < p_min.x ? min.x : p_min.x;
+	p_min.y = min.y < p_min.y ? min.y : p_min.y;
+	p_min.z = min.z < p_min.z ? min.z : p_min.z;
+	p_max.x = max.x > p_max.x ? max.x : p_max.x;
+	p_max.y = max.y > p_max.y ? max.y : p_max.y;
+	p_max.z = max.z > p_max.z ? max.z : p_max.z;
+}
+
 Lace GPU_BVH::print() const {
 	Lace lace;
 	lace << "Bvh: (" << p_min<< ") | (" << p_max << ") | " << pointer << " | " << tri_count;
 	return lace;
+}
+
+BVH_Builder::BVH_Builder(const vector<GPU_Triangle>& triangles) :
+	triangles(triangles)
+{
+	for (int i = 0; i < triangles.size(); i++) {
+		vec3 a = triangles[i].pos_a;
+		vec3 b = triangles[i].pos_b;
+		vec3 c = triangles[i].pos_c;
+		vec3 center = (a + b + c) / 3.0f;
+		vec3 max = glm::max(glm::max(a, b), c);
+		vec3 min = glm::min(glm::min(a, b), c);
+		bvh_tris.push_back(BVH_Triangle(min, max, center, i, triangles[i]));
+		mesh_bounds.f_growToInclude(min, max);
+	}
+
+	node_list.push_back(mesh_bounds);
+	f_splitBvh(0, 0, triangles.size());
+
+	this->triangles.clear();
+	for (int i = 0; i < bvh_tris.size(); i++) {
+		this->triangles.push_back(bvh_tris[i].tri);
+	}
 }

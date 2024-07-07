@@ -8,7 +8,7 @@ Camera::Camera() {
 	focal_angle  = 40.0;
 	sensor_size  = 0.036;
 
-	position = dvec3( 0, 0, -5 );
+	position = dvec3( 0, 0, -3.5 );
 	rotation = dvec3( 90, 0,  0 );
 
 	x_vector = dvec3( 1.0f, 0.0f, 0.0f);

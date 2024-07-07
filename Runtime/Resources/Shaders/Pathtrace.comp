@@ -19,18 +19,23 @@ Ray f_cameraRay(vec2 uv) {
 //}
 
 vec4 f_pathTrace(in Ray ray) {
-	vec4 radiance = vec4(0);
+	float alpha = 1.0f;
+
 	for (uint b = 0; b < ray_bounces; b++) {
 		Hit hit_data = f_SceneIntersection(ray);
 		if (hit_data.mesh_hit) {
 			//return vec4(abs(hit_data.hit_normal), 1);
-			radiance += f_shade(hit_data, ray);
+			return f_shade(hit_data, ray) * alpha;
 		}
-		//else
+		else {
+			for (int i = 0; i < hit_data.bvh_depth; i++) {
+				alpha *= 0.85;
+			}
+			return vec4(vec3(1-alpha), 1);
+		}
 			//radiance += f_environmentTexture(ray);
 			//break;
 	}
-	return radiance;
 }
 
 vec4 f_render(in vec2 uv) {

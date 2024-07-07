@@ -11,7 +11,7 @@ Renderer::Renderer() {
 	display_resolution = uvec2(3840U, 2160U);
 	display_aspect_ratio = u_to_d(display_resolution.x) / u_to_d(display_resolution.y);
 
-	render_resolution = uvec2(1920U, 800U);
+	render_resolution = uvec2(1000U, 700U);
 	render_aspect_ratio = u_to_d(render_resolution.x) / u_to_d(render_resolution.y);
 
 	recompile = false;
@@ -155,7 +155,7 @@ void Renderer::f_pipeline() {
 
 void Renderer::f_dataTransfer() {
 	GPU_Scene* gpu_data = new GPU_Scene("./Resources/Ganyu.krz", "");
-	//gpu_data->print();
+	gpu_data->print();
 	Session::getInstance().setScene(gpu_data);
 	
 	GLuint triangle_buffer;

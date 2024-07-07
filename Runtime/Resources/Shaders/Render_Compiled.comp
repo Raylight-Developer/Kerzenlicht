@@ -115,11 +115,11 @@ float f_randAround(inout uint seed, int range) { // [-1 to 1]
 
 
 bool f_rayBvhIntersection(in Ray ray, in Bvh box, inout float ray_length) {
-	vec3 t0 = (box.p_min.xyz - ray.origin) * ray.direction;
-	vec3 t1 = (box.p_max.xyz - ray.origin) * ray.direction;
+	vec3 t0 = (box.p_min - ray.origin) * ray.direction;
+	vec3 t1 = (box.p_max - ray.origin) * ray.direction;
 	float tmin = max(max(min(t0.x, t1.x), min(t0.y, t1.y)), min(t0.z, t1.z));
 	float tmax = min(min(max(t0.x, t1.x), max(t0.y, t1.y)), max(t0.z, t1.z));
-	if (all(greaterThanEqual(ray.origin, box.p_min.xyz)) && all(lessThanEqual(ray.origin, box.p_max.xyz))) {
+	if (all(greaterThanEqual(ray.origin, box.p_min)) && all(lessThanEqual(ray.origin, box.p_max))) {
 		ray_length = tmax;
 		return true;
 	}
@@ -166,6 +166,9 @@ Hit f_SceneIntersection(in Ray ray) {
 	hit_data.mesh_hit = false;
 	hit_data.t_dist = MAX_DIST;
 	float t_dist = MAX_DIST;
+	float bvh_t_length = MAX_DIST;
+	float bvh_ray_length = MAX_DIST;
+	Ray bvh_ray = Ray(ray.origin, 1.0 / ray.direction);
 	for (uint i = 0; i < triangles.length(); i++) {
 		Triangle tri = triangles[i];
 		if (f_rayTriangleIntersection(
@@ -175,19 +178,32 @@ Hit f_SceneIntersection(in Ray ray) {
 			tri.pos_c,
 			t_dist
 		)) {
-			if(t_dist < hit_data.t_dist && t_dist > EPSILON) {
+			if (t_dist < hit_data.t_dist && t_dist > EPSILON) {
 				hit_data.t_dist = t_dist;
 				hit_data.pos = ray.origin + ray.direction * t_dist;
 				hit_data.inside = false;
 				hit_data.mesh_hit = true;
+	
 				hit_data.uvw = f_barycentricCoords(
 					hit_data.pos,
 					tri.pos_a,
 					tri.pos_b,
 					tri.pos_c
 				);
+	
 				hit_data.hit_tri = tri;
 				hit_data.hit_normal = hit_data.uvw.x * tri.normal_a + hit_data.uvw.y * tri.normal_b + hit_data.uvw.z * tri.normal_c;
+			}
+		}
+	}
+	for (uint i = 0; i < bvh_nodes.length(); i++) {
+		if (f_rayBvhIntersection(
+			bvh_ray,
+			bvh_nodes[i],
+			bvh_ray_length
+		)) {
+			if (bvh_ray_length < bvh_t_length && bvh_ray_length > EPSILON) {
+				hit_data.bvh_depth++;
 			}
 		}
 	}
@@ -216,14 +232,20 @@ Ray f_cameraRay(vec2 uv) {
 
 
 vec4 f_pathTrace(in Ray ray) {
-	vec4 radiance = vec4(0);
+	float alpha = 1.0f;
+
 	for (uint b = 0; b < ray_bounces; b++) {
 		Hit hit_data = f_SceneIntersection(ray);
 		if (hit_data.mesh_hit) {
-			radiance += f_shade(hit_data, ray);
+			return f_shade(hit_data, ray) * alpha;
+		}
+		else {
+			for (int i = 0; i < hit_data.bvh_depth; i++) {
+				alpha *= 0.85;
+			}
+			return vec4(vec3(1-alpha), 1);
 		}
 	}
-	return radiance;
 }
 
 vec4 f_render(in vec2 uv) {
