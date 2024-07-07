@@ -69,117 +69,146 @@ Hit f_SceneIntersection(in Ray ray) {
 	hit_data.t_dist = MAX_DIST;
 	float t_dist = MAX_DIST;
 	float bvh_t_length = MAX_DIST;
-	float bvh_ray_length = MAX_DIST;
 
 	Ray bvh_ray = Ray(ray.origin, 1.0 / ray.direction);
 
-	//uint nodeOffset = 0;
-	//uint stack[8];
-	//uint stackIndex = 0;
-	//stack[stackIndex++] = nodeOffset;
+//	uint nodeOffset = 0;
+//	uint stack[8];
+//	uint stackIndex = 0;
+//	stack[stackIndex++] = nodeOffset;
 //
-	//while (stackIndex > 0) {
-	//	Bvh node = bvh_nodes[stack[--stackIndex]];
-	//	if (f_rayBvhIntersection(
-	//		bvh_ray,
-	//		node,
-	//		bvh_ray_length
-	//	)) {
-	//		if (bvh_ray_length < bvh_t_length && bvh_ray_length > EPSILON) {
-	//			hit_data.bvh_depth++;
+//	while (stackIndex > 0) {
+//		Bvh node = bvh_nodes[stack[--stackIndex]];
+//		if (f_rayBvhIntersection(
+//			bvh_ray,
+//			node,
+//			bvh_ray_length
+//		)) {
+//			if (bvh_ray_length < bvh_t_length && bvh_ray_length > EPSILON) {
+//				hit_data.bvh_depth++;
 //
-	//			bool isLeaf = node.tri_count > 0;
-	//			if (isLeaf) {
-	//				for (uint i = 0; i < node.tri_count; i++) {
-	//					Triangle tri = triangles[i];
+//				bool isLeaf = node.tri_count > 0;
+//				if (isLeaf) {
+//					for (uint i = 0; i < node.tri_count; i++) {
+//						Triangle tri = triangles[i];
 //
-	//					if (f_rayTriangleIntersection(
-	//						ray,
-	//						tri.pos_a,
-	//						tri.pos_b,
-	//						tri.pos_c,
-	//						t_dist
-	//					)) {
-	//						if(t_dist < hit_data.t_dist && t_dist > EPSILON) {
-	//							hit_data.t_dist = t_dist;
-	//							hit_data.pos = ray.origin + ray.direction * t_dist;
-	//							hit_data.inside = false;
-	//							hit_data.mesh_hit = true;
+//						if (f_rayTriangleIntersection(
+//							ray,
+//							tri.pos_a,
+//							tri.pos_b,
+//							tri.pos_c,
+//							t_dist
+//						)) {
+//							if(t_dist < hit_data.t_dist && t_dist > EPSILON) {
+//								hit_data.t_dist = t_dist;
+//								hit_data.pos = ray.origin + ray.direction * t_dist;
+//								hit_data.inside = false;
+//								hit_data.mesh_hit = true;
 //
-	//							hit_data.uvw = f_barycentricCoords(
-	//								hit_data.pos,
-	//								tri.pos_a,
-	//								tri.pos_b,
-	//								tri.pos_c
-	//							);
+//								hit_data.uvw = f_barycentricCoords(
+//									hit_data.pos,
+//									tri.pos_a,
+//									tri.pos_b,
+//									tri.pos_c
+//								);
 //
-	//							hit_data.hit_tri = tri;
-	//							hit_data.hit_normal = hit_data.uvw.x * tri.normal_a + hit_data.uvw.y * tri.normal_b + hit_data.uvw.z * tri.normal_c;
-	//						}
-	//					}
-	//				}
-	//			}
-	//			else {
-	//				uint childIndexA = nodeOffset + node.pointer + 0;
-	//				uint childIndexB = nodeOffset + node.pointer + 1;
-	//				Bvh childA = bvh_nodes[childIndexA];
-	//				Bvh childB = bvh_nodes[childIndexB];
+//								hit_data.hit_tri = tri;
+//								hit_data.hit_normal = hit_data.uvw.x * tri.normal_a + hit_data.uvw.y * tri.normal_b + hit_data.uvw.z * tri.normal_c;
+//							}
+//						}
+//					}
+//				}
+//				else {
+//					uint childIndexA = nodeOffset + node.pointer + 0;
+//					uint childIndexB = nodeOffset + node.pointer + 1;
+//					Bvh childA = bvh_nodes[childIndexA];
+//					Bvh childB = bvh_nodes[childIndexB];
 //
-	//				float dstA;
-	//				f_rayBvhIntersection(bvh_ray, childA, dstA);
-	//				float dstB;
-	//				f_rayBvhIntersection(bvh_ray, childB, dstB);
-	//				
-	//				// We want to look at closest child node first, so push it last
-	//				bool isNearestA = dstA <= dstB;
-	//				float dstNear = isNearestA ? dstA : dstB;
-	//				float dstFar = isNearestA ? dstB : dstA;
-	//				uint childIndexNear = isNearestA ? childIndexA : childIndexB;
-	//				uint childIndexFar = isNearestA ? childIndexB : childIndexA;
+//					float dstA;
+//					f_rayBvhIntersection(bvh_ray, childA, dstA);
+//					float dstB;
+//					f_rayBvhIntersection(bvh_ray, childB, dstB);
+//					
+//					// We want to look at closest child node first, so push it last
+//					bool isNearestA = dstA <= dstB;
+//					float dstNear = isNearestA ? dstA : dstB;
+//					float dstFar = isNearestA ? dstB : dstA;
+//					uint childIndexNear = isNearestA ? childIndexA : childIndexB;
+//					uint childIndexFar = isNearestA ? childIndexB : childIndexA;
 //
-	//				if (dstFar < t_dist) stack[stackIndex++] = childIndexFar;
-	//				if (dstNear < t_dist) stack[stackIndex++] = childIndexNear;
-	//			}
-	//		}
-	//	}
-	//}
-	for (uint i = 0; i < triangles.length(); i++) {
-		Triangle tri = triangles[i];
-		if (f_rayTriangleIntersection(
-			ray,
-			tri.pos_a,
-			tri.pos_b,
-			tri.pos_c,
-			t_dist
-		)) {
-			if (t_dist < hit_data.t_dist && t_dist > EPSILON) {
-				hit_data.t_dist = t_dist;
-				hit_data.pos = ray.origin + ray.direction * t_dist;
-				hit_data.inside = false;
-				hit_data.mesh_hit = true;
-	
-				hit_data.uvw = f_barycentricCoords(
-					hit_data.pos,
-					tri.pos_a,
-					tri.pos_b,
-					tri.pos_c
-				);
-	
-				hit_data.hit_tri = tri;
-				hit_data.hit_normal = hit_data.uvw.x * tri.normal_a + hit_data.uvw.y * tri.normal_b + hit_data.uvw.z * tri.normal_c;
-			}
-		}
-	}
+//					if (dstFar < t_dist) stack[stackIndex++] = childIndexFar;
+//					if (dstNear < t_dist) stack[stackIndex++] = childIndexNear;
+//				}
+//			}
+//		}
+//	}
+
+//	for (uint i = 0; i < triangles.length(); i++) {
+//		Triangle tri = triangles[i];
+//		if (f_rayTriangleIntersection(
+//			ray,
+//			tri.pos_a,
+//			tri.pos_b,
+//			tri.pos_c,
+//			t_dist
+//		)) {
+//			if (t_dist < hit_data.t_dist && t_dist > EPSILON) {
+//				hit_data.t_dist = t_dist;
+//				hit_data.pos = ray.origin + ray.direction * t_dist;
+//				hit_data.inside = false;
+//				hit_data.mesh_hit = true;
+//	
+//				hit_data.uvw = f_barycentricCoords(
+//					hit_data.pos,
+//					tri.pos_a,
+//					tri.pos_b,
+//					tri.pos_c
+//				);
+//	
+//				hit_data.hit_tri = tri;
+//				hit_data.hit_normal = hit_data.uvw.x * tri.normal_a + hit_data.uvw.y * tri.normal_b + hit_data.uvw.z * tri.normal_c;
+//			}
+//		}
+//	}
 
 	for (uint i = 0; i < bvh_nodes.length(); i++) {
+		Bvh node = bvh_nodes[i];
 		if (f_rayBvhIntersection(
 			bvh_ray,
-			bvh_nodes[i],
-			bvh_ray_length
+			node,
+			bvh_t_length
 		)) {
-			if (bvh_ray_length < bvh_t_length && bvh_ray_length > EPSILON) {
-				//bvh_t_length = bvh_ray_length;
+			if (bvh_t_length < MAX_DIST && bvh_t_length > EPSILON) {
 				hit_data.bvh_depth++;
+				if (node.tri_count > 0) {
+					for (uint i = node.pointer; i < node.pointer + node.tri_count; i++) {
+						Triangle tri = triangles[i];
+						if (f_rayTriangleIntersection(
+							ray,
+							tri.pos_a,
+							tri.pos_b,
+							tri.pos_c,
+							t_dist
+						)) {
+							if (t_dist < hit_data.t_dist && t_dist > EPSILON) {
+								hit_data.t_dist = t_dist;
+								hit_data.pos = ray.origin + ray.direction * t_dist;
+								hit_data.inside = false;
+								hit_data.mesh_hit = true;
+					
+								hit_data.uvw = f_barycentricCoords(
+									hit_data.pos,
+									tri.pos_a,
+									tri.pos_b,
+									tri.pos_c
+								);
+					
+								hit_data.hit_tri = tri;
+								hit_data.hit_normal = hit_data.uvw.x * tri.normal_a + hit_data.uvw.y * tri.normal_b + hit_data.uvw.z * tri.normal_c;
+							}
+						}
+					}
+				}
 			}
 		}
 	}

@@ -11,7 +11,7 @@ Renderer::Renderer() {
 	display_resolution = uvec2(3840U, 2160U);
 	display_aspect_ratio = u_to_d(display_resolution.x) / u_to_d(display_resolution.y);
 
-	render_resolution = uvec2(1000U, 700U);
+	render_resolution = uvec2(1050U, 450U);
 	render_aspect_ratio = u_to_d(render_resolution.x) / u_to_d(render_resolution.y);
 
 	recompile = false;

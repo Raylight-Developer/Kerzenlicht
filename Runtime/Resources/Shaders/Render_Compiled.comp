@@ -167,43 +167,45 @@ Hit f_SceneIntersection(in Ray ray) {
 	hit_data.t_dist = MAX_DIST;
 	float t_dist = MAX_DIST;
 	float bvh_t_length = MAX_DIST;
-	float bvh_ray_length = MAX_DIST;
 	Ray bvh_ray = Ray(ray.origin, 1.0 / ray.direction);
-	for (uint i = 0; i < triangles.length(); i++) {
-		Triangle tri = triangles[i];
-		if (f_rayTriangleIntersection(
-			ray,
-			tri.pos_a,
-			tri.pos_b,
-			tri.pos_c,
-			t_dist
-		)) {
-			if (t_dist < hit_data.t_dist && t_dist > EPSILON) {
-				hit_data.t_dist = t_dist;
-				hit_data.pos = ray.origin + ray.direction * t_dist;
-				hit_data.inside = false;
-				hit_data.mesh_hit = true;
-	
-				hit_data.uvw = f_barycentricCoords(
-					hit_data.pos,
-					tri.pos_a,
-					tri.pos_b,
-					tri.pos_c
-				);
-	
-				hit_data.hit_tri = tri;
-				hit_data.hit_normal = hit_data.uvw.x * tri.normal_a + hit_data.uvw.y * tri.normal_b + hit_data.uvw.z * tri.normal_c;
-			}
-		}
-	}
 	for (uint i = 0; i < bvh_nodes.length(); i++) {
+		Bvh node = bvh_nodes[i];
 		if (f_rayBvhIntersection(
 			bvh_ray,
-			bvh_nodes[i],
-			bvh_ray_length
+			node,
+			bvh_t_length
 		)) {
-			if (bvh_ray_length < bvh_t_length && bvh_ray_length > EPSILON) {
+			if (bvh_t_length < MAX_DIST && bvh_t_length > EPSILON) {
 				hit_data.bvh_depth++;
+				if (node.tri_count > 0) {
+					for (uint i = node.pointer; i < node.pointer + node.tri_count; i++) {
+						Triangle tri = triangles[i];
+						if (f_rayTriangleIntersection(
+							ray,
+							tri.pos_a,
+							tri.pos_b,
+							tri.pos_c,
+							t_dist
+						)) {
+							if (t_dist < hit_data.t_dist && t_dist > EPSILON) {
+								hit_data.t_dist = t_dist;
+								hit_data.pos = ray.origin + ray.direction * t_dist;
+								hit_data.inside = false;
+								hit_data.mesh_hit = true;
+					
+								hit_data.uvw = f_barycentricCoords(
+									hit_data.pos,
+									tri.pos_a,
+									tri.pos_b,
+									tri.pos_c
+								);
+					
+								hit_data.hit_tri = tri;
+								hit_data.hit_normal = hit_data.uvw.x * tri.normal_a + hit_data.uvw.y * tri.normal_b + hit_data.uvw.z * tri.normal_c;
+							}
+						}
+					}
+				}
 			}
 		}
 	}
