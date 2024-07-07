@@ -47,12 +47,14 @@ struct Hit {
 #define EPSILON  0.0001
 
 layout(local_size_x = 32, local_size_y = 32, local_size_z = 1) in;
-layout(rgba32f, binding = 0) uniform image2D render_tex;
-layout(rgba32f, binding = 1) writeonly uniform image2D raw_render_tex;
-layout(std430, binding = 2) buffer TriangleDataBuffer {
+layout(rgba32f, binding = 0)           uniform image2D accumulation_render_layer;
+layout(rgba32f, binding = 1) writeonly uniform image2D raw_render_layer;
+layout(rgba32f, binding = 2) writeonly uniform image2D bvh_render_layer;
+layout(rgba32f, binding = 3) writeonly uniform image2D normal_render_layer;
+layout(std430, binding = 5) buffer TriangleDataBuffer {
 	Triangle triangles[];
 };
-layout(std430, binding = 3) buffer BVH_Buffer {
+layout(std430, binding = 6) buffer BVH_Buffer {
 	Bvh bvh_nodes[];
 };
 layout(rgba8, binding = 4) readonly uniform image2D image_texture;
@@ -236,43 +238,48 @@ Ray f_cameraRay(vec2 uv) {
 }
 
 
-vec4 f_pathTrace(in Ray ray) {
+vec4 f_pathTrace(in Ray ray, in vec2 uv, in ivec2 pixel_id) {
+	vec4 radiance;
 	float alpha = 1.0f;
 
 	for (uint b = 0; b < ray_bounces; b++) {
 		Hit hit_data = f_SceneIntersection(ray);
 		if (hit_data.mesh_hit) {
-			return f_shade(hit_data, ray) * alpha;
+			imageStore(normal_render_layer, pixel_id, vec4(abs(hit_data.hit_normal), 1));
+			radiance = f_shade(hit_data, ray);
 		}
 		else {
-			for (int i = 0; i < hit_data.bvh_depth; i++) {
-				alpha *= 0.75;
-			}
-			return vec4(vec3(1-alpha), 1);
+			imageStore(normal_render_layer, pixel_id, vec4(0));
+			radiance = vec4(0,0,0,1);
 		}
+
+		for (int i = 0; i < hit_data.bvh_depth; i++) alpha *= 0.95;
+		imageStore(bvh_render_layer, pixel_id, vec4(vec3(1-alpha), 1));
+		return radiance;
 	}
 }
 
-vec4 f_render(in vec2 uv) {
+vec4 f_render(in vec2 uv, in ivec2 pixel_id) {
 	vec4 color = vec4(0);
 
 
 	Ray ray = f_cameraRay(uv);
-	color = f_pathTrace(ray);
+	color = f_pathTrace(ray, uv, pixel_id);
 
 	return clamp(color, 0, 1);
 }
 
 
 void main() {
-	ivec2 work_id = ivec2(gl_GlobalInvocationID.xy);
-	vec2 uv = (work_id - 1 - vec2(resolution) / 2.0) / float(max(resolution.x, resolution.y));
+	ivec2 pixel_id = ivec2(gl_GlobalInvocationID.xy);
+	vec2 uv = (pixel_id - 1 - vec2(resolution) / 2.0) / float(max(resolution.x, resolution.y));
 
-	vec4 color = f_render(uv);
+	vec4 color = f_render(uv, pixel_id);
 
-	vec4 previous_color = imageLoad(render_tex, work_id);
+	vec4 previous_color = imageLoad(accumulation_render_layer, pixel_id);
 	if (frame_count == 0 || bool(reset)) previous_color = vec4(0);
 
-	imageStore(render_tex, work_id, previous_color + color);
-	imageStore(raw_render_tex, work_id, color);
+	vec4 full_color = previous_color + color;
+	imageStore(accumulation_render_layer, pixel_id, vec4(full_color.rgb / full_color.a, 1));
+	imageStore(raw_render_layer, pixel_id, color);
 }

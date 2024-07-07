@@ -5,6 +5,8 @@
 
 GLuint fragmentShaderProgram(const string& file_path);
 GLuint computeShaderProgram(const string& file_path);
+GLuint renderLayer(const uvec2& resolution);
+void   bindRenderLayer(const GLuint& program_id, const GLuint& unit, const GLuint& id, const string& name);
 
 struct Image {
 	uint16_t width;

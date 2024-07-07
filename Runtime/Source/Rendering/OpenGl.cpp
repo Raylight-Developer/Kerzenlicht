@@ -81,3 +81,19 @@ GLuint computeShaderProgram(const string& file_path) {
 
 	return compute_program;
 }
+
+GLuint renderLayer(const uvec2& resolution) {
+	GLuint ID;
+	glCreateTextures(GL_TEXTURE_2D, 1, &ID);
+	glTextureParameteri(ID, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTextureParameteri(ID, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTextureParameteri(ID, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTextureParameteri(ID, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTextureStorage2D (ID, 1, GL_RGBA32F, resolution.x,resolution.y);
+	return ID;
+}
+
+void bindRenderLayer(const GLuint& program_id, const GLuint& unit, const GLuint& id, const string& name) {
+	glUniform1i(glGetUniformLocation(program_id, name.c_str()), unit);
+	glBindTextureUnit(unit, id);
+}

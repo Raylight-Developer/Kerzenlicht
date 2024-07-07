@@ -19,8 +19,8 @@ Renderer::Renderer() {
 
 	camera = Camera();
 
-	camera_move_sensitivity = 0.15;
-	camera_view_sensitivity = 0.075;
+	camera_move_sensitivity = 0.75;
+	camera_view_sensitivity = 2.5;
 	keys = vector(348, false);
 	last_mouse = dvec2(display_resolution) / 2.0;
 
@@ -186,12 +186,12 @@ void Renderer::dataTransfer() {
 	glGenBuffers(1, &triangle_buffer);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, triangle_buffer);
 	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPU_Triangle) * gpu_data->triangles.size(), gpu_data->triangles.data(), GL_STATIC_DRAW);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, triangle_buffer);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 5, triangle_buffer);
 
 	glGenBuffers(1, &bvh_buffer);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, bvh_buffer);
 	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPU_BVH) * gpu_data->bvh_nodes.size(), gpu_data->bvh_nodes.data(), GL_STATIC_DRAW);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, bvh_buffer);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 6, bvh_buffer);
 
 	//glGenBuffers(1, &material_buffer);
 	//glBindBuffer(GL_SHADER_STORAGE_BUFFER, material_buffer);
@@ -249,32 +249,32 @@ void Renderer::guiLoop() {
 
 void Renderer::gameLoop() {
 	if (keys[GLFW_KEY_D]) {
-		camera.move(1, 0, 0, camera_move_sensitivity);
+		camera.move(1.0, 0.0, 0.0, camera_move_sensitivity * frame_time);
 		reset = true;
 		runframe = 0;
 	}
 	if (keys[GLFW_KEY_A]) {
-		camera.move(-1, 0, 0, camera_move_sensitivity);
+		camera.move(-1.0, 0.0, 0.0, camera_move_sensitivity * frame_time);
 		reset = true;
 		runframe = 0;
 	}
 	if (keys[GLFW_KEY_E] || keys[GLFW_KEY_SPACE]) {
-		camera.position += dvec3(0.0, 1.0, 0.0) * camera_move_sensitivity;
+		camera.move(0.0, 1.0, 0.0, camera_move_sensitivity * frame_time);
 		reset = true;
 		runframe = 0;
 	}
 	if (keys[GLFW_KEY_Q] || keys[GLFW_KEY_LEFT_CONTROL]) {
-		camera.position -= dvec3(0.0, 1.0, 0.0) * camera_move_sensitivity;
+		camera.move(0.0, -1.0, 0.0, camera_move_sensitivity * frame_time);
 		reset = true;
 		runframe = 0;
 	}
 	if (keys[GLFW_KEY_W]) {
-		camera.move(0, 0, 1, camera_move_sensitivity);
+		camera.move(0.0, 0.0, 1.0, camera_move_sensitivity * frame_time);
 		reset = true;
 		runframe = 0;
 	}
 	if (keys[GLFW_KEY_S]) {
-		camera.move(0, 0, -1, camera_move_sensitivity);
+		camera.move(0.0, 0.0, -1.0, camera_move_sensitivity * frame_time);
 		reset = true;
 		runframe = 0;
 	}
@@ -284,8 +284,8 @@ void Renderer::displayLoop() {
 	const GLfloat vertices[16] = {
 		-1.0f, -1.0f, 0.0f, 0.0f,
 		-1.0f,  1.0f, 0.0f, 1.0f,
-		1.0f,  1.0f, 1.0f, 1.0f,
-		1.0f, -1.0f, 1.0f, 0.0f,
+		 1.0f,  1.0f, 1.0f, 1.0f,
+		 1.0f, -1.0f, 1.0f, 0.0f,
 	};
 	const GLuint indices[6] = {
 		0, 1, 2,
@@ -312,24 +312,6 @@ void Renderer::displayLoop() {
 	glVertexArrayVertexBuffer (VAO, 0, VBO, 0, 4 * sizeof(GLfloat));
 	glVertexArrayElementBuffer(VAO, EBO);
 
-	// Compute Output
-	GLuint render_result;
-	glCreateTextures(GL_TEXTURE_2D, 1, &render_result);
-	glTextureParameteri(render_result, GL_TEXTURE_MIN_FILTER, GL_NEAREST); // GL_NEAREST for raw pixels
-	glTextureParameteri(render_result, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTextureParameteri(render_result, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTextureParameteri(render_result, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glTextureStorage2D (render_result, 1, GL_RGBA32F, render_resolution.x, render_resolution.y);
-	
-	// Compute Output
-	GLuint raw_render_result;
-	glCreateTextures(GL_TEXTURE_2D, 1, &raw_render_result);
-	glTextureParameteri(raw_render_result, GL_TEXTURE_MIN_FILTER, GL_NEAREST); // GL_NEAREST for raw pixels
-	glTextureParameteri(raw_render_result, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTextureParameteri(raw_render_result, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTextureParameteri(raw_render_result, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glTextureStorage2D (raw_render_result, 1, GL_RGBA32F, render_resolution.x, render_resolution.y);
-
 	GLuint compute_program = computeShaderProgram("Render");
 	GLuint post_program = fragmentShaderProgram("Post");
 
@@ -340,6 +322,12 @@ void Renderer::displayLoop() {
 	);
 
 	dataTransfer();
+
+	// Compute Output
+	GLuint accumulation_render_layer = renderLayer(render_resolution);
+	GLuint raw_render_layer = renderLayer(render_resolution);
+	GLuint bvh_render_layer = renderLayer(render_resolution);
+	GLuint normal_render_layer = renderLayer(render_resolution);
 
 	GPU_Texture tex = GPU_Texture();
 	tex.init("./Resources/Ganyu.jpg");
@@ -372,9 +360,11 @@ void Renderer::displayLoop() {
 		glUniform1f (glGetUniformLocation(compute_program, "camera_focal_angle") , d_to_f(camera.focal_angle));
 		glUniform1f (glGetUniformLocation(compute_program, "camera_focal_length"), d_to_f(camera.focal_length));
 
-		glBindImageTexture(0, render_result, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
-		glBindImageTexture(1, raw_render_result, 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
-		glBindImageTexture(4, tex.ID, 0, GL_FALSE, 0, GL_READ_ONLY, GL_RGBA8);
+		glBindImageTexture(0, accumulation_render_layer, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
+		glBindImageTexture(1, raw_render_layer         , 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
+		glBindImageTexture(2, bvh_render_layer         , 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
+		glBindImageTexture(3, normal_render_layer      , 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
+		glBindImageTexture(4, tex.ID, 0, GL_FALSE      , 0, GL_READ_ONLY, GL_RGBA8);
 
 		//glActiveTexture(GL_TEXTURE4);
 		//glBindTexture(GL_TEXTURE_2D, tex.ID);
@@ -388,10 +378,10 @@ void Renderer::displayLoop() {
 		glClear(GL_COLOR_BUFFER_BIT);
 		glUniform1f(glGetUniformLocation(post_program, "display_aspect_ratio"), d_to_f(display_aspect_ratio));
 		glUniform1f(glGetUniformLocation(post_program, "render_aspect_ratio"), d_to_f(render_aspect_ratio));
-		glUniform1i(glGetUniformLocation(post_program, "render"), 0);
-		glBindTextureUnit(0, render_result);
-		glUniform1i(glGetUniformLocation(post_program, "raw_render"), 1);
-		glBindTextureUnit(1, raw_render_result);
+		bindRenderLayer(post_program, 0, accumulation_render_layer, "accumulation_render_layer");
+		bindRenderLayer(post_program, 1, raw_render_layer         , "raw_render_layer"         );
+		bindRenderLayer(post_program, 2, bvh_render_layer         , "bvh_render_layer"         );
+		bindRenderLayer(post_program, 3, normal_render_layer      , "normal_render_layer"      );
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
 		frame_counter++;
@@ -441,7 +431,7 @@ void Renderer::cursorPos(GLFWwindow* window, double xpos, double ypos) {
 
 		instance->last_mouse = dvec2(xpos, ypos);
 
-		instance->camera.rotate(xoffset * instance->camera_view_sensitivity, yoffset * instance->camera_view_sensitivity);
+		instance->camera.rotate(xoffset * instance->camera_view_sensitivity * instance->frame_time, yoffset * instance->camera_view_sensitivity * instance->frame_time);
 		instance->reset = true;
 		instance->runframe = 0;
 	}
