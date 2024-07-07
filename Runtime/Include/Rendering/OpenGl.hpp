@@ -16,3 +16,10 @@ struct Image {
 	Image();
 	bool f_load(const string& i_file_path);
 };
+
+struct GPU_Texture {
+	GLuint ID;
+
+	GPU_Texture() { ID = 0; };
+	void f_init(const string& i_image_path);
+};

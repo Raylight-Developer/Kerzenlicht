@@ -1,15 +1,18 @@
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
 struct Triangle {
-	vec3 pos_a;
-	vec3 normal_a;
-	vec2 uv_a; // 32
-	vec3 pos_b;
-	vec3 normal_b;
-	vec2 uv_b; // 64
-	vec3 pos_c;
-	vec3 normal_c;
-	vec2 uv_c; // 96
+	vec3  pos_a;
+	float uv_a_x;
+	vec3  normal_a;
+	float uv_a_y; // 32
+	vec3  pos_b;
+	float uv_b_x;
+	vec3  normal_b;
+	float uv_b_y; // 64
+	vec3  pos_c;
+	float uv_c_x;
+	vec3  normal_c;
+	float uv_c_y; // 96
 };
 
 struct Bvh {

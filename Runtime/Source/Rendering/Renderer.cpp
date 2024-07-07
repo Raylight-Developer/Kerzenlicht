@@ -172,20 +172,17 @@ void Renderer::f_dataTransfer() {
 	glGetIntegerv(GL_MAX_SHADER_STORAGE_BLOCK_SIZE, &ssboMaxSize);
 	gpu_data->printInfo(ssboMaxSize);
 
-	//const uint numTextures = 0;
-	//vector<GLuint> textureIDs = vector<GLuint>(numTextures, 0);
-	//for (uint i = 0; i < numTextures; i++) {
-	//	glGenTextures(1, &textureIDs[i]);
-	//	glBindTexture(GL_TEXTURE_2D, textureIDs[i] + 2);
-	//	// Set texture parameters and load image data
-	//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	//	// Load image data into texture
-	//	// ... (loading image data code)
-	//	// Acces in shader:  sampler2D(textureID)
+	// Textures
+	//vector<string> textures = { "./Resources/Ganyu.jpg" };
+	//
+	//for (uint i = 0; i < textures.size(); i++) {
+	//	auto tex = GPU_Texture();
+	//	tex.f_init(textures[i]);
+	//	glBindImageTexture(4, tex.ID, 0, GL_FALSE, 0, GL_READ_ONLY, GL_UNSIGNED_BYTE);
 	//}
 	//glBindTexture(GL_TEXTURE_2D, 0);
 
+	// SSBOs
 	glGenBuffers(1, &triangle_buffer);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, triangle_buffer);
 	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPU_Triangle) * gpu_data->triangles.size(), gpu_data->triangles.data(), GL_STATIC_DRAW);
@@ -344,6 +341,10 @@ void Renderer::f_displayLoop() {
 
 	f_dataTransfer();
 
+
+	GPU_Texture tex = GPU_Texture();
+	tex.f_init("./Resources/Ganyu.jpg");
+
 	glBindVertexArray(VAO);
 	while (!glfwWindowShouldClose(window)) {
 		f_gameLoop();
@@ -374,6 +375,12 @@ void Renderer::f_displayLoop() {
 
 		glBindImageTexture(0, render_result, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
 		glBindImageTexture(1, raw_render_result, 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
+		glBindImageTexture(4, tex.ID, 0, GL_FALSE, 0, GL_READ_ONLY, GL_RGBA8);
+
+		//glActiveTexture(GL_TEXTURE4);
+		//glBindTexture(GL_TEXTURE_2D, tex.ID);
+		//glUniform1i(glGetUniformLocation(tex.ID, "image_texture"), 4);
+
 		glDispatchCompute(compute_layout.x, compute_layout.y, compute_layout.z);
 		
 		glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);

@@ -65,21 +65,25 @@ struct GPU_Scene {
 
 struct alignas(16) GPU_Triangle {
 	vec3 pos_a;
+	vec1 uv_a_x;
 	vec3 normal_a;
-	vec2 uv_a;
+	vec1 uv_a_y;
 	// 32
 	vec3 pos_b;
+	vec1 uv_b_x;
 	vec3 normal_b;
-	vec2 uv_b;
+	vec1 uv_b_y;
 	// 64
 	vec3 pos_c;
+	vec1 uv_c_x;
 	vec3 normal_c;
-	vec2 uv_c;
+	vec1 uv_c_y;
+	// 96
 
 	GPU_Triangle(
 		const vec3& pos_a = vec3(0.0f),
 		const vec3& pos_b = vec3(0.0f),
-		const vec3& pos_x = vec3(0.0f),
+		const vec3& pos_c = vec3(0.0f),
 		const vec3& normal_a = vec3(0.0f),
 		const vec3& normal_b = vec3(0.0f),
 		const vec3& normal_c = vec3(0.0f),
@@ -88,14 +92,17 @@ struct alignas(16) GPU_Triangle {
 		const vec2& uv_c = vec2(0.0f)
 	) :
 		pos_a(pos_a),
-		pos_b(pos_b),
-		pos_c(pos_c),
+		uv_a_x(uv_a.x),
 		normal_a(normal_a),
+		uv_a_y(uv_a.y),
+		pos_b(pos_b),
+		uv_b_x(uv_b.x),
 		normal_b(normal_b),
+		uv_b_y(uv_b.y),
+		pos_c(pos_c),
+		uv_c_x(uv_c.x),
 		normal_c(normal_c),
-		uv_a(uv_a),
-		uv_b(uv_b),
-		uv_c(uv_c)
+		uv_c_y(uv_c.y)
 	{}
 
 	Lace print() const;
@@ -107,8 +114,16 @@ struct alignas(16) GPU_BVH {
 	vec3 p_max;
 	uint tri_count; // 32
 
-	GPU_BVH(const vec3& p_min, const vec3& p_max, const uint& pointer, const uint& tri_count) :
-		p_min(p_min), p_max(p_max), pointer(pointer), tri_count(tri_count)
+	GPU_BVH(
+		const vec3& p_min     = vec3(-0.5f),
+		const vec3& p_max     = vec3( 0.5f),
+		const uint& pointer   = 0U,
+		const uint& tri_count = 0U
+	) :
+		p_min(p_min),
+		p_max(p_max),
+		pointer(pointer),
+		tri_count(tri_count)
 	{}
 
 	Lace print() const;

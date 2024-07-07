@@ -22,8 +22,10 @@ vec4 f_pathTrace(in Ray ray) {
 	vec4 radiance = vec4(0);
 	for (uint b = 0; b < ray_bounces; b++) {
 		Hit hit_data = f_SceneIntersection(ray);
-		if (hit_data.mesh_hit)
-			radiance += vec4(1.0);//f_shade(hit_data, ray);
+		if (hit_data.mesh_hit) {
+			//return vec4(abs(hit_data.hit_normal), 1);
+			radiance += f_shade(hit_data, ray);
+		}
 		//else
 			//radiance += f_environmentTexture(ray);
 			//break;
@@ -32,7 +34,9 @@ vec4 f_pathTrace(in Ray ray) {
 }
 
 vec4 f_render(in vec2 uv) {
-	vec4 color;
+	vec4 color = vec4(0);
+
+	//const vec2 pixel_size = 1 / resolution.xy;
 	//for (uint x = 0; x < samples_per_pixel; x++) {
 	//	for (uint y = 0; y < samples_per_pixel; y++) {
 	//		vec2 subpixelUV = uv - (vec2(0.5) * pixel_size) + (vec2(float(x) / float(samples_per_pixel), float(y) / float(samples_per_pixel)) * pixel_size);
@@ -40,11 +44,12 @@ vec4 f_render(in vec2 uv) {
 	//		color += f_pathTrace(ray);
 	//	}
 	//}
-	//color /= float(SPP * SPP);
+	//color /= float(samples_per_pixel * samples_per_pixel);
 
 	Ray ray = f_cameraRay(uv);
-	color = vec4(abs(ray.direction), 1);
-	return color;
-	// Miss
-	return vec4(0);
+	color = f_pathTrace(ray);
+
+	//Ray ray = f_cameraRay(uv);
+	//color = vec4(abs(ray.direction), 1);
+	return clamp(color, 0, 1);
 }

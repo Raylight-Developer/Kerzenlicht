@@ -12,20 +12,29 @@ Image::Image() {
 #include "External/stb_image.h"
 bool Image::f_load(const string& i_file_path) {
 	int t_width, t_height, t_nrChannels;
-	data = stbi_load(i_file_path.c_str(), &t_width, &t_height, &t_nrChannels, 0);
+	data = stbi_load(i_file_path.c_str(), &t_width, &t_height, &t_nrChannels, STBI_rgb_alpha);
 	if (data) {
-		if (t_nrChannels == 1)
-			channel_fromat = GL_RED;
-		else if (t_nrChannels == 3)
-			channel_fromat = GL_RGB;
-		else if (t_nrChannels == 4)
-			channel_fromat = GL_RGBA;
+		channel_fromat = GL_RGBA;
 		width = t_width;
 		height = t_height;
 		data_type = GL_UNSIGNED_BYTE;
 		return true;
 	}
 	return false;
+}
+
+void GPU_Texture::f_init(const string& i_image_path) {
+	Image texture = Image();
+	if (texture.f_load(i_image_path)) {
+		glGenTextures(1, &ID);
+		glBindTexture(GL_TEXTURE_2D, ID);
+		glTexImage2D(GL_TEXTURE_2D, 0, texture.channel_fromat, texture.width, texture.height, 0, texture.channel_fromat, texture.data_type, texture.data);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glBindTexture(GL_TEXTURE_2D, 0);
+	}
 }
 
 GLuint f_fragmentShaderProgram(const string& file_path) {

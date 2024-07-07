@@ -5,12 +5,15 @@ layout(local_size_x = 32, local_size_y = 32, local_size_z = 1) in;
 layout(rgba32f, binding = 0) uniform image2D render_tex;
 layout(rgba32f, binding = 1) writeonly uniform image2D raw_render_tex;
 
+
 layout(std430, binding = 2) buffer TriangleDataBuffer {
 	Triangle triangles[];
 };
 layout(std430, binding = 3) buffer BVH_Buffer {
 	Bvh bvh_nodes[];
 };
+
+layout(rgba8, binding = 4) readonly uniform image2D image_texture;
 
 //layout(std430, binding = 2) buffer MaterialDataBuffer {
 //	Material materials[];

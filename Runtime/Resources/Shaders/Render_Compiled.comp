@@ -2,17 +2,19 @@
 #extension GL_ARB_gpu_shader_int64: enable
 
 struct Triangle {
-	vec3 pos_a;
-	vec3 normal_a;
-	vec2 uv_a; // 32
-	vec3 pos_b;
-	vec3 normal_b;
-	vec2 uv_b; // 64
-	vec3 pos_c;
-	vec3 normal_c;
-	vec2 uv_c; // 96
+	vec3  pos_a;
+	float uv_a_x;
+	vec3  normal_a;
+	float uv_a_y; // 32
+	vec3  pos_b;
+	float uv_b_x;
+	vec3  normal_b;
+	float uv_b_y; // 64
+	vec3  pos_c;
+	float uv_c_x;
+	vec3  normal_c;
+	float uv_c_y; // 96
 };
-
 struct Bvh {
 	vec3 p_min;
 	uint pointer;   // 16
@@ -29,13 +31,10 @@ struct Hit {
 	float t_dist;
 	bool  inside;
 	bool  mesh_hit;
-
 	uint  bvh_depth;
-
 	vec3  hit_pos;
 	vec3  hit_normal;
 	vec3  uvw;
-
 	Triangle hit_tri;
 };
 #define TWO_PI   6.28318530718
@@ -44,32 +43,26 @@ struct Hit {
 #define INV_PI   0.31830988618
 #define DEG_RAD  0.01745329252
 #define RAD_DEG  0.01745329252
-
 #define MAX_DIST 10000.0
 #define EPSILON  0.0001
 
 layout(local_size_x = 32, local_size_y = 32, local_size_z = 1) in;
-
 layout(rgba32f, binding = 0) uniform image2D render_tex;
 layout(rgba32f, binding = 1) writeonly uniform image2D raw_render_tex;
-
 layout(std430, binding = 2) buffer TriangleDataBuffer {
 	Triangle triangles[];
 };
 layout(std430, binding = 3) buffer BVH_Buffer {
 	Bvh bvh_nodes[];
 };
-
-
+layout(rgba8, binding = 4) readonly uniform image2D image_texture;
 uniform uint64_t frame_count;
 uniform float    aspect_ratio;
 uniform uvec2    resolution;
 uniform float    runtime;
 uniform bool     reset;
-
 uniform uint  ray_bounces;
 uniform uint  samples_per_pixel;
-
 uniform vec3  camera_pos;
 uniform vec3  camera_xvec;
 uniform vec3  camera_yvec;
@@ -124,10 +117,8 @@ float f_randAround(inout uint seed, int range) { // [-1 to 1]
 bool f_rayBvhIntersection(in Ray ray, in Bvh box, inout float ray_length) {
 	vec3 t0 = (box.p_min.xyz - ray.origin) * ray.direction;
 	vec3 t1 = (box.p_max.xyz - ray.origin) * ray.direction;
-
 	float tmin = max(max(min(t0.x, t1.x), min(t0.y, t1.y)), min(t0.z, t1.z));
 	float tmax = min(min(max(t0.x, t1.x), max(t0.y, t1.y)), max(t0.z, t1.z));
-
 	if (all(greaterThanEqual(ray.origin, box.p_min.xyz)) && all(lessThanEqual(ray.origin, box.p_max.xyz))) {
 		ray_length = tmax;
 		return true;
@@ -142,17 +133,14 @@ bool f_rayTriangleIntersection(in Ray ray, in vec3 vertex_a, in vec3 vertex_b, i
 	vec3 v1v0 = vertex_b - vertex_a;
 	vec3 v2v0 = vertex_c - vertex_a;
 	vec3 rov0 = ray.origin- vertex_a;
-
 	vec3  normal = cross(v1v0, v2v0);
 	vec3  q = cross(rov0, ray.direction);
 	float d = 1.0 / dot(ray.direction, normal);
 	float u = d * dot(-q, v2v0);
 	float v = d * dot(q, v1v0);
 	float t = d * dot(-normal, rov0);
-
 	if (u < 0.0 || v < 0.0 || (u + v) > 1.0)
 		return false;
-
 	ray_length = t;
 	return true;
 }
@@ -160,19 +148,15 @@ vec3 f_barycentricCoords(in vec3 hit_pos, in vec3 vertex_a, in vec3 vertex_b, in
 	vec3 v0 = vertex_b - vertex_a;
 	vec3 v1 = vertex_c - vertex_a;
 	vec3 v2 = hit_pos  - vertex_a;
-
 	float d00 = dot(v0, v0);
 	float d01 = dot(v0, v1);
 	float d11 = dot(v1, v1);
 	float d20 = dot(v2, v0);
 	float d21 = dot(v2, v1);
-
 	float denom = d00 * d11 - d01 * d01;
-
 	float v = (d11 * d20 - d01 * d21) / denom;
 	float w = (d00 * d21 - d01 * d20) / denom;
 	float u = 1.0 - v - w;
-
 	return vec3(u, v, w);
 }
 Hit f_SceneIntersection(in Ray ray) {
@@ -180,42 +164,33 @@ Hit f_SceneIntersection(in Ray ray) {
 	hit_data.error = false;
 	hit_data.bvh_depth = 0;
 	hit_data.mesh_hit = false;
-
 	hit_data.t_dist = MAX_DIST;
 	float t_dist = MAX_DIST;
-	float bvh_t_length = MAX_DIST;
-	float bvh_ray_length = MAX_DIST;
-
-for (uint i = 0; i < triangles.length(); i++) {
-	Triangle tri = triangles[i];
-	if (f_rayTriangleIntersection(
-		ray,
-		tri.pos_a,
-		tri.pos_b,
-		tri.pos_c,
-		t_dist
-	)) {
-		if(t_dist < hit_data.t_dist && t_dist > EPSILON) {
-			hit_data.t_dist = t_dist;
-			hit_data.pos = ray.origin + ray.direction * t_dist;
-			hit_data.inside = false;
-			hit_data.mesh_hit = true;
-
-			bvh_t_length = bvh_ray_length;
-
-			vec3 uvw = f_barycentricCoords(
-				hit_data.pos,
-				tri.pos_a,
-				tri.pos_b,
-				tri.pos_c
-			);
-
-			hit_data.hit_tri = tri;
-			hit_data.hit_normal = uvw.x * tri.normal_a + uvw.y * tri.normal_b + uvw.z * tri.normal_c;
+	for (uint i = 0; i < triangles.length(); i++) {
+		Triangle tri = triangles[i];
+		if (f_rayTriangleIntersection(
+			ray,
+			tri.pos_a,
+			tri.pos_b,
+			tri.pos_c,
+			t_dist
+		)) {
+			if(t_dist < hit_data.t_dist && t_dist > EPSILON) {
+				hit_data.t_dist = t_dist;
+				hit_data.pos = ray.origin + ray.direction * t_dist;
+				hit_data.inside = false;
+				hit_data.mesh_hit = true;
+				hit_data.uvw = f_barycentricCoords(
+					hit_data.pos,
+					tri.pos_a,
+					tri.pos_b,
+					tri.pos_c
+				);
+				hit_data.hit_tri = tri;
+				hit_data.hit_normal = hit_data.uvw.x * tri.normal_a + hit_data.uvw.y * tri.normal_b + hit_data.uvw.z * tri.normal_c;
+			}
 		}
 	}
-}
-
 	return hit_data;
 }
 
@@ -223,10 +198,13 @@ vec4 f_shade(in Hit hit_data, inout Ray ray) {
 	ray.direction = reflect(ray.direction, hit_data.hit_normal);
 	ray.origin = hit_data.hit_pos + ray.direction * EPSILON;
 
-			return vec4(1.0, 1.0, 1.0, 1.0);
 
-	hit_data.error = true;
-	return vec4(1, 0, 1, 1);
+	vec2 uv =
+		hit_data.uvw.x * vec2(hit_data.hit_tri.uv_a_x, hit_data.hit_tri.uv_a_y) +
+		hit_data.uvw.y * vec2(hit_data.hit_tri.uv_b_x, hit_data.hit_tri.uv_b_y) +
+		hit_data.uvw.z * vec2(hit_data.hit_tri.uv_c_x, hit_data.hit_tri.uv_c_y);
+	return imageLoad(image_texture, ivec2(vec2(uv.x, 1 - uv.y) * imageSize(image_texture)));
+
 }
 
 Ray f_cameraRay(vec2 uv) {
@@ -241,25 +219,27 @@ vec4 f_pathTrace(in Ray ray) {
 	vec4 radiance = vec4(0);
 	for (uint b = 0; b < ray_bounces; b++) {
 		Hit hit_data = f_SceneIntersection(ray);
-		if (hit_data.mesh_hit)
-			radiance += vec4(1.0);//f_shade(hit_data, ray);
+		if (hit_data.mesh_hit) {
+			radiance += f_shade(hit_data, ray);
+		}
 	}
 	return radiance;
 }
 
 vec4 f_render(in vec2 uv) {
-	vec4 color;
+	vec4 color = vec4(0);
+
 
 	Ray ray = f_cameraRay(uv);
-	color = vec4(abs(ray.direction), 1);
-	return color;
-	return vec4(0);
+	color = f_pathTrace(ray);
+
+	return clamp(color, 0, 1);
 }
 
 
 void main() {
 	ivec2 work_id = ivec2(gl_GlobalInvocationID.xy);
-	vec2 uv = work_id / vec2(resolution);
+	vec2 uv = (work_id - 1 - vec2(resolution) / 2.0) / float(max(resolution.x, resolution.y));
 
 	vec4 color = f_render(uv);
 

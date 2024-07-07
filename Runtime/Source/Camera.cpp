@@ -4,16 +4,16 @@ Camera::Camera() {
 	width  = 1920;
 	height = 1080;
 
-	focal_length = 0.05f;
-	focal_angle  = 40.0f;
-	sensor_size  = 0.036f;
+	focal_length = 0.05;
+	focal_angle  = 40.0;
+	sensor_size  = 0.036;
 
-	position = dvec3(  45 , 25, 45 );
-	rotation = dvec3( -135, -15,  0 );
+	position = dvec3( 0, 0, -5 );
+	rotation = dvec3( 90, 0,  0 );
 
-	x_vector = vec3( 1.0f, 0.0f, 0.0f);
-	y_vector = vec3( 0.0f, 1.0f, 0.0f);
-	z_vector = vec3( 0.0f, 0.0f, 1.0f);
+	x_vector = dvec3( 1.0f, 0.0f, 0.0f);
+	y_vector = dvec3( 0.0f, 1.0f, 0.0f);
+	z_vector = dvec3( 0.0f, 0.0f, 1.0f);
 
 	f_compileVectors();
 }

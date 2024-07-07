@@ -270,9 +270,12 @@ void GPU_Scene::f_loadMesh(const vector<vector<string>>& token_data, map<uint64,
 		else if (tokens[0] == "└UVs") {
 			is_processing = false;
 			for (const vector<string>& token_data : read_data) {
-				triangles[str_to_ul(token_data[0])].uv_a = str_to_f(token_data[1], token_data[2]);
-				triangles[str_to_ul(token_data[0])].uv_b = str_to_f(token_data[3], token_data[4]);
-				triangles[str_to_ul(token_data[0])].uv_c = str_to_f(token_data[5], token_data[6]);
+				triangles[str_to_ul(token_data[0])].uv_a_x = str_to_f(token_data[1]);
+				triangles[str_to_ul(token_data[0])].uv_a_y = str_to_f(token_data[2]);
+				triangles[str_to_ul(token_data[0])].uv_b_x = str_to_f(token_data[3]);
+				triangles[str_to_ul(token_data[0])].uv_b_y = str_to_f(token_data[4]);
+				triangles[str_to_ul(token_data[0])].uv_c_x = str_to_f(token_data[5]);
+				triangles[str_to_ul(token_data[0])].uv_c_y = str_to_f(token_data[6]);
 			}
 		}
 		else if (tokens[0] == "└Faces") {
@@ -315,7 +318,7 @@ void GPU_Scene::f_loadBuild(const vector<vector<string>>& token_data, map<uint64
 
 Lace GPU_Triangle::print() const {
 	Lace lace;
-	lace << "Tri: (" << pos_a<< ") : (" << normal_a << ") : (" << uv_a << ") | (" << pos_a << ") : (" << normal_a << ") : (" << uv_a << ") | (" << pos_a << ") : (" << normal_a << ") : (" << uv_a << ")";
+	lace << "Tri: (" << pos_a<< ") : (" << normal_a << ") : (" << vec2(uv_a_x, uv_a_y) << ") | (" << pos_b << ") : (" << normal_b << ") : (" << vec2(uv_b_x, uv_b_y) << ") | (" << pos_c << ") : (" << normal_c << ") : (" << vec2(uv_c_x, uv_c_y) << ")";
 	return lace;
 }
 
