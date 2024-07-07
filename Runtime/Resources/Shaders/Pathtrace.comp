@@ -29,7 +29,7 @@ vec4 f_pathTrace(in Ray ray) {
 		}
 		else {
 			for (int i = 0; i < hit_data.bvh_depth; i++) {
-				alpha *= 0.85;
+				alpha *= 0.75;
 			}
 			return vec4(vec3(1-alpha), 1);
 		}

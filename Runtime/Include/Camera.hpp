@@ -18,7 +18,7 @@ struct Camera {
 
 	Camera();
 
-	void f_move(const double& x, const double& y, const double& z, const double& speed);
-	void f_rotate(const double& yaw, const double& pitch);
-	void f_compileVectors();
+	void move(const double& x, const double& y, const double& z, const double& speed);
+	void rotate(const double& yaw, const double& pitch);
+	void compileVectors();
 };

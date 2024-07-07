@@ -2,6 +2,6 @@
 
 int main() {
 	Renderer renderer = Renderer();
-	renderer.f_init();
+	renderer.init();
 	return 0;
 }

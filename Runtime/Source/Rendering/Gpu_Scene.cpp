@@ -65,7 +65,7 @@ GPU_Scene::GPU_Scene(const string& data_file_path, const string& shader_file_pat
 					else if (is_processing == Parse_Type::DATA and tokens[0] == "└Data") {
 						COUT_S "[File] Reading: Data..." COUT_E
 						is_processing = Parse_Type::NONE;
-						f_loadData(data, pointer_map);
+						loadData(data, pointer_map);
 					}
 					else {
 						data.push_back(tokens);
@@ -135,8 +135,8 @@ void GPU_Scene::print() const {
 
 void GPU_Scene::printInfo(const uint64& max_size) const {
 	cout << "GPU Data:" << endl;
-	f_printSize("	Triangles            ", triangles);
-	f_printSize("	BVHs                 ", bvh_nodes);
+	printSize("	Triangles            ", triangles);
+	printSize("	BVHs                 ", bvh_nodes);
 	//f_printSize("	Materials            ", materials);
 	//f_printSize("	Lights               ", lights);
 	//f_printSize("	Spline Control Points", spline_controls);
@@ -158,88 +158,89 @@ void GPU_Scene::printInfo(const uint64& max_size) const {
 		throw runtime_error("GPU out of memory");
 }
 
-void GPU_Scene::f_loadHeader(const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map) {
+void GPU_Scene::loadHeader(const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map) {
 }
 
-void GPU_Scene::f_loadNodeTree(const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map) {
+void GPU_Scene::loadNodeTree(const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map) {
 	
 }
 
-void GPU_Scene::f_loadMaterial(const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map) {
+void GPU_Scene::loadMaterial(const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map) {
 
 }
 
-void GPU_Scene::f_loadData(const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map) {
+void GPU_Scene::loadData(const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map) {
 	if      (token_data[0][2] == "Atmosphere")
-		f_loadAtmosphere(token_data, pointer_map);
+		loadAtmosphere(token_data, pointer_map);
 	else if (token_data[0][2] == "Primitive")
-		f_loadPrimitive (token_data, pointer_map);
+		loadPrimitive (token_data, pointer_map);
 	else if (token_data[0][2] == "Skeleton")
-		f_loadSkeleton  (token_data, pointer_map);
+		loadSkeleton  (token_data, pointer_map);
 	else if (token_data[0][2] == "Camera")
-		f_loadCamera    (token_data, pointer_map);
+		loadCamera    (token_data, pointer_map);
 	else if (token_data[0][2] == "Volume")
-		f_loadVolume    (token_data, pointer_map);
+		loadVolume    (token_data, pointer_map);
 	else if (token_data[0][2] == "Curve")
-		f_loadCurve     (token_data, pointer_map);
+		loadCurve     (token_data, pointer_map);
 	else if (token_data[0][2] == "Empty")
-		f_loadEmpty     (token_data, pointer_map);
+		loadEmpty     (token_data, pointer_map);
 	else if (token_data[0][2] == "Force")
-		f_loadForce     (token_data, pointer_map);
+		loadForce     (token_data, pointer_map);
 	else if (token_data[0][2] == "Group")
-		f_loadGroup     (token_data, pointer_map);
+		loadGroup     (token_data, pointer_map);
 	else if (token_data[0][2] == "Light")
-		f_loadLight     (token_data, pointer_map);
+		loadLight     (token_data, pointer_map);
 	else if (token_data[0][2] == "Mesh")
-		f_loadMesh      (token_data, pointer_map);
+		loadMesh      (token_data, pointer_map);
 	else if (token_data[0][2] == "Sfx")
-		f_loadSfx       (token_data, pointer_map);
+		loadSfx       (token_data, pointer_map);
 	else if (token_data[0][2] == "Vfx")
-		f_loadVfx       (token_data, pointer_map);
+		loadVfx       (token_data, pointer_map);
 }
 
-void GPU_Scene::f_loadAtmosphere(const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map) {
-
-}
-
-void GPU_Scene::f_loadPrimitive(const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map) {
+void GPU_Scene::loadAtmosphere(const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map) {
 
 }
 
-void GPU_Scene::f_loadSkeleton(const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map) {
+void GPU_Scene::loadPrimitive(const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map) {
 
 }
 
-void GPU_Scene::f_loadCamera(const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map) {
+void GPU_Scene::loadSkeleton(const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map) {
 
 }
 
-void GPU_Scene::f_loadVolume(const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map) {
+void GPU_Scene::loadCamera(const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map) {
 
 }
 
-void GPU_Scene::f_loadCurve(const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map) {
+void GPU_Scene::loadVolume(const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map) {
 
 }
 
-void GPU_Scene::f_loadEmpty(const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map) {
+void GPU_Scene::loadCurve(const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map) {
 
 }
 
-void GPU_Scene::f_loadForce(const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map) {
+void GPU_Scene::loadEmpty(const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map) {
 
 }
 
-void GPU_Scene::f_loadGroup(const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map) {
+void GPU_Scene::loadForce(const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map) {
 
 }
 
-void GPU_Scene::f_loadLight(const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map) {
+void GPU_Scene::loadGroup(const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map) {
 
 }
 
-void GPU_Scene::f_loadMesh(const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map) {
+void GPU_Scene::loadLight(const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map) {
+
+}
+
+void GPU_Scene::loadMesh(const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map) {
 	vector<vec3> vertices;
+	vector<GPU_Triangle> mesh_triangles;
 
 	bool is_processing = false;
 	vector<vector<string>> read_data = vector<vector<string>>();
@@ -262,26 +263,26 @@ void GPU_Scene::f_loadMesh(const vector<vector<string>>& token_data, map<uint64,
 		else if (tokens[0] == "└Normals") {
 			is_processing = false;
 			for (const vector<string>& token_data : read_data) {
-				triangles[str_to_ul(token_data[0])].normal_a = str_to_f(token_data[1], token_data[2], token_data[3]);
-				triangles[str_to_ul(token_data[0])].normal_b = str_to_f(token_data[4], token_data[5], token_data[6]);
-				triangles[str_to_ul(token_data[0])].normal_c = str_to_f(token_data[7], token_data[8], token_data[9]);
+				mesh_triangles[str_to_ul(token_data[0])].normal_a = str_to_f(token_data[1], token_data[2], token_data[3]);
+				mesh_triangles[str_to_ul(token_data[0])].normal_b = str_to_f(token_data[4], token_data[5], token_data[6]);
+				mesh_triangles[str_to_ul(token_data[0])].normal_c = str_to_f(token_data[7], token_data[8], token_data[9]);
 			}
 		}
 		else if (tokens[0] == "└UVs") {
 			is_processing = false;
 			for (const vector<string>& token_data : read_data) {
-				triangles[str_to_ul(token_data[0])].uv_a_x = str_to_f(token_data[1]);
-				triangles[str_to_ul(token_data[0])].uv_a_y = str_to_f(token_data[2]);
-				triangles[str_to_ul(token_data[0])].uv_b_x = str_to_f(token_data[3]);
-				triangles[str_to_ul(token_data[0])].uv_b_y = str_to_f(token_data[4]);
-				triangles[str_to_ul(token_data[0])].uv_c_x = str_to_f(token_data[5]);
-				triangles[str_to_ul(token_data[0])].uv_c_y = str_to_f(token_data[6]);
+				mesh_triangles[str_to_ul(token_data[0])].uv_a_x = str_to_f(token_data[1]);
+				mesh_triangles[str_to_ul(token_data[0])].uv_a_y = str_to_f(token_data[2]);
+				mesh_triangles[str_to_ul(token_data[0])].uv_b_x = str_to_f(token_data[3]);
+				mesh_triangles[str_to_ul(token_data[0])].uv_b_y = str_to_f(token_data[4]);
+				mesh_triangles[str_to_ul(token_data[0])].uv_c_x = str_to_f(token_data[5]);
+				mesh_triangles[str_to_ul(token_data[0])].uv_c_y = str_to_f(token_data[6]);
 			}
 		}
 		else if (tokens[0] == "└Faces") {
 			is_processing = false;
 			for (const vector<string>& token_data : read_data) {
-				triangles.push_back(
+				mesh_triangles.push_back(
 					GPU_Triangle(
 						vertices[str_to_ul(token_data[2])],
 						vertices[str_to_ul(token_data[3])],
@@ -294,28 +295,33 @@ void GPU_Scene::f_loadMesh(const vector<vector<string>>& token_data, map<uint64,
 			read_data.push_back(tokens);
 		}
 	}
-	BVH_Builder bvh_build = BVH_Builder(triangles);
-	bvh_nodes = bvh_build.node_list;
-	triangles = bvh_build.triangles;
+
+	const uint64 triangle_offset = triangles.size();
+	const uint bvh_depth = d_to_u(glm::log2(ul_to_d(mesh_triangles.size()) / 64.0));
+
+	BVH_Builder bvh_build = BVH_Builder(mesh_triangles, bvh_depth);
+	bvh_nodes.insert(bvh_nodes.end(), bvh_build.node_list.begin(), bvh_build.node_list.end());
+	triangles.insert(triangles.end(), bvh_build.triangles.begin(), bvh_build.triangles.end());
+	cout << "Triangle Count: " << mesh_triangles.size() << "  BVH Depth: " << bvh_depth << "  BVH Nodes: " << bvh_nodes.size() << endl;
 }
 
-void GPU_Scene::f_loadSfx(const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map) {
+void GPU_Scene::loadSfx(const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map) {
 
 }
 
-void GPU_Scene::f_loadVfx(const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map) {
+void GPU_Scene::loadVfx(const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map) {
 
 }
 
-void GPU_Scene::f_loadObject(const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map) {
+void GPU_Scene::loadObject(const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map) {
 
 };
 
-void GPU_Scene::f_loadScene(const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map) {
+void GPU_Scene::loadScene(const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map) {
 
 }
 
-void GPU_Scene::f_loadBuild(const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map) {
+void GPU_Scene::loadBuild(const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map) {
 	
 }
 
@@ -325,7 +331,7 @@ Lace GPU_Triangle::print() const {
 	return lace;
 }
 
-void GPU_BVH::f_growToInclude(const vec3& min, const vec3& max) {
+void GPU_BVH::growToInclude(const vec3& min, const vec3& max) {
 	p_min.x = min.x < p_min.x ? min.x : p_min.x;
 	p_min.y = min.y < p_min.y ? min.y : p_min.y;
 	p_min.z = min.z < p_min.z ? min.z : p_min.z;
@@ -334,31 +340,154 @@ void GPU_BVH::f_growToInclude(const vec3& min, const vec3& max) {
 	p_max.z = max.z > p_max.z ? max.z : p_max.z;
 }
 
+vec3 GPU_BVH::getSize() {
+	return p_max - p_min;
+}
+
+vec3 GPU_BVH::getCenter() {
+	return (p_min + p_max) / 2.0f;
+}
+
 Lace GPU_BVH::print() const {
 	Lace lace;
 	lace << "Bvh: (" << p_min<< ") | (" << p_max << ") | " << pointer << " | " << tri_count;
 	return lace;
 }
 
-BVH_Builder::BVH_Builder(const vector<GPU_Triangle>& triangles) :
+BVH_Builder::BVH_Builder(const vector<GPU_Triangle>& triangles, const uint& depth) :
 	triangles(triangles)
 {
-	for (int i = 0; i < triangles.size(); i++) {
-		vec3 a = triangles[i].pos_a;
-		vec3 b = triangles[i].pos_b;
-		vec3 c = triangles[i].pos_c;
-		vec3 center = (a + b + c) / 3.0f;
-		vec3 max = glm::max(glm::max(a, b), c);
-		vec3 min = glm::min(glm::min(a, b), c);
+	for (uint i = 0; i < len32(triangles); i++) {
+		const vec3 a = triangles[i].pos_a;
+		const vec3 b = triangles[i].pos_b;
+		const vec3 c = triangles[i].pos_c;
+		const vec3 center = (a + b + c) / 3.0f;
+		const vec3 max = glm::max(glm::max(a, b), c);
+		const vec3 min = glm::min(glm::min(a, b), c);
 		bvh_tris.push_back(BVH_Triangle(min, max, center, i, triangles[i]));
-		mesh_bounds.f_growToInclude(min, max);
+		mesh_bounds.growToInclude(min, max);
 	}
 
 	node_list.push_back(mesh_bounds);
-	f_splitBvh(0, 0, triangles.size());
+	splitBvh(0, 0, len32(triangles), depth);
 
 	this->triangles.clear();
-	for (int i = 0; i < bvh_tris.size(); i++) {
+	for (uint i = 0; i < len32(bvh_tris); i++) {
 		this->triangles.push_back(bvh_tris[i].tri);
 	}
+}
+
+void BVH_Builder::splitBvh(const uint& parentIndex, const uint& triGlobalStart, const uint& triNum, const uint& depth) {
+	GPU_BVH parent = node_list[parentIndex];
+	vec3 size = parent.getSize();
+	float parentCost = nodeCost(size, triNum);
+
+	uint8 split_axis;
+	float splitPos;
+	float cost;
+
+	splitAxis(parent, triGlobalStart, triNum, split_axis, splitPos, cost);
+
+	if (cost < parentCost && depth > 0) {
+		GPU_BVH boundsLeft;
+		GPU_BVH boundsRight;
+		uint numOnLeft = 0;
+
+		for (uint i = triGlobalStart; i < triGlobalStart + triNum; i++) {
+			BVH_Triangle tri = bvh_tris[i];
+			if (tri.center[split_axis] < splitPos) {
+				boundsLeft.growToInclude(tri.p_min, tri.p_max);
+
+				BVH_Triangle swap = bvh_tris[triGlobalStart + numOnLeft];
+				bvh_tris[triGlobalStart + numOnLeft] = tri;
+				bvh_tris[i] = swap;
+				numOnLeft++;
+			}
+			else {
+				boundsRight.growToInclude(tri.p_min, tri.p_max);
+			}
+		}
+
+		uint numOnRight = triNum - numOnLeft;
+		uint triStartLeft = triGlobalStart;
+		uint triStartRight = triGlobalStart + numOnLeft;
+
+		node_list.push_back(GPU_BVH(boundsLeft.p_min, boundsLeft.p_max, triStartLeft));
+		uint childIndexRight = len32(node_list);
+		uint childIndexLeft = childIndexRight - 1;
+		node_list.push_back(GPU_BVH(boundsRight.p_min, boundsRight.p_max, triStartRight));
+
+		parent.pointer = childIndexLeft;
+		node_list[parentIndex] = parent;
+
+		splitBvh(childIndexLeft, triGlobalStart, numOnLeft, depth - 1);
+		splitBvh(childIndexRight, triGlobalStart + numOnLeft, numOnRight, depth - 1);
+	}
+	else {
+		parent.pointer = triGlobalStart;
+		parent.tri_count = triNum;
+		node_list[parentIndex] = parent;
+	}
+}
+
+void BVH_Builder::splitAxis(const GPU_BVH& node, const uint& start, const uint& count, uint8& axis, float& pos, float& cost) const {
+	if (count <= 1) {
+		axis = 0;
+		pos = 0.0f;
+		cost = MAX_VEC1;
+		return;
+	}
+
+	float bestSplitPos = 0;
+	uint8 bestSplitAxis = 0;
+	const uint8 numSplitTests = 5;
+
+	float bestCost = MAX_VEC1;
+
+	for (uint8 axis = 0; axis < 3; axis++) {
+		for (uint8 i = 0; i < numSplitTests; i++) {
+			float splitT = (u_to_f(i) + 1.0f) / (u_to_f(numSplitTests) + 1.0f);
+			float splitPos = glm::lerp(node.p_min[axis], node.p_max[axis], splitT);
+			float cost = splitEval(axis, splitPos, start, count);
+			if (cost < bestCost) {
+				bestCost = cost;
+				bestSplitPos = splitPos;
+				bestSplitAxis = axis;
+			}
+		}
+	}
+
+	axis = bestSplitAxis;
+	pos = bestSplitPos;
+	cost = bestCost;
+}
+
+float BVH_Builder::splitEval(const uint8& splitAxis, const float& splitPos, const uint& start, const uint& count) const {
+	GPU_BVH boundsLeft;
+	GPU_BVH boundsRight;
+	uint numOnLeft = 0;
+	uint numOnRight = 0;
+
+	for (uint i = start; i < start + count; i++) {
+		BVH_Triangle tri = bvh_tris[i];
+		if (tri.center[splitAxis] < splitPos)
+		{
+			boundsLeft.growToInclude(tri.p_min, tri.p_max);
+			numOnLeft++;
+		}
+		else
+		{
+			boundsRight.growToInclude(tri.p_min, tri.p_max);
+			numOnRight++;
+		}
+	}
+
+	float costA = nodeCost(boundsLeft.getSize(), numOnLeft);
+	float costB = nodeCost(boundsRight.getSize(), numOnRight);
+	return costA + costB;
+}
+
+float BVH_Builder::nodeCost(const vec3& size, const uint& numTriangles) {
+	const float halfArea = size.x * size.y + size.x * size.z + size.y * size.z;
+	return halfArea * numTriangles;
 }

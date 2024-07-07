@@ -38,26 +38,26 @@ struct GPU_Scene {
 
 	GPU_Scene(const string& data_file_path, const string& shader_file_path = "");
 
-	void f_loadHeader     (const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map);
-	void f_loadNodeTree   (const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map);
-	void f_loadMaterial   (const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map);
-	void f_loadData       (const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map);
-	void f_loadAtmosphere (const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map);
-	void f_loadPrimitive  (const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map);
-	void f_loadSkeleton   (const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map);
-	void f_loadCamera     (const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map);
-	void f_loadVolume     (const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map);
-	void f_loadCurve      (const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map);
-	void f_loadEmpty      (const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map);
-	void f_loadForce      (const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map);
-	void f_loadGroup      (const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map);
-	void f_loadLight      (const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map);
-	void f_loadMesh       (const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map);
-	void f_loadSfx        (const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map);
-	void f_loadVfx        (const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map);
-	void f_loadObject     (const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map);
-	void f_loadScene      (const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map);
-	void f_loadBuild      (const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map);
+	void loadHeader     (const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map);
+	void loadNodeTree   (const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map);
+	void loadMaterial   (const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map);
+	void loadData       (const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map);
+	void loadAtmosphere (const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map);
+	void loadPrimitive  (const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map);
+	void loadSkeleton   (const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map);
+	void loadCamera     (const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map);
+	void loadVolume     (const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map);
+	void loadCurve      (const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map);
+	void loadEmpty      (const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map);
+	void loadForce      (const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map);
+	void loadGroup      (const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map);
+	void loadLight      (const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map);
+	void loadMesh       (const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map);
+	void loadSfx        (const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map);
+	void loadVfx        (const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map);
+	void loadObject     (const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map);
+	void loadScene      (const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map);
+	void loadBuild      (const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map);
 
 	void print() const;
 	void printInfo(const uint64& max_size) const;
@@ -148,9 +148,9 @@ struct alignas(16) GPU_BVH {
 		tri_count(tri_count)
 	{}
 
-	void f_growToInclude(const vec3& min, const vec3& max);
-	vec3 CalculateBoundsSize() { return p_max - p_min; };
-	vec3 CalculateBoundscenter() { return (p_min + p_max) / 2.0f; };
+	void growToInclude(const vec3& min, const vec3& max);
+	vec3 getSize();
+	vec3 getCenter();
 	Lace print() const;
 };
 
@@ -160,130 +160,10 @@ struct BVH_Builder {
 	vector<GPU_BVH> node_list;
 	GPU_BVH mesh_bounds;
 
-	BVH_Builder(const vector<GPU_Triangle>& triangles);
+	BVH_Builder(const vector<GPU_Triangle>& triangles, const uint& depth);
 
-	void f_splitBvh(const uint64& parentIndex, const uint64& triGlobalStart, const uint64& triNum, const uint64& depth = 0) {
-		const int MaxDepth = 8;
-		GPU_BVH parent = node_list[parentIndex];
-		vec3 size = parent.CalculateBoundsSize();
-		float parentCost = NodeCost(size, triNum);
-
-		uint16 splitAxis;
-		float splitPos;
-		float cost;
-		
-		ChooseSplit(parent, triGlobalStart, triNum, splitAxis, splitPos, cost);
-
-		if (cost < parentCost && depth < MaxDepth) {
-			GPU_BVH boundsLeft;
-			GPU_BVH boundsRight;
-			uint64 numOnLeft = 0;
-
-			for (int i = triGlobalStart; i < triGlobalStart + triNum; i++) {
-				BVH_Triangle tri = bvh_tris[i];
-				if (tri.center[splitAxis] < splitPos) {
-					boundsLeft.f_growToInclude(tri.p_min, tri.p_max);
-
-					BVH_Triangle swap = bvh_tris[triGlobalStart + numOnLeft];
-					bvh_tris[triGlobalStart + numOnLeft] = tri;
-					bvh_tris[i] = swap;
-					numOnLeft++;
-				}
-				else {
-					boundsRight.f_growToInclude(tri.p_min, tri.p_max);
-				}
-			}
-
-			uint64 numOnRight = triNum - numOnLeft;
-			uint64 triStartLeft = triGlobalStart;
-			uint64 triStartRight = triGlobalStart + numOnLeft;
-
-			// Split parent into two children
-			node_list.push_back(GPU_BVH(boundsLeft.p_min, boundsLeft.p_max, triStartLeft));
-			uint64 childIndexRight = node_list.size();
-			uint64 childIndexLeft = childIndexRight - 1;
-			node_list.push_back(GPU_BVH(boundsRight.p_min, boundsRight.p_max, triStartRight));
-
-			// Update parent
-			parent.pointer = childIndexLeft;
-			node_list[parentIndex] = parent;
-
-			// Recursively split children
-			f_splitBvh(childIndexLeft, triGlobalStart, numOnLeft, depth + 1);
-			f_splitBvh(childIndexRight, triGlobalStart + numOnLeft, numOnRight, depth + 1);
-		}
-		else {
-			// Parent is actually leaf, assign all triangles to it
-			parent.pointer = triGlobalStart;
-			parent.tri_count = triNum;
-			node_list[parentIndex] = parent;
-		}
-	}
-
-	void ChooseSplit(const GPU_BVH& node, const int& start, const int& count, uint16& axis, float& pos, float& cost) const {
-		if (count <= 1) {
-			axis = 0;
-			pos = 0;
-			cost = MAX_VEC1;
-			return;
-		}
-
-		float bestSplitPos = 0;
-		int bestSplitAxis = 0;
-		const int numSplitTests = 5;
-
-		float bestCost = MAX_VEC1;
-
-		// Estimate best split pos
-		for (uint axis = 0; axis < 3; axis++)
-		{
-			for (uint i = 0; i < numSplitTests; i++)
-			{
-				float splitT = (i + 1) / (numSplitTests + 1.0f);
-				float splitPos = glm::lerp(node.p_min[axis], node.p_max[axis], splitT);
-				float cost = EvaluateSplit(axis, splitPos, start, count);
-				if (cost < bestCost)
-				{
-					bestCost = cost;
-					bestSplitPos = splitPos;
-					bestSplitAxis = axis;
-				}
-			}
-		}
-
-		axis = bestSplitAxis;
-		pos = bestSplitPos;
-		cost = bestCost;
-	}
-
-	float EvaluateSplit(const int64& splitAxis, const float& splitPos, const int64& start, const int64& count) const {
-		GPU_BVH boundsLeft;
-		GPU_BVH boundsRight;
-		int numOnLeft = 0;
-		int numOnRight = 0;
-
-		for (int i = start; i < start + count; i++)
-		{
-			BVH_Triangle tri = bvh_tris[i];
-			if (tri.center[splitAxis] < splitPos)
-			{
-				boundsLeft.f_growToInclude(tri.p_min, tri.p_max);
-				numOnLeft++;
-			}
-			else
-			{
-				boundsRight.f_growToInclude(tri.p_min, tri.p_max);
-				numOnRight++;
-			}
-		}
-
-		float costA = NodeCost(boundsLeft.CalculateBoundsSize(), numOnLeft);
-		float costB = NodeCost(boundsRight.CalculateBoundsSize(), numOnRight);
-		return costA + costB;
-	}
-
-	static float NodeCost(const vec3& size, const uint64& numTriangles) {
-		float halfArea = size.x * size.y + size.x * size.z + size.y * size.z;
-		return halfArea * numTriangles;
-	}
+	void splitBvh(const uint& parentIndex, const uint& triGlobalStart, const uint& triNum, const uint& depth);
+	void splitAxis(const GPU_BVH& node, const uint& start, const uint& count, uint8& axis, float& pos, float& cost) const;
+	float splitEval(const uint8& splitAxis, const float& splitPos, const uint& start, const uint& count) const;
+	static float nodeCost(const vec3& size, const uint& numTriangles);
 };

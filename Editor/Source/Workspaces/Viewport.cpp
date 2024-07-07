@@ -151,12 +151,12 @@ void GUI::WORKSPACE::Viewport_CPU_Renderer::f_pipeline() {
 	glBindImageTexture(0, cpu_render_result, 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
 
 	GLuint display_vert_shader = glCreateShader(GL_VERTEX_SHADER);
-	const string vertex_code = f_loadFromFile("./Resources/Shaders/CPU_Shader.vert");
+	const string vertex_code = loadFromFile("./Resources/Shaders/CPU_Shader.vert");
 	const char* vertex_code_cstr = vertex_code.c_str();
 	glShaderSource(display_vert_shader, 1, &vertex_code_cstr, NULL);
 	glCompileShader(display_vert_shader);
 	GLuint display_frag_shader = glCreateShader(GL_FRAGMENT_SHADER);
-	const string fragment_code = f_loadFromFile("./Resources/Shaders/CPU_Shader.frag");
+	const string fragment_code = loadFromFile("./Resources/Shaders/CPU_Shader.frag");
 	const char* fragment_code_cstr = fragment_code.c_str();
 	glShaderSource(display_frag_shader, 1, &fragment_code_cstr, NULL);
 	glCompileShader(display_frag_shader);
@@ -283,12 +283,12 @@ void GUI::WORKSPACE::Viewport_GPU_Renderer::f_pipeline() {
 	glBindImageTexture(0, compute_render, 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA8);
 
 	GLuint display_vert_shader = glCreateShader(GL_VERTEX_SHADER);
-	const string vertex_code = f_loadFromFile("./Resources/Shaders/GPU_Shader.vert");
+	const string vertex_code = loadFromFile("./Resources/Shaders/GPU_Shader.vert");
 	const char* vertex_code_cstr = vertex_code.c_str();
 	glShaderSource(display_vert_shader, 1, &vertex_code_cstr, NULL);
 	glCompileShader(display_vert_shader);
 	GLuint display_frag_shader = glCreateShader(GL_FRAGMENT_SHADER);
-	const string fragment_code = f_loadFromFile("./Resources/Shaders/GPU_Shader.frag");
+	const string fragment_code = loadFromFile("./Resources/Shaders/GPU_Shader.frag");
 	const char* fragment_code_cstr = fragment_code.c_str();
 	glShaderSource(display_frag_shader, 1, &fragment_code_cstr, NULL);
 	glCompileShader(display_frag_shader);
@@ -301,7 +301,7 @@ void GUI::WORKSPACE::Viewport_GPU_Renderer::f_pipeline() {
 	glDeleteShader(display_vert_shader);
 	glDeleteShader(display_frag_shader);
 
-	const string compute_code = f_loadFromFile("./Resources/Shaders/GPU_Shader.comp");
+	const string compute_code = loadFromFile("./Resources/Shaders/GPU_Shader.comp");
 	//cerr << compute_code;
 	const char* compute_code_cstr = compute_code.c_str();
 	GLuint comp_shader = glCreateShader(GL_COMPUTE_SHADER);

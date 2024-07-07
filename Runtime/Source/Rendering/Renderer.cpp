@@ -30,16 +30,16 @@ Renderer::Renderer() {
 	frame_time = 0.0;
 }
 
-void Renderer::f_init() {
-	f_initGlfw();
-	f_initImGui();
-	f_systemInfo();
+void Renderer::init() {
+	initGlfw();
+	initImGui();
+	systemInfo();
 
-	f_pipeline();
-	f_displayLoop();
+	pipeline();
+	displayLoop();
 }
 
-void Renderer::f_exit() {
+void Renderer::exit() {
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplGlfw_Shutdown();
 	ImGui::DestroyContext();
@@ -48,7 +48,7 @@ void Renderer::f_exit() {
 	glfwTerminate();
 }
 
-void Renderer::f_initGlfw() {
+void Renderer::initGlfw() {
 	glfwInit();
 
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
@@ -65,7 +65,7 @@ void Renderer::f_initGlfw() {
 	window = glfwCreateWindow(display_resolution.x, display_resolution.y, "Runtime", NULL, NULL);
 
 	Image icon = Image();
-	if (icon.f_load("./Resources/Icon.png")) {
+	if (icon.init("./Resources/Icon.png")) {
 		GLFWimage image_icon;
 		image_icon.width = icon.width;
 		image_icon.height = icon.height;
@@ -84,14 +84,14 @@ void Renderer::f_initGlfw() {
 
 	glfwSetWindowUserPointer(window, this);
 
-	glfwSetFramebufferSizeCallback(window, f_framebufferSize);
-	glfwSetMouseButtonCallback(window, f_mouseButton);
-	glfwSetCursorPosCallback(window, f_cursorPos);
-	glfwSetScrollCallback(window, f_scroll);
-	glfwSetKeyCallback(window, f_key);
+	glfwSetFramebufferSizeCallback(window, framebufferSize);
+	glfwSetMouseButtonCallback(window, mouseButton);
+	glfwSetCursorPosCallback(window, cursorPos);
+	glfwSetScrollCallback(window, scroll);
+	glfwSetKeyCallback(window, key);
 }
 
-void Renderer::f_initImGui() {
+void Renderer::initImGui() {
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 	ImGuiIO& io = ImGui::GetIO(); (void)io;
@@ -105,7 +105,7 @@ void Renderer::f_initImGui() {
 	ImGui_ImplOpenGL3_Init("#version 460");
 }
 
-void Renderer::f_systemInfo() {
+void Renderer::systemInfo() {
 	GLint work_grp_cnt[3];
 	glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_COUNT, 0, &work_grp_cnt[0]);
 	glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_COUNT, 1, &work_grp_cnt[1]);
@@ -149,13 +149,13 @@ void Renderer::f_systemInfo() {
 	cout << "SSBO struct alignment multiplier: " << uniformBufferOffsetAlignment << endl;
 }
 
-void Renderer::f_pipeline() {
+void Renderer::pipeline() {
 	glViewport(0, 0, display_resolution.x , display_resolution.y);
 }
 
-void Renderer::f_dataTransfer() {
+void Renderer::dataTransfer() {
 	GPU_Scene* gpu_data = new GPU_Scene("./Resources/Ganyu.krz", "");
-	gpu_data->print();
+	//gpu_data->print();
 	Session::getInstance().setScene(gpu_data);
 	
 	GLuint triangle_buffer;
@@ -177,7 +177,7 @@ void Renderer::f_dataTransfer() {
 	//
 	//for (uint i = 0; i < textures.size(); i++) {
 	//	auto tex = GPU_Texture();
-	//	tex.f_init(textures[i]);
+	//	tex.init(textures[i]);
 	//	glBindImageTexture(4, tex.ID, 0, GL_FALSE, 0, GL_READ_ONLY, GL_UNSIGNED_BYTE);
 	//}
 	//glBindTexture(GL_TEXTURE_2D, 0);
@@ -229,7 +229,7 @@ void Renderer::f_dataTransfer() {
 	//glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 9, mesh_buffer);
 }
 
-void Renderer::f_guiLoop() {
+void Renderer::guiLoop() {
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplGlfw_NewFrame();
 
@@ -247,14 +247,14 @@ void Renderer::f_guiLoop() {
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
-void Renderer::f_gameLoop() {
+void Renderer::gameLoop() {
 	if (keys[GLFW_KEY_D]) {
-		camera.f_move(1, 0, 0, camera_move_sensitivity);
+		camera.move(1, 0, 0, camera_move_sensitivity);
 		reset = true;
 		runframe = 0;
 	}
 	if (keys[GLFW_KEY_A]) {
-		camera.f_move(-1, 0, 0, camera_move_sensitivity);
+		camera.move(-1, 0, 0, camera_move_sensitivity);
 		reset = true;
 		runframe = 0;
 	}
@@ -269,18 +269,18 @@ void Renderer::f_gameLoop() {
 		runframe = 0;
 	}
 	if (keys[GLFW_KEY_W]) {
-		camera.f_move(0, 0, 1, camera_move_sensitivity);
+		camera.move(0, 0, 1, camera_move_sensitivity);
 		reset = true;
 		runframe = 0;
 	}
 	if (keys[GLFW_KEY_S]) {
-		camera.f_move(0, 0, -1, camera_move_sensitivity);
+		camera.move(0, 0, -1, camera_move_sensitivity);
 		reset = true;
 		runframe = 0;
 	}
 }
 
-void Renderer::f_displayLoop() {
+void Renderer::displayLoop() {
 	const GLfloat vertices[16] = {
 		-1.0f, -1.0f, 0.0f, 0.0f,
 		-1.0f,  1.0f, 0.0f, 1.0f,
@@ -330,8 +330,8 @@ void Renderer::f_displayLoop() {
 	glTextureParameteri(raw_render_result, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTextureStorage2D (raw_render_result, 1, GL_RGBA32F, render_resolution.x, render_resolution.y);
 
-	GLuint compute_program = f_computeShaderProgram("Render");
-	GLuint post_program = f_fragmentShaderProgram("Post");
+	GLuint compute_program = computeShaderProgram("Render");
+	GLuint post_program = fragmentShaderProgram("Post");
 
 	const uvec3 compute_layout = uvec3(
 		d_to_u(ceil(u_to_d(render_resolution.x) / 32.0)),
@@ -339,15 +339,14 @@ void Renderer::f_displayLoop() {
 		1U
 	);
 
-	f_dataTransfer();
-
+	dataTransfer();
 
 	GPU_Texture tex = GPU_Texture();
-	tex.f_init("./Resources/Ganyu.jpg");
+	tex.init("./Resources/Ganyu.jpg");
 
 	glBindVertexArray(VAO);
 	while (!glfwWindowShouldClose(window)) {
-		f_gameLoop();
+		gameLoop();
 
 		current_time = clock();
 		frame_time = dvec1(current_time - last_time) / CLOCKS_PER_SEC;
@@ -389,13 +388,20 @@ void Renderer::f_displayLoop() {
 		glClear(GL_COLOR_BUFFER_BIT);
 		glUniform1f(glGetUniformLocation(post_program, "display_aspect_ratio"), d_to_f(display_aspect_ratio));
 		glUniform1f(glGetUniformLocation(post_program, "render_aspect_ratio"), d_to_f(render_aspect_ratio));
-		glUniform1i(glGetUniformLocation(post_program, "render"), 1);
-		glBindTextureUnit(1, render_result);
+		glUniform1i(glGetUniformLocation(post_program, "render"), 0);
+		glBindTextureUnit(0, render_result);
+		glUniform1i(glGetUniformLocation(post_program, "raw_render"), 1);
+		glBindTextureUnit(1, raw_render_result);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
 		frame_counter++;
 		runframe++;
 		if (reset) reset = false;
+		if (recompile) {
+			compute_program = computeShaderProgram("Render");
+			post_program = fragmentShaderProgram("Post");
+			recompile = false;
+		}
 
 		if (window_time > 1.0) {
 			frame_count = frame_counter;
@@ -403,20 +409,21 @@ void Renderer::f_displayLoop() {
 			frame_counter = 0;
 		}
 
-		f_guiLoop();
+		guiLoop();
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
 }
 
-void Renderer::f_recompile() {
+void Renderer::recompileShader() {
 	reset = true;
+	recompile = true;
 	runframe = 0;
 	runtime = glfwGetTime();
 }
 
-void Renderer::f_framebufferSize(GLFWwindow* window, int width, int height) {
+void Renderer::framebufferSize(GLFWwindow* window, int width, int height) {
 	Renderer* instance = static_cast<Renderer*>(glfwGetWindowUserPointer(window));
 	glViewport(0, 0, width, height);
 	instance->display_resolution.x = width;
@@ -426,7 +433,7 @@ void Renderer::f_framebufferSize(GLFWwindow* window, int width, int height) {
 	instance->runtime = glfwGetTime();
 }
 
-void Renderer::f_cursorPos(GLFWwindow* window, double xpos, double ypos) {
+void Renderer::cursorPos(GLFWwindow* window, double xpos, double ypos) {
 	Renderer* instance = static_cast<Renderer*>(glfwGetWindowUserPointer(window));
 	if (instance->keys[GLFW_MOUSE_BUTTON_RIGHT]) {
 		double xoffset = xpos - instance->last_mouse.x;
@@ -434,13 +441,13 @@ void Renderer::f_cursorPos(GLFWwindow* window, double xpos, double ypos) {
 
 		instance->last_mouse = dvec2(xpos, ypos);
 
-		instance->camera.f_rotate(xoffset * instance->camera_view_sensitivity, yoffset * instance->camera_view_sensitivity);
+		instance->camera.rotate(xoffset * instance->camera_view_sensitivity, yoffset * instance->camera_view_sensitivity);
 		instance->reset = true;
 		instance->runframe = 0;
 	}
 }
 
-void Renderer::f_mouseButton(GLFWwindow* window, int button, int action, int mods) {
+void Renderer::mouseButton(GLFWwindow* window, int button, int action, int mods) {
 	Renderer* instance = static_cast<Renderer*>(glfwGetWindowUserPointer(window));
 	if (action == GLFW_PRESS) {
 		instance->keys[button] = true;
@@ -462,7 +469,7 @@ void Renderer::f_mouseButton(GLFWwindow* window, int button, int action, int mod
 	}
 }
 
-void Renderer::f_scroll(GLFWwindow* window, double xoffset, double yoffset) {
+void Renderer::scroll(GLFWwindow* window, double xoffset, double yoffset) {
 	Renderer* instance = static_cast<Renderer*>(glfwGetWindowUserPointer(window));
 	if (yoffset < 0) {
 		instance->reset = true;
@@ -476,11 +483,11 @@ void Renderer::f_scroll(GLFWwindow* window, double xoffset, double yoffset) {
 	}
 }
 
-void Renderer::f_key(GLFWwindow* window, int key, int scancode, int action, int mods) {
+void Renderer::key(GLFWwindow* window, int key, int scancode, int action, int mods) {
 	Renderer* instance = static_cast<Renderer*>(glfwGetWindowUserPointer(window));
 	// Input Handling
 	if (key == GLFW_KEY_R && action == GLFW_PRESS) {
-		instance->f_recompile();
+		instance->recompileShader();
 	}
 	if (key == GLFW_KEY_C && action == GLFW_PRESS) {
 		instance->camera = Camera();

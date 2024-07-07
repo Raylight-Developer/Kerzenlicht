@@ -13,11 +13,11 @@ string f_replace(const string& input, const string& old_str, const string& new_s
 string f_strip(const string& str);
 
 // I/O
-string f_loadFromFile(const string& file_path);
+string loadFromFile(const string& file_path);
 
 // Opengl
-string f_processSubShader(const string& file_path);
-string f_preprocessShader(const string& file_path);
+string processSubShader(const string& file_path);
+string preprocessShader(const string& file_path);
 
 // Math
 namespace CLASS {
@@ -79,7 +79,12 @@ namespace CLASS {
 }
 // Templates
 template<typename T>
-void f_printSize(const string& label, const vector<T>& value) {
+uint len32(const vector<T>& vector) {
+	return ul_to_u(vector.size());
+};
+
+template<typename T>
+void printSize(const string& label, const vector<T>& value) {
 	cout << fixed << setprecision(2) << label << " | " << static_cast<double>(sizeof(T) * value.size()) / (1024.0 * 1024.0) << "mb | " << static_cast<double>(sizeof(T) * value.size()) / 1024.0 << "kb | " << sizeof(T) * value.size() << "b" << endl;
 };
 

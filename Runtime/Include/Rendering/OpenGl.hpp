@@ -3,8 +3,8 @@
 #include "Include.hpp"
 #include "Ops.hpp"
 
-GLuint f_fragmentShaderProgram(const string& file_path);
-GLuint f_computeShaderProgram(const string& file_path);
+GLuint fragmentShaderProgram(const string& file_path);
+GLuint computeShaderProgram(const string& file_path);
 
 struct Image {
 	uint16_t width;
@@ -14,12 +14,12 @@ struct Image {
 	int data_type;
 
 	Image();
-	bool f_load(const string& i_file_path);
+	bool init(const string& i_file_path);
 };
 
 struct GPU_Texture {
 	GLuint ID;
 
 	GPU_Texture() { ID = 0; };
-	void f_init(const string& i_image_path);
+	void init(const string& i_image_path);
 };

@@ -86,6 +86,9 @@ float f_mapFloatClamp(float from_min, float from_max, float to_min, float to_max
 	else if (value < from_min) return to_min;
 	else return (to_min + ((to_max - to_min) / (from_max - from_min)) * (value - from_min));
 }
+vec2 f_mapVec2(vec2 from_min, vec2 from_max, vec2 to_min, vec2 to_max, vec2 value) {
+	return vec2(f_mapFloat(from_min.x, from_max.x, to_min.x, to_max.x, value.x), f_mapFloat(from_min.y, from_max.y, to_min.y, to_max.y, value.y));
+}
 
 uint f_tea(in uint val0, in uint val1) {
 	uint v0 = val0;
@@ -243,7 +246,7 @@ vec4 f_pathTrace(in Ray ray) {
 		}
 		else {
 			for (int i = 0; i < hit_data.bvh_depth; i++) {
-				alpha *= 0.85;
+				alpha *= 0.75;
 			}
 			return vec4(vec3(1-alpha), 1);
 		}

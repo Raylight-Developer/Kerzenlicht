@@ -15,25 +15,25 @@ Camera::Camera() {
 	y_vector = dvec3( 0.0f, 1.0f, 0.0f);
 	z_vector = dvec3( 0.0f, 0.0f, 1.0f);
 
-	f_compileVectors();
+	compileVectors();
 }
 
-void Camera::f_move(const double& x, const double& y, const double& z, const double& speed) {
+void Camera::move(const double& x, const double& y, const double& z, const double& speed) {
 	position += x * speed * x_vector;
 	position += y * speed * y_vector;
 	position += z * speed * z_vector;
 }
 
-void Camera::f_rotate(const double& yaw, const double& pitch) {
+void Camera::rotate(const double& yaw, const double& pitch) {
 	rotation += dvec3(yaw, pitch, 0);
 
 	if (rotation.y > 89.0) rotation.y = 89.0;
 	if (rotation.y < -89.0) rotation.y = -89.0;
 
-	f_compileVectors();
+	compileVectors();
 }
 
-void Camera::f_compileVectors() {
+void Camera::compileVectors() {
 	z_vector = normalize(dvec3(
 		cos(rotation.x * DEG_RAD) * cos(rotation.y * DEG_RAD),
 		sin(rotation.y * DEG_RAD),

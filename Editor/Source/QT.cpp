@@ -5,7 +5,7 @@
 GUI::Application::Application(int argc, char* argv[]) :
 	QApplication(argc, argv)
 {
-	setStyleSheet(QString::fromStdString(f_loadFromFile("./Resources/QStylesheet.css")));
+	setStyleSheet(QString::fromStdString(loadFromFile("./Resources/QStylesheet.css")));
 }
 
 GUI::Button::Button(QWidget* parent) :

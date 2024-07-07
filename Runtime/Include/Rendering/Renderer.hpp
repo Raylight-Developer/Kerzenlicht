@@ -42,25 +42,25 @@ struct Renderer {
 
 	Renderer();
 
-	void f_init();
-	void f_exit();
+	void init();
+	void exit();
 
-	void f_initGlfw();
-	void f_initImGui();
-	void f_systemInfo();
+	void initGlfw();
+	void initImGui();
+	void systemInfo();
 
-	void f_pipeline();
-	void f_dataTransfer();
+	void pipeline();
+	void dataTransfer();
 
-	void f_guiLoop();
-	void f_gameLoop();
-	void f_displayLoop();
+	void guiLoop();
+	void gameLoop();
+	void displayLoop();
 
-	void f_recompile();
+	void recompileShader();
 
-	static void f_framebufferSize(GLFWwindow* window, int width, int height);
-	static void f_cursorPos(GLFWwindow* window, dvec1 xpos, dvec1 ypos);
-	static void f_mouseButton(GLFWwindow* window, int button, int action, int mods);
-	static void f_scroll(GLFWwindow* window, dvec1 xoffset, dvec1 yoffset);
-	static void f_key(GLFWwindow* window, int key, int scancode, int action, int mods);
+	static void framebufferSize(GLFWwindow* window, int width, int height);
+	static void cursorPos(GLFWwindow* window, dvec1 xpos, dvec1 ypos);
+	static void mouseButton(GLFWwindow* window, int button, int action, int mods);
+	static void scroll(GLFWwindow* window, dvec1 xoffset, dvec1 yoffset);
+	static void key(GLFWwindow* window, int key, int scancode, int action, int mods);
 };

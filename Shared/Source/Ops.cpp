@@ -67,7 +67,7 @@ string f_strip(const string& str) {
 	return str.substr(first, last - first + 1);
 }
 
-string f_loadFromFile(const string& file_path) {
+string loadFromFile(const string& file_path) {
 	ifstream in(file_path, ios::binary);
 	if (in) {
 		string contents;
@@ -81,7 +81,7 @@ string f_loadFromFile(const string& file_path) {
 	throw runtime_error(to_string(errno));
 }
 
-string f_processSubShader(const string& file_path) {
+string processSubShader(const string& file_path) {
 	ifstream in(file_path, ios::binary);
 	if (in) {
 		std::stringstream output;
@@ -102,7 +102,7 @@ string f_processSubShader(const string& file_path) {
 	throw runtime_error(to_string(errno));
 }
 
-string f_preprocessShader(const string& file_path) {
+string preprocessShader(const string& file_path) {
 	ifstream in(file_path, ios::binary);
 	if (in) {
 		std::stringstream output;
@@ -116,7 +116,7 @@ string f_preprocessShader(const string& file_path) {
 					size_t endQuotePos = line.find("\"", quotePos + 1);
 					if (endQuotePos != std::string::npos) {
 						std::string includeFilename = line.substr(quotePos + 1, endQuotePos - quotePos - 1);
-						output << f_processSubShader("./Resources/Shaders/" + includeFilename) << endl;
+						output << processSubShader("./Resources/Shaders/" + includeFilename) << endl;
 						continue;
 					}
 				}

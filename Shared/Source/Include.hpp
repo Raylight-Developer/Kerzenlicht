@@ -114,6 +114,27 @@ inline dvec1 u_to_d(const uvec1& val) { return static_cast<dvec1>(val); }
 inline dvec2 u_to_d(const uvec2& val) { return static_cast<dvec2>(val); }
 inline dvec3 u_to_d(const uvec3& val) { return static_cast<dvec3>(val); }
 inline dvec4 u_to_d(const uvec4& val) { return static_cast<dvec4>(val); }
+inline vec1  u_to_f(const uvec1& val) { return static_cast<vec1> (val); }
+inline vec2  u_to_f(const uvec2& val) { return static_cast<vec2> (val); }
+inline vec3  u_to_f(const uvec3& val) { return static_cast<vec3> (val); }
+inline vec4  u_to_f(const uvec4& val) { return static_cast<vec4> (val); }
+
+inline dvec1 ul_to_d(const ulvec1& val) { return static_cast<dvec1>(val); }
+inline dvec2 ul_to_d(const ulvec2& val) { return static_cast<dvec2>(val); }
+inline dvec3 ul_to_d(const ulvec3& val) { return static_cast<dvec3>(val); }
+inline dvec4 ul_to_d(const ulvec4& val) { return static_cast<dvec4>(val); }
+inline vec1  ul_to_f(const ulvec1& val) { return static_cast<vec1> (val); }
+inline vec2  ul_to_f(const ulvec2& val) { return static_cast<vec2> (val); }
+inline vec3  ul_to_f(const ulvec3& val) { return static_cast<vec3> (val); }
+inline vec4  ul_to_f(const ulvec4& val) { return static_cast<vec4> (val); }
+inline uvec1 ul_to_u(const ulvec1& val) { return static_cast<uvec1>(val); }
+inline uvec2 ul_to_u(const ulvec2& val) { return static_cast<uvec2>(val); }
+inline uvec3 ul_to_u(const ulvec3& val) { return static_cast<uvec3>(val); }
+inline uvec4 ul_to_u(const ulvec4& val) { return static_cast<uvec4>(val); }
+inline ivec1 ul_to_i(const ulvec1& val) { return static_cast<ivec1>(val); }
+inline ivec2 ul_to_i(const ulvec2& val) { return static_cast<ivec2>(val); }
+inline ivec3 ul_to_i(const ulvec3& val) { return static_cast<ivec3>(val); }
+inline ivec4 ul_to_i(const ulvec4& val) { return static_cast<ivec4>(val); }
 
 inline uvec1 d_to_u(const dvec1& val) { return static_cast<uvec1>(val); }
 inline uvec2 d_to_u(const dvec2& val) { return static_cast<uvec2>(val); }
@@ -124,13 +145,21 @@ inline ivec2 d_to_i(const dvec2& val) { return static_cast<ivec2>(val); }
 inline ivec3 d_to_i(const dvec3& val) { return static_cast<ivec3>(val); }
 inline ivec4 d_to_i(const dvec4& val) { return static_cast<ivec4>(val); }
 
-inline dvec1 f_to_d(const vec1& val) { return static_cast<dvec1>(val); }
-inline dvec2 f_to_d(const vec2& val) { return static_cast<dvec2>(val); }
-inline dvec3 f_to_d(const vec3& val) { return static_cast<dvec3>(val); }
-inline dvec4 f_to_d(const vec4& val) { return static_cast<dvec4>(val); }
-inline dmat2 f_to_d(const mat2& val) { return static_cast<dmat2>(val); }
-inline dmat3 f_to_d(const mat3& val) { return static_cast<dmat3>(val); }
-inline dmat4 f_to_d(const mat4& val) { return static_cast<dmat4>(val); }
+inline dvec1  f_to_d (const vec1& val) { return static_cast<dvec1> (val); }
+inline dvec2  f_to_d (const vec2& val) { return static_cast<dvec2> (val); }
+inline dvec3  f_to_d (const vec3& val) { return static_cast<dvec3> (val); }
+inline dvec4  f_to_d (const vec4& val) { return static_cast<dvec4> (val); }
+inline dmat2  f_to_d (const mat2& val) { return static_cast<dmat2> (val); }
+inline dmat3  f_to_d (const mat3& val) { return static_cast<dmat3> (val); }
+inline dmat4  f_to_d (const mat4& val) { return static_cast<dmat4> (val); }
+inline uvec1  f_to_u (const vec1& val) { return static_cast<uvec1> (val); }
+inline uvec2  f_to_u (const vec2& val) { return static_cast<uvec2> (val); }
+inline uvec3  f_to_u (const vec3& val) { return static_cast<uvec3> (val); }
+inline uvec4  f_to_u (const vec4& val) { return static_cast<uvec4> (val); }
+inline ulvec1 f_to_ul(const vec1& val) { return static_cast<ulvec1>(val); }
+inline ulvec2 f_to_ul(const vec2& val) { return static_cast<ulvec2>(val); }
+inline ulvec3 f_to_ul(const vec3& val) { return static_cast<ulvec3>(val); }
+inline ulvec4 f_to_ul(const vec4& val) { return static_cast<ulvec4>(val); }
 
 inline vec1 d_to_f(const dvec1& val) { return static_cast<vec1>(val); }
 inline vec2 d_to_f(const dvec2& val) { return static_cast<vec2>(val); }
