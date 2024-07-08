@@ -20,6 +20,8 @@ struct Image {
 };
 
 vector<uint> loadRgba8Texture(const string& file_path, uvec2& resolution);
+vector<uint> loadRgba16fTexture(const string& file_path, uvec2& resolution);
+vector<uint> loadRgba32fTexture(const string& file_path, uvec2& resolution);
 
 //struct GPU_Texture {
 //	GLuint ID;

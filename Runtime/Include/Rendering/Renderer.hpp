@@ -58,8 +58,6 @@ struct Renderer {
 	void gameLoop();
 	void displayLoop();
 
-	void recompileShader();
-
 	static void framebufferSize(GLFWwindow* window, int width, int height);
 	static void cursorPos(GLFWwindow* window, dvec1 xpos, dvec1 ypos);
 	static void mouseButton(GLFWwindow* window, int button, int action, int mods);

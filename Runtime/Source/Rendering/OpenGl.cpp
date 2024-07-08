@@ -120,3 +120,35 @@ vector<uint> loadRgba8Texture(const string& file_path, uvec2& resolution) {
 	resolution = uvec2(i_to_u(width), i_to_u(height));
 	return imageData;
 }
+
+vector<uint> loadRgba16fTexture(const string& file_path, uvec2& resolution) {
+
+	int width, height, channels;
+	float* data = stbi_loadf(file_path.c_str(), &width, &height, &channels, STBI_rgb_alpha);
+	if (!data) {
+		std::cerr << "Failed to load image: " << file_path << std::endl;
+	}
+
+	vector<uint> imageData(width * height);
+	//TODO
+
+	resolution = uvec2(i_to_u(width), i_to_u(height));
+	return imageData;
+}
+
+vector<uint> loadRgba32fTexture(const string& file_path, uvec2& resolution) {
+
+	int width, height, channels;
+	float* data = stbi_loadf(file_path.c_str(), &width, &height, &channels, STBI_rgb_alpha);
+	if (!data) {
+		std::cerr << "Failed to load image: " << file_path << std::endl;
+	}
+
+	vector<uint> imageData(width * height);
+	for (uint i = 0; i < i_to_u(width * height); i++) {
+		imageData[i] = data[i];
+	}
+
+	resolution = uvec2(i_to_u(width), i_to_u(height));
+	return imageData;
+}

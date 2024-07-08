@@ -16,7 +16,7 @@ vec4 f_shade(in Hit hit_data, inout Ray ray) {
 		hit_data.uvw.y * vec2(hit_data.hit_tri.uv_b_x, hit_data.hit_tri.uv_b_y) +
 		hit_data.uvw.z * vec2(hit_data.hit_tri.uv_c_x, hit_data.hit_tri.uv_c_y);
 	//return vec4(uv.x, 0, uv.y, 1);
-	return rgba8Color(textures[0], vec2(uv.x, 1 - uv.y));
+	return sampleTextureRgba8u(textures[0], vec2(uv.x, 1 - uv.y));
 	//);
 
 	// ERROR:

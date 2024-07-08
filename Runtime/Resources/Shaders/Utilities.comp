@@ -21,7 +21,7 @@ vec2 f_mapVec2(vec2 from_min, vec2 from_max, vec2 to_min, vec2 to_max, vec2 valu
 }
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
-vec4 rgba8Color(in Texture tex, in vec2 uv) {
+vec4 sampleTextureRgba8u(in Texture tex, in vec2 uv) {
 	uint x = uint(uv.x * float(tex.width));
 	uint y = uint(uv.y * float(tex.height));
 
@@ -36,6 +36,45 @@ vec4 rgba8Color(in Texture tex, in vec2 uv) {
 		float((color >> 16) & 0xFF) / 255.0,
 		float((color >> 8) & 0xFF) / 255.0,
 		float(color & 0xFF) / 255.0
+	);
+}
+
+vec4 sampleTextureRgba16f(in Texture tex, in vec2 uv) {
+	uint x = uint(uv.x * float(tex.width));
+	uint y = uint(uv.y * float(tex.height));
+
+	x = clamp(x, 0, tex.width - 1);
+	y = clamp(y, 0, tex.height - 1);
+
+	uint index = tex.start + (y * tex.width + x) * 2;
+	uint color_a = texture_data[index];
+	uint color_b = texture_data[index+1];
+
+	vec2 rg = unpackHalf2x16(color_a);
+	vec2 ba = unpackHalf2x16(color_b);
+
+	return vec4(
+		rg.x,
+		rg.y,
+		ba.x,
+		ba.y
+	);
+}
+
+vec4 sampleTextureRgba32f(in Texture tex, in vec2 uv) {
+	uint x = uint(uv.x * float(tex.width));
+	uint y = uint(uv.y * float(tex.height));
+
+	x = clamp(x, 0, tex.width - 1);
+	y = clamp(y, 0, tex.height - 1);
+
+	uint index = tex.start + (y * tex.width + x) * 4;
+
+	return vec4(
+		texture_data[index],
+		texture_data[index + 1],
+		texture_data[index + 2],
+		texture_data[index + 3]
 	);
 }
 //-------------------------------------------------------------------------------------------------

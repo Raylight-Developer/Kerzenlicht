@@ -125,14 +125,6 @@ void Renderer::systemInfo() {
 		" y:" << work_grp_size[1] <<
 		" z:" << work_grp_size[2] << endl;
 
-	//GLint totalMemoryKB = 0;
-	//glGetIntegerv(GL_GPU_MEMORY_INFO_TOTAL_AVAILABLE_MEMORY_NVX, &totalMemoryKB);
-	//GLint currentMemoryKB = 0;
-	//glGetIntegerv(GL_GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX, &currentMemoryKB);
-	//
-	//cout << "Total GPU Memory: " << totalMemoryKB << " KB\n";
-	//cout << "Available GPU Memory: " << currentMemoryKB << " KB\n";
-
 	GLint work_grp_inv;
 	glGetIntegerv(GL_MAX_COMPUTE_WORK_GROUP_INVOCATIONS, &work_grp_inv);
 	cout << "Max invocations count per work group: " << work_grp_inv << endl;
@@ -160,8 +152,6 @@ void Renderer::pipeline() {
 
 void Renderer::dataTransfer() {
 	GPU_Scene* gpu_data = new GPU_Scene("./Resources/Ganyu.krz", "");
-	//gpu_data->print();
-	Session::getInstance().setScene(gpu_data);
 	
 	GLint ssboMaxSize;
 	glGetIntegerv(GL_MAX_SHADER_STORAGE_BLOCK_SIZE, &ssboMaxSize);
@@ -192,40 +182,6 @@ void Renderer::dataTransfer() {
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, texture_data_buffer);
 	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(uint) * gpu_data->texture_data.size(), gpu_data->texture_data.data(), GL_STATIC_DRAW);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 8, texture_data_buffer);
-	//glGenBuffers(1, &material_buffer);
-	//glBindBuffer(GL_SHADER_STORAGE_BUFFER, material_buffer);
-	//glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPU_Material) * gpu_data.materials.size(), gpu_data.materials.data(), GL_STATIC_DRAW);
-	//glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, material_buffer);
-	//
-	//glGenBuffers(1, &light_buffer);
-	//glBindBuffer(GL_SHADER_STORAGE_BUFFER, light_buffer);
-	//glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPU_Light) * gpu_data.lights.size(), gpu_data.lights.data(), GL_STATIC_DRAW);
-	//glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, light_buffer);
-	//
-	//glGenBuffers(1, &spline_handle_buffer);
-	//glBindBuffer(GL_SHADER_STORAGE_BUFFER, spline_handle_buffer);
-	//glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPU_Spline_Point) * gpu_data.spline_controls.size(), gpu_data.spline_controls.data(), GL_STATIC_DRAW);
-	//glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 4, spline_handle_buffer);
-	//
-	//glGenBuffers(1, &spline_buffer);
-	//glBindBuffer(GL_SHADER_STORAGE_BUFFER, spline_buffer);
-	//glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPU_Spline) * gpu_data.splines.size(), gpu_data.splines.data(), GL_STATIC_DRAW);
-	//glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 5, spline_buffer);
-	//
-	//glGenBuffers(1, &curve_buffer);
-	//glBindBuffer(GL_SHADER_STORAGE_BUFFER, curve_buffer);
-	//glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPU_Curve) * gpu_data.curves.size(), gpu_data.curves.data(), GL_STATIC_DRAW);
-	//glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 6, curve_buffer);
-	//
-	//glGenBuffers(1, &vertex_buffer);
-	//glBindBuffer(GL_SHADER_STORAGE_BUFFER, vertex_buffer);
-	//glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPU_Vertex) * gpu_data.vertices.size(), gpu_data.vertices.data(), GL_STATIC_DRAW);
-	//glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 7, vertex_buffer);
-	//
-	//glGenBuffers(1, &mesh_buffer);
-	//glBindBuffer(GL_SHADER_STORAGE_BUFFER, mesh_buffer);
-	//glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPU_Mesh) * gpu_data.meshes.size(), gpu_data.meshes.data(), GL_STATIC_DRAW);
-	//glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 9, mesh_buffer);
 }
 
 void Renderer::guiLoop() {
@@ -338,9 +294,6 @@ void Renderer::displayLoop() {
 	GLuint bvh_render_layer = renderLayer(render_resolution);
 	GLuint normal_render_layer = renderLayer(render_resolution);
 
-	//GPU_Texture tex = GPU_Texture();
-	//tex.init("./Resources/Ganyu.jpg");
-
 	glBindVertexArray(VAO);
 	while (!glfwWindowShouldClose(window)) {
 		current_time = glfwGetTime();
@@ -410,12 +363,6 @@ void Renderer::displayLoop() {
 	}
 }
 
-void Renderer::recompileShader() {
-	reset = true;
-	recompile = true;
-	runframe = 0;
-}
-
 void Renderer::framebufferSize(GLFWwindow* window, int width, int height) {
 	Renderer* instance = static_cast<Renderer*>(glfwGetWindowUserPointer(window));
 	glViewport(0, 0, width, height);
@@ -472,7 +419,7 @@ void Renderer::key(GLFWwindow* window, int key, int scancode, int action, int mo
 	Renderer* instance = static_cast<Renderer*>(glfwGetWindowUserPointer(window));
 	// Input Handling
 	if (key == GLFW_KEY_F5 && action == GLFW_PRESS) {
-		instance->recompileShader();
+		instance->recompile = true;
 	}
 	if (key == GLFW_KEY_V  && action == GLFW_PRESS) {
 		instance->debug = !instance->debug;
