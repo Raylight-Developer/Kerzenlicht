@@ -10,11 +10,17 @@ layout(rgba32f, binding = 3) writeonly uniform image2D normal_render_layer;
 layout(std430, binding = 5) buffer TriangleDataBuffer {
 	Triangle triangles[];
 };
-layout(std430, binding = 6) buffer BVH_Buffer {
+layout(std430, binding = 6) buffer BvhBuffer {
 	Bvh bvh_nodes[];
 };
+layout(std430, binding = 7) buffer TextureBuffer {
+	Texture textures[];
+};
+layout(std430, binding = 8) buffer TextureDataBuffer {
+	uint texture_data[];
+};
 
-layout(rgba8, binding = 4) readonly uniform image2D image_texture;
+//layout(rgba8, binding = 4) readonly uniform image2D image_texture;
 
 //layout(std430, binding = 2) buffer MaterialDataBuffer {
 //	Material materials[];

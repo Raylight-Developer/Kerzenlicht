@@ -20,6 +20,12 @@ struct Bvh {
 	vec3 p_max;
 	uint tri_count; // 32 // If == 0, pointer leads to other Bvh Node, else leads to Triangle Start Index
 };
+struct Texture {
+	uint start;
+	uint width;
+	uint height;
+	uint format; // 32
+};
 struct Ray {
 	vec3  origin;
 	vec3  direction;
@@ -53,10 +59,15 @@ layout(rgba32f, binding = 3) writeonly uniform image2D normal_render_layer;
 layout(std430, binding = 5) buffer TriangleDataBuffer {
 	Triangle triangles[];
 };
-layout(std430, binding = 6) buffer BVH_Buffer {
+layout(std430, binding = 6) buffer BvhBuffer {
 	Bvh bvh_nodes[];
 };
-layout(rgba8, binding = 4) readonly uniform image2D image_texture;
+layout(std430, binding = 7) buffer TextureBuffer {
+	Texture textures[];
+};
+layout(std430, binding = 8) buffer TextureDataBuffer {
+	uint texture_data[];
+};
 uniform uint  frame_count;
 uniform float aspect_ratio;
 uniform float current_time;
@@ -87,6 +98,20 @@ float f_mapFloatClamp(float from_min, float from_max, float to_min, float to_max
 }
 vec2 f_mapVec2(vec2 from_min, vec2 from_max, vec2 to_min, vec2 to_max, vec2 value) {
 	return vec2(f_mapFloat(from_min.x, from_max.x, to_min.x, to_max.x, value.x), f_mapFloat(from_min.y, from_max.y, to_min.y, to_max.y, value.y));
+}
+vec4 rgba8Color(in Texture tex, in vec2 uv) {
+	uint x = uint(uv.x * float(tex.width));
+	uint y = uint(uv.y * float(tex.height));
+	x = clamp(x, 0, tex.width - 1);
+	y = clamp(y, 0, tex.height - 1);
+	uint index = tex.start + y * tex.width + x;
+	uint color = texture_data[index];
+	return vec4(
+		float((color >> 24) & 0xFF) / 255.0,
+		float((color >> 16) & 0xFF) / 255.0,
+		float((color >> 8) & 0xFF) / 255.0,
+		float(color & 0xFF) / 255.0
+	);
 }
 
 uint f_tea(in uint val0, in uint val1) {
@@ -223,7 +248,7 @@ vec4 f_shade(in Hit hit_data, inout Ray ray) {
 		hit_data.uvw.x * vec2(hit_data.hit_tri.uv_a_x, hit_data.hit_tri.uv_a_y) +
 		hit_data.uvw.y * vec2(hit_data.hit_tri.uv_b_x, hit_data.hit_tri.uv_b_y) +
 		hit_data.uvw.z * vec2(hit_data.hit_tri.uv_c_x, hit_data.hit_tri.uv_c_y);
-	return imageLoad(image_texture, ivec2(vec2(uv.x, 1 - uv.y) * imageSize(image_texture)));
+	return rgba8Color(textures[0], vec2(uv.x, 1 - uv.y));
 
 }
 

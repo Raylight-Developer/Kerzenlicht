@@ -21,6 +21,13 @@ struct Bvh {
 	vec3 p_max;
 	uint tri_count; // 32 // If == 0, pointer leads to other Bvh Node, else leads to Triangle Start Index
 };
+
+struct Texture {
+	uint start;
+	uint width;
+	uint height;
+	uint format; // 32
+};
 // INTERNAL ---------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
 struct Ray {

@@ -19,9 +19,11 @@ struct Image {
 	bool init(const string& i_file_path);
 };
 
-struct GPU_Texture {
-	GLuint ID;
+vector<uint> loadRgba8Texture(const string& file_path, uvec2& resolution);
 
-	GPU_Texture() { ID = 0; };
-	void init(const string& i_image_path);
-};
+//struct GPU_Texture {
+//	GLuint ID;
+//
+//	GPU_Texture() { ID = 0; };
+//	void init(const string& i_image_path);
+//};

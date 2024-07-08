@@ -15,3 +15,5 @@ Editor/Editor.vcxproj.user
 Scripting/Scripting.vcxproj.user
 Shared/Shared.vcxproj.user
 Runtime/Resources/Ganyu.krz
+Runtime/Resources/Shaders/Render_Compiled.comp
+/Vulkan-Playground-main

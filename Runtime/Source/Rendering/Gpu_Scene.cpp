@@ -91,6 +91,7 @@ GPU_Scene::GPU_Scene(const string& data_file_path, const string& shader_file_pat
 	//		}
 	//	}
 	//}
+	loadTexture("./Resources/Ganyu.jpg");
 }
 
 void GPU_Scene::print() const {
@@ -101,6 +102,13 @@ void GPU_Scene::print() const {
 	data << "BVHs " << bvh_nodes.size() << NL();
 	for (const GPU_BVH& bvh : bvh_nodes)
 		data << TAB() << bvh.print() << NL();
+	data << "Textures " << textures.size() << NL();
+	for (const GPU_Texture& texture : textures)
+		data << TAB() << texture.print() << NL();
+	data << "Texture Data " << texture_data.size() << NL() << TAB();
+	for (const uint& pixel : texture_data)
+		data << S() << pixel;
+	data << NL();
 	//data << "Materials" << NL();
 	//for (const GPU_Material& mat : materials) {
 	//	data << TAB() << mat.albedo << NL();
@@ -137,6 +145,8 @@ void GPU_Scene::printInfo(const uint64& max_size) const {
 	cout << "GPU Data:" << endl;
 	printSize("	Triangles            ", triangles);
 	printSize("	BVHs                 ", bvh_nodes);
+	printSize("	Textures             ", textures);
+	printSize("	Texture Data         ", texture_data);
 	//f_printSize("	Materials            ", materials);
 	//f_printSize("	Lights               ", lights);
 	//f_printSize("	Spline Control Points", spline_controls);
@@ -325,6 +335,14 @@ void GPU_Scene::loadBuild(const vector<vector<string>>& token_data, map<uint64, 
 	
 }
 
+void GPU_Scene::loadTexture(const string& file_path) {
+	uvec2 resolution;
+	vector<uint> data = loadRgba8Texture(file_path, resolution);
+
+	texture_data.insert(texture_data.end(), data.begin(), data.end());
+	textures.push_back(GPU_Texture(0U, resolution.x, resolution.y, 0U));
+}
+
 Lace GPU_Triangle::print() const {
 	Lace lace;
 	lace << "Tri: (" << pos_a<< ") : (" << normal_a << ") : (" << vec2(uv_a_x, uv_a_y) << ") | (" << pos_b << ") : (" << normal_b << ") : (" << vec2(uv_b_x, uv_b_y) << ") | (" << pos_c << ") : (" << normal_c << ") : (" << vec2(uv_c_x, uv_c_y) << ")";
@@ -490,4 +508,10 @@ float BVH_Builder::splitEval(const uint8& splitAxis, const float& splitPos, cons
 float BVH_Builder::nodeCost(const vec3& size, const uint& numTriangles) {
 	const float halfArea = size.x * size.y + size.x * size.z + size.y * size.z;
 	return halfArea * numTriangles;
+}
+
+Lace GPU_Texture::print() const {
+	Lace lace;
+	lace << "Texture: (" << start<< ") | (" << width << " x " << height << ") | " << format;
+	return lace;
 }

@@ -163,29 +163,14 @@ void Renderer::dataTransfer() {
 	//gpu_data->print();
 	Session::getInstance().setScene(gpu_data);
 	
-	GLuint triangle_buffer;
-	GLuint bvh_buffer;
-	//GLuint material_buffer;
-	//GLuint light_buffer;
-	//GLuint vertex_buffer;
-	//GLuint mesh_buffer;
-	//GLuint spline_handle_buffer;
-	//GLuint spline_buffer;
-	//GLuint curve_buffer;
-	
 	GLint ssboMaxSize;
 	glGetIntegerv(GL_MAX_SHADER_STORAGE_BLOCK_SIZE, &ssboMaxSize);
 	gpu_data->printInfo(ssboMaxSize);
 
-	// Textures
-	//vector<string> textures = { "./Resources/Ganyu.jpg" };
-	//
-	//for (uint i = 0; i < textures.size(); i++) {
-	//	auto tex = GPU_Texture();
-	//	tex.init(textures[i]);
-	//	glBindImageTexture(4, tex.ID, 0, GL_FALSE, 0, GL_READ_ONLY, GL_UNSIGNED_BYTE);
-	//}
-	//glBindTexture(GL_TEXTURE_2D, 0);
+	GLuint triangle_buffer;
+	GLuint bvh_buffer;
+	GLuint texture_buffer;
+	GLuint texture_data_buffer;
 
 	// SSBOs
 	glGenBuffers(1, &triangle_buffer);
@@ -198,6 +183,15 @@ void Renderer::dataTransfer() {
 	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPU_BVH) * gpu_data->bvh_nodes.size(), gpu_data->bvh_nodes.data(), GL_STATIC_DRAW);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 6, bvh_buffer);
 
+	glGenBuffers(1, &texture_buffer);
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, texture_buffer);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPU_Texture) * gpu_data->textures.size(), gpu_data->textures.data(), GL_STATIC_DRAW);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 7, texture_buffer);
+
+	glGenBuffers(1, &texture_data_buffer);
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, texture_data_buffer);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(uint) * gpu_data->texture_data.size(), gpu_data->texture_data.data(), GL_STATIC_DRAW);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 8, texture_data_buffer);
 	//glGenBuffers(1, &material_buffer);
 	//glBindBuffer(GL_SHADER_STORAGE_BUFFER, material_buffer);
 	//glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPU_Material) * gpu_data.materials.size(), gpu_data.materials.data(), GL_STATIC_DRAW);
@@ -344,8 +338,8 @@ void Renderer::displayLoop() {
 	GLuint bvh_render_layer = renderLayer(render_resolution);
 	GLuint normal_render_layer = renderLayer(render_resolution);
 
-	GPU_Texture tex = GPU_Texture();
-	tex.init("./Resources/Ganyu.jpg");
+	//GPU_Texture tex = GPU_Texture();
+	//tex.init("./Resources/Ganyu.jpg");
 
 	glBindVertexArray(VAO);
 	while (!glfwWindowShouldClose(window)) {
@@ -372,19 +366,12 @@ void Renderer::displayLoop() {
 		glUniform3fv(glGetUniformLocation(compute_program, "camera_projection_u"), 1, value_ptr(d_to_f(camera.projection_u)));
 		glUniform3fv(glGetUniformLocation(compute_program, "camera_projection_v"), 1, value_ptr(d_to_f(camera.projection_v)));
 		glUniform3fv(glGetUniformLocation(compute_program, "camera_pos"), 1, value_ptr(d_to_f(camera.transform.position)));
-		//glUniform1f (glGetUniformLocation(compute_program, "camera_sensor_size") , d_to_f(camera.sensor_size));
-		//glUniform1f (glGetUniformLocation(compute_program, "camera_focal_angle") , d_to_f(camera.focal_angle));
-		//glUniform1f (glGetUniformLocation(compute_program, "camera_focal_length"), d_to_f(camera.focal_length));
 
 		glBindImageTexture(0, accumulation_render_layer, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
 		glBindImageTexture(1, raw_render_layer         , 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
 		glBindImageTexture(2, bvh_render_layer         , 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
 		glBindImageTexture(3, normal_render_layer      , 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
-		glBindImageTexture(4, tex.ID, 0, GL_FALSE      , 0, GL_READ_ONLY, GL_RGBA8);
-
-		//glActiveTexture(GL_TEXTURE4);
-		//glBindTexture(GL_TEXTURE_2D, tex.ID);
-		//glUniform1i(glGetUniformLocation(tex.ID, "image_texture"), 4);
+		//glBindImageTexture(4, tex.ID, 0, GL_FALSE      , 0, GL_READ_ONLY, GL_RGBA8);
 
 		glDispatchCompute(compute_layout.x, compute_layout.y, compute_layout.z);
 		
@@ -410,9 +397,9 @@ void Renderer::displayLoop() {
 			recompile = false;
 		}
 
-		if (window_time > 0.25) {
+		if (window_time > 1.0) {
 			frame_count = frame_counter;
-			window_time -= 0.25;
+			window_time -= 1.0;
 			frame_counter = 0;
 		}
 

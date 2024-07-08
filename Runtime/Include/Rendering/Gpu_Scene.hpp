@@ -7,9 +7,11 @@
 #include "Session.hpp"
 
 #include "Camera.hpp"
+#include "OpenGl.hpp"
 
 struct GPU_Scene;
 struct alignas(16) GPU_Triangle;
+struct alignas(16) GPU_Texture;
 struct alignas(16) GPU_BVH;
 
 enum struct Parse_Type {
@@ -26,6 +28,8 @@ enum struct Parse_Type {
 struct GPU_Scene {
 	vector<GPU_Triangle>      triangles;
 	vector<GPU_BVH>           bvh_nodes;
+	vector<GPU_Texture>       textures;
+	vector<uint>              texture_data;
 
 	//Camera                    camera;
 	//vector<GPU_Material>      materials;
@@ -58,6 +62,8 @@ struct GPU_Scene {
 	void loadObject     (const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map);
 	void loadScene      (const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map);
 	void loadBuild      (const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map);
+
+	void loadTexture    (const string& file_path);
 
 	void print() const;
 	void printInfo(const uint64& max_size) const;
@@ -151,6 +157,32 @@ struct alignas(16) GPU_BVH {
 	void growToInclude(const vec3& min, const vec3& max);
 	vec3 getSize();
 	vec3 getCenter();
+	Lace print() const;
+};
+
+enum struct Texture_Fromat {
+	RGBA8,
+	RGBA16,
+	RGBA32
+};
+
+struct alignas(16) GPU_Texture {
+	uint start;
+	uint width;
+	uint height;
+	uint format; // 32
+
+	GPU_Texture(
+		const uint& start  = 0U,
+		const uint& width  = 0U,
+		const uint& height = 0U,
+		const uint& format = 0U
+	) :
+		start(start),
+		width(width),
+		height(height),
+		format(format)
+	{}
 	Lace print() const;
 };
 
