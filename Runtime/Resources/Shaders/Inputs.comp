@@ -38,19 +38,25 @@ layout(rgba8, binding = 4) readonly uniform image2D image_texture;
 //	Mesh meshes[];
 //};
 
-uniform uint64_t frame_count;
-uniform float    aspect_ratio;
-uniform uvec2    resolution;
-uniform float    runtime;
-uniform bool     reset;
+uniform uint  frame_count;
+uniform float aspect_ratio;
+uniform float current_time;
+uniform uvec2 resolution;
+uniform bool  reset;
+uniform bool  debug;
 
 uniform uint  ray_bounces;
 uniform uint  samples_per_pixel;
 
-uniform vec3  camera_pos;
-uniform vec3  camera_xvec;
-uniform vec3  camera_yvec;
-uniform vec3  camera_zvec;
-uniform float camera_sensor_size;
-uniform float camera_focal_angle;
-uniform float camera_focal_length;
+//uniform vec3  camera_pos;
+//uniform vec3  camera_xvec;
+//uniform vec3  camera_yvec;
+//uniform vec3  camera_zvec;
+//uniform float camera_sensor_size;
+//uniform float camera_focal_angle;
+//uniform float camera_focal_length;
+
+uniform vec3 camera_projection_center;
+uniform vec3 camera_projection_u;
+uniform vec3 camera_projection_v;
+uniform vec3 camera_pos;

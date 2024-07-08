@@ -86,7 +86,6 @@ class Kerzenlicht_Bridge(bpy.types.Operator):
 		self.KL.append("  └Vertices")
 		self.KL.append(f"  ┌Normals( {len(data.polygons)} )")
 
-		uv_layer = data.uv_layers.active.data
 		for j, data_b in enumerate(data.polygons):
 			poly: bpy.types.MeshPolygon = data_b
 			normals = " ".join([f"{-nor.x} {nor.z} {nor.y}" for nor in [data.vertices[index].normal for index in poly.vertices]])
@@ -104,13 +103,9 @@ class Kerzenlicht_Bridge(bpy.types.Operator):
 		self.KL.append("  └UVs")
 		self.KL.append(f"  ┌Faces( {len(data.polygons)} )")
 
-		uv_layer = data.uv_layers.active.data
 		for j, data_b in enumerate(data.polygons):
 			poly: bpy.types.MeshPolygon = data_b
 			vertices = " ".join([str(index) for index in poly.vertices])
-			normals = " ".join([f"{-nor.x} {nor.z} {nor.y}" for nor in [data.vertices[index].normal for index in poly.vertices]])
-			uvs = " ".join([f"{uv_layer[loop_index].uv.x} {uv_layer[loop_index].uv.y}" for loop_index in range(poly.loop_start, poly.loop_start + poly.loop_total)])
-
 			self.KL.append(f"   {j} {len(poly.vertices)} {vertices}")
 
 		self.KL.append("  └Faces")

@@ -5,11 +5,10 @@ Camera::Camera() {
 	height = 1080;
 
 	focal_length = 0.05;
-	focal_angle  = 40.0;
+	focal_angle  = 50.0;
 	sensor_size  = 0.036;
 
-	position = dvec3( 0, 0, -3.5 );
-	rotation = dvec3( 90, 0,  0 );
+	transform = CLASS::Transform(dvec3( -2.5, 1.5, -2.5 ), dvec3( 20, 45, 0 ));
 
 	x_vector = dvec3( 1.0f, 0.0f, 0.0f);
 	y_vector = dvec3( 0.0f, 1.0f, 0.0f);
@@ -19,26 +18,29 @@ Camera::Camera() {
 }
 
 void Camera::move(const double& x, const double& y, const double& z, const double& speed) {
-	position += x * speed * x_vector;
-	position += y * speed * y_vector;
-	position += z * speed * z_vector;
+	transform.position += x * speed * x_vector;
+	transform.position += y * speed * y_vector;
+	transform.position += z * speed * z_vector;
 }
 
 void Camera::rotate(const double& yaw, const double& pitch) {
-	rotation += dvec3(yaw, pitch, 0);
+	transform.euler_rotation += dvec3(pitch, yaw, 0);
 
-	if (rotation.y > 89.0) rotation.y = 89.0;
-	if (rotation.y < -89.0) rotation.y = -89.0;
+	if (transform.euler_rotation.x > 89.0) transform.euler_rotation.x = 89.0;
+	if (transform.euler_rotation.x < -89.0) transform.euler_rotation.x = -89.0;
 
 	compileVectors();
 }
 
 void Camera::compileVectors() {
-	z_vector = normalize(dvec3(
-		cos(rotation.x * DEG_RAD) * cos(rotation.y * DEG_RAD),
-		sin(rotation.y * DEG_RAD),
-		sin(rotation.x * DEG_RAD) * cos(rotation.y * DEG_RAD)
-	));
-	x_vector = normalize(cross(z_vector, dvec3(0, 1, 0)));
-	y_vector = normalize(cross(x_vector, z_vector));
+	const dmat4 matrix = glm::yawPitchRoll(transform.euler_rotation.y * DEG_RAD, transform.euler_rotation.x * DEG_RAD, transform.euler_rotation.z * DEG_RAD);
+	x_vector = matrix[0];
+	y_vector = matrix[1];
+	z_vector = matrix[2];
+}
+
+void Camera::compile() {
+	projection_center = transform.position + focal_length * z_vector;
+	projection_u = normalize(cross(z_vector, y_vector)) * sensor_size ;
+	projection_v = normalize(cross(projection_u, z_vector)) * sensor_size;
 }

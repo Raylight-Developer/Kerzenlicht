@@ -3,7 +3,6 @@
 Renderer::Renderer() {
 	window = nullptr;
 
-	runtime = 0.0;
 	frame_counter = 0;
 	frame_count = 0;
 	runframe = 0;
@@ -16,18 +15,20 @@ Renderer::Renderer() {
 
 	recompile = false;
 	reset = false;
+	debug = false;
 
 	camera = Camera();
 
 	camera_move_sensitivity = 0.75;
 	camera_view_sensitivity = 2.5;
 	keys = vector(348, false);
+	current_mouse = dvec2(display_resolution) / 2.0;
 	last_mouse = dvec2(display_resolution) / 2.0;
 
-	last_time = 0;
-	current_time = 0;
+	current_time = 0.0;
 	window_time = 0.0;
-	frame_time = 0.0;
+	frame_time = FPS_60;
+	last_time = 0.0;
 }
 
 void Renderer::init() {
@@ -136,9 +137,13 @@ void Renderer::systemInfo() {
 	glGetIntegerv(GL_MAX_COMPUTE_WORK_GROUP_INVOCATIONS, &work_grp_inv);
 	cout << "Max invocations count per work group: " << work_grp_inv << endl;
 
+	GLint uboMaxSize;
+	glGetIntegerv(GL_MAX_UNIFORM_BLOCK_SIZE , &uboMaxSize);
+	cout << "Maximum UBO size: " << static_cast<dvec1>(uboMaxSize) / (1024.0 * 1024.0) << " Mb" << endl;
+
 	GLint ssboMaxSize;
 	glGetIntegerv(GL_MAX_SHADER_STORAGE_BLOCK_SIZE, &ssboMaxSize);
-	cout << "Maximum SSBO size per binding: " << static_cast<double>(ssboMaxSize) / static_cast<double>(1024 * 1024 * 1024) << " Gb" << endl;
+	cout << "Maximum SSBO size per binding: " << static_cast<dvec1>(ssboMaxSize) / (1024.0 * 1024.0) << " Mb" << endl;
 
 	GLint maxSSBOBindings;
 	glGetIntegerv(GL_MAX_SHADER_STORAGE_BUFFER_BINDINGS, &maxSSBOBindings);
@@ -238,7 +243,7 @@ void Renderer::guiLoop() {
 	ImGuiIO& io = ImGui::GetIO(); (void)io;
 
 	ImGui::Begin("Info");
-	ImGui::Text((to_string(1.0/static_cast<double>(frame_count)) + "ms").c_str());
+	ImGui::Text((to_string(1.0 / u_to_d(frame_count)) + "ms").c_str());
 	ImGui::Text((to_string(frame_count) + "fps").c_str());
 	ImGui::Text((to_string(runframe) + "frames").c_str());
 	ImGui::End();
@@ -249,12 +254,12 @@ void Renderer::guiLoop() {
 
 void Renderer::gameLoop() {
 	if (keys[GLFW_KEY_D]) {
-		camera.move(1.0, 0.0, 0.0, camera_move_sensitivity * frame_time);
+		camera.move(-1.0, 0.0, 0.0, camera_move_sensitivity * frame_time);
 		reset = true;
 		runframe = 0;
 	}
 	if (keys[GLFW_KEY_A]) {
-		camera.move(-1.0, 0.0, 0.0, camera_move_sensitivity * frame_time);
+		camera.move(1.0, 0.0, 0.0, camera_move_sensitivity * frame_time);
 		reset = true;
 		runframe = 0;
 	}
@@ -277,6 +282,16 @@ void Renderer::gameLoop() {
 		camera.move(0.0, 0.0, -1.0, camera_move_sensitivity * frame_time);
 		reset = true;
 		runframe = 0;
+	}
+	if (keys[GLFW_MOUSE_BUTTON_RIGHT]) {
+		const dvec1 xoffset =   (last_mouse.x - current_mouse.x) * frame_time;
+		const dvec1 yoffset = - (last_mouse.y - current_mouse.y) * frame_time;
+
+		camera.rotate(xoffset * camera_view_sensitivity, yoffset * camera_view_sensitivity);
+		reset = true;
+		runframe = 0;
+
+		last_mouse = current_mouse;
 	}
 }
 
@@ -334,31 +349,32 @@ void Renderer::displayLoop() {
 
 	glBindVertexArray(VAO);
 	while (!glfwWindowShouldClose(window)) {
-		gameLoop();
-
-		current_time = clock();
-		frame_time = dvec1(current_time - last_time) / CLOCKS_PER_SEC;
+		current_time = glfwGetTime();
+		frame_time = current_time - last_time;
 		last_time = current_time;
-		runtime = glfwGetTime();
 		window_time += frame_time;
 
+		gameLoop();
+
 		glUseProgram(compute_program);
-		glUniform1ui64ARB(glGetUniformLocation(compute_program, "frame_count"), runframe);
+		glUniform1ui(glGetUniformLocation(compute_program, "frame_count"), ul_to_u(runframe));
 		glUniform1f (glGetUniformLocation(compute_program, "aspect_ratio"), d_to_f(render_aspect_ratio));
+		glUniform1f (glGetUniformLocation(compute_program, "current_time"), d_to_f(current_time));
 		glUniform2ui(glGetUniformLocation(compute_program, "resolution"), render_resolution.x, render_resolution.y);
-		glUniform1f (glGetUniformLocation(compute_program, "runtime"), d_to_f(runtime));
 		glUniform1ui(glGetUniformLocation(compute_program, "reset"), static_cast<GLuint>(reset));
+		glUniform1ui(glGetUniformLocation(compute_program, "debug"), static_cast<GLuint>(debug));
 
-		glUniform1ui(glGetUniformLocation(compute_program, "ray_bounces"), static_cast<GLuint>(1U));
-		glUniform1ui(glGetUniformLocation(compute_program, "samples_per_pixel"), static_cast<GLuint>(1U));
+		glUniform1ui(glGetUniformLocation(compute_program, "ray_bounces"), 1U);
+		glUniform1ui(glGetUniformLocation(compute_program, "samples_per_pixel"), 1U);
 
-		glUniform3fv(glGetUniformLocation(compute_program, "camera_pos") , 1, value_ptr(d_to_f(camera.position)));
-		glUniform3fv(glGetUniformLocation(compute_program, "camera_xvec"), 1, value_ptr(d_to_f(camera.x_vector)));
-		glUniform3fv(glGetUniformLocation(compute_program, "camera_yvec"), 1, value_ptr(d_to_f(camera.y_vector)));
-		glUniform3fv(glGetUniformLocation(compute_program, "camera_zvec"), 1, value_ptr(d_to_f(camera.z_vector)));
-		glUniform1f (glGetUniformLocation(compute_program, "camera_sensor_size") , d_to_f(camera.sensor_size));
-		glUniform1f (glGetUniformLocation(compute_program, "camera_focal_angle") , d_to_f(camera.focal_angle));
-		glUniform1f (glGetUniformLocation(compute_program, "camera_focal_length"), d_to_f(camera.focal_length));
+		camera.compile();
+		glUniform3fv(glGetUniformLocation(compute_program, "camera_projection_center") , 1, value_ptr(d_to_f(camera.projection_center)));
+		glUniform3fv(glGetUniformLocation(compute_program, "camera_projection_u"), 1, value_ptr(d_to_f(camera.projection_u)));
+		glUniform3fv(glGetUniformLocation(compute_program, "camera_projection_v"), 1, value_ptr(d_to_f(camera.projection_v)));
+		glUniform3fv(glGetUniformLocation(compute_program, "camera_pos"), 1, value_ptr(d_to_f(camera.transform.position)));
+		//glUniform1f (glGetUniformLocation(compute_program, "camera_sensor_size") , d_to_f(camera.sensor_size));
+		//glUniform1f (glGetUniformLocation(compute_program, "camera_focal_angle") , d_to_f(camera.focal_angle));
+		//glUniform1f (glGetUniformLocation(compute_program, "camera_focal_length"), d_to_f(camera.focal_length));
 
 		glBindImageTexture(0, accumulation_render_layer, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
 		glBindImageTexture(1, raw_render_layer         , 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
@@ -376,8 +392,9 @@ void Renderer::displayLoop() {
 
 		glUseProgram(post_program);
 		glClear(GL_COLOR_BUFFER_BIT);
-		glUniform1f(glGetUniformLocation(post_program, "display_aspect_ratio"), d_to_f(display_aspect_ratio));
-		glUniform1f(glGetUniformLocation(post_program, "render_aspect_ratio"), d_to_f(render_aspect_ratio));
+		glUniform1f (glGetUniformLocation(post_program, "display_aspect_ratio"), d_to_f(display_aspect_ratio));
+		glUniform1f (glGetUniformLocation(post_program, "render_aspect_ratio"), d_to_f(render_aspect_ratio));
+		glUniform1ui(glGetUniformLocation(post_program, "debug"), static_cast<GLuint>(debug));
 		bindRenderLayer(post_program, 0, accumulation_render_layer, "accumulation_render_layer");
 		bindRenderLayer(post_program, 1, raw_render_layer         , "raw_render_layer"         );
 		bindRenderLayer(post_program, 2, bvh_render_layer         , "bvh_render_layer"         );
@@ -393,9 +410,9 @@ void Renderer::displayLoop() {
 			recompile = false;
 		}
 
-		if (window_time > 1.0) {
+		if (window_time > 0.25) {
 			frame_count = frame_counter;
-			window_time -= 1.0;
+			window_time -= 0.25;
 			frame_counter = 0;
 		}
 
@@ -410,7 +427,6 @@ void Renderer::recompileShader() {
 	reset = true;
 	recompile = true;
 	runframe = 0;
-	runtime = glfwGetTime();
 }
 
 void Renderer::framebufferSize(GLFWwindow* window, int width, int height) {
@@ -419,22 +435,14 @@ void Renderer::framebufferSize(GLFWwindow* window, int width, int height) {
 	instance->display_resolution.x = width;
 	instance->display_resolution.y = height;
 	instance->display_aspect_ratio = u_to_d(instance->display_resolution.x) / u_to_d(instance->display_resolution.y);
+	instance->current_mouse = dvec2(instance->display_resolution) / 2.0;
+	instance->last_mouse = instance->current_mouse;
 	instance->runframe = 0;
-	instance->runtime = glfwGetTime();
 }
 
 void Renderer::cursorPos(GLFWwindow* window, double xpos, double ypos) {
 	Renderer* instance = static_cast<Renderer*>(glfwGetWindowUserPointer(window));
-	if (instance->keys[GLFW_MOUSE_BUTTON_RIGHT]) {
-		double xoffset = xpos - instance->last_mouse.x;
-		double yoffset = instance->last_mouse.y - ypos;
-
-		instance->last_mouse = dvec2(xpos, ypos);
-
-		instance->camera.rotate(xoffset * instance->camera_view_sensitivity * instance->frame_time, yoffset * instance->camera_view_sensitivity * instance->frame_time);
-		instance->reset = true;
-		instance->runframe = 0;
-	}
+	instance->current_mouse = dvec2(xpos, ypos);
 }
 
 void Renderer::mouseButton(GLFWwindow* window, int button, int action, int mods) {
@@ -464,20 +472,23 @@ void Renderer::scroll(GLFWwindow* window, double xoffset, double yoffset) {
 	if (yoffset < 0) {
 		instance->reset = true;
 		instance->runframe = 0;
-		instance->camera_move_sensitivity /= 1.1;
+		instance->camera_move_sensitivity /= 1.05;
 	}
 	if (yoffset > 0) {
 		instance->reset = true;
 		instance->runframe = 0;
-		instance->camera_move_sensitivity *= 1.1;
+		instance->camera_move_sensitivity *= 1.05;
 	}
 }
 
 void Renderer::key(GLFWwindow* window, int key, int scancode, int action, int mods) {
 	Renderer* instance = static_cast<Renderer*>(glfwGetWindowUserPointer(window));
 	// Input Handling
-	if (key == GLFW_KEY_R && action == GLFW_PRESS) {
+	if (key == GLFW_KEY_F5 && action == GLFW_PRESS) {
 		instance->recompileShader();
+	}
+	if (key == GLFW_KEY_V  && action == GLFW_PRESS) {
+		instance->debug = !instance->debug;
 	}
 	if (key == GLFW_KEY_C && action == GLFW_PRESS) {
 		instance->camera = Camera();

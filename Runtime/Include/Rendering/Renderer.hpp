@@ -20,25 +20,27 @@ struct Renderer {
 	uvec2 display_resolution;
 	uvec2 render_resolution;
 
-	dvec1  runtime;
 	uint   frame_counter;
 	uint   frame_count;
 	uint64 runframe;
 
 	bool recompile;
 	bool reset;
+	bool debug;
 
 	Camera camera;
 
 	dvec1 camera_move_sensitivity;
 	dvec1 camera_view_sensitivity;
 	vector<bool> keys;
-	dvec2  last_mouse;
 
-	clock_t last_time;
-	clock_t current_time;
-	dvec1  window_time;
-	dvec1  frame_time;
+	dvec2 current_mouse;
+	dvec2 last_mouse;
+
+	dvec1 current_time;
+	dvec1 window_time;
+	dvec1 frame_time;
+	dvec1 last_time;
 
 	Renderer();
 

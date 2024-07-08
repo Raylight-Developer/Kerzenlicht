@@ -23,8 +23,8 @@ CLASS::File::File() {
 	active_scene = new Observable_Ptr<Scene>();
 
 	default_camera = new Object();
-	default_camera->transform.position = dvec3(2.5, 1.5, 2.5);
-	default_camera->transform.euler_rotation = dvec3(15, 225, 0);
+	default_camera->transform.position = dvec3(-2.5, 1.5, -2.5);
+	default_camera->transform.euler_rotation = dvec3(20, 45, 0);
 	default_camera->data = new OBJECT::Data(OBJECT::DATA::Type::CAMERA, new OBJECT::DATA::Camera());
 
 	version = "ERROR";
@@ -393,7 +393,9 @@ CLASS::OBJECT::Data* CLASS::File::f_loadMesh(const vector<vector<string>>& token
 	for (const vector<string>& tokens : token_data) {
 		if (
 			tokens[0] == "┌Vertices(" or
-			tokens[0] == "┌Faces("
+			//tokens[0] == "┌Normals(" or
+			tokens[0] == "┌Faces("// or
+			//tokens[0] == "┌UVs("
 		) {
 			is_processing = true;
 			read_data.clear();
@@ -408,12 +410,33 @@ CLASS::OBJECT::Data* CLASS::File::f_loadMesh(const vector<vector<string>>& token
 			is_processing = false;
 			for (const vector<string>& token_data : read_data) {
 				CLASS::OBJECT::DATA::MESH::Face* face = new CLASS::OBJECT::DATA::MESH::Face();
-				face->vertices.push_back(mesh->vertices[str_to_ul(token_data[2])]);
-				face->vertices.push_back(mesh->vertices[str_to_ul(token_data[3])]);
-				face->vertices.push_back(mesh->vertices[str_to_ul(token_data[4])]);
+				for (uint i = 0; i < str_to_ul(token_data[1]); i++)
+					face->vertices.push_back(mesh->vertices[str_to_ul(token_data[i+2])]);
+				//face->vertices.push_back(mesh->vertices[str_to_ul(token_data[3])]);
+				//face->vertices.push_back(mesh->vertices[str_to_ul(token_data[4])]);
 				mesh->faces.push_back(face);
 			}
 		}
+		//else if (tokens[0] == "└Normals") {
+		//	is_processing = false;
+		//	for (const vector<string>& token_data : read_data) {
+		//		mesh->normals[0][mesh->faces[str_to_ul(token_data[0])]] = {
+		//			str_to_d(token_data[1], token_data[2], token_data[3]),
+		//			str_to_d(token_data[4], token_data[5], token_data[6]),
+		//			str_to_d(token_data[7], token_data[8], token_data[9])
+		//		};
+		//	}
+		//}
+		//else if (tokens[0] == "└UVs") {
+		//	is_processing = false;
+		//	for (const vector<string>& token_data : read_data) {
+		//		mesh->uvs[0][mesh->faces[str_to_ul(token_data[0])]] = {
+		//			str_to_d(token_data[1], token_data[2]),
+		//			str_to_d(token_data[3], token_data[4]),
+		//			str_to_d(token_data[5], token_data[6])
+		//		};
+		//	}
+		//}
 		else if (is_processing) {
 			read_data.push_back(tokens);
 		}

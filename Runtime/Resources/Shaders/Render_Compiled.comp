@@ -1,5 +1,4 @@
 #version 460
-#extension GL_ARB_gpu_shader_int64: enable
 
 struct Triangle {
 	vec3  pos_a;
@@ -58,20 +57,18 @@ layout(std430, binding = 6) buffer BVH_Buffer {
 	Bvh bvh_nodes[];
 };
 layout(rgba8, binding = 4) readonly uniform image2D image_texture;
-uniform uint64_t frame_count;
-uniform float    aspect_ratio;
-uniform uvec2    resolution;
-uniform float    runtime;
-uniform bool     reset;
+uniform uint  frame_count;
+uniform float aspect_ratio;
+uniform float current_time;
+uniform uvec2 resolution;
+uniform bool  reset;
+uniform bool  debug;
 uniform uint  ray_bounces;
 uniform uint  samples_per_pixel;
-uniform vec3  camera_pos;
-uniform vec3  camera_xvec;
-uniform vec3  camera_yvec;
-uniform vec3  camera_zvec;
-uniform float camera_sensor_size;
-uniform float camera_focal_angle;
-uniform float camera_focal_length;
+uniform vec3 camera_projection_center;
+uniform vec3 camera_projection_u;
+uniform vec3 camera_projection_v;
+uniform vec3 camera_pos;
 
 
 float f_lerp(in float a,in float b, in float t) {
@@ -231,10 +228,7 @@ vec4 f_shade(in Hit hit_data, inout Ray ray) {
 }
 
 Ray f_cameraRay(vec2 uv) {
-	vec3 projection_center = camera_pos + camera_focal_length * camera_zvec;
-	vec3 projection_u = normalize(cross(camera_zvec, camera_yvec)) * camera_sensor_size;
-	vec3 projection_v = normalize(cross(projection_u, camera_zvec)) * camera_sensor_size;
-	return Ray(camera_pos, normalize(projection_center + (projection_u * uv.x) + (projection_v * uv.y) - camera_pos));
+	return Ray(camera_pos, normalize(camera_projection_center + (camera_projection_u * uv.x) + (camera_projection_v * uv.y) - camera_pos));
 }
 
 

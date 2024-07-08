@@ -18,6 +18,8 @@ namespace CLASS::OBJECT::DATA {
 	struct Mesh {
 		vector<MESH::Vertex*> vertices;
 		vector<MESH::Face*> faces;
+		map<uint8, unordered_map<MESH::Face*, vector<dvec2>>> uvs;
+		map<uint8, unordered_map<MESH::Face*, vector<dvec3>>> normals;
 
 		Mesh();
 		~Mesh();

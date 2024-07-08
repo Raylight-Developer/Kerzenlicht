@@ -1,9 +1,8 @@
 #version 460 core
 
-#define DEBUG true
-
 uniform float display_aspect_ratio;
 uniform float render_aspect_ratio;
+uniform bool  debug;
 
 uniform sampler2D accumulation_render_layer;
 uniform sampler2D raw_render_layer;
@@ -38,7 +37,7 @@ vec3 ColorGrade( vec3 vColor ) {
 }
 
 void main() {
-	if (DEBUG) {
+	if (debug) {
 		if      (uv_coords.x < 0.5 && uv_coords.y >= 0.5) {
 			color_out = vec4(ColorGrade(texture(accumulation_render_layer, f_mapVec2(vec2(0.0, 0.5), vec2(0.5, 1.0), vec2(0.0), vec2(1.0), uv_coords)).rgb), 1);
 		}

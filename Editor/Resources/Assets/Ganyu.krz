@@ -7,6 +7,7 @@
 └Node-Trees
 ┌Data( 1 )
  ┌Data :: Mesh [ 0 ] Ganyu
+  1462593552096
   ┌Vertices( 5273 )
    0 -0.2577989995479584 -0.5521939992904663 0.14192195236682892
    1 -0.23718099296092987 -0.563256025314331 0.11384595185518265
@@ -24735,6 +24736,7 @@
 └Data
 ┌└Objects( 1 )
  ┌Object [ 0 ] Ganyu
+  1462618579808
   Position 0.0 0.0 0.0
   Rotation 0.0 0.0 0.0
   Scale 1.0 1.0 1.0
@@ -24743,17 +24745,18 @@
 └└Objects
 ┌Scenes( 1 )
  ┌Scene [ 0 ]
+  1462593428544
   ┌Objects
-  0 Ganyu
+  1462618579808 Ganyu
   └Objects
  └Scene
 └Scenes
 ┌Build-Steps
- Active-Scene 0
+ Active-Scene 1462593428544
  ┌Object-Group
  └Object-Group
  ┌Object-Data
-  0 0
+  1462618579808 1462593552096
  └Object-Data
  ┌Object-Node
  └Object-Node
