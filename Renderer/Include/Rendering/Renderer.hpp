@@ -42,6 +42,8 @@ struct Renderer {
 	dvec1 frame_time;
 	dvec1 last_time;
 
+	uint view_layer;
+
 	Renderer();
 
 	void init();

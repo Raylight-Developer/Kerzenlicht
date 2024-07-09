@@ -908,19 +908,18 @@ void CLASS::File::f_saveMesh(Lace& lace, const CLASS::OBJECT::Data* data, const 
 	lace NL "┌Vertices( " << mesh->vertices.size() << " )";
 	lace A
 	for (uint64 i = 0; i < mesh->vertices.size(); i++) {
-		lace NL i << " ( " << mesh->vertices[i]->position << " )";
+		lace NL i << " " << mesh->vertices[i]->position;
 	}
 	lace R
 	lace NL "└Vertices";
 	lace NL "┌Faces( " << mesh->faces.size() << " )";
 	lace A
 	for (uint64 i = 0; i < mesh->faces.size(); i++) {
-		lace NL i << " [ ";
+		lace NL i SP mesh->faces[i]->vertices.size() << S();
 		for (uint64 j = 0; j < mesh->faces[i]->vertices.size(); j++)
 			for (uint64 k = 0; k < mesh->vertices.size(); k++)
 				if (mesh->faces[i]->vertices[j] == mesh->vertices[k])
-					lace << k << " ";
-		lace << "]";
+					lace << k << S();
 	}
 	lace R
 	lace NL "└Faces";

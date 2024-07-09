@@ -10,7 +10,7 @@ Renderer::Renderer() {
 	display_resolution = uvec2(3840U, 2160U);
 	display_aspect_ratio = u_to_d(display_resolution.x) / u_to_d(display_resolution.y);
 
-	render_resolution = uvec2(1050U, 450U);
+	render_resolution = uvec2(2100U, 900U);
 	render_aspect_ratio = u_to_d(render_resolution.x) / u_to_d(render_resolution.y);
 
 	recompile = false;
@@ -29,6 +29,8 @@ Renderer::Renderer() {
 	window_time = 0.0;
 	frame_time = FPS_60;
 	last_time = 0.0;
+
+	view_layer = 0;
 }
 
 void Renderer::init() {
@@ -334,6 +336,7 @@ void Renderer::displayLoop() {
 		glClear(GL_COLOR_BUFFER_BIT);
 		glUniform1f (glGetUniformLocation(post_program, "display_aspect_ratio"), d_to_f(display_aspect_ratio));
 		glUniform1f (glGetUniformLocation(post_program, "render_aspect_ratio"), d_to_f(render_aspect_ratio));
+		glUniform1ui(glGetUniformLocation(post_program, "view_layer"), view_layer);
 		glUniform1ui(glGetUniformLocation(post_program, "debug"), static_cast<GLuint>(debug));
 		bindRenderLayer(post_program, 0, accumulation_render_layer, "accumulation_render_layer");
 		bindRenderLayer(post_program, 1, raw_render_layer         , "raw_render_layer"         );
@@ -423,6 +426,18 @@ void Renderer::key(GLFWwindow* window, int key, int scancode, int action, int mo
 	}
 	if (key == GLFW_KEY_V  && action == GLFW_PRESS) {
 		instance->debug = !instance->debug;
+	}
+	if (key == GLFW_KEY_RIGHT  && action == GLFW_PRESS) {
+		if (instance->view_layer < 3)
+			instance->view_layer++;
+		else
+			instance->view_layer = 0;
+	}
+	if (key == GLFW_KEY_LEFT  && action == GLFW_PRESS) {
+		if (instance->view_layer > 0)
+			instance->view_layer--;
+		else
+			instance->view_layer = 3;
 	}
 	if (key == GLFW_KEY_C && action == GLFW_PRESS) {
 		instance->camera = Camera();

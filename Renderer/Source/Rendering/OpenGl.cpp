@@ -146,7 +146,7 @@ vector<uint> loadRgba32fTexture(const string& file_path, uvec2& resolution) {
 
 	vector<uint> imageData(width * height);
 	for (uint i = 0; i < i_to_u(width * height); i++) {
-		imageData[i] = data[i];
+		imageData[i] = f_to_u(data[i]);
 	}
 
 	resolution = uvec2(i_to_u(width), i_to_u(height));

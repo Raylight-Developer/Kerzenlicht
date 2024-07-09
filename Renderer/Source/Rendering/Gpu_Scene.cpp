@@ -143,29 +143,10 @@ void GPU_Scene::print() const {
 
 void GPU_Scene::printInfo(const uint64& max_size) const {
 	cout << "GPU Data:" << endl;
-	printSize("	Triangles            ", triangles);
-	printSize("	BVHs                 ", bvh_nodes);
-	printSize("	Textures             ", textures);
-	printSize("	Texture Data         ", texture_data);
-	//f_printSize("	Materials            ", materials);
-	//f_printSize("	Lights               ", lights);
-	//f_printSize("	Spline Control Points", spline_controls);
-	//f_printSize("	Splines              ", splines);
-	//f_printSize("	Curves               ", curves);
-	//f_printSize("	Vertices             ", vertices);
-	//f_printSize("	Meshes               ", meshes);
-	if (
-		//sizeof(GPU_Material)     * materials.size()       +
-		//sizeof(GPU_Light)        * lights.size()          +
-		//sizeof(GPU_Spline_Point) * spline_controls.size() +
-		//sizeof(GPU_Spline)       * splines.size()         +
-		//sizeof(GPU_Curve)        * curves.size()          +
-		//sizeof(GPU_Vertex)       * vertices.size()        +
-		//sizeof(GPU_Mesh)         * meshes.size()          +
-		sizeof(GPU_Triangle)     * triangles.size()       +
-		sizeof(GPU_BVH)          * bvh_nodes.size() > max_size
-	)
-		throw runtime_error("GPU out of memory");
+	printSize("	Triangles    ", triangles);
+	printSize("	BVHs         ", bvh_nodes);
+	printSize("	Textures     ", textures);
+	printSize("	Texture Data ", texture_data);
 }
 
 void GPU_Scene::loadHeader(const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map) {
@@ -488,13 +469,11 @@ float BVH_Builder::splitEval(const uint8& splitAxis, const float& splitPos, cons
 
 	for (uint i = start; i < start + count; i++) {
 		BVH_Triangle tri = bvh_tris[i];
-		if (tri.center[splitAxis] < splitPos)
-		{
+		if (tri.center[splitAxis] < splitPos) {
 			boundsLeft.growToInclude(tri.p_min, tri.p_max);
 			numOnLeft++;
 		}
-		else
-		{
+		else {
 			boundsRight.growToInclude(tri.p_min, tri.p_max);
 			numOnRight++;
 		}

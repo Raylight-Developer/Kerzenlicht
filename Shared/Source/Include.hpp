@@ -30,7 +30,7 @@
 #include <map>
 #include <set>
 
-#ifdef COMPILE_RUNTIME
+#ifdef COMPILE_RENDERER
 	#include <glad/glad.h>
 #endif
 
