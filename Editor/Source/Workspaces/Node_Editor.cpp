@@ -6,6 +6,7 @@ GUI::WORKSPACE::Workspace_Node_Editor::Workspace_Node_Editor(Workspace_Manager* 
 	GUI::Linear_Contents(parent, QBoxLayout::Direction::TopToBottom),
 	parent(parent)
 {
+	parent->setMaximumWidth(800);
 	viewport = new Node_Viewport(this);
 	shelf = new Node_Shelf(this);
 
@@ -53,7 +54,7 @@ GUI::WORKSPACE::Node_Viewport::Node_Viewport(Workspace_Node_Editor* parent) :
 	moving = false;
 	connecting = false;
 	connection = nullptr;
-	move_selection = nullptr;
+	move_selection = {};
 	active_node_tree = nullptr;
 	scene = new QGraphicsScene(this);
 
@@ -121,6 +122,7 @@ void GUI::WORKSPACE::Node_Viewport::mouseReleaseEvent(QMouseEvent* event) {
 	if (event->button() == Qt::MouseButton::RightButton)
 		moving = false;
 	if (event->button() == Qt::MouseButton::LeftButton) {
+		moving = false;
 		if (connecting) {
 			if (auto item = scene->itemAt(mapToScene(event->pos()), transform())) {
 				if (auto drop_port = dynamic_cast<GUI::NODE::PORT::Data_I_Port*>(item)) {
@@ -187,23 +189,34 @@ void GUI::WORKSPACE::Node_Viewport::mousePressEvent(QMouseEvent* event) {
 				connecting = true;
 				connection = new GUI::NODE::Connection(port, nullptr);
 			}
+			else if (GUI::NODE::Node* node = dynamic_cast<GUI::NODE::Node*>(item)) {
+				moving = true;
+				if (event->modifiers() & Qt::KeyboardModifier::ShiftModifier) {
+					if (!node->isSelected()) {
+						move_selection.push_back(node);
+						node->setSelected(true);
+					}
+				}
+				else {
+					if (!node->isSelected()) {
+						for (auto item : move_selection) item->setSelected(false);
+						move_selection.clear();
+						move_selection.push_back(node);
+						node->setSelected(true);
+					}
+				}
+				move_pos = mapToScene(event->pos());
+			}
+			else {
+				for (auto item : move_selection) item->setSelected(false);
+				move_selection.clear();
+			}
+		}
+		else {
+			for (auto item : move_selection) item->setSelected(false);
+			move_selection.clear();
 		}
 	}
-	if (event->button() == Qt::MouseButton::RightButton) {
-		if (auto item = scene->itemAt(mapToScene(event->pos()), transform())) {
-			if (GUI::NODE::Node* node = dynamic_cast<GUI::NODE::Node*>(item)) {
-				moving = true;
-				move_selection = node;
-				move_pos = mapToScene(event->pos()) - move_selection->scenePos();
-			}
-			else if (GUI::NODE::Port* port = dynamic_cast<GUI::NODE::Port*>(item)) {
-				moving = true;
-				move_selection = port->node;
-				move_pos = mapToScene(event->pos()) - move_selection->scenePos();
-			}
-		}
-	}
-	QGraphicsView::mousePressEvent(event);
 }
 
 void GUI::WORKSPACE::Node_Viewport::mouseMoveEvent(QMouseEvent* event) {
@@ -256,7 +269,10 @@ void GUI::WORKSPACE::Node_Viewport::mouseMoveEvent(QMouseEvent* event) {
 		}
 		if (moving) {
 			const QPointF delta = mapToScene(event->pos()) - move_pos;
-			move_selection->setPos(f_roundToNearest(delta.x(), 10.0), f_roundToNearest(delta.y(), 10.0));
+			for (auto& item : move_selection) {
+				item->setPos(item->pos() + delta);
+			}
+			move_pos = mapToScene(event->pos());
 		}
 		if (connecting) {
 			if (connection->port_l)

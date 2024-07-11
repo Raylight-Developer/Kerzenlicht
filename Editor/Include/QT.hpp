@@ -70,6 +70,10 @@ namespace GUI {
 		Graphics_View(QWidget* parent = nullptr);
 	};
 
+	struct Graphics_Scene : QGraphicsScene {
+		Graphics_Scene(QWidget* parent = nullptr);
+	};
+
 	struct Label : QLabel {
 		Label(QWidget* parent = nullptr, const QString& label = "");
 		~Label() {};

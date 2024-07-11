@@ -15,6 +15,7 @@ GUI::NODE::Node::Node(QGraphicsItem* parent) :
 	QGraphicsItem(parent)
 {
 	setZValue(1);
+	setFlag(QGraphicsItem::GraphicsItemFlag::ItemIsSelectable);
 	type = CLASS::NODE::Type::NONE;
 	sub_type = 0;
 	outputs = {};
@@ -22,8 +23,12 @@ GUI::NODE::Node::Node(QGraphicsItem* parent) :
 }
 
 void GUI::NODE::Node::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) {
+	if (isSelected())
+		painter->setPen(QPen(QColor(150,200,255), 3.0));
+
 	painter->setBrush(QColor(40, 40, 40));
 	painter->drawRoundedRect(rect, 5, 5);
+
 
 	painter->setBrush(QColor(25, 25, 25));
 	painter->drawRoundedRect(QRectF(rect.topLeft(), QSize(rect.width(), 20)), 5, 5);

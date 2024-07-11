@@ -57,7 +57,7 @@ namespace GUI {
 
 			bool moving;
 			QPointF move_pos;
-			GUI::NODE::Node* move_selection;
+			vector<GUI::NODE::Node*> move_selection;
 
 			bool connecting;
 			GUI::NODE::Connection* connection;

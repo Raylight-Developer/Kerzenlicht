@@ -172,9 +172,6 @@ void GUI::WORKSPACE::Viewport_Realtime::f_updateTick() {
 	for (const CLASS::Object* object : FILE->active_scene->ptr->objects)
 		if (object->nodes)
 			object->nodes->exec(&delta);
-	//for (auto [key, workspace] : parent->parent->parent->workspaces) // TODO optimize with callbacks or other method
-	//	if (workspace->type == Workspace_Type::NODE_EDITOR)
-	//		static_cast<Workspace_Node_Editor*>(workspace->workspace)->viewport->update();
 	frame_counter++;
 	f_updateFrame();
 }
@@ -184,7 +181,7 @@ void GUI::WORKSPACE::Viewport_Realtime::f_updateFrame() {
 	update();
 }
 
-void GUI::WORKSPACE::Viewport_Realtime::f_selectObject(const dvec2& uv) {
+void GUI::WORKSPACE::Viewport_Realtime::f_selectObject(const dvec2& uv) { // TODO fix slight missalignment
 	CLASS::OBJECT::DATA::Camera* camera = FILE->default_camera->data->getCamera();
 	camera->f_compile(FILE->active_scene->ptr, FILE->default_camera);
 	const VIEWPORT_REALTIME::Ray ray = VIEWPORT_REALTIME::Ray(

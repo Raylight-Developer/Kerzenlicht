@@ -53,6 +53,12 @@ GUI::Graphics_View::Graphics_View(QWidget* parent) :
 	QSurfaceFormat::setDefaultFormat(format);
 }
 
+GUI::Graphics_Scene::Graphics_Scene(QWidget* parent) :
+	QGraphicsScene(parent)
+{
+
+}
+
 GUI::Label::Label(QWidget* parent, const QString& label) :
 	QLabel(label)
 {

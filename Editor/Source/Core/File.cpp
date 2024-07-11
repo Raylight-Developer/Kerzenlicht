@@ -193,6 +193,9 @@ CLASS::Node_Tree* CLASS::File::f_loadNodeTree(const vector<vector<string>>& toke
 			}
 			else if (read_data[0][2] == "UTIL") {
 			}
+			else {
+				// TODO load "unkown" node from newer version
+			}
 
 			pointer_map[str_to_ul(read_data[1][0])] = node;
 			node_gui_map[node] = gui_node;
