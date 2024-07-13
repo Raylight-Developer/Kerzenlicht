@@ -1,11 +1,11 @@
 #pragma once
 
 #include "Include.hpp"
+#include "Log_Console.hpp"
 
 namespace CLASS {
 	struct File;
 }
-struct Log_Console;
 
 struct Session {
 	static Session& getInstance();

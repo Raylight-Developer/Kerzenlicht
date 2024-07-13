@@ -1,6 +1,7 @@
 #include "Workspaces/Node_Editor.hpp"
 
 #include "Workspaces/Manager.hpp"
+#include "Core/Compiler.hpp"
 
 GUI::WORKSPACE::Workspace_Node_Editor::Workspace_Node_Editor(Workspace_Manager* parent) :
 	GUI::Linear_Contents(parent, QBoxLayout::Direction::TopToBottom),
@@ -19,19 +20,24 @@ GUI::WORKSPACE::Workspace_Node_Editor::Workspace_Node_Editor(Workspace_Manager* 
 	compile->setText("Compile");
 	header->addWidget(compile);
 
+	auto load_in = new GUI::Button(this);
+	load_in->setText("Load To View");
+	header->addWidget(load_in);
+
 	addWidget(header);
 	addWidget(splitter);
 
 	FILE->active_object->addCallback(this, [this]() { viewport->f_objectChanged(FILE->active_object->ptr); });
-	connect(compile, &GUI::Button::pressed, [this, parent]() {
+	connect(load_in, &GUI::Button::pressed, [this]() { // CAN CRASH. [xmemory 1335] STOP Executing nodes before
 		if (viewport->active_node_tree and FILE->active_object->ptr) {
-			*LOG << ENDL << HTML_MAGENTA << "[Compilation]" << HTML_RESET << " Compiling Nodes...";
+			*LOG << ENDL << HTML_MAGENTA << "[Translation]" << HTML_RESET << " Compiling Nodes..."; FLUSH
 
 			FILE->nodes.erase(std::find(FILE->nodes.begin(), FILE->nodes.end(), FILE->active_object->ptr->nodes));
 
 			auto it = FILE->node_map.find(FILE->active_object->ptr->nodes);
-			if (it != FILE->node_map.end())
+			if (it != FILE->node_map.end()) {
 				FILE->node_map.erase(it);
+			}
 
 			delete FILE->active_object->ptr->nodes;
 
@@ -40,7 +46,31 @@ GUI::WORKSPACE::Workspace_Node_Editor::Workspace_Node_Editor(Workspace_Manager* 
 			FILE->nodes.push_back(node);
 			FILE->node_map[node] = viewport->active_node_tree;
 
-			*LOG << ENDL << HTML_GREEN << "[Compilation]" << HTML_RESET << " Compiled Nodes"; // TODO Not printing :( ?
+			*LOG << ENDL << HTML_GREEN << "[Translation]" << HTML_RESET << " Compiled Nodes"; FLUSH
+		}
+	});
+	connect(compile, &GUI::Button::pressed, [this]() { // CAN CRASH. [xmemory 1335 and exec()] STOP Executing nodes before
+		if (viewport->active_node_tree and FILE->active_object->ptr) {
+			*LOG << ENDL << HTML_MAGENTA << "[DLL Compilation]" << HTML_RESET << " Compiling Solution..."; FLUSH
+
+			auto node_tree = FILE->active_object->ptr->nodes;
+			auto gui_node_tree = FILE->node_map[node_tree];
+			
+			HINSTANCE dynlib;
+			recompileDLL(dynlib);
+
+			for (auto node : node_tree->nodes) {
+				if (node->type == CLASS::NODE::Type::EXEC and node->sub_type == e_to_u(CLASS::NODE::EXEC::Type::SCRIPT)) {
+					static_cast<CLASS::NODE::EXEC::Script*>(node)->recompile(dynlib);
+				}
+			}
+			for (auto node : gui_node_tree->nodes) {
+				if (node->type == CLASS::NODE::Type::EXEC and node->sub_type == e_to_u(CLASS::NODE::EXEC::Type::SCRIPT)) {
+					static_cast<GUI::NODE::EXEC::Script*>(node)->recompile(dynlib);
+				}
+			}
+
+			*LOG << ENDL << HTML_GREEN << "[DLL Compilation]" << HTML_RESET << " Compiled Solution"; FLUSH
 		}
 	});
 }
@@ -70,19 +100,28 @@ GUI::WORKSPACE::Node_Viewport::Node_Viewport(Workspace_Node_Editor* parent) :
 }
 
 GUI::WORKSPACE::Node_Viewport::~Node_Viewport() {
-	for (auto item : scene->items())
-		if (dynamic_cast<GUI::NODE::Node*>(item)) scene->removeItem(item);
+	for (auto item : scene->items()) {
+		if (dynamic_cast<GUI::NODE::Node*>(item)) {
+			scene->removeItem(item);
+		}
+	}
 	FILE->active_object->callbacks.erase(this);
+
+	delete connection;
 	delete selection_rect;
 }
 
 void GUI::WORKSPACE::Node_Viewport::f_objectChanged(CLASS::Object* object) {
-	for (auto item: scene->items())
-		if (dynamic_cast<GUI::NODE::Node*>(item)) scene->removeItem(item);
+	for (auto item: scene->items()) {
+		if (dynamic_cast<GUI::NODE::Node*>(item)) {
+			scene->removeItem(item);
+		}
+	}
 	if (object) {
 		active_node_tree = FILE->node_map[object->nodes];
-		for (auto node : FILE->node_map[object->nodes]->nodes)
+		for (auto node : FILE->node_map[object->nodes]->nodes) {
 			scene->addItem(node);
+		}
 	}
 	else active_node_tree = nullptr;
 }
@@ -95,10 +134,12 @@ void GUI::WORKSPACE::Node_Viewport::drawBackground(QPainter* painter, const QRec
 		const int xOffset = int(rect.left()) - (int(rect.left()) % gridSize);
 		const int yOffset = int(rect.top()) - (int(rect.top()) % gridSize);
 
-		for (int x = xOffset; x < int(rect.right()); x += gridSize)
+		for (int x = xOffset; x < int(rect.right()); x += gridSize) {
 			painter->drawLine(x, int(rect.top()), x, int(rect.bottom()));
-		for (int y = yOffset; y < int(rect.bottom()); y += gridSize)
+		}
+		for (int y = yOffset; y < int(rect.bottom()); y += gridSize) {
 			painter->drawLine(int(rect.left()), y, int(rect.right()), y);
+		}
 	}
 	else if (view_scale > 0.35) {
 		painter->setPen(QPen(QColor(60, 60, 60), 3));
@@ -106,10 +147,12 @@ void GUI::WORKSPACE::Node_Viewport::drawBackground(QPainter* painter, const QRec
 		const int xOffset = int(rect.left()) - (int(rect.left()) % gridSize);
 		const int yOffset = int(rect.top()) - (int(rect.top()) % gridSize);
 
-		for (int x = xOffset; x < int(rect.right()); x += gridSize)
+		for (int x = xOffset; x < int(rect.right()); x += gridSize) {
 			painter->drawLine(x, int(rect.top()), x, int(rect.bottom()));
-		for (int y = yOffset; y < int(rect.bottom()); y += gridSize)
+		}
+		for (int y = yOffset; y < int(rect.bottom()); y += gridSize) {
 			painter->drawLine(int(rect.left()), y, int(rect.right()), y);
+		}
 	}
 	else {
 		painter->setPen(QPen(QColor(60, 60, 60), 5));
@@ -117,18 +160,22 @@ void GUI::WORKSPACE::Node_Viewport::drawBackground(QPainter* painter, const QRec
 		const int xOffset = int(rect.left()) - (int(rect.left()) % gridSize);
 		const int yOffset = int(rect.top()) - (int(rect.top()) % gridSize);
 
-		for (int x = xOffset; x < int(rect.right()); x += gridSize)
+		for (int x = xOffset; x < int(rect.right()); x += gridSize) {
 			painter->drawLine(x, int(rect.top()), x, int(rect.bottom()));
-		for (int y = yOffset; y < int(rect.bottom()); y += gridSize)
+		}
+		for (int y = yOffset; y < int(rect.bottom()); y += gridSize) {
 			painter->drawLine(int(rect.left()), y, int(rect.right()), y);
+		}
 	}
 }
 
 void GUI::WORKSPACE::Node_Viewport::mouseReleaseEvent(QMouseEvent* event) {
-	if (event->button() == Qt::MouseButton::MiddleButton)
+	if (event->button() == Qt::MouseButton::MiddleButton) {
 		pan = false;
-	if (event->button() == Qt::MouseButton::RightButton)
+	}
+	if (event->button() == Qt::MouseButton::RightButton) {
 		moving = false;
+	}
 	if (event->button() == Qt::MouseButton::LeftButton) {
 		moving = false;
 		if (selecting) {
@@ -141,27 +188,35 @@ void GUI::WORKSPACE::Node_Viewport::mouseReleaseEvent(QMouseEvent* event) {
 					}
 				}
 			}
+			selecting = false;
 			selection_rect->hide();
 		}
 		if (connecting) {
 			if (auto item = scene->itemAt(mapToScene(event->pos()), transform())) {
 				if (auto drop_port = dynamic_cast<GUI::NODE::PORT::Data_I_Port*>(item)) {
-					if (auto source_port = dynamic_cast<GUI::NODE::PORT::Data_O_Port*>(connection->port_l)) {
-						if (drop_port->connection)
-							delete drop_port->connection;
-						drop_port->connection = new GUI::NODE::Connection(source_port, drop_port);
-						source_port->outgoing_connections.push_back(drop_port->connection);
+					bool exists = false;
+					if (!(drop_port->connection and drop_port->connection->port_r == connection->port_r)) {
+						if (auto source_port = dynamic_cast<GUI::NODE::PORT::Data_O_Port*>(connection->port_l)) {
+							if (drop_port->connection) {
+								delete drop_port->connection;
+							}
+							drop_port->connection = new GUI::NODE::Connection(source_port, drop_port);
+							source_port->outgoing_connections.push_back(drop_port->connection);
+						}
 					}
 				}
 				else if (auto drop_port = dynamic_cast<GUI::NODE::PORT::Data_O_Port*>(item)) {
 					bool exists = false;
-					for (auto conn : drop_port->outgoing_connections)
-						if (conn->port_l == connection->port_l)
+					for (auto conn : drop_port->outgoing_connections) {
+						if (conn->port_l == connection->port_l) {
 							exists = true;
+						}
+					}
 					if (!exists) {
 						if (auto source_port = dynamic_cast<GUI::NODE::PORT::Data_I_Port*>(connection->port_l)) {
-							if (source_port->connection)
+							if (source_port->connection) {
 								delete source_port->connection;
+							}
 							source_port->connection = new GUI::NODE::Connection(drop_port, source_port);
 							drop_port->outgoing_connections.push_back(source_port->connection);
 						}
@@ -169,24 +224,31 @@ void GUI::WORKSPACE::Node_Viewport::mouseReleaseEvent(QMouseEvent* event) {
 				}
 				else if (auto drop_port = dynamic_cast<GUI::NODE::PORT::Exec_I_Port*>(item)) {
 					bool exists = false;
-					for (auto conn : drop_port->incoming_connections)
-						if (conn->port_l == connection->port_l)
+					for (auto conn : drop_port->incoming_connections) {
+						if (conn->port_l == connection->port_l) {
 							exists = true;
+						}
+					}
 					if (!exists) {
 						if (auto source_port = dynamic_cast<GUI::NODE::PORT::Exec_O_Port*>(connection->port_l)) {
-							if (source_port->connection)
+							if (source_port->connection) {
 								delete source_port->connection;
+							}
 							source_port->connection = new GUI::NODE::Connection(source_port, drop_port);
 							drop_port->incoming_connections.push_back(source_port->connection);
 						}
 					}
 				}
 				else if (auto drop_port = dynamic_cast<GUI::NODE::PORT::Exec_O_Port*>(item)) {
-					if (auto source_port = dynamic_cast<GUI::NODE::PORT::Exec_I_Port*>(connection->port_l)) {
-						if (drop_port->connection)
-							delete drop_port->connection;
-						drop_port->connection = new GUI::NODE::Connection(drop_port, source_port);
-						source_port->incoming_connections.push_back(drop_port->connection);
+					bool exists = false;
+					if (!(drop_port->connection and drop_port->connection->port_r == connection->port_r)) {
+						if (auto source_port = dynamic_cast<GUI::NODE::PORT::Exec_I_Port*>(connection->port_l)) {
+							if (drop_port->connection) {
+								delete drop_port->connection;
+							}
+							drop_port->connection = new GUI::NODE::Connection(drop_port, source_port);
+							source_port->incoming_connections.push_back(drop_port->connection);
+						}
 					}
 				}
 			}
@@ -215,7 +277,9 @@ void GUI::WORKSPACE::Node_Viewport::mousePressEvent(QMouseEvent* event) {
 					if (!node->isSelected()) {
 						node->setSelected(true);
 						node->real_pos = node->pos();
-						for (auto subnode: move_selection) subnode->real_pos = subnode->pos();
+						for (auto subnode: move_selection) {
+							subnode->real_pos = subnode->pos();
+						}
 						move_selection.push_back(node);
 					}
 					else {
@@ -224,7 +288,9 @@ void GUI::WORKSPACE::Node_Viewport::mousePressEvent(QMouseEvent* event) {
 				}
 				else {
 					if (!node->isSelected()) {
-						for (auto item : move_selection) item->setSelected(false);
+						for (auto item : move_selection) {
+							item->setSelected(false);
+						}
 						move_selection.clear();
 						node->setSelected(true);
 						node->real_pos = node->pos();
@@ -234,12 +300,16 @@ void GUI::WORKSPACE::Node_Viewport::mousePressEvent(QMouseEvent* event) {
 				move_pos = mapToScene(event->pos());
 			}
 			else {
-				for (auto item : move_selection) item->setSelected(false);
+				for (auto item : move_selection) {
+					item->setSelected(false);
+				}
 				move_selection.clear();
 			}
 		}
 		else {
-			for (auto item : move_selection) item->setSelected(false);
+			for (auto item : move_selection) {
+				item->setSelected(false);
+			}
 			move_selection.clear();
 
 			selecting = true;
@@ -311,10 +381,12 @@ void GUI::WORKSPACE::Node_Viewport::mouseMoveEvent(QMouseEvent* event) {
 			selection_rect->setRect(newRect.normalized());
 		}
 		if (connecting) {
-			if (connection->port_l)
+			if (connection->port_l) {
 				connection->updateR(mapToScene(event->pos()));
-			else
+			}
+			else {
 				connection->updateL(mapToScene(event->pos()));
+			}
 			connection->update();
 		}
 	}
@@ -452,31 +524,59 @@ GUI::WORKSPACE::Node_Shelf::Node_Shelf(Workspace_Node_Editor* parent) :
 	setDragDropMode(QAbstractItemView::DragDropMode::DragDrop);
 
 	auto tree_constraint = new Tree_Item(this, "Constraint");
-	auto tree_generate   = new Tree_Item(this, "Generate");
-	auto tree_physics    = new Tree_Item(this, "Physics");
-	auto tree_modify     = new Tree_Item(this, "Modify");
-	auto tree_exec       = new Tree_Item(this, "Exec");
-	auto tree_math       = new Tree_Item(this, "Math");
-	auto tree_link       = new Tree_Item(this, "Link");
-	auto tree_util       = new Tree_Item(this, "Util");
+	auto tree_generate   = new Tree_Item(this, "Generate"  );
+	auto tree_physics    = new Tree_Item(this, "Physics"   );
+	auto tree_modify     = new Tree_Item(this, "Modify"    );
+	auto tree_exec       = new Tree_Item(this, "Exec"      );
+	auto tree_math       = new Tree_Item(this, "Math"      );
+	auto tree_link       = new Tree_Item(this, "Link"      );
+	auto tree_util       = new Tree_Item(this, "Util"      );
 
-	new Tree_Item(tree_exec, "Sequence", 1, { { 1000, "EXEC" }, { 1001, "Sequence" } });
-	new Tree_Item(tree_exec, "Counter",  1, { { 1000, "EXEC" }, { 1001, "Counter" } });
-	new Tree_Item(tree_exec, "Script",   1, { { 1000, "EXEC" }, { 1001, "Script" } });
-	new Tree_Item(tree_exec, "Start",    1, { { 1000, "EXEC" }, { 1001, "Start" } });
-	new Tree_Item(tree_exec, "Timer",    1, { { 1000, "EXEC" }, { 1001, "Timer" } });
-	new Tree_Item(tree_exec, "Tick",     1, { { 1000, "EXEC" }, { 1001, "Tick" } });
-	new Tree_Item(tree_exec, "For",      1, { { 1000, "EXEC" }, { 1001, "For" } });
+	auto tree_exec_0     = new Tree_Item(tree_exec    , "Sequence"      , 1, { { 1000, "EXEC" }, { 1001, "Sequence"                  } });
+	auto tree_exec_1     = new Tree_Item(tree_exec    , "Counter"       , 1, { { 1000, "EXEC" }, { 1001, "Counter"                   } });
+	auto tree_exec_2     = new Tree_Item(tree_exec    , "Script"        , 1, { { 1000, "EXEC" }, { 1001, "Script"                    } });
+	auto tree_exec_4     = new Tree_Item(tree_exec    , "Timer"         , 1, { { 1000, "EXEC" }, { 1001, "Timer"                     } });
+	auto tree_exec_5     = new Tree_Item(tree_exec    , "Tick"          , 1, { { 1000, "EXEC" }, { 1001, "Tick"                      } });
+	auto tree_exec_6     = new Tree_Item(tree_exec    , "For"           , 1, { { 1000, "EXEC" }, { 1001, "For"                       } });
+	auto tree_exec_3     = new Tree_Item(tree_exec    , "Start"         , 1, { { 1000, "EXEC" }, { 1001, "Start"                     } });
 	
-	new Tree_Item(tree_math, "Add",  1, { { 1000, "MATH" }, { 1001, "Add" } });
-	new Tree_Item(tree_math, "Sub",  1, { { 1000, "MATH" }, { 1001, "Sub" } });
-	new Tree_Item(tree_math, "Mul",  1, { { 1000, "MATH" }, { 1001, "Mul" } });
-	new Tree_Item(tree_math, "Div",  1, { { 1000, "MATH" }, { 1001, "Div" } });
+	auto tree_math_0     = new Tree_Item(tree_math    , "Add"           , 1, { { 1000, "MATH" }, { 1001, "Add"                       } });
+	auto tree_math_1     = new Tree_Item(tree_math    , "Sub"           , 1, { { 1000, "MATH" }, { 1001, "Sub"                       } });
+	auto tree_math_2     = new Tree_Item(tree_math    , "Mul"           , 1, { { 1000, "MATH" }, { 1001, "Mul"                       } });
+	auto tree_math_3     = new Tree_Item(tree_math    , "Div"           , 1, { { 1000, "MATH" }, { 1001, "Div"                       } });
 
-	auto tree_link_set                       = new Tree_Item(tree_link                        , "Set"           , 1, { { 1000, "LINK" }, { 1001, "SET_Field" } });
-	auto tree_link_set_transform             = new Tree_Item(tree_link_set                    , "Transform"     , 2, { { 1000, "LINK" }, { 1001, "SET_Transform" } });
-	auto tree_link_set_transform_euler_rot   = new Tree_Item(tree_link_set_transform          , "Euler Rotation", 3, { { 1000, "LINK" }, { 1001, "SET_Transform_Euler_Rot" } });
-	auto tree_link_set_transform_euler_rot_x = new Tree_Item(tree_link_set_transform_euler_rot, "X"             , 4, { { 1000, "LINK" }, { 1001, "SET_Transform_Euler_Rot_X" } });
+	auto tree_link_0     = new Tree_Item(tree_link    , "Set"           , 1, { { 1000, "LINK" }, { 1001, "SET_Field"                 } });
+	auto tree_link_1     = new Tree_Item(tree_link    , "Get"           , 1, { { 1000, "LINK" }, { 1001, "GET_Field"                 } });
+
+	auto tree_link_00    = new Tree_Item(tree_link_0  , "Field"         , 1, { { 1000, "LINK" }, { 1001, "SET_Field"                 } });
+	auto tree_link_01    = new Tree_Item(tree_link_0  , "Transform"     , 2, { { 1000, "LINK" }, { 1001, "SET_Transform"             } });
+	auto tree_link_010   = new Tree_Item(tree_link_01 , "Position"      , 3, { { 1000, "LINK" }, { 1001, "SET_Transform_Position"    } });
+	auto tree_link_0100  = new Tree_Item(tree_link_010, "X"             , 4, { { 1000, "LINK" }, { 1001, "SET_Transform_Position_X"  } });
+	auto tree_link_0101  = new Tree_Item(tree_link_010, "Y"             , 4, { { 1000, "LINK" }, { 1001, "SET_Transform_Position_Y"  } });
+	auto tree_link_0102  = new Tree_Item(tree_link_010, "Z"             , 4, { { 1000, "LINK" }, { 1001, "SET_Transform_Position_Z"  } });
+	auto tree_link_011   = new Tree_Item(tree_link_01 , "Euler Rotation", 3, { { 1000, "LINK" }, { 1001, "SET_Transform_Euler_Rot"   } });
+	auto tree_link_0110  = new Tree_Item(tree_link_011, "X"             , 4, { { 1000, "LINK" }, { 1001, "SET_Transform_Euler_Rot_X" } });
+	auto tree_link_0111  = new Tree_Item(tree_link_011, "Y"             , 4, { { 1000, "LINK" }, { 1001, "SET_Transform_Euler_Rot_Y" } });
+	auto tree_link_0112  = new Tree_Item(tree_link_011, "Z"             , 4, { { 1000, "LINK" }, { 1001, "SET_Transform_Euler_Rot_Z" } });
+	auto tree_link_012   = new Tree_Item(tree_link_01 , "Scale"         , 3, { { 1000, "LINK" }, { 1001, "SET_Transform_Scale"       } });
+	auto tree_link_0120  = new Tree_Item(tree_link_012, "X"             , 4, { { 1000, "LINK" }, { 1001, "SET_Transform_Scale_X"     } });
+	auto tree_link_0121  = new Tree_Item(tree_link_012, "Y"             , 4, { { 1000, "LINK" }, { 1001, "SET_Transform_Scale_Y"     } });
+	auto tree_link_0122  = new Tree_Item(tree_link_012, "Z"             , 4, { { 1000, "LINK" }, { 1001, "SET_Transform_Scale_Z"     } });
+
+	auto tree_link_10    = new Tree_Item(tree_link_1  , "Field"         , 1, { { 1000, "LINK" }, { 1001, "GET_Field"                 } });
+	auto tree_link_11    = new Tree_Item(tree_link_1  , "Transform"     , 2, { { 1000, "LINK" }, { 1001, "GET_Transform"             } });
+	auto tree_link_110   = new Tree_Item(tree_link_11 , "Position"      , 3, { { 1000, "LINK" }, { 1001, "GET_Transform_Position"    } });
+	auto tree_link_1100  = new Tree_Item(tree_link_110, "X"             , 4, { { 1000, "LINK" }, { 1001, "GET_Transform_Position_X"  } });
+	auto tree_link_1101  = new Tree_Item(tree_link_110, "Y"             , 4, { { 1000, "LINK" }, { 1001, "GET_Transform_Position_Y"  } });
+	auto tree_link_1102  = new Tree_Item(tree_link_110, "Z"             , 4, { { 1000, "LINK" }, { 1001, "GET_Transform_Position_Z"  } });
+	auto tree_link_111   = new Tree_Item(tree_link_11 , "Euler Rotation", 3, { { 1000, "LINK" }, { 1001, "GET_Transform_Euler_Rot"   } });
+	auto tree_link_1110  = new Tree_Item(tree_link_111, "X"             , 4, { { 1000, "LINK" }, { 1001, "GET_Transform_Euler_Rot_X" } });
+	auto tree_link_1111  = new Tree_Item(tree_link_111, "Y"             , 4, { { 1000, "LINK" }, { 1001, "GET_Transform_Euler_Rot_Y" } });
+	auto tree_link_1112  = new Tree_Item(tree_link_111, "Z"             , 4, { { 1000, "LINK" }, { 1001, "GET_Transform_Euler_Rot_Z" } });
+	auto tree_link_112   = new Tree_Item(tree_link_11 , "Scale"         , 3, { { 1000, "LINK" }, { 1001, "GET_Transform_Scale"       } });
+	auto tree_link_1120  = new Tree_Item(tree_link_112, "X"             , 4, { { 1000, "LINK" }, { 1001, "GET_Transform_Scale_X"     } });
+	auto tree_link_1121  = new Tree_Item(tree_link_112, "Y"             , 4, { { 1000, "LINK" }, { 1001, "GET_Transform_Scale_Y"     } });
+	auto tree_link_1122  = new Tree_Item(tree_link_112, "Z"             , 4, { { 1000, "LINK" }, { 1001, "GET_Transform_Scale_Z"     } });
 }
 
 void GUI::WORKSPACE::Node_Viewport::dragMoveEvent(QDragMoveEvent* event) {

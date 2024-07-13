@@ -7,7 +7,7 @@ using namespace GUI::NODE;
 EXEC::Counter::Counter(const ivec2& pos) {
 	label = "Tick Counter";
 	type = CLASS::NODE::Type::EXEC;
-	sub_type = ETOU(CLASS::NODE::EXEC::Type::COUNTER);
+	sub_type = e_to_u(CLASS::NODE::EXEC::Type::COUNTER);
 
 	rect = QRectF(-100, -20, 200, 40);
 	rect.moveTo(QPointF(pos.x, pos.y));
@@ -27,7 +27,9 @@ EXEC::Counter::Counter(const ivec2& pos) {
 GUI::NODE::EXEC::Script::Script(const ivec2& pos) {
 	label = "Script";
 	type = CLASS::NODE::Type::EXEC;
-	sub_type = ETOU(CLASS::NODE::EXEC::Type::SCRIPT);
+	sub_type = e_to_u(CLASS::NODE::EXEC::Type::SCRIPT);
+
+	buildGuiFunc = nullptr;
 
 	rect = QRectF(-100, -20, 200, 40);
 	rect.moveTo(QPointF(pos.x, pos.y));
@@ -50,20 +52,27 @@ GUI::NODE::EXEC::Script::Script(const ivec2& pos) {
 		reloadFunctions();
 	});
 
-	loadDLL(dynlib, "D:/Kerzenlicht/x64/Debug/Scripting.dll");
+	loadDLL(dynlib);
 
 	FARPROC buildAddress = GetProcAddress(dynlib, (script_identifier->text().toStdString() + "_buildGui").c_str());
-	if (buildAddress != NULL) {
+	if (buildAddress != nullptr) {
 		buildGuiFunc = (void(*)(Script*))buildAddress;
 		buildGuiFunc(this);
+	}
+	else {
+		*LOG << ENDL << HTML_RED << "[DLL Binding]" << HTML_RESET << " Unable to resolve Script ID"; FLUSH
 	}
 }
 
 void EXEC::Script::clearIO() {
-	for (auto it = inputs.begin(); it != inputs.end(); ++it) { delete* it; }
-	inputs.erase(inputs.begin(), inputs.end());
-	for (auto it = outputs.begin(); it != outputs.end(); ++it) { delete* it; }
-	outputs.erase(outputs.begin(), outputs.end());
+	for (auto it : inputs) {
+		delete it;
+	}
+	inputs.clear();
+	for (auto it : outputs) {
+		delete it;
+	}
+	outputs.clear();
 }
 
 void EXEC::Script::addDataInput(const uint16& slot_id, const string& label, const CLASS::NODE::DATA::Type& type, const CLASS::NODE::DATA::Modifier& modifier) {
@@ -96,22 +105,31 @@ void EXEC::Script::addExecOutput(const uint16& slot_id, const string& label) {
 
 void EXEC::Script::reloadFunctions() {
 	FARPROC buildAddress = GetProcAddress(dynlib, (script_identifier->text().toStdString() + "_buildGui").c_str());
-	if (buildAddress != NULL) {
+	if (buildAddress != nullptr) {
 		buildGuiFunc = (void(*)(Script*))buildAddress;
 		buildGuiFunc(this);
+	}
+	else {
+		*LOG << ENDL << HTML_RED << "[DLL Binding]" << HTML_RESET << " Unable to resolve Script ID"; FLUSH
 	}
 }
 
 void EXEC::Script::reloadDll() {
 	unloadDLL(dynlib);
-	loadDLL(dynlib, "D:/Kerzenlicht/x64/Debug/Scripting.dll");
+	loadDLL(dynlib);
+	reloadFunctions();
+}
+
+void EXEC::Script::recompile(const HINSTANCE& library) {
+	clearIO();
+	dynlib = library;
 	reloadFunctions();
 }
 
 EXEC::Tick::Tick(const ivec2& pos) {
 	label = "Tick Update";
 	type = CLASS::NODE::Type::EXEC;
-	sub_type = ETOU(CLASS::NODE::EXEC::Type::TICK);
+	sub_type = e_to_u(CLASS::NODE::EXEC::Type::TICK);
 
 	rect = QRectF(-100, -20, 200, 40);
 	rect.moveTo(QPointF(pos.x, pos.y));
@@ -125,7 +143,7 @@ EXEC::Tick::Tick(const ivec2& pos) {
 LINK::Pointer::Pointer(const ivec2& pos) {
 	label = "Pointer";
 	type = CLASS::NODE::Type::LINK;
-	sub_type = ETOU(CLASS::NODE::LINK::Type::POINTER);
+	sub_type = e_to_u(CLASS::NODE::LINK::Type::POINTER);
 
 	pointer_type = CLASS::NODE::DATA::Type::NONE;
 	pointer = nullptr;
@@ -155,7 +173,7 @@ void LINK::Pointer::paint(QPainter* painter, const QStyleOptionGraphicsItem* opt
 LINK::Get::Get(const ivec2& pos) {
 	label = "Pointer";
 	type = CLASS::NODE::Type::LINK;
-	sub_type = ETOU(CLASS::NODE::LINK::Type::POINTER);
+	sub_type = e_to_u(CLASS::NODE::LINK::Type::POINTER);
 
 	rect = QRectF(-100, -20, 200, 40);
 	rect.moveTo(QPointF(pos.x, pos.y));
@@ -168,7 +186,7 @@ LINK::Get::Get(const ivec2& pos) {
 LINK::Set::Set(const ivec2& pos) {
 	label = "Set";
 	type = CLASS::NODE::Type::LINK;
-	sub_type = ETOU(CLASS::NODE::LINK::Type::SET);
+	sub_type = e_to_u(CLASS::NODE::LINK::Type::SET);
 	mini_type = CLASS::NODE::LINK::SET::Type::NONE;
 
 	rect = QRectF(-100, -20, 200, 40);
@@ -225,26 +243,26 @@ MATH::Add::Add(const ivec2& pos) :
 	MATH(pos)
 {
 	label = "Add";
-	sub_type = ETOU(CLASS::NODE::MATH::Type::ADD);
+	sub_type = e_to_u(CLASS::NODE::MATH::Type::ADD);
 }
 
 MATH::Sub::Sub(const ivec2& pos) :
 	MATH(pos)
 {
 	label = "Subtract";
-	sub_type = ETOU(CLASS::NODE::MATH::Type::SUB);
+	sub_type = e_to_u(CLASS::NODE::MATH::Type::SUB);
 }
 
 MATH::Mul::Mul(const ivec2& pos) :
 	MATH(pos)
 {
 	label = "Multiply";
-	sub_type = ETOU(CLASS::NODE::MATH::Type::MUL);
+	sub_type = e_to_u(CLASS::NODE::MATH::Type::MUL);
 }
 
 MATH::Div::Div(const ivec2& pos) :
 	MATH(pos)
 {
 	label = "Divide";
-	sub_type = ETOU(CLASS::NODE::MATH::Type::DIV);
+	sub_type = e_to_u(CLASS::NODE::MATH::Type::DIV);
 }

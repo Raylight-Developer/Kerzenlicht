@@ -47,6 +47,8 @@ namespace GUI {
 			Allow Visualization of GUI::Node_Tree during execution
 			CHECK Circular dependencies
 			PREVENT connection between different data_types
+			Alt-Drag deselects
+			Alt-Click deselects
 		*/
 		struct Node_Viewport : GUI::Graphics_View {
 			Workspace_Node_Editor* parent;
@@ -56,6 +58,7 @@ namespace GUI {
 			bool moving;
 			bool selecting;
 			bool connecting;
+
 			QPointF pan_pos;
 			QPointF move_pos;
 			qreal  view_scale;

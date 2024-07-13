@@ -1,7 +1,6 @@
 #include "Core/Session.hpp"
 
 #include "Core/File.hpp"
-#include "Log_Console.hpp"
 
 Session& Session::getInstance() {
 	static Session instance;

@@ -52,6 +52,7 @@ namespace GUI {
 
 				void reloadFunctions();
 				void reloadDll();
+				void recompile(const HINSTANCE& library);
 			};
 			struct Tick : Node {
 				Tick(const ivec2& pos);

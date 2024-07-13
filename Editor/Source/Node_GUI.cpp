@@ -116,6 +116,7 @@ GUI::NODE::PORT::Data_I_Port::~Data_I_Port() {
 			}
 		}
 		delete connection;
+		connection = nullptr;
 	}
 }
 
@@ -150,9 +151,7 @@ GUI::NODE::PORT::Data_O_Port::Data_O_Port(Node* parent, const uint16& slot_id, c
 
 GUI::NODE::PORT::Data_O_Port::~Data_O_Port() {
 	for (Connection* connection : outgoing_connections) {
-		if (Data_I_Port* port = dynamic_cast<Data_I_Port*>(connection->port_l)) {
-			port->connection = nullptr;
-		}
+		static_cast<Data_I_Port*>(connection->port_r)->connection = nullptr;
 		delete connection;
 	}
 }
@@ -185,9 +184,7 @@ GUI::NODE::PORT::Exec_I_Port::Exec_I_Port(Node* parent, const uint16& slot_id, c
 
 GUI::NODE::PORT::Exec_I_Port::~Exec_I_Port() {
 	for (Connection* connection : incoming_connections) {
-		if (Exec_O_Port* port = dynamic_cast<Exec_O_Port*>(connection->port_r)) {
-			port->connection = nullptr;
-		}
+		static_cast<Exec_O_Port*>(connection->port_l)->connection = nullptr;
 		delete connection;
 	}
 }
@@ -232,6 +229,7 @@ GUI::NODE::PORT::Exec_O_Port::~Exec_O_Port() {
 			}
 		}
 		delete connection;
+		connection = nullptr;
 	}
 }
 

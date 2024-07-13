@@ -66,6 +66,7 @@ namespace GUI {
 			CLASS::NODE::PORT::Type type;
 
 			Port(Node* node);
+			virtual ~Port() {};
 
 			void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget = nullptr) override;
 			QRectF boundingRect() const override;

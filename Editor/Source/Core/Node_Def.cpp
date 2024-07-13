@@ -3,11 +3,13 @@
 #include "Node_GUI.hpp"
 #include "Object/Object.hpp"
 
+#include "Core/Session.hpp"
+
 using namespace CLASS::NODE;
 
 EXEC::Timer::Timer() {
 	type = NODE::Type::EXEC;
-	sub_type = ETOU(Type::TIMER);
+	sub_type = e_to_u(Type::TIMER);
 	
 	timer.setInterval(50);
 	QObject::connect(&timer, &QTimer::timeout, [this]() {exec(0); });
@@ -23,7 +25,7 @@ void EXEC::Timer::exec(const uint16& slot_id) {
 
 EXEC::Counter::Counter() {
 	type = NODE::Type::EXEC;
-	sub_type = ETOU(Type::COUNTER);
+	sub_type = e_to_u(Type::COUNTER);
 
 	count = 0;
 
@@ -43,7 +45,7 @@ void EXEC::Counter::exec(const uint16& slot_id) {
 
 EXEC::Sequence::Sequence() {
 	type = NODE::Type::EXEC;
-	sub_type = ETOU(Type::SEQUENCE);
+	sub_type = e_to_u(Type::SEQUENCE);
 
 	count = 0;
 
@@ -62,27 +64,26 @@ void EXEC::Sequence::exec(const uint16& slot_id) {
 
 EXEC::Script::Script() {
 	type = NODE::Type::EXEC;
-	sub_type = ETOU(Type::SCRIPT);
+	sub_type = e_to_u(Type::SCRIPT);
 	script_id = "Script_ID";
 
 	getDataFunc = nullptr;
 	buildFunc = nullptr;
 	execFunc = nullptr;
 
-	loadDLL(dynlib, "D:/Kerzenlicht/x64/Debug/Scripting.dll");
+	loadDLL(dynlib);
 
-	FARPROC execAddress = GetProcAddress(dynlib, (script_id + "_exec").c_str());
-	if (execAddress != NULL) {
-		execFunc = (void(*)(Script*))execAddress;
-	}
-	FARPROC dataAddress = GetProcAddress(dynlib, (script_id + "_getData").c_str());
-	if (dataAddress != NULL) {
-		getDataFunc = (Data(*)(const Script*, const uint16&))dataAddress;
-	}
+	FARPROC execAddress  = GetProcAddress(dynlib, (script_id + "_exec").c_str());
+	FARPROC dataAddress  = GetProcAddress(dynlib, (script_id + "_getData").c_str());
 	FARPROC buildAddress = GetProcAddress(dynlib, (script_id + "_build").c_str());
-	if (buildAddress != NULL) {
+	if (execAddress != nullptr and dataAddress != nullptr and buildAddress != nullptr) {
+		execFunc = (void(*)(Script*))execAddress;
+		getDataFunc = (Data*(*)(const Script*, const uint16&))dataAddress;
 		buildFunc = (void(*)(Script*))buildAddress;
 		buildFunc(this);
+	}
+	else {
+		*LOG << ENDL << HTML_RED << "[DLL Binding]" << HTML_RESET << " Unable to resolve Script ID"; FLUSH
 	}
 }
 
@@ -111,32 +112,35 @@ void EXEC::Script::addExecOutput(const uint16& slot_id, const string& map_name) 
 };
 
 void EXEC::Script::reloadFunctions() {
-	FARPROC execAddress = GetProcAddress(dynlib, (script_id + "_exec").c_str());
-	if (execAddress != NULL) {
-		execFunc = (void(*)(Script*))execAddress;
-	}
-	FARPROC dataAddress = GetProcAddress(dynlib, (script_id + "_getData").c_str());
-	if (dataAddress != NULL) {
-		getDataFunc = (Data(*)(const Script*, const uint16&))dataAddress;
-	}
+	FARPROC execAddress  = GetProcAddress(dynlib, (script_id + "_exec").c_str());
+	FARPROC dataAddress  = GetProcAddress(dynlib, (script_id + "_getData").c_str());
 	FARPROC buildAddress = GetProcAddress(dynlib, (script_id + "_build").c_str());
-	if (buildAddress != NULL) {
+	if (execAddress != nullptr and dataAddress != nullptr and buildAddress != nullptr) {
+		execFunc = (void(*)(Script*))execAddress;
+		getDataFunc = (Data*(*)(const Script*, const uint16&))dataAddress;
 		buildFunc = (void(*)(Script*))buildAddress;
 		buildFunc(this);
+	}
+	else {
+		*LOG << ENDL << HTML_RED << "[DLL Binding]" << HTML_RESET << " Unable to resolve Script ID"; FLUSH
 	}
 }
 
 void EXEC::Script::reloadDll() {
 	unloadDLL(dynlib);
-	loadDLL(dynlib, "D:/Kerzenlicht/x64/Debug/Scripting.dll");
+	loadDLL(dynlib);
 	reloadFunctions();
 }
 
-void EXEC::Script::clearIO() { // TODO delete GUI connections
-	for (auto it = inputs.begin(); it != inputs.end(); ++it) { delete* it; }
-	inputs.erase(inputs.begin(), inputs.end());
-	for (auto it = outputs.begin(); it != outputs.end(); ++it) { delete* it; }
-	outputs.erase(outputs.begin(), outputs.end());
+void EXEC::Script::clearIO() {
+	for (auto it : inputs) {
+		delete it;
+	}
+	inputs.clear();
+	for (auto it : outputs) {
+		delete it;
+	}
+	outputs.clear();
 
 	data_inputs.clear();
 	data_outputs.clear();
@@ -150,7 +154,12 @@ void EXEC::Script::exec(const uint16& slot_id) {
 }
 
 Data EXEC::Script::getData(const uint16& slot_id) const {
-	if (getDataFunc) return getDataFunc(this, slot_id);
+	if (getDataFunc) {
+		Data* copy = getDataFunc(this, slot_id);
+		Data static_copy = *copy;
+		delete copy;
+		return static_copy;
+	}
 	return Data();
 }
 
@@ -161,9 +170,15 @@ Data EXEC::Script::getInputData(const string& map_name) const {
 	return Data();
 }
 
+void CLASS::NODE::EXEC::Script::recompile(const HINSTANCE& library) {
+	clearIO();
+	dynlib = library;
+	reloadFunctions();
+}
+
 EXEC::Tick::Tick() {
 	type = NODE::Type::EXEC;
-	sub_type = ETOU(Type::TICK);
+	sub_type = e_to_u(Type::TICK);
 
 	delta = new dvec1(FPS_60);
 
@@ -184,7 +199,7 @@ Data EXEC::Tick::getData(const uint16& slot_id) const {
 
 LINK::Get::Get() {
 	type = NODE::Type::LINK;
-	sub_type = ETOU(Type::GET);
+	sub_type = e_to_u(Type::GET);
 	mini_type = GET::Type::NONE;
 
 	i_pointer = new PORT::Data_I_Port(this, 0, DATA::Type::ANY);
@@ -197,7 +212,7 @@ LINK::Get::Get() {
 
 LINK::Set::Set() {
 	type = NODE::Type::LINK;
-	sub_type = ETOU(Type::SET);
+	sub_type = e_to_u(Type::SET);
 	mini_type = SET::Type::NONE;
 
 	i_exec    = new PORT::Exec_I_Port(this, 0);
@@ -301,7 +316,7 @@ void LINK::SET::Field::exec(const uint16& slot_id) {
 
 LINK::Pointer::Pointer() {
 	type = NODE::Type::LINK;
-	sub_type = ETOU(Type::POINTER);
+	sub_type = e_to_u(Type::POINTER);
 	pointer_type = DATA::Type::NONE;
 	pointer = nullptr;
 
@@ -322,7 +337,7 @@ Data LINK::Pointer::getData(const uint16& slot_id) const {
 
 MATH::MATH::MATH() {
 	type = NODE::Type::MATH;
-	sub_type = ETOU(Type::ADD);
+	sub_type = e_to_u(Type::ADD);
 
 	i_value_a   = new PORT::Data_I_Port(this, 0, DATA::Type::ANY);
 	i_value_b   = new PORT::Data_I_Port(this, 1, DATA::Type::ANY);
@@ -349,7 +364,7 @@ Data MATH::Div::getData(const uint16& slot_id) const {
 
 UTIL::Cast::Cast() {
 	type = NODE::Type::UTIL;
-	sub_type = ETOU(Type::CAST);
+	sub_type = e_to_u(Type::CAST);
 
 	i_value = new PORT::Data_I_Port(this, 0, DATA::Type::ANY);
 
@@ -370,7 +385,7 @@ Data CLASS::NODE::UTIL::CAST::Uint_To_Double::getData(const uint16& slot_id) con
 
 UTIL::View::View() {
 	type = NODE::Type::UTIL;
-	sub_type = ETOU(Type::VIEW);
+	sub_type = e_to_u(Type::VIEW);
 
 	port = new PORT::Data_I_Port(this, 0, DATA::Type::ANY);
 

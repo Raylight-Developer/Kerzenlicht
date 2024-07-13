@@ -36,10 +36,10 @@ extern "C" {
 		node->exec_outputs["O Exec"]->exec();
 	}
 
-	EXPORT Data Script_ID_getData(const EXEC::Script* node, const uint16& port_request) {
+	EXPORT Data* Script_ID_getData(const EXEC::Script* node, const uint16& port_request) {
 		if (port_request == 1) {
-			return node->data_inputs.at("I Value")->getData() * Data(2.5);
+			return &Data(node->data_inputs.at("I Value")->getData() * Data(50.0));
 		}
-		return Data();
+		return &Data();
 	}
 }

@@ -227,5 +227,3 @@ inline ulvec4 str_to_ul(const string& val_1, const string& val_2, const string& 
 #define FPS_60      dvec1(0.016666666666667)
 #define MAX_DIST    dvec1(10000.0)
 #define EPSILON     dvec1(0.00001)
-
-#define ETOU static_cast<uint16>

@@ -340,19 +340,19 @@ void CLASS::NODE::PORT::Exec_O_Port::exec() const {
 
 QColor typeColor(const CLASS::NODE::DATA::Type& type) {
 	switch (type) {
-		case CLASS::NODE::DATA::Type::NONE:  return QColor(  0,  0,  0);
-		case CLASS::NODE::DATA::Type::ANY:    return QColor(150,150,150);
-		case CLASS::NODE::DATA::Type::STRING: return QColor(215,155,135);
-		case CLASS::NODE::DATA::Type::DOUBLE: return QColor( 95,230, 95);
-		case CLASS::NODE::DATA::Type::BOOL:   return QColor(240,100,175);
-		case CLASS::NODE::DATA::Type::UINT:   return QColor(105,125, 60);
-		case CLASS::NODE::DATA::Type::INT:    return QColor( 40,130, 40);
+		case CLASS::NODE::DATA::Type::NONE:   return QColor(  0,   0,   0);
+		case CLASS::NODE::DATA::Type::ANY:    return QColor(150, 150, 150);
+		case CLASS::NODE::DATA::Type::STRING: return QColor(215, 155, 135);
+		case CLASS::NODE::DATA::Type::DOUBLE: return QColor( 95, 230,  95);
+		case CLASS::NODE::DATA::Type::BOOL:   return QColor(240, 100, 175);
+		case CLASS::NODE::DATA::Type::UINT:   return QColor(105, 125,  60);
+		case CLASS::NODE::DATA::Type::INT:    return QColor( 40, 130,  40);
 
-		case CLASS::NODE::DATA::Type::TRANSFORM: return QColor( 85, 85,240);
-		case CLASS::NODE::DATA::Type::TEXTURE:   return QColor(240, 85, 85);
-		case CLASS::NODE::DATA::Type::OBJECT:    return QColor(250,175,100);
-		case CLASS::NODE::DATA::Type::SCENE:     return QColor( 85,195,240);
-		case CLASS::NODE::DATA::Type::DATA:      return QColor(210,240, 85);
+		case CLASS::NODE::DATA::Type::TRANSFORM: return QColor( 85,  85, 240);
+		case CLASS::NODE::DATA::Type::TEXTURE:   return QColor(240,  85,  85);
+		case CLASS::NODE::DATA::Type::OBJECT:    return QColor(250, 175, 100);
+		case CLASS::NODE::DATA::Type::SCENE:     return QColor( 85, 195, 240);
+		case CLASS::NODE::DATA::Type::DATA:      return QColor(210, 240,  85);
 
 		case CLASS::NODE::DATA::Type::VEC2:
 		case CLASS::NODE::DATA::Type::VEC3:

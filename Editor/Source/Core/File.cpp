@@ -1025,7 +1025,7 @@ void CLASS::File::f_saveBuild(Lace& lace) {
 	for (auto object : objects) {
 		if (object->data->type != OBJECT::DATA::Type::NONE and object->nodes) {
 			for (auto node : object->nodes->nodes) {
-				if (node->type == CLASS::NODE::Type::LINK and node->sub_type == ETOU(CLASS::NODE::LINK::Type::POINTER)) {
+				if (node->type == CLASS::NODE::Type::LINK and node->sub_type == e_to_u(CLASS::NODE::LINK::Type::POINTER)) {
 					lace NL reinterpret_cast<uint64>(node) SP reinterpret_cast<uint64>(static_cast<CLASS::NODE::LINK::Pointer*>(node)->pointer);
 				}
 			}

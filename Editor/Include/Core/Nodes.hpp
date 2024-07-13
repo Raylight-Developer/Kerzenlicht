@@ -123,6 +123,7 @@ namespace CLASS {
 			PORT::Type type;
 
 			Port(Node* node);
+			virtual ~Port() {};
 
 			virtual Data getData() const { return Data(); }
 			virtual void exec() const {}

@@ -99,10 +99,11 @@ namespace CLASS {
 				virtual void addExecOutput(const uint16& slot_id, const string& map_name);
 				virtual void clearIO();
 
+				void recompile(const HINSTANCE& library);
 			private:
 				HINSTANCE dynlib;
 
-				Data (*getDataFunc)(const Script*, const uint16&);
+				Data* (*getDataFunc)(const Script*, const uint16&);
 				void (*buildFunc)(Script*);
 				void (*execFunc)(Script*);
 

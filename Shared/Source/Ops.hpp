@@ -79,6 +79,11 @@ namespace CLASS {
 }
 // Templates
 template<typename T>
+uint e_to_u(const T& enumerator) {
+	return static_cast<uint>(enumerator);
+};
+
+template<typename T>
 uint len32(const vector<T>& vector) {
 	return ul_to_u(vector.size());
 };
