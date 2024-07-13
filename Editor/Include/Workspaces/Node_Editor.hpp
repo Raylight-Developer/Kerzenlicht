@@ -44,27 +44,27 @@ namespace GUI {
 			Workspace_Node_Editor(Workspace_Manager* parent);
 		};
 		/* TODO:
-		Also allow Visualization of GUI::Node_Tree during execution
-		CHECK Circular dependencies
-		PREVENT connection between different data_types;
+			Allow Visualization of GUI::Node_Tree during execution
+			CHECK Circular dependencies
+			PREVENT connection between different data_types
 		*/
 		struct Node_Viewport : GUI::Graphics_View {
 			Workspace_Node_Editor* parent;
 			QGraphicsScene* scene;
 
-			QPointF pan_pos;
 			bool pan;
-
 			bool moving;
+			bool selecting;
+			bool connecting;
+			QPointF pan_pos;
 			QPointF move_pos;
+			qreal  view_scale;
+			QPointF selection_start;
+			QGraphicsRectItem* selection_rect;
 			vector<GUI::NODE::Node*> move_selection;
 
-			bool connecting;
 			GUI::NODE::Connection* connection;
-
 			GUI::NODE::Node_Tree* active_node_tree;
-
-			qreal view_scale;
 
 			Node_Viewport(Workspace_Node_Editor* parent);
 			~Node_Viewport();

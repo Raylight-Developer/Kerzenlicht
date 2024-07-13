@@ -52,13 +52,20 @@ GUI::WORKSPACE::Node_Viewport::Node_Viewport(Workspace_Node_Editor* parent) :
 	view_scale = 1.0;
 	pan = false;
 	moving = false;
+	selecting = false;
 	connecting = false;
 	connection = nullptr;
 	move_selection = {};
 	active_node_tree = nullptr;
 	scene = new QGraphicsScene(this);
+	selection_rect = new QGraphicsRectItem(QRectF(0,0,0,0));
+	selection_rect->setBrush(QColor(255, 135, 25, 50));
+	selection_rect->setPen(QPen(QColor(255,135,25,200), 2.5));
+	selection_rect->setZValue(10);
+	selection_rect->hide();
 
 	setScene(scene);
+	scene->addItem(selection_rect);
 	setSceneRect(-10000, -10000, 20000, 20000);
 }
 
@@ -66,6 +73,7 @@ GUI::WORKSPACE::Node_Viewport::~Node_Viewport() {
 	for (auto item : scene->items())
 		if (dynamic_cast<GUI::NODE::Node*>(item)) scene->removeItem(item);
 	FILE->active_object->callbacks.erase(this);
+	delete selection_rect;
 }
 
 void GUI::WORKSPACE::Node_Viewport::f_objectChanged(CLASS::Object* object) {
@@ -123,6 +131,18 @@ void GUI::WORKSPACE::Node_Viewport::mouseReleaseEvent(QMouseEvent* event) {
 		moving = false;
 	if (event->button() == Qt::MouseButton::LeftButton) {
 		moving = false;
+		if (selecting) {
+			for (auto item : scene->items(selection_rect->rect())) {
+				if (GUI::NODE::Node* node = dynamic_cast<GUI::NODE::Node*>(item)) {
+					if (!node->isSelected()) {
+						node->setSelected(true);
+						node->real_pos = node->pos();
+						move_selection.push_back(node);
+					}
+				}
+			}
+			selection_rect->hide();
+		}
 		if (connecting) {
 			if (auto item = scene->itemAt(mapToScene(event->pos()), transform())) {
 				if (auto drop_port = dynamic_cast<GUI::NODE::PORT::Data_I_Port*>(item)) {
@@ -193,16 +213,22 @@ void GUI::WORKSPACE::Node_Viewport::mousePressEvent(QMouseEvent* event) {
 				moving = true;
 				if (event->modifiers() & Qt::KeyboardModifier::ShiftModifier) {
 					if (!node->isSelected()) {
-						move_selection.push_back(node);
 						node->setSelected(true);
+						node->real_pos = node->pos();
+						for (auto subnode: move_selection) subnode->real_pos = subnode->pos();
+						move_selection.push_back(node);
+					}
+					else {
+						node->setSelected(false);
 					}
 				}
 				else {
 					if (!node->isSelected()) {
 						for (auto item : move_selection) item->setSelected(false);
 						move_selection.clear();
-						move_selection.push_back(node);
 						node->setSelected(true);
+						node->real_pos = node->pos();
+						move_selection.push_back(node);
 					}
 				}
 				move_pos = mapToScene(event->pos());
@@ -215,6 +241,11 @@ void GUI::WORKSPACE::Node_Viewport::mousePressEvent(QMouseEvent* event) {
 		else {
 			for (auto item : move_selection) item->setSelected(false);
 			move_selection.clear();
+
+			selecting = true;
+			selection_start = mapToScene(event->pos());
+			selection_rect->setRect(QRectF(selection_start, QSizeF(0,0)));
+			selection_rect->show();
 		}
 	}
 }
@@ -268,11 +299,16 @@ void GUI::WORKSPACE::Node_Viewport::mouseMoveEvent(QMouseEvent* event) {
 			pan_pos = event->pos();
 		}
 		if (moving) {
-			const QPointF delta = mapToScene(event->pos()) - move_pos;
-			for (auto& item : move_selection) {
-				item->setPos(item->pos() + delta);
+			for (auto& node : move_selection) {
+				const QPointF delta = node->real_pos + mapToScene(event->pos()) - move_pos;
+				node->setPos(f_roundToNearest(delta.x(), 10.0), f_roundToNearest(delta.y(), 10.0));
+				node->real_pos = delta;
 			}
 			move_pos = mapToScene(event->pos());
+		}
+		if (selecting) {
+			const QRectF newRect(selection_start, mapToScene(event->pos()));
+			selection_rect->setRect(newRect.normalized());
 		}
 		if (connecting) {
 			if (connection->port_l)

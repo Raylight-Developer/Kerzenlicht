@@ -50,7 +50,7 @@ GUI::NODE::EXEC::Script::Script(const ivec2& pos) {
 		reloadFunctions();
 	});
 
-	loadDLL(dynlib, "D:/Kerzenlicht Renderer/x64/Debug/Scripting.dll");
+	loadDLL(dynlib, "D:/Kerzenlicht/x64/Debug/Scripting.dll");
 
 	FARPROC buildAddress = GetProcAddress(dynlib, (script_identifier->text().toStdString() + "_buildGui").c_str());
 	if (buildAddress != NULL) {
@@ -104,7 +104,7 @@ void EXEC::Script::reloadFunctions() {
 
 void EXEC::Script::reloadDll() {
 	unloadDLL(dynlib);
-	loadDLL(dynlib, "D:/Kerzenlicht Renderer/x64/Debug/Scripting.dll");
+	loadDLL(dynlib, "D:/Kerzenlicht/x64/Debug/Scripting.dll");
 	reloadFunctions();
 }
 

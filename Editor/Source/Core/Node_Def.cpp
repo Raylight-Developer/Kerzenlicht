@@ -69,7 +69,7 @@ EXEC::Script::Script() {
 	buildFunc = nullptr;
 	execFunc = nullptr;
 
-	loadDLL(dynlib, "D:/Kerzenlicht Renderer/x64/Debug/Scripting.dll");
+	loadDLL(dynlib, "D:/Kerzenlicht/x64/Debug/Scripting.dll");
 
 	FARPROC execAddress = GetProcAddress(dynlib, (script_id + "_exec").c_str());
 	if (execAddress != NULL) {
@@ -128,7 +128,7 @@ void EXEC::Script::reloadFunctions() {
 
 void EXEC::Script::reloadDll() {
 	unloadDLL(dynlib);
-	loadDLL(dynlib, "D:/Kerzenlicht Renderer/x64/Debug/Scripting.dll");
+	loadDLL(dynlib, "D:/Kerzenlicht/x64/Debug/Scripting.dll");
 	reloadFunctions();
 }
 

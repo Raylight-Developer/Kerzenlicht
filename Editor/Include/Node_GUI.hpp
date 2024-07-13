@@ -43,6 +43,7 @@ namespace GUI {
 			QRectF rect;
 			CLASS::NODE::Type type;
 			uint16 sub_type;
+			QPointF real_pos;
 
 			vector<Port*> inputs;  // src
 			vector<Port*> outputs; // src
