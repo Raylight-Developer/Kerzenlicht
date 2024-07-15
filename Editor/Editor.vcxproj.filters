@@ -7,13 +7,7 @@
     <ClCompile Include="Source\Object\Data\Camera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\CPU_Renderer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Source\Rendering\Render_Kernel.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Object\Data\Atmosphere.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -116,6 +110,9 @@
     <ClCompile Include="Source\Workspaces\Shelf.cpp" />
     <ClCompile Include="Source\Node_GUI_Def.cpp" />
     <ClCompile Include="Source\Core\Session.cpp" />
+    <ClCompile Include="..\Shared\Source\glad.c">
+      <Filter>Shared</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\Object\Data\Camera.hpp">
@@ -190,9 +187,6 @@
     <ClInclude Include="Include\Rendering\Material.hpp">
       <Filter>Header Files\RENDERING\MATERIAL</Filter>
     </ClInclude>
-    <ClInclude Include="Include\Rendering\Render_Kernel.hpp">
-      <Filter>Header Files\RENDERING</Filter>
-    </ClInclude>
     <ClInclude Include="Resources\Documentation\Layout.hpp" />
     <ClInclude Include="Include\Workspaces\Node_Editor.hpp">
       <Filter>Header Files\GUI</Filter>
@@ -224,6 +218,9 @@
     <ClInclude Include="Include\Workspaces\Shelf.hpp" />
     <ClInclude Include="Include\Node_GUI_Def.hpp" />
     <ClInclude Include="Include\Core\Session.hpp" />
+    <ClInclude Include="Include\Workspaces\Viewport.hpp">
+      <Filter>Header Files\GUI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Source Files">
@@ -265,14 +262,11 @@
     <Filter Include="Header Files\CORE">
       <UniqueIdentifier>{86f2e4c0-34c0-460a-b4b4-2334b89f122e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shared">
+      <UniqueIdentifier>{0929c487-3bdf-42f9-96a4-03e4a1e7dee8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <QtMoc Include="Include\Workspaces\Viewport.hpp">
-      <Filter>Header Files\GUI</Filter>
-    </QtMoc>
-    <QtMoc Include="Include\CPU_Renderer.hpp">
-      <Filter>Header Files\RENDERING</Filter>
-    </QtMoc>
     <QtMoc Include="Include\GUI.hpp">
       <Filter>Header Files\GUI</Filter>
     </QtMoc>

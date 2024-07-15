@@ -91,6 +91,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\Shared\Source\glad.c" />
+    <ClCompile Include="Source\Rendering\OpenGl.cpp" />
     <ClCompile Include="Source\Session.cpp" />
     <ClCompile Include="Source\Rendering\Gpu_Scene.cpp" />
     <ClCompile Include="Include\External\imgui-1.90\backends\imgui_impl_glfw.cpp" />
@@ -101,14 +103,13 @@
     <ClCompile Include="Include\External\imgui-1.90\imgui_tables.cpp" />
     <ClCompile Include="Include\External\imgui-1.90\imgui_widgets.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Source\Rendering\OpenGl.cpp" />
     <ClCompile Include="Source\Camera.cpp" />
     <ClCompile Include="Source\Operators.cpp" />
-    <ClCompile Include="Resources\glad.c" />
     <ClCompile Include="Source\Rendering\Renderer.cpp" />
     <ClCompile Include="Source\Rendering\Vulkan.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Include\Rendering\OpenGl.hpp" />
     <ClInclude Include="Include\Rendering\Gpu_Scene.hpp" />
     <ClInclude Include="Include\Camera.hpp" />
     <ClInclude Include="Include\External\imgui-1.90\backends\imgui_impl_glfw.h" />
@@ -122,7 +123,6 @@
     <ClInclude Include="Include\External\stb_image.h" />
     <ClInclude Include="Include\Operators.hpp" />
     <ClInclude Include="Include\Rendering\Renderer.hpp" />
-    <ClInclude Include="Include\Rendering\OpenGl.hpp" />
     <ClInclude Include="Include\Session.hpp" />
     <ClInclude Include="Include\Rendering\Vulkan.hpp" />
   </ItemGroup>
