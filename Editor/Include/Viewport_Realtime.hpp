@@ -29,8 +29,8 @@ namespace GUI {
 				Triangle(const dvec3& v0, const dvec3& v1, const dvec3& v2) : v0(v0), v1(v1), v2(v2) {};
 			};
 			struct alignas(16) GPU_Triangle {
-				dvec4 v0, v1, v2;
-				GPU_Triangle(const dvec3& v0, const dvec3& v1, const dvec3& v2) : v0(dvec4(v0, 1.0)), v1(dvec4(v1, 1.0)), v2(dvec4(v2, 1.0)) {};
+				vec4 v0, v1, v2;
+				GPU_Triangle(const vec3& v0, const vec3& v1, const vec3& v2) : v0(vec4(v0, 1.0f)), v1(vec4(v1, 1.0f)), v2(vec4(v2, 1.0f)) {};
 			};
 
 			bool f_rayTriangleIntersection(const Ray& ray, const Triangle& tri, dvec1& ray_length);
@@ -44,7 +44,7 @@ namespace GUI {
 
 			uvec3 compute_layout;
 			vector<VIEWPORT_REALTIME::GPU_Triangle> triangles;
-			map<CLASS::Object*, vector<VIEWPORT_REALTIME::Triangle>> triangle_map;
+			unordered_map<CLASS::Object*, vector<VIEWPORT_REALTIME::Triangle>> triangle_map;
 
 			GLuint compute_shader_program;
 			GLuint display_shader_program;
@@ -67,7 +67,6 @@ namespace GUI {
 			void f_pipeline();
 			void f_uploadData();
 			void f_updateTick();
-			void f_updateFrame();
 
 			void f_selectObject(const dvec2& uv);
 

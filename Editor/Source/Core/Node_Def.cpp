@@ -171,7 +171,7 @@ Data EXEC::Script::getInputData(const string& map_name) const {
 }
 
 void CLASS::NODE::EXEC::Script::recompile(const HINSTANCE& library) {
-	clearIO();
+	//clearIO();
 	dynlib = library;
 	reloadFunctions();
 }
@@ -183,7 +183,7 @@ EXEC::Tick::Tick() {
 	delta = new dvec1(FPS_60);
 
 	port_tick  = new PORT::Exec_O_Port(this, 0);
-	port_delta = new PORT::Data_O_Port(this, 1,  DATA::Type::DOUBLE);
+	port_delta = new PORT::Data_O_Port(this, 1, DATA::Type::DOUBLE);
 
 	outputs.push_back(port_tick);
 	outputs.push_back(port_delta);
@@ -229,7 +229,13 @@ LINK::Set::Set() {
 	outputs.push_back(o_value);
 }
 
-LINK::GET::Field::Field() {
+LINK::GET::Field::Field() :
+	Get()
+{
+	type = NODE::Type::LINK;
+	sub_type = e_to_u(LINK::Type::GET);
+	mini_type = GET::Type::FIELD;
+
 	field = "";
 }
 

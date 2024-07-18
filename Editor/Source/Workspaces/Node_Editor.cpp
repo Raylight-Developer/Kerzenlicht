@@ -28,7 +28,7 @@ GUI::WORKSPACE::Workspace_Node_Editor::Workspace_Node_Editor(Workspace_Manager* 
 	addWidget(splitter);
 
 	FILE->active_object->addCallback(this, [this]() { viewport->f_objectChanged(FILE->active_object->ptr); });
-	connect(load_in, &GUI::Button::pressed, [this]() { // CAN CRASH. [xmemory 1335] STOP Executing nodes before
+	connect(load_in, &GUI::Button::pressed, [this]() {
 		if (viewport->active_node_tree and FILE->active_object->ptr) {
 			*LOG << ENDL << HTML_MAGENTA << "[Translation]" << HTML_RESET << " Compiling Nodes..."; FLUSH
 
@@ -39,7 +39,8 @@ GUI::WORKSPACE::Workspace_Node_Editor::Workspace_Node_Editor(Workspace_Manager* 
 				FILE->node_map.erase(it);
 			}
 
-			delete FILE->active_object->ptr->nodes;
+			// TODO memory leak?
+			// delete FILE->active_object->ptr->nodes; // WILL CRASH ON SECOND ATTEMPT. [xmemory 1335] STOP Executing nodes before
 
 			auto node = new CLASS::Node_Tree(viewport->active_node_tree);
 			FILE->active_object->ptr->nodes = node;
@@ -488,6 +489,21 @@ void GUI::WORKSPACE::Node_Viewport::dropEvent(QDropEvent* event) {
 				}
 			}
 			if (type == "LINK") {
+				if (sub_type == "LINK_POINTER_SCENE") {
+					event->acceptProposedAction();
+					auto node = new GUI::NODE::LINK::Pointer(drop_pos, CLASS::NODE::DATA::Type::SCENE);
+					node->pointer = FILE->active_scene->ptr;
+					active_node_tree->nodes.push_back(node);
+					scene->addItem(node);
+					return;
+				}
+				if (sub_type == "LINK_GET_FIELD") {
+					event->acceptProposedAction();
+					auto node = new GUI::NODE::LINK::GET::Field(drop_pos);
+					active_node_tree->nodes.push_back(node);
+					scene->addItem(node);
+					return;
+				}
 				if (sub_type == "SET_Transform_Euler_Rot_X") {
 					event->acceptProposedAction();
 					auto node = new GUI::NODE::LINK::SET::Euler_Rotation_X(drop_pos);
@@ -507,9 +523,8 @@ void GUI::WORKSPACE::Node_Viewport::dropEvent(QDropEvent* event) {
 			
 			auto object = reinterpret_cast<CLASS::Object*>(ptr);
 
-			auto node = new GUI::NODE::LINK::Pointer(drop_pos);
+			auto node = new GUI::NODE::LINK::Pointer(drop_pos, CLASS::NODE::DATA::Type::OBJECT);
 			node->pointer = object;
-			node->pointer_type = CLASS::NODE::DATA::Type::OBJECT;
 			active_node_tree->nodes.push_back(node);
 			scene->addItem(node);
 			return;
@@ -545,38 +560,41 @@ GUI::WORKSPACE::Node_Shelf::Node_Shelf(Workspace_Node_Editor* parent) :
 	auto tree_math_2     = new Tree_Item(tree_math    , "Mul"           , 1, { { 1000, "MATH" }, { 1001, "Mul"                       } });
 	auto tree_math_3     = new Tree_Item(tree_math    , "Div"           , 1, { { 1000, "MATH" }, { 1001, "Div"                       } });
 
-	auto tree_link_0     = new Tree_Item(tree_link    , "Set"           , 1, { { 1000, "LINK" }, { 1001, "SET_Field"                 } });
-	auto tree_link_1     = new Tree_Item(tree_link    , "Get"           , 1, { { 1000, "LINK" }, { 1001, "GET_Field"                 } });
+	auto tree_link_0     = new Tree_Item(tree_link    , "Pointer"       , 1, { { 1000, "LINK" }, { 1001, "Pointer"                   } });
+	auto tree_link_1     = new Tree_Item(tree_link    , "Set"           , 1, { { 1000, "LINK" }, { 1001, "SET_Field"                 } });
+	auto tree_link_2     = new Tree_Item(tree_link    , "Get"           , 1, { { 1000, "LINK" }, { 1001, "GET_Field"                 } });
 
-	auto tree_link_00    = new Tree_Item(tree_link_0  , "Field"         , 1, { { 1000, "LINK" }, { 1001, "SET_Field"                 } });
-	auto tree_link_01    = new Tree_Item(tree_link_0  , "Transform"     , 2, { { 1000, "LINK" }, { 1001, "SET_Transform"             } });
-	auto tree_link_010   = new Tree_Item(tree_link_01 , "Position"      , 3, { { 1000, "LINK" }, { 1001, "SET_Transform_Position"    } });
-	auto tree_link_0100  = new Tree_Item(tree_link_010, "X"             , 4, { { 1000, "LINK" }, { 1001, "SET_Transform_Position_X"  } });
-	auto tree_link_0101  = new Tree_Item(tree_link_010, "Y"             , 4, { { 1000, "LINK" }, { 1001, "SET_Transform_Position_Y"  } });
-	auto tree_link_0102  = new Tree_Item(tree_link_010, "Z"             , 4, { { 1000, "LINK" }, { 1001, "SET_Transform_Position_Z"  } });
-	auto tree_link_011   = new Tree_Item(tree_link_01 , "Euler Rotation", 3, { { 1000, "LINK" }, { 1001, "SET_Transform_Euler_Rot"   } });
-	auto tree_link_0110  = new Tree_Item(tree_link_011, "X"             , 4, { { 1000, "LINK" }, { 1001, "SET_Transform_Euler_Rot_X" } });
-	auto tree_link_0111  = new Tree_Item(tree_link_011, "Y"             , 4, { { 1000, "LINK" }, { 1001, "SET_Transform_Euler_Rot_Y" } });
-	auto tree_link_0112  = new Tree_Item(tree_link_011, "Z"             , 4, { { 1000, "LINK" }, { 1001, "SET_Transform_Euler_Rot_Z" } });
-	auto tree_link_012   = new Tree_Item(tree_link_01 , "Scale"         , 3, { { 1000, "LINK" }, { 1001, "SET_Transform_Scale"       } });
-	auto tree_link_0120  = new Tree_Item(tree_link_012, "X"             , 4, { { 1000, "LINK" }, { 1001, "SET_Transform_Scale_X"     } });
-	auto tree_link_0121  = new Tree_Item(tree_link_012, "Y"             , 4, { { 1000, "LINK" }, { 1001, "SET_Transform_Scale_Y"     } });
-	auto tree_link_0122  = new Tree_Item(tree_link_012, "Z"             , 4, { { 1000, "LINK" }, { 1001, "SET_Transform_Scale_Z"     } });
+	auto tree_link_00    = new Tree_Item(tree_link_0  , "Scene"         , 1, { { 1000, "LINK" }, { 1001, "LINK_POINTER_SCENE"        } });
 
-	auto tree_link_10    = new Tree_Item(tree_link_1  , "Field"         , 1, { { 1000, "LINK" }, { 1001, "GET_Field"                 } });
-	auto tree_link_11    = new Tree_Item(tree_link_1  , "Transform"     , 2, { { 1000, "LINK" }, { 1001, "GET_Transform"             } });
-	auto tree_link_110   = new Tree_Item(tree_link_11 , "Position"      , 3, { { 1000, "LINK" }, { 1001, "GET_Transform_Position"    } });
-	auto tree_link_1100  = new Tree_Item(tree_link_110, "X"             , 4, { { 1000, "LINK" }, { 1001, "GET_Transform_Position_X"  } });
-	auto tree_link_1101  = new Tree_Item(tree_link_110, "Y"             , 4, { { 1000, "LINK" }, { 1001, "GET_Transform_Position_Y"  } });
-	auto tree_link_1102  = new Tree_Item(tree_link_110, "Z"             , 4, { { 1000, "LINK" }, { 1001, "GET_Transform_Position_Z"  } });
-	auto tree_link_111   = new Tree_Item(tree_link_11 , "Euler Rotation", 3, { { 1000, "LINK" }, { 1001, "GET_Transform_Euler_Rot"   } });
-	auto tree_link_1110  = new Tree_Item(tree_link_111, "X"             , 4, { { 1000, "LINK" }, { 1001, "GET_Transform_Euler_Rot_X" } });
-	auto tree_link_1111  = new Tree_Item(tree_link_111, "Y"             , 4, { { 1000, "LINK" }, { 1001, "GET_Transform_Euler_Rot_Y" } });
-	auto tree_link_1112  = new Tree_Item(tree_link_111, "Z"             , 4, { { 1000, "LINK" }, { 1001, "GET_Transform_Euler_Rot_Z" } });
-	auto tree_link_112   = new Tree_Item(tree_link_11 , "Scale"         , 3, { { 1000, "LINK" }, { 1001, "GET_Transform_Scale"       } });
-	auto tree_link_1120  = new Tree_Item(tree_link_112, "X"             , 4, { { 1000, "LINK" }, { 1001, "GET_Transform_Scale_X"     } });
-	auto tree_link_1121  = new Tree_Item(tree_link_112, "Y"             , 4, { { 1000, "LINK" }, { 1001, "GET_Transform_Scale_Y"     } });
-	auto tree_link_1122  = new Tree_Item(tree_link_112, "Z"             , 4, { { 1000, "LINK" }, { 1001, "GET_Transform_Scale_Z"     } });
+	auto tree_link_10    = new Tree_Item(tree_link_1  , "Field"         , 1, { { 1000, "LINK" }, { 1001, "SET_Field"                 } });
+	auto tree_link_11    = new Tree_Item(tree_link_1  , "Transform"     , 2, { { 1000, "LINK" }, { 1001, "SET_Transform"             } });
+	auto tree_link_110   = new Tree_Item(tree_link_11 , "Position"      , 3, { { 1000, "LINK" }, { 1001, "SET_Transform_Position"    } });
+	auto tree_link_1100  = new Tree_Item(tree_link_110, "X"             , 4, { { 1000, "LINK" }, { 1001, "SET_Transform_Position_X"  } });
+	auto tree_link_1101  = new Tree_Item(tree_link_110, "Y"             , 4, { { 1000, "LINK" }, { 1001, "SET_Transform_Position_Y"  } });
+	auto tree_link_1102  = new Tree_Item(tree_link_110, "Z"             , 4, { { 1000, "LINK" }, { 1001, "SET_Transform_Position_Z"  } });
+	auto tree_link_111   = new Tree_Item(tree_link_11 , "Euler Rotation", 3, { { 1000, "LINK" }, { 1001, "SET_Transform_Euler_Rot"   } });
+	auto tree_link_1110  = new Tree_Item(tree_link_111, "X"             , 4, { { 1000, "LINK" }, { 1001, "SET_Transform_Euler_Rot_X" } });
+	auto tree_link_1111  = new Tree_Item(tree_link_111, "Y"             , 4, { { 1000, "LINK" }, { 1001, "SET_Transform_Euler_Rot_Y" } });
+	auto tree_link_1112  = new Tree_Item(tree_link_111, "Z"             , 4, { { 1000, "LINK" }, { 1001, "SET_Transform_Euler_Rot_Z" } });
+	auto tree_link_112   = new Tree_Item(tree_link_11 , "Scale"         , 3, { { 1000, "LINK" }, { 1001, "SET_Transform_Scale"       } });
+	auto tree_link_1120  = new Tree_Item(tree_link_112, "X"             , 4, { { 1000, "LINK" }, { 1001, "SET_Transform_Scale_X"     } });
+	auto tree_link_1121  = new Tree_Item(tree_link_112, "Y"             , 4, { { 1000, "LINK" }, { 1001, "SET_Transform_Scale_Y"     } });
+	auto tree_link_1122  = new Tree_Item(tree_link_112, "Z"             , 4, { { 1000, "LINK" }, { 1001, "SET_Transform_Scale_Z"     } });
+
+	auto tree_link_20    = new Tree_Item(tree_link_2  , "Field"         , 1, { { 1000, "LINK" }, { 1001, "LINK_GET_FIELD"            } });
+	auto tree_link_21    = new Tree_Item(tree_link_2  , "Transform"     , 2, { { 1000, "LINK" }, { 1001, "GET_Transform"             } });
+	auto tree_link_210   = new Tree_Item(tree_link_21 , "Position"      , 3, { { 1000, "LINK" }, { 1001, "GET_Transform_Position"    } });
+	auto tree_link_2100  = new Tree_Item(tree_link_210, "X"             , 4, { { 1000, "LINK" }, { 1001, "GET_Transform_Position_X"  } });
+	auto tree_link_2101  = new Tree_Item(tree_link_210, "Y"             , 4, { { 1000, "LINK" }, { 1001, "GET_Transform_Position_Y"  } });
+	auto tree_link_2102  = new Tree_Item(tree_link_210, "Z"             , 4, { { 1000, "LINK" }, { 1001, "GET_Transform_Position_Z"  } });
+	auto tree_link_211   = new Tree_Item(tree_link_21 , "Euler Rotation", 3, { { 1000, "LINK" }, { 1001, "GET_Transform_Euler_Rot"   } });
+	auto tree_link_2110  = new Tree_Item(tree_link_211, "X"             , 4, { { 1000, "LINK" }, { 1001, "GET_Transform_Euler_Rot_X" } });
+	auto tree_link_2111  = new Tree_Item(tree_link_211, "Y"             , 4, { { 1000, "LINK" }, { 1001, "GET_Transform_Euler_Rot_Y" } });
+	auto tree_link_2112  = new Tree_Item(tree_link_211, "Z"             , 4, { { 1000, "LINK" }, { 1001, "GET_Transform_Euler_Rot_Z" } });
+	auto tree_link_212   = new Tree_Item(tree_link_21 , "Scale"         , 3, { { 1000, "LINK" }, { 1001, "GET_Transform_Scale"       } });
+	auto tree_link_2120  = new Tree_Item(tree_link_212, "X"             , 4, { { 1000, "LINK" }, { 1001, "GET_Transform_Scale_X"     } });
+	auto tree_link_2121  = new Tree_Item(tree_link_212, "Y"             , 4, { { 1000, "LINK" }, { 1001, "GET_Transform_Scale_Y"     } });
+	auto tree_link_2122  = new Tree_Item(tree_link_212, "Z"             , 4, { { 1000, "LINK" }, { 1001, "GET_Transform_Scale_Z"     } });
 }
 
 void GUI::WORKSPACE::Node_Viewport::dragMoveEvent(QDragMoveEvent* event) {

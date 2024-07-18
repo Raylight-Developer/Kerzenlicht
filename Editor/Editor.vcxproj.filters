@@ -7,13 +7,7 @@
     <ClCompile Include="Source\Object\Data\Camera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\CPU_Renderer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Source\Rendering\Render_Kernel.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Object\Data\Atmosphere.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -190,9 +184,6 @@
     <ClInclude Include="Include\Rendering\Material.hpp">
       <Filter>Header Files\RENDERING\MATERIAL</Filter>
     </ClInclude>
-    <ClInclude Include="Include\Rendering\Render_Kernel.hpp">
-      <Filter>Header Files\RENDERING</Filter>
-    </ClInclude>
     <ClInclude Include="Resources\Documentation\Layout.hpp" />
     <ClInclude Include="Include\Workspaces\Node_Editor.hpp">
       <Filter>Header Files\GUI</Filter>
@@ -224,6 +215,9 @@
     <ClInclude Include="Include\Workspaces\Shelf.hpp" />
     <ClInclude Include="Include\Node_GUI_Def.hpp" />
     <ClInclude Include="Include\Core\Session.hpp" />
+    <ClInclude Include="Include\Workspaces\Viewport.hpp">
+      <Filter>Header Files\GUI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Source Files">
@@ -267,32 +261,11 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <QtMoc Include="Include\Workspaces\Viewport.hpp">
-      <Filter>Header Files\GUI</Filter>
-    </QtMoc>
-    <QtMoc Include="Include\CPU_Renderer.hpp">
-      <Filter>Header Files\RENDERING</Filter>
-    </QtMoc>
     <QtMoc Include="Include\GUI.hpp">
       <Filter>Header Files\GUI</Filter>
     </QtMoc>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\Shaders\CPU_Shader.frag">
-      <Filter>Shader Files</Filter>
-    </None>
-    <None Include="Resources\Shaders\CPU_Shader.vert">
-      <Filter>Shader Files</Filter>
-    </None>
-    <None Include="Resources\Shaders\GPU_Shader.comp">
-      <Filter>Shader Files</Filter>
-    </None>
-    <None Include="Resources\Shaders\GPU_Shader.frag">
-      <Filter>Shader Files</Filter>
-    </None>
-    <None Include="Resources\Shaders\GPU_Shader.vert">
-      <Filter>Shader Files</Filter>
-    </None>
     <None Include="Resources\Shaders\Realtime_Shader.comp">
       <Filter>Shader Files</Filter>
     </None>

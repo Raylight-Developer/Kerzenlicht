@@ -23,7 +23,7 @@ void recompileDLL(HINSTANCE& dynlib) {
 	if (dynlib != NULL) {
 		FreeLibrary(dynlib);
 	}
-	string rebuildCommand = "C:/Programs/Coding/Microsoft/VisualStudio/Community/MSBuild/Current/Bin/MSBuild.exe \"./Kerzenlicht.sln\" /t:Scripting:Build /p:Configuration=Release";
+	string rebuildCommand = "C:/Programs/Coding/Microsoft/VisualStudio/Community/MSBuild/Current/Bin/MSBuild.exe /p:Project=Scripting /t:Build \"D:/Kerzenlicht/Kerzenlicht.sln\"";
 	const int result = std::system(rebuildCommand.c_str());
 	if (result == 0) {
 		*LOG << ENDL << HTML_GREEN << "[DLL Compilation]" << HTML_RESET << " Succesfully Compiled"; FLUSH

@@ -46,12 +46,10 @@
     <ClInclude Include="Include\Workspaces\Manager.hpp" />
     <ClInclude Include="Include\Workspaces\Scene_Outliner.hpp" />
     <ClInclude Include="Include\Workspaces\Properties.hpp" />
-    <QtMoc Include="Include\Workspaces\Viewport.hpp" />
+    <ClInclude Include="Include\Workspaces\Viewport.hpp" />
     <ClInclude Include="Include\Core\File.hpp" />
     <ClInclude Include="Include\Object\Data\Camera.hpp" />
     <ClInclude Include="Include\Core\Python_API.hpp" />
-    <ClInclude Include="Include\Rendering\Render_Kernel.hpp" />
-    <QtMoc Include="Include\CPU_Renderer.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Core\Node_Def.cpp" />
@@ -84,11 +82,9 @@
     <ClCompile Include="Source\Workspaces\Viewport.cpp" />
     <ClCompile Include="Source\Object\Object.cpp" />
     <ClCompile Include="Source\Core\Python_API.cpp" />
-    <ClCompile Include="Source\CPU_Renderer.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Source\Core\File.cpp" />
     <ClCompile Include="Source\Object\Data\Camera.cpp" />
-    <ClCompile Include="Source\Rendering\Render_Kernel.cpp" />
     <ClCompile Include="Source\Workspaces\Node_Editor.cpp" />
     <ClCompile Include="Source\Viewport_Realtime.cpp" />
     <ClCompile Include="Source\Node_GUI.cpp" />
@@ -97,11 +93,6 @@
     <ClCompile Include="Source\Core\Session.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\Shaders\CPU_Shader.frag" />
-    <None Include="Resources\Shaders\CPU_Shader.vert" />
-    <None Include="Resources\Shaders\GPU_Shader.comp" />
-    <None Include="Resources\Shaders\GPU_Shader.frag" />
-    <None Include="Resources\Shaders\GPU_Shader.vert" />
     <None Include="Resources\Shaders\Realtime_Shader.comp" />
     <None Include="Resources\Shaders\Realtime_Shader.frag" />
     <None Include="Resources\Shaders\Realtime_Shader.vert" />

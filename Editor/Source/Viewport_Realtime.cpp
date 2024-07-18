@@ -20,7 +20,7 @@ GUI::WORKSPACE::Viewport_Realtime::Viewport_Realtime(Workspace_Viewport* parent)
 	fullscreen_quad_EBO = 0U;
 
 	triangles = vector<VIEWPORT_REALTIME::GPU_Triangle>();
-	triangle_map = map<CLASS::Object*, vector<VIEWPORT_REALTIME::Triangle>>();
+	triangle_map = unordered_map<CLASS::Object*, vector<VIEWPORT_REALTIME::Triangle>>();
 
 	fps_counter = 0;
 	fps_measure = chrono::steady_clock::now();
@@ -173,12 +173,8 @@ void GUI::WORKSPACE::Viewport_Realtime::f_updateTick() {
 		if (object->nodes)
 			object->nodes->exec(&delta);
 	frame_counter++;
-	f_updateFrame();
-}
-
-void GUI::WORKSPACE::Viewport_Realtime::f_updateFrame() {
 	f_uploadData();
-	update();
+	requestUpdate();
 }
 
 void GUI::WORKSPACE::Viewport_Realtime::f_selectObject(const dvec2& uv) { // TODO fix slight missalignment
@@ -232,10 +228,10 @@ void GUI::WORKSPACE::Viewport_Realtime::paintGL() {
 	camera->f_compile(FILE->active_scene->ptr, FILE->default_camera);
 
 	glUseProgram(compute_shader_program);
-	glUniform3dv(glGetUniformLocation(compute_shader_program, "camera_pos"),  1, value_ptr(FILE->default_camera->transform.position));
-	glUniform3dv(glGetUniformLocation(compute_shader_program, "camera_p_uv"), 1, value_ptr(camera->projection_center));
-	glUniform3dv(glGetUniformLocation(compute_shader_program, "camera_p_u"),  1, value_ptr(camera->projection_u));
-	glUniform3dv(glGetUniformLocation(compute_shader_program, "camera_p_v"),  1, value_ptr(camera->projection_v));
+	glUniform3fv(glGetUniformLocation(compute_shader_program, "camera_pos"),  1, value_ptr(d_to_f(FILE->default_camera->transform.position)));
+	glUniform3fv(glGetUniformLocation(compute_shader_program, "camera_p_uv"), 1, value_ptr(d_to_f(camera->projection_center)));
+	glUniform3fv(glGetUniformLocation(compute_shader_program, "camera_p_u"),  1, value_ptr(d_to_f(camera->projection_u)));
+	glUniform3fv(glGetUniformLocation(compute_shader_program, "camera_p_v"),  1, value_ptr(d_to_f(camera->projection_v)));
 
 	glDispatchCompute(compute_layout.x, compute_layout.y, compute_layout.z);
 	glMemoryBarrier(GL_ALL_BARRIER_BITS);
@@ -244,12 +240,12 @@ void GUI::WORKSPACE::Viewport_Realtime::paintGL() {
 	glUseProgram(display_shader_program);
 
 	glBindTextureUnit(0, compute_render);
-	glUniform1d(glGetUniformLocation(display_shader_program, "aspect_ratio"), aspect_ratio);
+	glUniform1f(glGetUniformLocation(display_shader_program, "aspect_ratio"), d_to_f(aspect_ratio));
 	glUniform1i(glGetUniformLocation(display_shader_program, "render"), 0);
 
 	glBindVertexArray(fullscreen_quad_VAO);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-	requestUpdate();
+	//requestUpdate();
 }
 
 void GUI::WORKSPACE::Viewport_Realtime::resizeGL(int w, int h) {

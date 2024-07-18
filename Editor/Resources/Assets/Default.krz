@@ -15,12 +15,15 @@
    └Node
    ┌Node :: LINK :: Pointer [ 2 ] ( -120 100 )
     1002
+    27
    └Node
    ┌Node :: LINK :: Pointer [ 3 ] ( -120 200 )
     1003
+    27
    └Node
    ┌Node :: LINK :: Pointer [ 4 ] ( -120 300 )
     1004
+    27
    └Node
    ┌Node :: EXEC :: Script [ 5 ] ( 120 -20 )
     1005

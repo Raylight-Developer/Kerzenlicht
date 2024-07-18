@@ -66,7 +66,7 @@ typedef glm::mat2 mat2; // 128-bits
 typedef glm::mat3 mat3; // 288-bits
 typedef glm::mat4 mat4; // 512-bits
 
-typedef uint32_t uint;
+typedef uint32_t uint;   //max: 4'294'967'295
 typedef uint8_t  uint8;  //max: 255
 typedef uint16_t uint16; //max: 65'535
 typedef uint32_t uint32; //max: 4'294'967'295

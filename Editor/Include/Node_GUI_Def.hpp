@@ -65,11 +65,16 @@ namespace GUI {
 				CLASS::NODE::DATA::Type pointer_type;
 				void* pointer;
 
-				Pointer(const ivec2& pos);
+				Pointer(const ivec2& pos, const CLASS::NODE::DATA::Type& pointer_type);
 
 				void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget = nullptr) override;
 			};
 			struct Get : Node {
+				PORT::Data_I_Port* i_pointer;
+				PORT::Data_O_Port* o_value;
+
+				CLASS::NODE::LINK::GET::Type mini_type;
+
 				Get(const ivec2& pos);
 			};
 			struct Set : Node {
@@ -84,6 +89,11 @@ namespace GUI {
 				Set(const ivec2& pos);
 			};
 			namespace GET {
+				struct Field : Get {
+					Value_Input* field;
+
+					Field(const ivec2& pos);
+				};
 			}
 			namespace SET {
 				struct Euler_Rotation_X : Set {

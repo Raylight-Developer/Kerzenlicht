@@ -60,6 +60,19 @@ CLASS::Node_Tree::Node_Tree(const GUI::NODE::Node_Tree* gui_tree) :
 						node_map[gui_node] = node;
 						break;
 					}
+					case NODE::LINK::Type::GET: {
+						switch (static_cast<GUI::NODE::LINK::Get*>(gui_node)->mini_type) {
+							case NODE::LINK::GET::Type::FIELD: {
+								auto node = new NODE::LINK::GET::Field();
+								node->pos = ivec2(gui_node->rect.topLeft().x(), gui_node->rect.topLeft().y());
+								node->field = static_cast<GUI::NODE::LINK::GET::Field*>(gui_node)->field->text().toStdString();
+								nodes.push_back(node);
+								node_map[gui_node] = node;
+								break;
+							}
+						}
+						break;
+					}
 					case NODE::LINK::Type::SET: {
 						switch (static_cast<GUI::NODE::LINK::Set*>(gui_node)->mini_type) {
 							case NODE::LINK::SET::Type::EULER_ROTATION_X: {
@@ -70,6 +83,7 @@ CLASS::Node_Tree::Node_Tree(const GUI::NODE::Node_Tree* gui_tree) :
 								break;
 							}
 						}
+						break;
 					}
 				}
 				break;
@@ -120,7 +134,7 @@ CLASS::Node_Tree::Node_Tree(const GUI::NODE::Node_Tree* gui_tree) :
 							for (auto port_l : node_map[cast_port->connection->port_l->node]->outputs) {
 								if (port_l->slot_id == cast_port->connection->port_l->slot_id) {
 									static_cast<NODE::PORT::Data_I_Port*>(port_r)->connection = static_cast<NODE::PORT::Data_O_Port*>(port_l);
-									//cout << "Connect Data L_Node[" << getKeyByValue(node_map, port_l->node)->label.toStdString() << "] : " << port_l->slot_id << " To R_Node[" << gui_node->label.toStdString() << "] : " << port_r->slot_id << endl;
+									cout << "Connect Data L_Node[" << getKeyByValue(node_map, port_l->node)->label.toStdString() << "] : " << port_l->slot_id << " To R_Node[" << gui_node->label.toStdString() << "] : " << port_r->slot_id << endl;
 								}
 							}
 						}
@@ -137,7 +151,7 @@ CLASS::Node_Tree::Node_Tree(const GUI::NODE::Node_Tree* gui_tree) :
 							for (auto port_r : node_map[cast_port->connection->port_r->node]->inputs) {
 								if (port_r->slot_id == cast_port->connection->port_r->slot_id) {
 									static_cast<NODE::PORT::Exec_O_Port*>(port_l)->connection = static_cast<NODE::PORT::Exec_I_Port*>(port_r);
-									//cout << "Connect Exec L_Node[" << gui_node->label.toStdString() << "] : " << port_l->slot_id << " To R_Node[" << getKeyByValue(node_map, port_r->node)->label.toStdString() << "] : " << port_r->slot_id << endl;
+									cout << "Connect Exec L_Node[" << gui_node->label.toStdString() << "] : " << port_l->slot_id << " To R_Node[" << getKeyByValue(node_map, port_r->node)->label.toStdString() << "] : " << port_r->slot_id << endl;
 								}
 							}
 						}
@@ -335,7 +349,7 @@ CLASS::NODE::PORT::Exec_O_Port::~Exec_O_Port() {
 }
 
 void CLASS::NODE::PORT::Exec_O_Port::exec() const {
-	if (connection) connection->exec();
+	if (connection) connection->exec(); // TODO can crash on recompilation of nodes
 }
 
 QColor typeColor(const CLASS::NODE::DATA::Type& type) {

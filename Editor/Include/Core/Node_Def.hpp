@@ -196,7 +196,6 @@ namespace CLASS {
 				enum struct Type { NONE, EULER_ROTATION_X, EULER_ROTATION_Y, EULER_ROTATION_Z, FIELD };
 				struct Field : Get {
 					string field;
-
 					Field();
 
 					NODE::Data getData(const uint16& slot_id) const override;

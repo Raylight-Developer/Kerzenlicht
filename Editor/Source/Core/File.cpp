@@ -153,9 +153,21 @@ CLASS::Node_Tree* CLASS::File::f_loadNodeTree(const vector<vector<string>>& toke
 			}
 			else if (read_data[0][2] == "LINK") {
 				if      (read_data[0][4] == "Pointer") {
-					node = new NODE::LINK::Pointer();
+					auto pointer = new NODE::LINK::Pointer();
+					pointer->pointer_type = static_cast<NODE::DATA::Type>(str_to_u(read_data[2][0]));
+					node = pointer;
 					node->pos = ivec2(str_to_i(read_data[0][9], read_data[0][10]));
-					gui_node = new GUI::NODE::LINK::Pointer(str_to_i(read_data[0][9], read_data[0][10]));
+					gui_node = new GUI::NODE::LINK::Pointer(str_to_i(read_data[0][9], read_data[0][10]), static_cast<NODE::DATA::Type>(str_to_u(read_data[2][0])));
+				}
+				else if (read_data[0][4] == "GET") {
+					if      (read_data[0][6] == "FIELD") {
+						auto field = new NODE::LINK::GET::Field();
+						node = field;
+						node->pos = ivec2(str_to_i(read_data[0][11], read_data[0][12]));
+						auto gui_field = new GUI::NODE::LINK::GET::Field(str_to_i(read_data[0][11], read_data[0][12]));
+						gui_node = gui_field;
+						gui_field->field->setText(QString::fromStdString(f_join(read_data[2])));
+					}
 				}
 				else if (read_data[0][4] == "SET") {
 					if      (read_data[0][6] == "TRANSFORM") {
@@ -563,10 +575,9 @@ void CLASS::File::f_loadBuild(const vector<vector<string>>& token_data, map<uint
 			for (const vector<string>& sub_tokens : read_data) {
 				auto ptr = static_cast<NODE::LINK::Pointer*>(pointer_map[str_to_ul(sub_tokens[0])]);
 				ptr->pointer = static_cast<CLASS::Object*>(pointer_map[str_to_ul(sub_tokens[1])]);
-				ptr->pointer_type = NODE::DATA::Type::OBJECT;
+
 				auto gui_ptr = static_cast<GUI::NODE::LINK::Pointer*>(node_gui_map.at(ptr));
 				gui_ptr->pointer = static_cast<CLASS::Object*>(pointer_map[str_to_ul(sub_tokens[1])]);
-				gui_ptr->pointer_type = NODE::DATA::Type::OBJECT;
 			}
 		}
 		else if (is_processing) {
@@ -690,7 +701,20 @@ void CLASS::File::f_saveNodeTree(Lace& lace, CLASS::Node_Tree* data, const uint6
 					case NODE::LINK::Type::POINTER: {
 						lace NL "┌Node :: LINK :: Pointer [ " << j++ << " ] ( " << node->pos << " )";
 						lace NL S() << reinterpret_cast<uint64>(node);
+						lace NL S() << e_to_u(static_cast<const NODE::LINK::Pointer*>(node)->pointer_type);
 						lace NL "└Node";
+						break;
+					}
+					case NODE::LINK::Type::GET: {
+						switch (static_cast<const CLASS::NODE::LINK::Get*>(node)->mini_type) {
+							case NODE::LINK::GET::Type::FIELD: {
+								lace NL "┌Node :: LINK :: GET :: FIELD [ " << j++ << " ] ( " << node->pos << " )";
+								lace NL S() << reinterpret_cast<uint64>(node);
+								lace NL S() << static_cast<const NODE::LINK::GET::Field*>(node)->field;
+								lace NL "└Node";
+								break;
+							}
+						}
 						break;
 					}
 					case NODE::LINK::Type::SET: {
