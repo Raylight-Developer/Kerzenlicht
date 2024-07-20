@@ -57,8 +57,16 @@
 					"match": "[+-]?[0-9]*\\.[0-9]+"
 				},
 				{
+					"name": "keyword.float.vector",
+					"match": "[ ]*\\([ ]*([^\\)]*)[ ]*\\)[ ]*"
+				},
+				{
 					"name": "keyword.integer",
 					"match": "[+-]?[0-9]+(?!\\.[0-9])"
+				},
+				{
+					"name": "keyword.name",
+					"match": "(?<=^[ ]*[└┌].*\\][ ]*).*"
 				}
 			]
 		},

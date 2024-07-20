@@ -6,7 +6,7 @@
 		{
 			"scope": "keyword.section.type",
 			"settings": {
-				"foreground": "#3dd99d"
+				"foreground": "#33f2a9"
 			}
 		},
 		{
@@ -24,31 +24,43 @@
 		{
 			"scope": "keyword.section.size",
 			"settings": {
-				"foreground": "#d9c44e"
+				"foreground": "#2376a8"
 			}
 		},
 		{
 			"scope": "keyword.integer.pointer",
 			"settings": {
-				"foreground": "#f067b4"
-			}
-		},
-		{
-			"scope": "keyword.integer",
-			"settings": {
-				"foreground": "#996342"
+				"foreground": "#b56551"
 			}
 		},
 		{
 			"scope": "keyword.integer.index",
 			"settings": {
-				"foreground": "#4ea4d9"
+				"foreground": "#52a9bf"
 			}
 		},
 		{
 			"scope": "keyword.float",
 			"settings": {
-				"foreground": "#e88a4f"
+				"foreground": "#dbc08f"
+			}
+		},
+		{
+			"scope": "keyword.float.vector",
+			"settings": {
+				"foreground": "#fce1ae"
+			}
+		},
+		{
+			"scope": "keyword.integer",
+			"settings": {
+				"foreground": "#b89b67"
+			}
+		},
+		{
+			"scope": "keyword.name",
+			"settings": {
+				"foreground": "#f067b4"
 			}
 		}
 	]

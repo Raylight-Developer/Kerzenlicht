@@ -426,8 +426,8 @@ CLASS::OBJECT::Data* CLASS::File::f_loadMesh(const vector<vector<string>>& token
 			is_processing = false;
 			for (const vector<string>& token_data : read_data) {
 				CLASS::OBJECT::DATA::MESH::Face* face = new CLASS::OBJECT::DATA::MESH::Face();
-				for (uint i = 0; i < str_to_ul(token_data[1]); i++)
-					face->vertices.push_back(mesh->vertices[str_to_ul(token_data[i+2])]);
+				for (uint i = 1; i < token_data.size(); i++)
+					face->vertices.push_back(mesh->vertices[str_to_ul(token_data[i])]);
 				//face->vertices.push_back(mesh->vertices[str_to_ul(token_data[3])]);
 				//face->vertices.push_back(mesh->vertices[str_to_ul(token_data[4])]);
 				mesh->faces.push_back(face);
@@ -943,11 +943,11 @@ void CLASS::File::f_saveMesh(Lace& lace, const CLASS::OBJECT::Data* data, const 
 	lace NL "┌Faces( " << mesh->faces.size() << " )";
 	lace A
 	for (uint64 i = 0; i < mesh->faces.size(); i++) {
-		lace NL i SP mesh->faces[i]->vertices.size();
+		lace NL i;
 		for (uint64 j = 0; j < mesh->faces[i]->vertices.size(); j++)
 			for (uint64 k = 0; k < mesh->vertices.size(); k++)
 				if (mesh->faces[i]->vertices[j] == mesh->vertices[k])
-					lace << S() << k;
+					lace SP k;
 	}
 	lace R
 	lace NL "└Faces";
