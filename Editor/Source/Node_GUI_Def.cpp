@@ -150,9 +150,9 @@ LINK::Pointer::Pointer(const ivec2& pos, const CLASS::NODE::DATA::Type& pointer_
 	rect = QRectF(-100, -20, 200, 40);
 	rect.moveTo(QPointF(pos.x, pos.y));
 
-	out_pointer = new PORT::Data_O_Port(this, 0, "Pointer", pointer_type);
+	o_pointer = new PORT::Data_O_Port(this, 0, "Pointer", pointer_type);
 
-	outputs.push_back(out_pointer);
+	outputs.push_back(o_pointer);
 
 	rect.setHeight(40 + max(inputs.size(), outputs.size()) * 20);
 }
@@ -201,14 +201,14 @@ LINK::GET::Field::Field(const ivec2& pos) :
 
 	QGraphicsProxyWidget* proxyWidget_id = new QGraphicsProxyWidget(this);
 	field = new GUI::Value_Input();
-	field->setFixedSize(90, 20);
+	field->setFixedSize(180, 20);
 	field->setPlaceholderText("Field");
 	proxyWidget_id->setWidget(field);
-	proxyWidget_id->setPos(boundingRect().topLeft() + QPointF(40, 30));
+	proxyWidget_id->setPos(boundingRect().topLeft() + QPointF(10, 50));
 
-	i_pointer = new PORT::Data_I_Port(this, 1, "Pointer", CLASS::NODE::DATA::Type::ANY);
+	i_pointer = new PORT::Data_I_Port(this, 0, "Pointer", CLASS::NODE::DATA::Type::ANY);
 
-	o_value   = new PORT::Data_O_Port(this, 1, "Value", CLASS::NODE::DATA::Type::ANY);
+	o_value   = new PORT::Data_O_Port(this, 0, "Value", CLASS::NODE::DATA::Type::ANY);
 
 	inputs.push_back(i_pointer);
 	outputs.push_back(o_value);

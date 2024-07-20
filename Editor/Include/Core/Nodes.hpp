@@ -11,6 +11,7 @@ namespace GUI {
 	}
 }
 namespace CLASS {
+	struct Scene;
 	namespace NODE {
 		namespace EXEC {
 			struct Tick;
@@ -115,6 +116,10 @@ namespace CLASS {
 			Data operator-(const Data& other);
 			Data operator*(const Data& other);
 			Data operator/(const Data& other);
+
+			uint64 getUint()   const;
+			dvec1  getDouble() const;
+			Scene* getScene()  const;
 		};
 
 		struct Port {
@@ -123,7 +128,7 @@ namespace CLASS {
 			PORT::Type type;
 
 			Port(Node* node);
-			virtual ~Port() {};
+			virtual ~Port() = default;
 
 			virtual Data getData() const { return Data(); }
 			virtual void exec() const {}

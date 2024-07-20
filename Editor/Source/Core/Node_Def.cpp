@@ -3,6 +3,7 @@
 #include "Node_GUI.hpp"
 #include "Object/Object.hpp"
 
+#include "Core/File.hpp"
 #include "Core/Session.hpp"
 
 using namespace CLASS::NODE;
@@ -240,6 +241,15 @@ LINK::GET::Field::Field() :
 }
 
 Data LINK::GET::Field::getData(const uint16& slot_id) const {
+	Data pointer_ref = i_pointer->getData();
+	switch (pointer_ref.type) {
+		case DATA::Type::OBJECT: {
+		}
+		case DATA::Type::SCENE: {
+			if (field == "current_frame")
+				return Data(pointer_ref.getScene()->current_frame, DATA::Type::INT);
+		}
+	}
 	return NODE::Data();
 }
 
@@ -256,18 +266,19 @@ void LINK::SET::Euler_Rotation_X::exec(const uint16& slot_id) {
 	Data value_ref = i_value->getData();
 	switch (pointer_ref.type) {
 		case DATA::Type::OBJECT: {
-			if (value_ref.type == DATA::Type::DOUBLE) {
-				any_cast<Object*>(pointer_ref.data)->node_transform.euler_rotation.x += any_cast<double>(value_ref.data);
-			}
-			else if (value_ref.type == DATA::Type::UINT) {
-				any_cast<Object*>(pointer_ref.data)->node_transform.euler_rotation.x += static_cast<double>(any_cast<uint64>(value_ref.data));
-			}
+			any_cast<Object*>(pointer_ref.data)->node_transform.euler_rotation.x = value_ref.getDouble();
 			break;
 		}
 	}
 }
 
-LINK::SET::Field::Field() {
+LINK::SET::Field::Field() :
+	Set()
+{
+	type = NODE::Type::LINK;
+	sub_type = e_to_u(LINK::Type::SET);
+	mini_type = SET::Type::FIELD;
+
 	field = "";
 }
 

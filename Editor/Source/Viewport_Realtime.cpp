@@ -6,10 +6,13 @@
 
 GUI::WORKSPACE::Viewport_Realtime::Viewport_Realtime(Workspace_Viewport* parent) :
 	QOpenGLWindow(),
-	parent(parent),
-	resolution(uvec2(3840U, 2160U)),
-	aspect_ratio(16.0 / 9.0)
+	parent(parent)
 {
+	resolution = uvec2(3840U, 2160U);
+	aspect_ratio = u_to_d(resolution.x) / u_to_d(resolution.y);
+	resolution_scale = 0.5;
+	render_resolution = d_to_u(u_to_d(resolution) * resolution_scale);
+
 	compute_shader_program = 0U;
 	compute_layout = uvec3(0U);
 	compute_render = 0U;
@@ -70,7 +73,7 @@ void GUI::WORKSPACE::Viewport_Realtime::f_pipeline() {
 	glTextureParameteri(compute_render, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTextureParameteri(compute_render, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTextureParameteri(compute_render, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glTextureStorage2D(compute_render, 1, GL_RGBA8, resolution.x, resolution.y);
+	glTextureStorage2D(compute_render, 1, GL_RGBA8, render_resolution.x, render_resolution.y);
 	glBindImageTexture(0, compute_render, 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA8);
 
 	GLuint display_vert_shader = glCreateShader(GL_VERTEX_SHADER);
@@ -78,6 +81,7 @@ void GUI::WORKSPACE::Viewport_Realtime::f_pipeline() {
 	const char* vertex_code_cstr = vertex_code.c_str();
 	glShaderSource(display_vert_shader, 1, &vertex_code_cstr, NULL);
 	glCompileShader(display_vert_shader);
+
 	GLuint display_frag_shader = glCreateShader(GL_FRAGMENT_SHADER);
 	const string fragment_code = loadFromFile("./Resources/Shaders/Realtime_Shader.frag");
 	const char* fragment_code_cstr = fragment_code.c_str();
@@ -106,8 +110,8 @@ void GUI::WORKSPACE::Viewport_Realtime::f_pipeline() {
 	glDeleteShader(comp_shader);
 
 	compute_layout = uvec3(
-		d_to_u(ceil(u_to_d(resolution.x) / 32.0)),
-		d_to_u(ceil(u_to_d(resolution.y) / 32.0)),
+		d_to_u(ceil(u_to_d(render_resolution.x) / 32.0)),
+		d_to_u(ceil(u_to_d(render_resolution.y) / 32.0)),
 		1U
 	);
 }
@@ -251,6 +255,7 @@ void GUI::WORKSPACE::Viewport_Realtime::paintGL() {
 void GUI::WORKSPACE::Viewport_Realtime::resizeGL(int w, int h) {
 	resolution = uvec2(w, h);
 	aspect_ratio = u_to_d(resolution.x) / u_to_d(resolution.y);
+	render_resolution = d_to_u(u_to_d(resolution) * resolution_scale);
 
 	GLuint new_compute;
 	glCreateTextures(GL_TEXTURE_2D, 1, &new_compute);
@@ -258,13 +263,13 @@ void GUI::WORKSPACE::Viewport_Realtime::resizeGL(int w, int h) {
 	glTextureParameteri(new_compute, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTextureParameteri(new_compute, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTextureParameteri(new_compute, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glTextureStorage2D(new_compute, 1, GL_RGBA8, resolution.x, resolution.y);
+	glTextureStorage2D(new_compute, 1, GL_RGBA8, render_resolution.x, render_resolution.y);
 	glBindImageTexture(0, new_compute, 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA8);
 	compute_render = new_compute;
 
 	compute_layout = uvec3(
-		d_to_u(ceil(u_to_d(resolution.x) / 32.0)),
-		d_to_u(ceil(u_to_d(resolution.y) / 32.0)),
+		d_to_u(ceil(u_to_d(render_resolution.x) / 32.0)),
+		d_to_u(ceil(u_to_d(render_resolution.y) / 32.0)),
 		1U
 	);
 

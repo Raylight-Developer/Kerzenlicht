@@ -1,0 +1,55 @@
+{
+	"name": "Your Language Color Theme",
+	"type": "dark",
+	"colors": {},
+	"tokenColors": [
+		{
+			"scope": "keyword.section.type",
+			"settings": {
+				"foreground": "#3dd99d"
+			}
+		},
+		{
+			"scope": "keyword.section.subtype",
+			"settings": {
+				"foreground": "#dbafe0"
+			}
+		},
+		{
+			"scope": "keyword.section.separator",
+			"settings": {
+				"foreground": "#ffffff"
+			}
+		},
+		{
+			"scope": "keyword.section.size",
+			"settings": {
+				"foreground": "#d9c44e"
+			}
+		},
+		{
+			"scope": "keyword.integer.pointer",
+			"settings": {
+				"foreground": "#f067b4"
+			}
+		},
+		{
+			"scope": "keyword.integer",
+			"settings": {
+				"foreground": "#996342"
+			}
+		},
+		{
+			"scope": "keyword.integer.index",
+			"settings": {
+				"foreground": "#4ea4d9"
+			}
+		},
+		{
+			"scope": "keyword.float",
+			"settings": {
+				"foreground": "#e88a4f"
+			}
+		}
+	]
+}

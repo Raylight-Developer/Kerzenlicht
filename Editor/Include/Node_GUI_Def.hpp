@@ -60,7 +60,7 @@ namespace GUI {
 		}
 		namespace LINK {
 			struct Pointer : Node {
-				PORT::Data_O_Port* out_pointer;
+				PORT::Data_O_Port* o_pointer;
 
 				CLASS::NODE::DATA::Type pointer_type;
 				void* pointer;

@@ -1,0 +1,78 @@
+{
+	"$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+	"name": "kerz",
+	"patterns": [
+		{
+			"include": "#keywords"
+		},
+		{
+			"include": "#strings"
+		}
+	],
+	"repository": {
+		"keywords": {
+			"patterns": [
+				{
+					"name": "keyword.section.type",
+					"match": "^[ ]*[└┌][^() ]+"
+				},
+				{
+					"name": "keyword.section.subtype",
+					"match": "(?<= :: )[^ ::]+"
+				},
+				{
+					"name": "keyword.section.subtype",
+					"match": "(?<=\\bType\\b)[ ]*(.*)"
+				},
+				{
+					"name": "keyword.section.separator",
+					"match": "( :: )"
+				},
+				{
+					"name": "keyword.section.size",
+					"match": "(?<=^[ ]*┌[^()]*?)\\([ ]*[0-9]+[ ]*\\)"
+				},
+				{
+					"name": "keyword.integer.pointer",
+					"match": "[ ]*[0-9]{13}[ ]*"
+				},
+				{
+					"name": "keyword.integer.index",
+					"match": "\\[[ ]*([0-9]+)[ ]*\\]"
+				},
+				{
+					"name": "keyword.integer.index",
+					"match": "(?<=[ ]*[0-9]{13}[ ]*)[0-9]+"
+				},
+				{
+					"name": "keyword.integer.index",
+					"match": "[0-9]+(?=[ ]*[0-9]{13}[ ]*)"
+				},
+				{
+					"name": "keyword.integer.index",
+					"match": "^[ ]*[+-]?[0-9]+(?!\\.[0-9])(?=.*\\b[+-]?[0-9]*(\\.[0-9]+)?\\b)"
+				},
+				{
+					"name": "keyword.float",
+					"match": "[+-]?[0-9]*\\.[0-9]+"
+				},
+				{
+					"name": "keyword.integer",
+					"match": "[+-]?[0-9]+(?!\\.[0-9])"
+				}
+			]
+		},
+		"strings": {
+			"name": "string.quoted.double.krz",
+			"begin": "\"",
+			"end": "\"",
+			"patterns": [
+				{
+					"name": "constant.character.escape.krz",
+					"match": "\\\\."
+				}
+			]
+		}
+	},
+	"scopeName": "main.krz"
+}

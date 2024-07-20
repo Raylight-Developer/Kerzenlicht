@@ -41,6 +41,8 @@ namespace GUI {
 
 			uvec2 resolution;
 			dvec1 aspect_ratio;
+			dvec1 resolution_scale;
+			uvec2 render_resolution;
 
 			uvec3 compute_layout;
 			vector<VIEWPORT_REALTIME::GPU_Triangle> triangles;

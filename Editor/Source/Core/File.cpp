@@ -154,14 +154,15 @@ CLASS::Node_Tree* CLASS::File::f_loadNodeTree(const vector<vector<string>>& toke
 			else if (read_data[0][2] == "LINK") {
 				if      (read_data[0][4] == "Pointer") {
 					auto pointer = new NODE::LINK::Pointer();
-					pointer->pointer_type = static_cast<NODE::DATA::Type>(str_to_u(read_data[2][0]));
+					pointer->pointer_type = static_cast<NODE::DATA::Type>(str_to_u(read_data[2][1]));
 					node = pointer;
 					node->pos = ivec2(str_to_i(read_data[0][9], read_data[0][10]));
-					gui_node = new GUI::NODE::LINK::Pointer(str_to_i(read_data[0][9], read_data[0][10]), static_cast<NODE::DATA::Type>(str_to_u(read_data[2][0])));
+					gui_node = new GUI::NODE::LINK::Pointer(str_to_i(read_data[0][9], read_data[0][10]), static_cast<NODE::DATA::Type>(str_to_u(read_data[2][1])));
 				}
 				else if (read_data[0][4] == "GET") {
 					if      (read_data[0][6] == "FIELD") {
 						auto field = new NODE::LINK::GET::Field();
+						field->field = f_join(read_data[2]);
 						node = field;
 						node->pos = ivec2(str_to_i(read_data[0][11], read_data[0][12]));
 						auto gui_field = new GUI::NODE::LINK::GET::Field(str_to_i(read_data[0][11], read_data[0][12]));
@@ -701,7 +702,7 @@ void CLASS::File::f_saveNodeTree(Lace& lace, CLASS::Node_Tree* data, const uint6
 					case NODE::LINK::Type::POINTER: {
 						lace NL "┌Node :: LINK :: Pointer [ " << j++ << " ] ( " << node->pos << " )";
 						lace NL S() << reinterpret_cast<uint64>(node);
-						lace NL S() << e_to_u(static_cast<const NODE::LINK::Pointer*>(node)->pointer_type);
+						lace NL S() << "Type " << e_to_u(static_cast<const NODE::LINK::Pointer*>(node)->pointer_type);
 						lace NL "└Node";
 						break;
 					}
@@ -942,11 +943,11 @@ void CLASS::File::f_saveMesh(Lace& lace, const CLASS::OBJECT::Data* data, const 
 	lace NL "┌Faces( " << mesh->faces.size() << " )";
 	lace A
 	for (uint64 i = 0; i < mesh->faces.size(); i++) {
-		lace NL i SP mesh->faces[i]->vertices.size() << S();
+		lace NL i SP mesh->faces[i]->vertices.size();
 		for (uint64 j = 0; j < mesh->faces[i]->vertices.size(); j++)
 			for (uint64 k = 0; k < mesh->vertices.size(); k++)
 				if (mesh->faces[i]->vertices[j] == mesh->vertices[k])
-					lace << k << S();
+					lace << S() << k;
 	}
 	lace R
 	lace NL "└Faces";
@@ -1004,7 +1005,7 @@ void CLASS::File::f_saveScene(Lace& lace, const CLASS::Scene* data, const uint64
 	lace NL "┌Objects";
 	lace A
 	for (auto object : data->objects)
-		lace NL reinterpret_cast<uint64>(object) SP object->name;
+		lace NL reinterpret_cast<uint64>(object);
 	lace R
 	lace NL "└Objects";
 	lace R
