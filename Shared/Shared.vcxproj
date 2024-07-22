@@ -141,14 +141,11 @@
     </PreLinkEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Source\OpenGL.hpp" />
     <ClInclude Include="Source\Include.hpp" />
     <ClInclude Include="Source\Lace.hpp" />
     <ClInclude Include="Source\Ops.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\OpenGL.cpp" />
-    <ClCompile Include="Source\glad.c" />
     <ClCompile Include="Source\Lace.cpp" />
     <ClCompile Include="Source\Ops.cpp" />
   </ItemGroup>

@@ -4,8 +4,6 @@
 #include "Workspaces/Manager.hpp"
 #include "Main_Window.hpp"
 
-#include "OpenGL.hpp"
-
 GUI::WORKSPACE::Viewport_Realtime::Viewport_Realtime(Workspace_Viewport* parent) :
 	QOpenGLWindow(),
 	parent(parent)
@@ -19,47 +17,55 @@ GUI::WORKSPACE::Viewport_Realtime::Viewport_Realtime(Workspace_Viewport* parent)
 	compute_layout = uvec3(0U);
 	compute_render = 0U;
 
-
-	frame_counter = 0;
-	frame_count = 0;
-	runframe = 0;
+	display_shader_program = 0U;
+	fullscreen_quad_VAO = 0U;
+	fullscreen_quad_VBO = 0U;
+	fullscreen_quad_EBO = 0U;
 
 	triangles = vector<VIEWPORT_REALTIME::GPU_Triangle>();
 	triangle_map = unordered_map<CLASS::Object*, vector<VIEWPORT_REALTIME::Triangle>>();
 
-	render_resolution = uvec2(2100U, 900U);
-	render_aspect_ratio = u_to_d(render_resolution.x) / u_to_d(render_resolution.y);
+	fps_counter = 0;
+	fps_measure = chrono::steady_clock::now();
 
-	current_time = 0.0;
-	window_time = 0.0;
-	frame_time = FPS_60;
-	last_time = 0.0;
+	frame_counter = 0;
+	last_delta = fps_measure;
+	delta = FPS_60;
 
-	vector<VIEWPORT_REALTIME::GPU_Triangle> triangles;
-	map<CLASS::Object*, vector<VIEWPORT_REALTIME::Triangle>> triangle_map;
+	setObjectName("Viewport_Realtime");
 }
 
-void GUI::WORKSPACE::Viewport_Realtime::init() {
-	initGlfw();
+void GUI::WORKSPACE::Viewport_Realtime::f_pipeline() {
+	// Pipeline Setup
+	const GLfloat vertices[16] = {
+		-1.0f, -1.0f, 0.0f, 0.0f,
+		-1.0f,  1.0f, 0.0f, 1.0f,
+		 1.0f,  1.0f, 1.0f, 1.0f,
+		 1.0f, -1.0f, 1.0f, 0.0f,
+	};
+	const GLuint indices[6] = {
+		0, 1, 2,
+		2, 3, 0
+	};
 
-	pipeline();
-	displayLoop();
-}
+	// Display Quad
+	glCreateVertexArrays(1, &fullscreen_quad_VAO);
+	glCreateBuffers(1, &fullscreen_quad_VBO);
+	glCreateBuffers(1, &fullscreen_quad_EBO);
 
-void GUI::WORKSPACE::Viewport_Realtime::exit() {
-	glfwDestroyWindow(window);
-	glfwTerminate();
-}
+	glNamedBufferData(fullscreen_quad_VBO, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	glNamedBufferData(fullscreen_quad_EBO, sizeof(indices), indices, GL_STATIC_DRAW);
 
-void GUI::WORKSPACE::Viewport_Realtime::initGlfw() {
-	glfwInit();
+	glEnableVertexArrayAttrib(fullscreen_quad_VAO, 0);
+	glVertexArrayAttribBinding(fullscreen_quad_VAO, 0, 0);
+	glVertexArrayAttribFormat(fullscreen_quad_VAO, 0, 2, GL_FLOAT, GL_FALSE, 0);
 
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	glEnableVertexArrayAttrib(fullscreen_quad_VAO, 1);
+	glVertexArrayAttribBinding(fullscreen_quad_VAO, 1, 0);
+	glVertexArrayAttribFormat(fullscreen_quad_VAO, 1, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GLfloat));
 
-	GLFWmonitor* monitor = glfwGetPrimaryMonitor();
-	const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+	glVertexArrayVertexBuffer(fullscreen_quad_VAO, 0, fullscreen_quad_VBO, 0, 4 * sizeof(GLfloat));
+	glVertexArrayElementBuffer(fullscreen_quad_VAO, fullscreen_quad_EBO);
 
 	// Compute Output
 	glCreateTextures(GL_TEXTURE_2D, 1, &compute_render);
@@ -110,7 +116,7 @@ void GUI::WORKSPACE::Viewport_Realtime::initGlfw() {
 	);
 }
 
-void GUI::WORKSPACE::Viewport_Realtime::dataTransfer() {
+void GUI::WORKSPACE::Viewport_Realtime::f_uploadData() {
 	triangles.clear();
 	triangle_map.clear();
 	for (CLASS::Object* object : FILE->active_scene->ptr->objects) {
@@ -209,23 +215,21 @@ void GUI::WORKSPACE::Viewport_Realtime::f_selectObject(const dvec2& uv) { // TOD
 	}
 }
 
-void GUI::WORKSPACE::Viewport_Realtime::displayLoop() {
-	const GLfloat vertices[16] = {
-		-1.0f, -1.0f, 0.0f, 0.0f,
-		-1.0f,  1.0f, 0.0f, 1.0f,
-		1.0f,  1.0f, 1.0f, 1.0f,
-		1.0f, -1.0f, 1.0f, 0.0f,
-	};
-	const GLuint indices[6] = {
-		0, 1, 2,
-		2, 3, 0
-	};
+void GUI::WORKSPACE::Viewport_Realtime::initializeGL() {
+	initializeOpenGLFunctions();
+	glClearColor(1.0f, 0.0f, 1.0f, 1.0f);
+	glViewport(0, 0, resolution.x, resolution.y);
 
-	// Display Quad
-	GLuint VAO, VBO, EBO;
-	glCreateVertexArrays(1, &VAO);
-	glCreateBuffers(1, &VBO);
-	glCreateBuffers(1, &EBO);
+	f_pipeline();
+	last_delta = chrono::steady_clock::now();
+}
+
+void GUI::WORKSPACE::Viewport_Realtime::paintGL() {
+	glClear(GL_COLOR_BUFFER_BIT);
+
+	f_updateTick();
+	CLASS::OBJECT::DATA::Camera* camera = FILE->default_camera->data->getCamera();
+	camera->f_compile(FILE->active_scene->ptr, FILE->default_camera);
 
 	glUseProgram(compute_shader_program);
 	glUniform3fv(glGetUniformLocation(compute_shader_program, "camera_pos"),  1, value_ptr(d_to_f(FILE->default_camera->transform.position)));
@@ -233,13 +237,11 @@ void GUI::WORKSPACE::Viewport_Realtime::displayLoop() {
 	glUniform3fv(glGetUniformLocation(compute_shader_program, "camera_p_u"),  1, value_ptr(d_to_f(camera->projection_u)));
 	glUniform3fv(glGetUniformLocation(compute_shader_program, "camera_p_v"),  1, value_ptr(d_to_f(camera->projection_v)));
 
-	glEnableVertexArrayAttrib (VAO, 0);
-	glVertexArrayAttribBinding(VAO, 0, 0);
-	glVertexArrayAttribFormat (VAO, 0, 2, GL_FLOAT, GL_FALSE, 0);
+	glDispatchCompute(compute_layout.x, compute_layout.y, compute_layout.z);
+	glMemoryBarrier(GL_ALL_BARRIER_BITS);
 
-	glEnableVertexArrayAttrib (VAO, 1);
-	glVertexArrayAttribBinding(VAO, 1, 0);
-	glVertexArrayAttribFormat (VAO, 1, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GLfloat));
+	// Display Render
+	glUseProgram(display_shader_program);
 
 	glBindTextureUnit(0, compute_render);
 	glUniform1f(glGetUniformLocation(display_shader_program, "aspect_ratio"), d_to_f(aspect_ratio));
@@ -271,62 +273,8 @@ void GUI::WORKSPACE::Viewport_Realtime::resizeGL(int w, int h) {
 		1U
 	);
 
-	dataTransfer();
-
-	// Compute Output
-	GLuint raw_render_layer = renderLayer(render_resolution, GL_RGBA8);
-
-	glad_glBindVertexArray(VAO);
-	while (!glfwWindowShouldClose(window)) {
-		current_time = glfwGetTime();
-		frame_time = current_time - last_time;
-		last_time = current_time;
-		window_time += frame_time;
-
-		renderTick();
-		CLASS::OBJECT::DATA::Camera* camera = FILE->default_camera->data->getCamera();
-		camera->f_compile(FILE->active_scene->ptr, FILE->default_camera);
-
-		glad_glUseProgram(compute_program);
-		glad_glUniform3dv(glad_glGetUniformLocation(compute_program, "camera_pos" ), 1, value_ptr(FILE->default_camera->transform.position));
-		glad_glUniform3dv(glad_glGetUniformLocation(compute_program, "camera_p_uv"), 1, value_ptr(camera->projection_center ));
-		glad_glUniform3dv(glad_glGetUniformLocation(compute_program, "camera_p_u" ), 1, value_ptr(camera->projection_u ));
-		glad_glUniform3dv(glad_glGetUniformLocation(compute_program, "camera_p_v" ), 1, value_ptr(camera->projection_v ));
-
-		glad_glBindImageTexture(0, raw_render_layer         , 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA8);
-
-		glad_glDispatchCompute(compute_layout.x, compute_layout.y, compute_layout.z);
-
-		glad_glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
-
-		glad_glUseProgram(post_program);
-		glad_glClear(GL_COLOR_BUFFER_BIT);
-		glad_glUniform1f(glad_glGetUniformLocation(post_program, "display_aspect_ratio"), d_to_f(display_aspect_ratio));
-		glad_glUniform1f(glad_glGetUniformLocation(post_program, "render_aspect_ratio"), d_to_f(render_aspect_ratio));
-		bindRenderLayer(post_program, 0, raw_render_layer , "raw_render_layer");
-		glad_glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
-		frame_counter++;
-		runframe++;
-
-		if (window_time > 1.0) {
-			frame_count = frame_counter;
-			window_time -= 1.0;
-			frame_counter = 0;
-		}
-
-		glfwSwapBuffers(window);
-		glfwPollEvents();
-	}
-}
-
-void GUI::WORKSPACE::Viewport_Realtime::framebufferSize(GLFWwindow* window, int width, int height) {
-	Viewport_Realtime* instance = static_cast<Viewport_Realtime*>(glfwGetWindowUserPointer(window));
-	glad_glViewport(0, 0, width, height);
-	instance->display_resolution.x = width;
-	instance->display_resolution.y = height;
-	instance->display_aspect_ratio = u_to_d(instance->display_resolution.x) / u_to_d(instance->display_resolution.y);
-	instance->runframe = 0;
+	glViewport(0, 0, resolution.x, resolution.y);
+	//update();
 }
 
 bool GUI::WORKSPACE::VIEWPORT_REALTIME::f_rayTriangleIntersection(const Ray& ray, const Triangle& tri, dvec1& ray_length) {

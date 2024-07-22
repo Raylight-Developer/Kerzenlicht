@@ -7,11 +7,6 @@
 #include "Core/File.hpp"
 #include "Core/Session.hpp"
 
-#define GLFW_EXPOSE_NATIVE_WIN32
-
-#include "GLFW/glfw3.h"
-#include "GLFW/glfw3native.h"
-
 // FWD DECL OTHER
 namespace GUI {
 	namespace WORKSPACE {
@@ -41,10 +36,8 @@ namespace GUI {
 			bool f_rayTriangleIntersection(const Ray& ray, const Triangle& tri, dvec1& ray_length);
 		}
 
-
-		struct Viewport_Realtime : QObject {
+		struct Viewport_Realtime : QOpenGLWindow, protected QOpenGLFunctions_4_5_Core {
 			Workspace_Viewport* parent;
-			GLFWwindow* window;
 
 			uvec2 resolution;
 			dvec1 aspect_ratio;
@@ -55,30 +48,33 @@ namespace GUI {
 			vector<VIEWPORT_REALTIME::GPU_Triangle> triangles;
 			unordered_map<CLASS::Object*, vector<VIEWPORT_REALTIME::Triangle>> triangle_map;
 
-			dvec1 current_time;
-			dvec1 window_time;
-			dvec1 frame_time;
-			dvec1 last_time;
+			GLuint compute_shader_program;
+			GLuint display_shader_program;
 
-			vector<VIEWPORT_REALTIME::GPU_Triangle> triangles;
-			map<CLASS::Object*, vector<VIEWPORT_REALTIME::Triangle>> triangle_map;
+			GLuint compute_render;
 
-			Viewport_Realtime(Workspace_Viewport* parent = nullptr);
+			GLuint fullscreen_quad_VAO;
+			GLuint fullscreen_quad_VBO;
+			GLuint fullscreen_quad_EBO;
 
-			void init();
-			void exit();
+			uint8 fps_counter;
+			chrono::steady_clock::time_point fps_measure;
 
-			void initGlfw();
+			uint64 frame_counter;
+			chrono::steady_clock::time_point last_delta;
+			dvec1 delta;
 
-			void pipeline();
-			void renderTick();
-			void dataTransfer();
+			Viewport_Realtime(Workspace_Viewport* parent);
 
-			void selectObject(const dvec2& uv);
+			void f_pipeline();
+			void f_uploadData();
+			void f_updateTick();
 
-			void displayLoop();
+			void f_selectObject(const dvec2& uv);
 
-			static void framebufferSize(GLFWwindow* window, int width, int height);
+			void initializeGL() override;
+			void paintGL() override;
+			void resizeGL(int w, int h) override;
 		};
 	}
 }

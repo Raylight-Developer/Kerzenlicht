@@ -58,7 +58,7 @@ bool GUI::WORKSPACE::Main_Window::eventFilter(QObject* object, QEvent* event) {
 		if (object->objectName() == "Viewport_Realtime") {
 			QMouseEvent* d_event =static_cast<QMouseEvent*>(event);
 			Viewport_Realtime* viewport = dynamic_cast<Viewport_Realtime*>(object);
-			//viewport->selectObject(dvec2(1.0, -1.0) * (dvec2(d_event->pos().x(), d_event->pos().y()) - 1.0 - dvec2(viewport->width(), viewport->height()) / 2.0) / max(i_to_d(viewport->width()), i_to_d(viewport->height())));
+			viewport->f_selectObject(dvec2(1.0, -1.0) * (dvec2(d_event->pos().x(), d_event->pos().y()) - 1.0 - dvec2(viewport->width(), viewport->height()) / 2.0) / max(i_to_d(viewport->width()), i_to_d(viewport->height())));
 		}
 	}
 	if (event->type() == QEvent::MouseButtonRelease) {
