@@ -3,7 +3,7 @@
 #include "Include.hpp"
 
 #if defined(COMPILE_EDITOR) || defined(COMPILE_SCRIPTING)
-	#include "QT.hpp"
+	#include "../../Editor/Include/Qt.hpp"
 #endif
 
 struct Lace;

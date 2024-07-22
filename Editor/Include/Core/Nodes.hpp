@@ -12,6 +12,7 @@ namespace GUI {
 }
 namespace CLASS {
 	struct Scene;
+	struct Object;
 	namespace NODE {
 		namespace EXEC {
 			struct Tick;
@@ -60,7 +61,6 @@ namespace CLASS {
 	struct Node {
 		NODE::Type type;
 		uint16 sub_type;
-		ivec2 pos;
 
 		vector<NODE::Port*> inputs;  // src
 		vector<NODE::Port*> outputs; // src
@@ -117,9 +117,12 @@ namespace CLASS {
 			Data operator*(const Data& other);
 			Data operator/(const Data& other);
 
-			uint64 getUint()   const;
-			dvec1  getDouble() const;
-			Scene* getScene()  const;
+			uint64 getUint()     const;
+			dvec1  getDouble()   const;
+			Scene* getScene()    const;
+			Object* getObject()  const;
+
+			string to_string() const;
 		};
 
 		struct Port {

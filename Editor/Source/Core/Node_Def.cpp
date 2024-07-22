@@ -244,6 +244,10 @@ Data LINK::GET::Field::getData(const uint16& slot_id) const {
 	Data pointer_ref = i_pointer->getData();
 	switch (pointer_ref.type) {
 		case DATA::Type::OBJECT: {
+			if (field == "transform.euler.x")
+				return Data(pointer_ref.getObject()->transform.euler_rotation.x, DATA::Type::DOUBLE);
+			if (field == "node_transform.euler.x")
+				return Data(pointer_ref.getObject()->node_transform.euler_rotation.x, DATA::Type::DOUBLE);
 		}
 		case DATA::Type::SCENE: {
 			if (field == "current_frame")
@@ -266,7 +270,7 @@ void LINK::SET::Euler_Rotation_X::exec(const uint16& slot_id) {
 	Data value_ref = i_value->getData();
 	switch (pointer_ref.type) {
 		case DATA::Type::OBJECT: {
-			any_cast<Object*>(pointer_ref.data)->node_transform.euler_rotation.x = value_ref.getDouble();
+			pointer_ref.getObject()->node_transform.euler_rotation.x = value_ref.getDouble();
 			break;
 		}
 	}
@@ -354,7 +358,7 @@ Data LINK::Pointer::getData(const uint16& slot_id) const {
 
 MATH::MATH::MATH() {
 	type = NODE::Type::MATH;
-	sub_type = e_to_u(Type::ADD);
+	sub_type = e_to_u(Type::NONE);
 
 	i_value_a   = new PORT::Data_I_Port(this, 0, DATA::Type::ANY);
 	i_value_b   = new PORT::Data_I_Port(this, 1, DATA::Type::ANY);
@@ -366,17 +370,53 @@ MATH::MATH::MATH() {
 	outputs.push_back(o_value_res);
 }
 
+CLASS::NODE::MATH::Add::Add() {
+	sub_type = e_to_u(Type::ADD);
+}
+
 Data MATH::Add::getData(const uint16& slot_id) const {
 	return i_value_a->getData() + i_value_b->getData();
+}
+
+CLASS::NODE::MATH::Sub::Sub() {
+	sub_type = e_to_u(Type::SUB);
 }
 Data MATH::Sub::getData(const uint16& slot_id) const {
 	return i_value_a->getData() - i_value_b->getData();
 }
+
+CLASS::NODE::MATH::Mul::Mul() {
+	sub_type = e_to_u(Type::MUL);
+}
 Data MATH::Mul::getData(const uint16& slot_id) const {
 	return i_value_a->getData() * i_value_b->getData();
 }
+
+CLASS::NODE::MATH::Div::Div() {
+	sub_type = e_to_u(Type::DIV);
+}
 Data MATH::Div::getData(const uint16& slot_id) const {
 	return i_value_a->getData() / i_value_b->getData();
+}
+
+CLASS::NODE::UTIL::Print::Print() {
+	type = NODE::Type::UTIL;
+	sub_type = e_to_u(Type::PRINT);
+
+	i_exec  = new PORT::Exec_I_Port(this, 0);
+	i_value = new PORT::Data_I_Port(this, 1, DATA::Type::ANY);
+
+	o_exec  = new PORT::Exec_O_Port(this, 0);
+
+	inputs.push_back(i_exec);
+	inputs.push_back(i_value);
+
+	outputs.push_back(o_exec);
+}
+
+void CLASS::NODE::UTIL::Print::exec(const uint16& slot_id) {
+	cout << endl << i_value->getData().to_string();
+	o_exec->exec();
 }
 
 UTIL::Cast::Cast() {

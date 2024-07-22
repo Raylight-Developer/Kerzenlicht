@@ -44,6 +44,7 @@ namespace GUI {
 			CLASS::NODE::Type type;
 			uint16 sub_type;
 			QPointF real_pos;
+			QPointF load_pos;
 
 			vector<Port*> inputs;  // src
 			vector<Port*> outputs; // src
