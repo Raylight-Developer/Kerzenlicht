@@ -1,0 +1,41 @@
+{
+	"name": "kerzenlicht-language",
+	"displayName": "Kerzenlicht Language",
+	"description": "Syntax Highlighting for .krz files in VSCode",
+	"version": "0.0.1",
+	"engines": {
+		"vscode": "^1.91.0"
+	},
+	"categories": [
+		"Programming Languages"
+	],
+	"contributes": {
+		"languages": [
+			{
+				"id": "Kerz",
+				"aliases": [
+					"Kerzenlicht",
+					"krz"
+				],
+				"extensions": [
+					".krz"
+				],
+				"configuration": "./language-configuration.json"
+			}
+		],
+		"grammars": [
+			{
+				"language": "Kerz",
+				"scopeName": "source.krz",
+				"path": "./syntaxes/krz.tmLanguage.json"
+			}
+		],
+		"themes": [
+			{
+				"label": "Kerz",
+				"uiTheme": "vs-dark",
+				"path": "./themes/theme.json"
+			}
+		]
+	}
+}

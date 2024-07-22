@@ -262,6 +262,7 @@ dvec1 CLASS::NODE::Data::getDouble() const {
 		case DATA::Type::UINT: return static_cast<dvec1>(any_cast<uint64>(data));
 		case DATA::Type::INT: return static_cast<dvec1>(any_cast<int64>(data));
 	}
+	return 0.0;
 }
 
 CLASS::Scene* CLASS::NODE::Data::getScene() const {

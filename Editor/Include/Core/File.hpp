@@ -110,3 +110,8 @@ namespace CLASS {
 		void f_saveBuild      (Lace& lace);
 	};
 }
+
+template <typename T>
+string ptr_to_str(const T pointer) {
+	return "* " + to_string(reinterpret_cast<uint64>(pointer));
+}

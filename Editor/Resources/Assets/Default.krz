@@ -5,45 +5,45 @@
 └Materials
 ┌Node-Trees( 1 )
  ┌Node-Tree [ 0 ]
-  100
+  * 100
   ┌Nodes( 6 )
    ┌Node :: EXEC :: Tick [ 0 ] ( -120 0 )
-    1000
+    * 1000
    └Node
    ┌Node :: LINK :: SET :: TRANSFORM :: EULER_ROTATION :: X [ 1 ] ( 360 0 )
-    1001
+    * 1001
    └Node
    ┌Node :: LINK :: Pointer [ 2 ] ( -120 100 )
-    1002
-    27
+    * 1002
+    Type 27
    └Node
    ┌Node :: LINK :: Pointer [ 3 ] ( -120 200 )
-    1003
-    27
+    * 1003
+    Type 27
    └Node
    ┌Node :: LINK :: Pointer [ 4 ] ( -120 300 )
-    1004
-    27
+    * 1004
+    Type 27
    └Node
    ┌Node :: EXEC :: Script [ 5 ] ( 120 -20 )
-    1005
+    * 1005
     Script_ID
    └Node
   └Nodes
   ┌Build-E
-   1000 0 0 1005
-   1005 0 0 1001
+   * 1000 0 0 * 1005
+   * 1005 0 0 * 1001
   └Build-E
   ┌Build-D
-   1002 0 1 1001
-   1005 1 2 1001
-   1000 1 1 1005
+   * 1002 0 1 * 1001
+   * 1005 1 2 * 1001
+   * 1000 1 1 * 1005
   └Build-D
  └Node-Tree
 └Node-Trees
 ┌Data( 3 )
  ┌Data :: Mesh [ 0 ] Cube
-  10000
+  * 10000
   ┌Vertices( 8 )
    0  0.2 -0.2 -0.2
    1  0.2  0.2 -0.2
@@ -70,7 +70,7 @@
   └Faces
  └Data :: Mesh
  ┌Data :: Mesh [ 1 ] Plane
-  10001
+  * 10001
   ┌Vertices( 4 )
    0  2 0 -2
    1 -2 0 -2
@@ -83,26 +83,26 @@
   └Faces
  └Data :: Mesh
  ┌Data :: Group [ 2 ] Container
- 10002
+  * 10002
  └Data :: Group
 └Data
 ┌Objects( 3 )
  ┌Object [ 0 ] Cube
-  100000
+  * 100000
   Position 0 0.6 0
   Rotation 0 0 0
   Scale 1 1 1
   Type Mesh
  └Object
  ┌Object [ 1 ] Plane
-  100001
+  * 100001
   Position 0 0 0
   Rotation 0 0 0
   Scale 1 1 1
   Type Mesh
  └Object
  ┌Object [ 2 ] Container
-  100002
+  * 100002
   Position 0 0 0
   Rotation 0 0 0
   Scale 1 1 1
@@ -111,9 +111,9 @@
 └Objects
 ┌Scenes( 3 )
  ┌Scene [ 0 ]
-  1000000
+  * 1000000
   ┌Objects
-   100002 Container
+   * 100002
   └Objects
   ┌Render-Settings
    Spectral-Rendering true
@@ -137,26 +137,26 @@
  └Scene
 └Scenes
 ┌Build-Steps
- Active-Scene 1000000
+ Active-Scene * 1000000
  ┌Data-Group
-  10002 100000
-  10002 100001
+  * 10002 * 100000
+  * 10002 * 100001
  └Data-Group
  ┌Object-Data
-  100000 10000
-  100001 10001
-  100002 10002
+  * 100000 * 10000
+  * 100001 * 10001
+  * 100002 * 10002
  └Object-Data
  ┌Object-Node
-  100002 100
+  * 100002 * 100
  └Object-Node
  ┌Node-Pointer
-  1002 100000
-  1003 100001
-  1004 100002
+  * 1002 * 100000
+  * 1003 * 100001
+  * 1004 * 100002
  └Node-Pointer
 └Build-Steps
 ┌Render-Instructions
- Scene 1000000
+ Scene * 1000000
  Type Frame 0 // Type (Frame / Animation / Realtime)
 └Render-Instructions

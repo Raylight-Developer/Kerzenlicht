@@ -1,0 +1,69 @@
+{
+	"name": "Kerz",
+	"fileTypes": [
+		"krz"
+	],
+	"scopeName": "source.krz",
+	"patterns": [
+		{
+			"name": "keyword.section.type",
+			"match": "^[ ]*[└┌][^() ]+"
+		},
+		{
+			"name": "keyword.section.subtype",
+			"match": "(?<= :: )[^ ::]+"
+		},
+		{
+			"name": "keyword.section.subtype",
+			"match": "(?<=\\bType\\b)[ ]*(.*)"
+		},
+		{
+			"name": "keyword.section.separator",
+			"match": "( :: )"
+		},
+		{
+			"name": "keyword.section.size",
+			"match": "(?<=^[ ]*┌[^()]*?)\\([ ]*[0-9]+[ ]*\\)"
+		},
+		{
+			"name": "keyword.integer.pointer",
+			"match": "\\*[ ][0-9]+([ ]|)"
+		},
+		{
+			"name": "keyword.integer.index",
+			"match": "\\[[ ]*([0-9]+)[ ]*\\]"
+		},
+		{
+			"name": "keyword.integer.index",
+			"match": "(?<=[ ]*\\*[ ][0-9]{13}[ ]*)([0-9]+(?:[ ]+[0-9]+)*?)[ ]*?(?=\\*[ ][0-9]{13}[ ]*)"
+		},
+		{
+			"name": "keyword.integer.index",
+			"match": "^[ ]*[+-]?[0-9]+(?!\\.[0-9])(?=.*\\b[+-]?[0-9]*(\\.[0-9]+)?\\b)"
+		},
+		{
+			"name": "keyword.float",
+			"match": "[+-]?[0-9]*\\.[0-9]+"
+		},
+		{
+			"name": "keyword.float.vector",
+			"match": "[ ]*\\([ ]*([^\\)]*)[ ]*\\)[ ]*"
+		},
+		{
+			"name": "keyword.integer",
+			"match": "[+-]?[0-9]+(?!\\.[0-9])"
+		},
+		{
+			"name": "keyword.name",
+			"match": "(?<=^[ ]*[└┌].*\\][ ]*).*"
+		},
+		{
+			"name": "keyword.comment",
+			"match": "\\/\\*[\\s\\S]*?\\*\\/"
+		},
+		{
+			"name": "keyword.comment",
+			"match": "\\/\\/.*"
+		}
+	]
+}
