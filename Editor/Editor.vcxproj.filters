@@ -272,21 +272,6 @@
     </QtMoc>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\Shaders\CPU_Shader.frag">
-      <Filter>Shader Files</Filter>
-    </None>
-    <None Include="Resources\Shaders\CPU_Shader.vert">
-      <Filter>Shader Files</Filter>
-    </None>
-    <None Include="Resources\Shaders\GPU_Shader.comp">
-      <Filter>Shader Files</Filter>
-    </None>
-    <None Include="Resources\Shaders\GPU_Shader.frag">
-      <Filter>Shader Files</Filter>
-    </None>
-    <None Include="Resources\Shaders\GPU_Shader.vert">
-      <Filter>Shader Files</Filter>
-    </None>
     <None Include="Resources\Shaders\Realtime_Shader.comp">
       <Filter>Shader Files</Filter>
     </None>

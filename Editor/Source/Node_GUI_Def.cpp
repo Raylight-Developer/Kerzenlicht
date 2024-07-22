@@ -121,7 +121,6 @@ void EXEC::Script::reloadDll() {
 }
 
 void EXEC::Script::recompile(const HINSTANCE& library) {
-	clearIO();
 	dynlib = library;
 	reloadFunctions();
 }
@@ -140,20 +139,20 @@ EXEC::Tick::Tick(const ivec2& pos) {
 	rect.setHeight(40 + max(inputs.size(), outputs.size()) * 20);
 }
 
-LINK::Pointer::Pointer(const ivec2& pos) {
+LINK::Pointer::Pointer(const ivec2& pos, const CLASS::NODE::DATA::Type& pointer_type) {
 	label = "Pointer";
 	type = CLASS::NODE::Type::LINK;
 	sub_type = e_to_u(CLASS::NODE::LINK::Type::POINTER);
 
-	pointer_type = CLASS::NODE::DATA::Type::NONE;
+	this->pointer_type = pointer_type;
 	pointer = nullptr;
 
 	rect = QRectF(-100, -20, 200, 40);
 	rect.moveTo(QPointF(pos.x, pos.y));
 
-	out_pointer = new PORT::Data_O_Port(this, 0, "Pointer", CLASS::NODE::DATA::Type::OBJECT);
+	o_pointer = new PORT::Data_O_Port(this, 0, "Pointer", pointer_type);
 
-	outputs.push_back(out_pointer);
+	outputs.push_back(o_pointer);
 
 	rect.setHeight(40 + max(inputs.size(), outputs.size()) * 20);
 }
@@ -165,22 +164,56 @@ void LINK::Pointer::paint(QPainter* painter, const QStyleOptionGraphicsItem* opt
 		painter->drawRoundedRect(QRectF(rect.topLeft() + QPointF(4, 30), QSize(120, 20)), 5, 5);
 
 		painter->setPen(Qt::white);
-		if (pointer_type == CLASS::NODE::DATA::Type::OBJECT)
-			painter->drawText(QRectF(rect.topLeft() + QPointF(14, 30), QSize(100, 20)), Qt::AlignLeft, QString::fromStdString(static_cast<CLASS::Object*>(pointer)->name));
+		switch (pointer_type) {
+			case CLASS::NODE::DATA::Type::OBJECT: {
+				painter->drawText(QRectF(rect.topLeft() + QPointF(14, 30), QSize(100, 20)), Qt::AlignLeft, QString::fromStdString(static_cast<CLASS::Object*>(pointer)->name));
+				break;
+			}
+			case CLASS::NODE::DATA::Type::SCENE: {
+				painter->drawText(QRectF(rect.topLeft() + QPointF(14, 30), QSize(100, 20)), Qt::AlignLeft, "Active Scene");
+				break;
+			}
+		}
 	}
 }
 
 LINK::Get::Get(const ivec2& pos) {
-	label = "Pointer";
+	label = "Get";
 	type = CLASS::NODE::Type::LINK;
-	sub_type = e_to_u(CLASS::NODE::LINK::Type::POINTER);
+	sub_type = e_to_u(CLASS::NODE::LINK::Type::GET);
+	mini_type = CLASS::NODE::LINK::GET::Type::NONE;
+
+	i_pointer = nullptr;
+	o_value   = nullptr;
 
 	rect = QRectF(-100, -20, 200, 40);
+}
+
+LINK::GET::Field::Field(const ivec2& pos) :
+	Get(pos)
+{
+	label = "Get Field";
+	type = CLASS::NODE::Type::LINK;
+	sub_type = e_to_u(CLASS::NODE::LINK::Type::GET);
+	mini_type = CLASS::NODE::LINK::GET::Type::FIELD;
+
 	rect.moveTo(QPointF(pos.x, pos.y));
 
-	outputs.push_back(new PORT::Data_O_Port(this, 0, "Pointer", CLASS::NODE::DATA::Type::ANY));
+	QGraphicsProxyWidget* proxyWidget_id = new QGraphicsProxyWidget(this);
+	field = new GUI::Value_Input();
+	field->setFixedSize(180, 20);
+	field->setPlaceholderText("Field");
+	proxyWidget_id->setWidget(field);
+	proxyWidget_id->setPos(boundingRect().topLeft() + QPointF(10, 50));
 
-	rect.setHeight(40 + max(inputs.size(), outputs.size()) * 20);
+	i_pointer = new PORT::Data_I_Port(this, 0, "Pointer", CLASS::NODE::DATA::Type::ANY);
+
+	o_value   = new PORT::Data_O_Port(this, 0, "Value", CLASS::NODE::DATA::Type::ANY);
+
+	inputs.push_back(i_pointer);
+	outputs.push_back(o_value);
+
+	rect.setHeight(60 + max(inputs.size(), outputs.size()) * 20);
 }
 
 LINK::Set::Set(const ivec2& pos) {
@@ -189,23 +222,13 @@ LINK::Set::Set(const ivec2& pos) {
 	sub_type = e_to_u(CLASS::NODE::LINK::Type::SET);
 	mini_type = CLASS::NODE::LINK::SET::Type::NONE;
 
+	i_exec    = nullptr;
+	i_pointer = nullptr;
+	i_value   = nullptr;
+	o_exec    = nullptr;
+	o_value   = nullptr;
+
 	rect = QRectF(-100, -20, 200, 40);
-	rect.moveTo(QPointF(pos.x, pos.y));
-
-	i_exec    = new PORT::Exec_I_Port(this, 0, "Exec");
-	i_pointer = new PORT::Data_I_Port(this, 1, "Pointer", CLASS::NODE::DATA::Type::ANY);
-	i_value   = new PORT::Data_I_Port(this, 2, "Input Value", CLASS::NODE::DATA::Type::ANY);
-
-	o_exec    = new PORT::Exec_O_Port(this, 0, "Exec");
-	o_value   = new PORT::Data_O_Port(this, 1, "Output Value", CLASS::NODE::DATA::Type::ANY);
-
-	inputs.push_back(i_exec);
-	inputs.push_back(i_pointer);
-	inputs.push_back(i_value);
-	outputs.push_back(o_exec);
-	outputs.push_back(o_value);
-
-	rect.setHeight(40 + max(inputs.size(), outputs.size()) * 20);
 }
 
 LINK::SET::Euler_Rotation_X::Euler_Rotation_X(const ivec2& pos) :
@@ -214,9 +237,22 @@ LINK::SET::Euler_Rotation_X::Euler_Rotation_X(const ivec2& pos) :
 	label = "Set Euler Rotation X";
 	mini_type = CLASS::NODE::LINK::SET::Type::EULER_ROTATION_X;
 
-	i_pointer->setDataType(CLASS::NODE::DATA::Type::OBJECT);
-	i_value->setDataType(CLASS::NODE::DATA::Type::DOUBLE);
-	o_value->setDataType(CLASS::NODE::DATA::Type::DOUBLE);
+	rect.moveTo(QPointF(pos.x, pos.y));
+
+	i_exec    = new PORT::Exec_I_Port(this, 0, "Exec");
+	i_pointer = new PORT::Data_I_Port(this, 1, "Pointer", CLASS::NODE::DATA::Type::OBJECT);
+	i_value   = new PORT::Data_I_Port(this, 2, "Input Value", CLASS::NODE::DATA::Type::DOUBLE);
+
+	o_exec    = new PORT::Exec_O_Port(this, 0, "Exec");
+	o_value   = new PORT::Data_O_Port(this, 1, "Output Value", CLASS::NODE::DATA::Type::DOUBLE);
+
+	inputs.push_back(i_exec);
+	inputs.push_back(i_pointer);
+	inputs.push_back(i_value);
+	outputs.push_back(o_exec);
+	outputs.push_back(o_value);
+
+	rect.setHeight(40 + max(inputs.size(), outputs.size()) * 20);
 }
 
 MATH::MATH::MATH(const ivec2& pos) {

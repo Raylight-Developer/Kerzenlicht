@@ -1,6 +1,7 @@
 #include "Core/Nodes.hpp"
 
 #include "Core/Node_Def.hpp"
+#include "Core/File.hpp"
 
 #include "Node_GUI.hpp"
 #include "Node_GUI_Def.hpp"
@@ -60,6 +61,19 @@ CLASS::Node_Tree::Node_Tree(const GUI::NODE::Node_Tree* gui_tree) :
 						node_map[gui_node] = node;
 						break;
 					}
+					case NODE::LINK::Type::GET: {
+						switch (static_cast<GUI::NODE::LINK::Get*>(gui_node)->mini_type) {
+							case NODE::LINK::GET::Type::FIELD: {
+								auto node = new NODE::LINK::GET::Field();
+								node->pos = ivec2(gui_node->rect.topLeft().x(), gui_node->rect.topLeft().y());
+								node->field = static_cast<GUI::NODE::LINK::GET::Field*>(gui_node)->field->text().toStdString();
+								nodes.push_back(node);
+								node_map[gui_node] = node;
+								break;
+							}
+						}
+						break;
+					}
 					case NODE::LINK::Type::SET: {
 						switch (static_cast<GUI::NODE::LINK::Set*>(gui_node)->mini_type) {
 							case NODE::LINK::SET::Type::EULER_ROTATION_X: {
@@ -70,6 +84,7 @@ CLASS::Node_Tree::Node_Tree(const GUI::NODE::Node_Tree* gui_tree) :
 								break;
 							}
 						}
+						break;
 					}
 				}
 				break;
@@ -120,7 +135,7 @@ CLASS::Node_Tree::Node_Tree(const GUI::NODE::Node_Tree* gui_tree) :
 							for (auto port_l : node_map[cast_port->connection->port_l->node]->outputs) {
 								if (port_l->slot_id == cast_port->connection->port_l->slot_id) {
 									static_cast<NODE::PORT::Data_I_Port*>(port_r)->connection = static_cast<NODE::PORT::Data_O_Port*>(port_l);
-									//cout << "Connect Data L_Node[" << getKeyByValue(node_map, port_l->node)->label.toStdString() << "] : " << port_l->slot_id << " To R_Node[" << gui_node->label.toStdString() << "] : " << port_r->slot_id << endl;
+									cout << endl << "Connect Data L_Node[" << getKeyByValue(node_map, port_l->node)->label.toStdString() << "] : " << port_l->slot_id << " To R_Node[" << gui_node->label.toStdString() << "] : " << port_r->slot_id;
 								}
 							}
 						}
@@ -137,7 +152,7 @@ CLASS::Node_Tree::Node_Tree(const GUI::NODE::Node_Tree* gui_tree) :
 							for (auto port_r : node_map[cast_port->connection->port_r->node]->inputs) {
 								if (port_r->slot_id == cast_port->connection->port_r->slot_id) {
 									static_cast<NODE::PORT::Exec_O_Port*>(port_l)->connection = static_cast<NODE::PORT::Exec_I_Port*>(port_r);
-									//cout << "Connect Exec L_Node[" << gui_node->label.toStdString() << "] : " << port_l->slot_id << " To R_Node[" << getKeyByValue(node_map, port_r->node)->label.toStdString() << "] : " << port_r->slot_id << endl;
+									cout << endl << "Connect Exec L_Node[" << gui_node->label.toStdString() << "] : " << port_l->slot_id << " To R_Node[" << getKeyByValue(node_map, port_r->node)->label.toStdString() << "] : " << port_r->slot_id;
 								}
 							}
 						}
@@ -237,6 +252,22 @@ CLASS::NODE::Data CLASS::NODE::Data::operator/(const Data& other) {
 	return Data();
 }
 
+uint64 CLASS::NODE::Data::getUint() const {
+	return any_cast<uint64>(data);
+}
+
+dvec1 CLASS::NODE::Data::getDouble() const {
+	switch (type) {
+		case DATA::Type::DOUBLE: return any_cast<dvec1>(data);
+		case DATA::Type::UINT: return static_cast<dvec1>(any_cast<uint64>(data));
+		case DATA::Type::INT: return static_cast<dvec1>(any_cast<int64>(data));
+	}
+	return 0.0;
+}
+
+CLASS::Scene* CLASS::NODE::Data::getScene() const {
+	return any_cast<CLASS::Scene*>(data);
+}
 
 CLASS::NODE::Port::Port(Node* node) :
 	node(node)
@@ -335,7 +366,7 @@ CLASS::NODE::PORT::Exec_O_Port::~Exec_O_Port() {
 }
 
 void CLASS::NODE::PORT::Exec_O_Port::exec() const {
-	if (connection) connection->exec();
+	if (connection) connection->exec(); // TODO can crash on recompilation of nodes
 }
 
 QColor typeColor(const CLASS::NODE::DATA::Type& type) {

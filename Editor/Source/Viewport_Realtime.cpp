@@ -7,17 +7,25 @@
 #include "OpenGL.hpp"
 
 GUI::WORKSPACE::Viewport_Realtime::Viewport_Realtime(Workspace_Viewport* parent) :
-	QObject(),
+	QOpenGLWindow(),
 	parent(parent)
 {
-	window = nullptr;
+	resolution = uvec2(3840U, 2160U);
+	aspect_ratio = u_to_d(resolution.x) / u_to_d(resolution.y);
+	resolution_scale = 0.5;
+	render_resolution = d_to_u(u_to_d(resolution) * resolution_scale);
+
+	compute_shader_program = 0U;
+	compute_layout = uvec3(0U);
+	compute_render = 0U;
+
 
 	frame_counter = 0;
 	frame_count = 0;
 	runframe = 0;
 
-	display_resolution = uvec2(3840U, 2160U);
-	display_aspect_ratio = u_to_d(display_resolution.x) / u_to_d(display_resolution.y);
+	triangles = vector<VIEWPORT_REALTIME::GPU_Triangle>();
+	triangle_map = unordered_map<CLASS::Object*, vector<VIEWPORT_REALTIME::Triangle>>();
 
 	render_resolution = uvec2(2100U, 900U);
 	render_aspect_ratio = u_to_d(render_resolution.x) / u_to_d(render_resolution.y);
@@ -53,33 +61,53 @@ void GUI::WORKSPACE::Viewport_Realtime::initGlfw() {
 	GLFWmonitor* monitor = glfwGetPrimaryMonitor();
 	const GLFWvidmode* mode = glfwGetVideoMode(monitor);
 
-	display_resolution = uvec2(mode->width, mode->height);
-	display_aspect_ratio = u_to_d(display_resolution.x) / u_to_d(display_resolution.y);
+	// Compute Output
+	glCreateTextures(GL_TEXTURE_2D, 1, &compute_render);
+	glTextureParameteri(compute_render, GL_TEXTURE_MIN_FILTER, GL_NEAREST); // GL_NEAREST for raw pixels
+	glTextureParameteri(compute_render, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTextureParameteri(compute_render, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTextureParameteri(compute_render, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTextureStorage2D(compute_render, 1, GL_RGBA8, render_resolution.x, render_resolution.y);
+	glBindImageTexture(0, compute_render, 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA8);
 
-	window = glfwCreateWindow(display_resolution.x, display_resolution.y, "Runtime", NULL, NULL);
-	if (window == NULL) {
-		cout << "Failed to create GLFW window" << endl;
-		glfwTerminate();
-	}
+	GLuint display_vert_shader = glCreateShader(GL_VERTEX_SHADER);
+	const string vertex_code = loadFromFile("./Resources/Shaders/Realtime_Shader.vert");
+	const char* vertex_code_cstr = vertex_code.c_str();
+	glShaderSource(display_vert_shader, 1, &vertex_code_cstr, NULL);
+	glCompileShader(display_vert_shader);
 
-	glfwMakeContextCurrent(window);
-	glfwSwapInterval(false); // V-Sync
-	gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
+	GLuint display_frag_shader = glCreateShader(GL_FRAGMENT_SHADER);
+	const string fragment_code = loadFromFile("./Resources/Shaders/Realtime_Shader.frag");
+	const char* fragment_code_cstr = fragment_code.c_str();
+	glShaderSource(display_frag_shader, 1, &fragment_code_cstr, NULL);
+	glCompileShader(display_frag_shader);
 
-	glfwSetWindowUserPointer(window, this);
+	display_shader_program = glCreateProgram();
+	glAttachShader(display_shader_program, display_vert_shader);
+	glAttachShader(display_shader_program, display_frag_shader);
+	glLinkProgram(display_shader_program);
 
-	glfwSetFramebufferSizeCallback(window, framebufferSize);
-}
+	glDeleteShader(display_vert_shader);
+	glDeleteShader(display_frag_shader);
 
-void GUI::WORKSPACE::Viewport_Realtime::pipeline() {
-	glad_glViewport(0, 0, display_resolution.x , display_resolution.y);
-}
+	const string compute_code = loadFromFile("./Resources/Shaders/Realtime_Shader.comp");
+	//cerr << compute_code;
+	const char* compute_code_cstr = compute_code.c_str();
+	GLuint comp_shader = glCreateShader(GL_COMPUTE_SHADER);
+	glShaderSource(comp_shader, 1, &compute_code_cstr, NULL);
+	glCompileShader(comp_shader);
 
-void GUI::WORKSPACE::Viewport_Realtime::renderTick() {
-	for (const CLASS::Object* object : FILE->active_scene->ptr->objects)
-		if (object->nodes)
-			object->nodes->exec(&frame_time);
-	dataTransfer();
+	compute_shader_program = glCreateProgram();
+	glAttachShader(compute_shader_program, comp_shader);
+	glLinkProgram(compute_shader_program);
+
+	glDeleteShader(comp_shader);
+
+	compute_layout = uvec3(
+		d_to_u(ceil(u_to_d(render_resolution.x) / 32.0)),
+		d_to_u(ceil(u_to_d(render_resolution.y) / 32.0)),
+		1U
+	);
 }
 
 void GUI::WORKSPACE::Viewport_Realtime::dataTransfer() {
@@ -125,13 +153,29 @@ void GUI::WORKSPACE::Viewport_Realtime::dataTransfer() {
 	}
 
 	GLuint triangle_buffer;
-	glad_glGenBuffers(1, &triangle_buffer);
-	glad_glBindBuffer(GL_SHADER_STORAGE_BUFFER, triangle_buffer);
-	glad_glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(VIEWPORT_REALTIME::GPU_Triangle) * triangles.size(), triangles.data(), GL_DYNAMIC_DRAW);
-	glad_glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, triangle_buffer);
+	glGenBuffers(1, &triangle_buffer);
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, triangle_buffer);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(VIEWPORT_REALTIME::GPU_Triangle) * triangles.size(), triangles.data(), GL_DYNAMIC_DRAW);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, triangle_buffer);
 }
 
-void GUI::WORKSPACE::Viewport_Realtime::selectObject(const dvec2& uv) { // TODO fix slight missalignment
+void GUI::WORKSPACE::Viewport_Realtime::f_updateTick() {
+	if (++fps_counter >= 60) {
+		parent->timeline->info->setText("Fps: " + QString::number(60.0 / (chrono::duration_cast<std::chrono::milliseconds>(chrono::steady_clock::now() - fps_measure).count() / 1000.0)));
+		fps_measure = chrono::steady_clock::now();
+		fps_counter = 0;
+	}
+	if (frame_counter != 0) delta = chrono::duration_cast<std::chrono::milliseconds>(chrono::steady_clock::now() - last_delta).count() / 1000.0;
+	last_delta = chrono::steady_clock::now();
+	for (const CLASS::Object* object : FILE->active_scene->ptr->objects)
+		if (object->nodes)
+			object->nodes->exec(&delta);
+	frame_counter++;
+	f_uploadData();
+	requestUpdate();
+}
+
+void GUI::WORKSPACE::Viewport_Realtime::f_selectObject(const dvec2& uv) { // TODO fix slight missalignment
 	CLASS::OBJECT::DATA::Camera* camera = FILE->default_camera->data->getCamera();
 	camera->f_compile(FILE->active_scene->ptr, FILE->default_camera);
 	const VIEWPORT_REALTIME::Ray ray = VIEWPORT_REALTIME::Ray(
@@ -183,8 +227,11 @@ void GUI::WORKSPACE::Viewport_Realtime::displayLoop() {
 	glCreateBuffers(1, &VBO);
 	glCreateBuffers(1, &EBO);
 
-	glNamedBufferData(VBO, sizeof(vertices), vertices, GL_STATIC_DRAW);
-	glNamedBufferData(EBO, sizeof(indices), indices, GL_STATIC_DRAW);
+	glUseProgram(compute_shader_program);
+	glUniform3fv(glGetUniformLocation(compute_shader_program, "camera_pos"),  1, value_ptr(d_to_f(FILE->default_camera->transform.position)));
+	glUniform3fv(glGetUniformLocation(compute_shader_program, "camera_p_uv"), 1, value_ptr(d_to_f(camera->projection_center)));
+	glUniform3fv(glGetUniformLocation(compute_shader_program, "camera_p_u"),  1, value_ptr(d_to_f(camera->projection_u)));
+	glUniform3fv(glGetUniformLocation(compute_shader_program, "camera_p_v"),  1, value_ptr(d_to_f(camera->projection_v)));
 
 	glEnableVertexArrayAttrib (VAO, 0);
 	glVertexArrayAttribBinding(VAO, 0, 0);
@@ -194,13 +241,31 @@ void GUI::WORKSPACE::Viewport_Realtime::displayLoop() {
 	glVertexArrayAttribBinding(VAO, 1, 0);
 	glVertexArrayAttribFormat (VAO, 1, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GLfloat));
 
-	glVertexArrayVertexBuffer (VAO, 0, VBO, 0, 4 * sizeof(GLfloat));
-	glVertexArrayElementBuffer(VAO, EBO);
+	glBindTextureUnit(0, compute_render);
+	glUniform1f(glGetUniformLocation(display_shader_program, "aspect_ratio"), d_to_f(aspect_ratio));
+	glUniform1i(glGetUniformLocation(display_shader_program, "render"), 0);
 
-	GLuint compute_program = computeShaderProgram("Realtime_Shader");
-	GLuint post_program = fragmentShaderProgram("Realtime_Shader");
+	glBindVertexArray(fullscreen_quad_VAO);
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+	//requestUpdate();
+}
 
-	const uvec3 compute_layout = uvec3(
+void GUI::WORKSPACE::Viewport_Realtime::resizeGL(int w, int h) {
+	resolution = uvec2(w, h);
+	aspect_ratio = u_to_d(resolution.x) / u_to_d(resolution.y);
+	render_resolution = d_to_u(u_to_d(resolution) * resolution_scale);
+
+	GLuint new_compute;
+	glCreateTextures(GL_TEXTURE_2D, 1, &new_compute);
+	glTextureParameteri(new_compute, GL_TEXTURE_MIN_FILTER, GL_NEAREST); // GL_NEAREST for raw pixels
+	glTextureParameteri(new_compute, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTextureParameteri(new_compute, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTextureParameteri(new_compute, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTextureStorage2D(new_compute, 1, GL_RGBA8, render_resolution.x, render_resolution.y);
+	glBindImageTexture(0, new_compute, 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA8);
+	compute_render = new_compute;
+
+	compute_layout = uvec3(
 		d_to_u(ceil(u_to_d(render_resolution.x) / 32.0)),
 		d_to_u(ceil(u_to_d(render_resolution.y) / 32.0)),
 		1U

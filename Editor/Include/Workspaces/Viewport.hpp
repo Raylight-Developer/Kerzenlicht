@@ -38,15 +38,5 @@ namespace GUI {
 			Workspace_Viewport(Workspace_Manager* parent);
 			~Workspace_Viewport();
 		};
-
-		struct alignas(16) GPU_Triangle {
-			vec4 v0, v1, v2;
-
-			GPU_Triangle(
-				const vec3& v0, const vec3& v1, const vec3& v2
-			) :
-				v0(vec4(v0, 1.0)), v1(vec4(v1, 1.0)), v2(vec4(v2, 1.0))
-			{}
-		};
 	}
 }

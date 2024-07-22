@@ -196,22 +196,22 @@ Lace& Lace::operator<< (const uvec4& value) {
 }
 
 Lace& Lace::operator<< (const vec1& value) {
-	data << value;
+	data << f_to_str(value);
 	return *this;
 }
 
 Lace& Lace::operator<< (const vec2& value) {
-	data << value.x << " " << value.y;
+	data << f_to_str(value.x) << " " << f_to_str(value.y);
 	return *this;
 }
 
 Lace& Lace::operator<< (const vec3& value) {
-	data << value.x << " " << value.y << " " << value.z;
+	data << f_to_str(value.x) << " " << f_to_str(value.y) << " " << f_to_str(value.z);
 	return *this;
 }
 
 Lace& Lace::operator<< (const vec4& value) {
-	data << value.x << " " << value.y << " " << value.z << " " << value.w;
+	data << f_to_str(value.x) << " " << f_to_str(value.y) << " " << f_to_str(value.z) << " " << f_to_str(value.w);
 	return *this;
 }
 
@@ -221,43 +221,43 @@ Lace& Lace::operator<<(const quat& value) {
 }
 
 Lace& Lace::operator<<(const mat2& value) {
-	data << value[0][0] << " " << value[0][1] << " "
-		 << value[1][0] << " " << value[1][1];
+	data << f_to_str(value[0][0]) << " " << f_to_str(value[0][1]) << " "
+		 << f_to_str(value[1][0]) << " " << f_to_str(value[1][1]);
 	return *this;
 }
 
 Lace& Lace::operator<<(const mat3& value) {
-	data << value[0][0] << " " << value[0][1] << " " << value[0][2] << " "
-		 << value[1][0] << " " << value[1][1] << " " << value[1][2] << " "
-		 << value[2][0] << " " << value[2][1] << " " << value[2][2];
+	data << f_to_str(value[0][0]) << " " << f_to_str(value[0][1]) << " " << f_to_str(value[0][2]) << " "
+		 << f_to_str(value[1][0]) << " " << f_to_str(value[1][1]) << " " << f_to_str(value[1][2]) << " "
+		 << f_to_str(value[2][0]) << " " << f_to_str(value[2][1]) << " " << f_to_str(value[2][2]);
 	return *this;
 }
 
 Lace& Lace::operator<<(const mat4& value) {
-	data << value[0][0] << " " << value[0][1] << " " << value[0][2] << " " << value[0][3] << " "
-		 << value[1][0] << " " << value[1][1] << " " << value[1][2] << " " << value[1][3] << " "
-		 << value[2][0] << " " << value[2][1] << " " << value[2][2] << " " << value[2][3] << " "
-		 << value[3][0] << " " << value[3][1] << " " << value[3][2] << " " << value[3][3];
+	data << f_to_str(value[0][0]) << " " << f_to_str(value[0][1]) << " " << f_to_str(value[0][2]) << " " << f_to_str(value[0][3]) << " "
+		 << f_to_str(value[1][0]) << " " << f_to_str(value[1][1]) << " " << f_to_str(value[1][2]) << " " << f_to_str(value[1][3]) << " "
+		 << f_to_str(value[2][0]) << " " << f_to_str(value[2][1]) << " " << f_to_str(value[2][2]) << " " << f_to_str(value[2][3]) << " "
+		 << f_to_str(value[3][0]) << " " << f_to_str(value[3][1]) << " " << f_to_str(value[3][2]) << " " << f_to_str(value[3][3]);
 	return *this;
 }
 
 Lace& Lace::operator<< (const dvec1& value) {
-	data << value;
+	data << d_to_str(value);
 	return *this;
 }
 
 Lace& Lace::operator<< (const dvec2& value) {
-	data << value.x << " " << value.y;
+	data << d_to_str(value.x) << " " << d_to_str(value.y);
 	return *this;
 }
 
 Lace& Lace::operator<< (const dvec3& value) {
-	data << value.x << " " << value.y << " " << value.z;
+	data << d_to_str(value.x) << " " << d_to_str(value.y) << " " << d_to_str(value.z);
 	return *this;
 }
 
 Lace& Lace::operator<< (const dvec4& value) {
-	data << value.x << " " << value.y << " " << value.z << " " << value.w;
+	data << d_to_str(value.x) << " " << d_to_str(value.y) << " " << d_to_str(value.z) << " " << d_to_str(value.w);
 	return *this;
 }
 
@@ -267,23 +267,23 @@ Lace& Lace::operator<<(const dquat& value) {
 }
 
 Lace& Lace::operator<<(const dmat2& value) {
-	data << value[0][0] << " " << value[0][1] << " "
-		 << value[1][0] << " " << value[1][1];
+	data << d_to_str(value[0][0]) << " " << d_to_str(value[0][1]) << " "
+		 << d_to_str(value[1][0]) << " " << d_to_str(value[1][1]);
 	return *this;
 }
 
 Lace& Lace::operator<<(const dmat3& value) {
-	data << value[0][0] << " " << value[0][1] << " " << value[0][2] << " "
-		 << value[1][0] << " " << value[1][1] << " " << value[1][2] << " "
-		 << value[2][0] << " " << value[2][1] << " " << value[2][2];
+	data << d_to_str(value[0][0]) << " " << d_to_str(value[0][1]) << " " << d_to_str(value[0][2]) << " "
+		 << d_to_str(value[1][0]) << " " << d_to_str(value[1][1]) << " " << d_to_str(value[1][2]) << " "
+		 << d_to_str(value[2][0]) << " " << d_to_str(value[2][1]) << " " << d_to_str(value[2][2]);
 	return *this;
 }
 
 Lace& Lace::operator<<(const dmat4& value) {
-	data << value[0][0] << " " << value[0][1] << " " << value[0][2] << " " << value[0][3] << " "
-		 << value[1][0] << " " << value[1][1] << " " << value[1][2] << " " << value[1][3] << " "
-		 << value[2][0] << " " << value[2][1] << " " << value[2][2] << " " << value[2][3] << " "
-		 << value[3][0] << " " << value[3][1] << " " << value[3][2] << " " << value[3][3];
+	data << d_to_str(value[0][0]) << " " << d_to_str(value[0][1]) << " " << d_to_str(value[0][2]) << " " << d_to_str(value[0][3]) << " "
+		 << d_to_str(value[1][0]) << " " << d_to_str(value[1][1]) << " " << d_to_str(value[1][2]) << " " << d_to_str(value[1][3]) << " "
+		 << d_to_str(value[2][0]) << " " << d_to_str(value[2][1]) << " " << d_to_str(value[2][2]) << " " << d_to_str(value[2][3]) << " "
+		 << d_to_str(value[3][0]) << " " << d_to_str(value[3][1]) << " " << d_to_str(value[3][2]) << " " << d_to_str(value[3][3]);
 	return *this;
 }
 
@@ -351,4 +351,48 @@ Lace& Lace::operator<<(const vector<string>& value) {
 	for (string val : value)
 		data << val << " ";
 	return *this;
+}
+
+string d_to_str(const dvec1& value) {
+	ostringstream oss;
+	oss << fixed;
+	oss << setprecision(15) << value;
+
+	string result = oss.str();
+
+	if (result.find('.') != string::npos) {
+		result.erase(result.find_last_not_of('0') + 1, string::npos);
+
+		if (result.back() == '.') {
+			result.pop_back();
+		}
+	}
+
+	if (result.find('.') == string::npos) {
+		result += ".0";
+	}
+
+	return result;
+}
+
+string f_to_str(const vec1& value) {
+	ostringstream oss;
+	oss << fixed;
+	oss << setprecision(8) << value;
+
+	string result = oss.str();
+
+	if (result.find('.') != string::npos) {
+		result.erase(result.find_last_not_of('0') + 1, string::npos);
+
+		if (result.back() == '.') {
+			result.pop_back();
+		}
+	}
+
+	if (result.find('.') == string::npos) {
+		result += ".0";
+	}
+
+	return result;
 }

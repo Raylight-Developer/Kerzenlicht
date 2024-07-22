@@ -17,3 +17,6 @@ Shared/Shared.vcxproj.user
 Runtime/Resources/Ganyu.krz
 Runtime/Resources/Shaders/Render_Compiled.comp
 /Vulkan-Playground-main
+krz Syntax/vsc-extension-quickstart.md
+krz Syntax/README.md
+krz Syntax/CHANGELOG.md

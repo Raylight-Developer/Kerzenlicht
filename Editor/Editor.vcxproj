@@ -94,11 +94,6 @@
     <ClCompile Include="Source\Core\Session.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\Shaders\CPU_Shader.frag" />
-    <None Include="Resources\Shaders\CPU_Shader.vert" />
-    <None Include="Resources\Shaders\GPU_Shader.comp" />
-    <None Include="Resources\Shaders\GPU_Shader.frag" />
-    <None Include="Resources\Shaders\GPU_Shader.vert" />
     <None Include="Resources\Shaders\Realtime_Shader.comp" />
     <None Include="Resources\Shaders\Realtime_Shader.frag" />
     <None Include="Resources\Shaders\Realtime_Shader.vert" />

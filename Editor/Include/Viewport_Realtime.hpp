@@ -34,8 +34,8 @@ namespace GUI {
 				Triangle(const dvec3& v0, const dvec3& v1, const dvec3& v2) : v0(v0), v1(v1), v2(v2) {};
 			};
 			struct alignas(16) GPU_Triangle {
-				dvec4 v0, v1, v2;
-				GPU_Triangle(const dvec3& v0, const dvec3& v1, const dvec3& v2) : v0(dvec4(v0, 1.0)), v1(dvec4(v1, 1.0)), v2(dvec4(v2, 1.0)) {};
+				vec4 v0, v1, v2;
+				GPU_Triangle(const vec3& v0, const vec3& v1, const vec3& v2) : v0(vec4(v0, 1.0f)), v1(vec4(v1, 1.0f)), v2(vec4(v2, 1.0f)) {};
 			};
 
 			bool f_rayTriangleIntersection(const Ray& ray, const Triangle& tri, dvec1& ray_length);
@@ -46,14 +46,14 @@ namespace GUI {
 			Workspace_Viewport* parent;
 			GLFWwindow* window;
 
-			dvec1 display_aspect_ratio;
-			dvec1 render_aspect_ratio;
-			uvec2 display_resolution;
+			uvec2 resolution;
+			dvec1 aspect_ratio;
+			dvec1 resolution_scale;
 			uvec2 render_resolution;
 
-			uint   frame_counter;
-			uint   frame_count;
-			uint64 runframe;
+			uvec3 compute_layout;
+			vector<VIEWPORT_REALTIME::GPU_Triangle> triangles;
+			unordered_map<CLASS::Object*, vector<VIEWPORT_REALTIME::Triangle>> triangle_map;
 
 			dvec1 current_time;
 			dvec1 window_time;

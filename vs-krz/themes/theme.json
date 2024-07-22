@@ -1,0 +1,73 @@
+{
+	"name": "Kerz",
+	"type": "dark",
+	"colors": {},
+	"tokenColors": [
+		{
+			"scope": "source.krz keyword.section.type",
+			"settings": {
+				"foreground": "#33f2a9"
+			}
+		},
+		{
+			"scope": "source.krz keyword.section.subtype",
+			"settings": {
+				"foreground": "#f0abf7"
+			}
+		},
+		{
+			"scope": "source.krz keyword.section.separator",
+			"settings": {
+				"foreground": "#ffffff"
+			}
+		},
+		{
+			"scope": "source.krz keyword.section.size",
+			"settings": {
+				"foreground": "#0a6e0a"
+			}
+		},
+		{
+			"scope": "source.krz keyword.float",
+			"settings": {
+				"foreground": "#ccb07c"
+			}
+		},
+		{
+			"scope": "source.krz keyword.float.vector",
+			"settings": {
+				"foreground": "#f5f2b0"
+			}
+		},
+		{
+			"scope": "source.krz keyword.integer",
+			"settings": {
+				"foreground": "#bf9c5c"
+			}
+		},
+		{
+			"scope": "source.krz keyword.integer.index",
+			"settings": {
+				"foreground": "#62d3f0"
+			}
+		},
+		{
+			"scope": "source.krz keyword.integer.pointer",
+			"settings": {
+				"foreground": "#914836"
+			}
+		},
+		{
+			"scope": "source.krz keyword.name",
+			"settings": {
+				"foreground": "#ff6392"
+			}
+		},
+		{
+			"scope": "source.krz keyword.comment",
+			"settings": {
+				"foreground": "#6b7869"
+			}
+		}
+	]
+}

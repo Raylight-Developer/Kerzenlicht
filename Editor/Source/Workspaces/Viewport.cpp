@@ -22,8 +22,7 @@ GUI::WORKSPACE::Timeline::Timeline(Workspace_Viewport* parent) :
 		current_frame->setText(QString::number(value));
 		FILE->active_scene->ptr->current_frame = value;
 
-		//if (this->parent->viewport_gpu_renderer) this->parent->viewport_gpu_renderer->f_updateFrame();
-		//if (this->parent->viewport_realtime) this->parent->viewport_realtime->f_updateFrame();
+		if (this->parent->viewport_realtime) this->parent->viewport_realtime->f_updateTick();
 	});
 	connect(current_frame, &GUI::Value_Input::returnPressed, [this, current_frame]() {
 		slider->setValue(current_frame->text().toInt());
@@ -47,10 +46,8 @@ GUI::WORKSPACE::Workspace_Viewport::Workspace_Viewport(Workspace_Manager* parent
 	f_systemInfo();
 
 	viewport_realtime = new Viewport_Realtime(this);
-	viewport_realtime->init();
-	QWindow *qWindow = QWindow::fromWinId((WId)glfwGetWin32Window(viewport_realtime->window));
-	qWindow->setSurfaceType(QSurface::OpenGLSurface);
-	container = QWidget::createWindowContainer(qWindow);
+	container = QWidget::createWindowContainer(viewport_realtime);
+
 
 	container->setSizePolicy(QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Expanding);
 	container->setContentsMargins(0, 0, 0, 0);

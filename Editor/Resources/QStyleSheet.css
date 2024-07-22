@@ -111,6 +111,9 @@ QPushButton {
 	border-width: 1px;
 	border-radius: 2px;
 
+	padding-left: 5px;
+	padding-right: 5px;
+
 	background: rgb(75,75,75);
 	height: 25px;
 }
@@ -362,6 +365,7 @@ QTreeWidget:branch:open:has-children:!has-siblings, QTreeWidget:branch:open:has-
 	max-height: 24px;
 	width: 24px;
 	max-width: 24px;
+	padding: 0px;
 }
 
 #Keyframe_Toggle {

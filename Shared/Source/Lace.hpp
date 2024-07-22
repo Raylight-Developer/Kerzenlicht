@@ -124,3 +124,6 @@ struct Lace { //------------Utility for string manipulation------------
 	// Vectors
 	Lace& operator<< (const vector<string>& value);
 };
+
+string d_to_str(const dvec1& value);
+string f_to_str(const vec1& value);
