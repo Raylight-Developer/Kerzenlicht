@@ -64,7 +64,7 @@ namespace GUI {
 			qreal  view_scale;
 			QPointF selection_start;
 			QGraphicsRectItem* selection_rect;
-			vector<GUI::NODE::Node*> move_selection;
+			vector<GUI::NODE::Node*> selection;
 
 			GUI::NODE::Connection* connection;
 			GUI::NODE::Node_Tree* active_node_tree;
@@ -75,9 +75,12 @@ namespace GUI {
 			void f_objectChanged(CLASS::Object* object);
 
 			void drawBackground(QPainter* painter, const QRectF& rect) override;
+
 			void mouseReleaseEvent(QMouseEvent* event) override;
 			void mousePressEvent(QMouseEvent* event) override; // TODO Fix sticky mouse, double clicks and odd non-registering behaviors
 			void mouseMoveEvent(QMouseEvent* event) override;
+			void keyPressEvent(QKeyEvent* event) override;
+
 			void resizeEvent(QResizeEvent* event) override;
 			void wheelEvent(QWheelEvent* event) override;
 

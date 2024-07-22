@@ -245,6 +245,7 @@ GUI::NODE::LINK::SET::Euler_Rotation_X::Euler_Rotation_X(const ivec2& pos) :
 	inputs.push_back(i_exec);
 	inputs.push_back(i_pointer);
 	inputs.push_back(i_value);
+
 	outputs.push_back(o_exec);
 	outputs.push_back(o_value);
 

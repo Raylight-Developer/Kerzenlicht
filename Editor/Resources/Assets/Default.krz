@@ -7,26 +7,32 @@
  ┌Node-Tree [ 0 ]
   * 100
   ┌Nodes( 6 )
-   ┌Node :: EXEC :: Tick [ 0 ] ( -120 0 )
+   ┌Node :: EXEC :: Tick [ 0 ] #
     * 1000
+    ( -120 0 )
    └Node
-   ┌Node :: LINK :: SET :: TRANSFORM :: EULER_ROTATION :: X [ 1 ] ( 360 0 )
+   ┌Node :: LINK :: SET :: TRANSFORM :: EULER_ROTATION :: X [ 1 ] #
     * 1001
+    ( 360 0 )
    └Node
-   ┌Node :: LINK :: Pointer [ 2 ] ( -120 100 )
+   ┌Node :: LINK :: Pointer [ 2 ] #
     * 1002
+    ( -120 100 )
     Type 27
    └Node
-   ┌Node :: LINK :: Pointer [ 3 ] ( -120 200 )
+   ┌Node :: LINK :: Pointer [ 3 ] #
     * 1003
+    ( -120 200 )
     Type 27
    └Node
-   ┌Node :: LINK :: Pointer [ 4 ] ( -120 300 )
+   ┌Node :: LINK :: Pointer [ 4 ] #
     * 1004
+	( -120 300 )
     Type 27
    └Node
-   ┌Node :: EXEC :: Script [ 5 ] ( 120 -20 )
+   ┌Node :: EXEC :: Script [ 5 ] #
     * 1005
+    ( 120 -20 )
     Script_ID
    └Node
   └Nodes

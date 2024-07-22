@@ -297,8 +297,8 @@ void GUI::NODE::Connection::paint(QPainter* painter, const QStyleOptionGraphicsI
 
 		QPainterPath path;
 		path.moveTo(pos_l + QPointF(6, 0));
-		path.lineTo(pos_l + QPointF(10, 0));
-		path.lineTo(pos_r - QPointF(10, 0));
+		path.lineTo(pos_l + QPointF((pos_r.x() - pos_l.x())/2.0, 0));
+		path.lineTo(pos_r - QPointF(-(pos_l.x() - pos_r.x())/2.0, 0));
 		path.lineTo(pos_r - QPointF(6, 0));
 
 		painter->drawPath(path);

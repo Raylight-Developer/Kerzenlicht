@@ -86,7 +86,7 @@ GUI::WORKSPACE::Node_Viewport::Node_Viewport(Workspace_Node_Editor* parent) :
 	selecting = false;
 	connecting = false;
 	connection = nullptr;
-	move_selection = {};
+	selection = {};
 	active_node_tree = nullptr;
 	scene = new QGraphicsScene(this);
 	selection_rect = new QGraphicsRectItem(QRectF(0, 0, 0, 0));
@@ -186,7 +186,7 @@ void GUI::WORKSPACE::Node_Viewport::mouseReleaseEvent(QMouseEvent* event) {
 					if (!node->isSelected()) {
 						node->setSelected(true);
 						node->real_pos = node->pos();
-						move_selection.push_back(node);
+						selection.push_back(node);
 					}
 				}
 			}
@@ -279,10 +279,10 @@ void GUI::WORKSPACE::Node_Viewport::mousePressEvent(QMouseEvent* event) {
 					if (!node->isSelected()) {
 						node->setSelected(true);
 						node->real_pos = node->pos();
-						for (auto subnode: move_selection) {
+						for (auto subnode: selection) {
 							subnode->real_pos = subnode->pos();
 						}
-						move_selection.push_back(node);
+						selection.push_back(node);
 					}
 					else {
 						node->setSelected(false);
@@ -290,29 +290,29 @@ void GUI::WORKSPACE::Node_Viewport::mousePressEvent(QMouseEvent* event) {
 				}
 				else {
 					if (!node->isSelected()) {
-						for (auto item : move_selection) {
+						for (auto item : selection) {
 							item->setSelected(false);
 						}
-						move_selection.clear();
+						selection.clear();
 						node->setSelected(true);
 						node->real_pos = node->pos();
-						move_selection.push_back(node);
+						selection.push_back(node);
 					}
 				}
 				move_pos = mapToScene(event->pos());
 			}
 			else {
-				for (auto item : move_selection) {
+				for (auto item : selection) {
 					item->setSelected(false);
 				}
-				move_selection.clear();
+				selection.clear();
 			}
 		}
 		else {
-			for (auto item : move_selection) {
+			for (auto item : selection) {
 				item->setSelected(false);
 			}
-			move_selection.clear();
+			selection.clear();
 
 			selecting = true;
 			selection_start = mapToScene(event->pos());
@@ -371,7 +371,7 @@ void GUI::WORKSPACE::Node_Viewport::mouseMoveEvent(QMouseEvent* event) {
 			pan_pos = event->pos();
 		}
 		if (moving) {
-			for (auto& node : move_selection) {
+			for (auto& node : selection) {
 				const QPointF delta = node->real_pos + mapToScene(event->pos()) - move_pos;
 				node->setPos(f_roundToNearest(delta.x(), 10.0), f_roundToNearest(delta.y(), 10.0));
 				node->real_pos = delta;
@@ -394,6 +394,17 @@ void GUI::WORKSPACE::Node_Viewport::mouseMoveEvent(QMouseEvent* event) {
 		}
 	}
 	QGraphicsView::mouseMoveEvent(event);
+}
+
+void GUI::WORKSPACE::Node_Viewport::keyPressEvent(QKeyEvent* event) {
+	Graphics_View::keyPressEvent(event);
+	if (event->key() == Qt::Key::Key_Delete) {
+		for (NODE::Node* node : selection) {
+			scene->removeItem(node);
+			delete node;
+		}
+		selection.clear();
+	}
 }
 
 void GUI::WORKSPACE::Node_Viewport::resizeEvent(QResizeEvent* event) {
@@ -424,8 +435,10 @@ void GUI::WORKSPACE::Node_Viewport::wheelEvent(QWheelEvent* event) {
 }
 
 void GUI::WORKSPACE::Node_Viewport::dropEvent(QDropEvent* event) {
-	const dvec2 drop_pos = f_roundToNearest(p_to_d(mapToScene(event->position().toPoint())), 10.0);
+	const ivec2 drop_pos = d_to_i(f_roundToNearest(p_to_d(mapToScene(event->position().toPoint())), 10.0));
 	if (event->mimeData()->hasText() and active_node_tree) {
+		GUI::NODE::Node* node = nullptr;
+
 		if (event->mimeData()->text() == "NODE") {
 			QByteArray itemDataType = event->mimeData()->data("Type");
 			QDataStream dataStreamType(&itemDataType, QIODevice::ReadOnly);
@@ -439,88 +452,45 @@ void GUI::WORKSPACE::Node_Viewport::dropEvent(QDropEvent* event) {
 
 			if (type == "EXEC") {
 				if (sub_type == "Counter") {
-					event->acceptProposedAction();
-					auto node = new GUI::NODE::EXEC::Counter(drop_pos);
-					active_node_tree->nodes.push_back(node);
-					scene->addItem(node);
-					return;
+					node = new GUI::NODE::EXEC::Counter(drop_pos);
 				}
-				if (sub_type == "Script") {
-					event->acceptProposedAction();
-					auto node = new GUI::NODE::EXEC::Script(drop_pos);
-					active_node_tree->nodes.push_back(node);
-					scene->addItem(node);
-					return;
+				else if (sub_type == "Script") {
+					node = new GUI::NODE::EXEC::Script(drop_pos);
 				}
-				if (sub_type == "Tick") {
-					event->acceptProposedAction();
-					auto node = new GUI::NODE::EXEC::Tick(drop_pos);
-					active_node_tree->nodes.push_back(node);
-					scene->addItem(node);
-					return;
+				else if (sub_type == "Tick") {
+					node = new GUI::NODE::EXEC::Tick(drop_pos);
 				}
 			}
-			if (type == "MATH") {
+			else if (type == "MATH") {
 				if (sub_type == "Add") {
-					event->acceptProposedAction();
-					auto node = new GUI::NODE::MATH::Add(drop_pos);
-					active_node_tree->nodes.push_back(node);
-					scene->addItem(node);
-					return;
+					node = new GUI::NODE::MATH::Add(drop_pos);
 				}
-				if (sub_type == "Sub") {
-					event->acceptProposedAction();
-					auto node = new GUI::NODE::MATH::Sub(drop_pos);
-					active_node_tree->nodes.push_back(node);
-					scene->addItem(node);
-					return;
+				else if (sub_type == "Sub") {
+					node = new GUI::NODE::MATH::Sub(drop_pos);
 				}
-				if (sub_type == "Mul") {
-					event->acceptProposedAction();
-					auto node = new GUI::NODE::MATH::Mul(drop_pos);
-					active_node_tree->nodes.push_back(node);
-					scene->addItem(node);
-					return;
+				else if (sub_type == "Mul") {
+					node = new GUI::NODE::MATH::Mul(drop_pos);
 				}
-				if (sub_type == "Div") {
-					event->acceptProposedAction();
-					auto node = new GUI::NODE::MATH::Div(drop_pos);
-					active_node_tree->nodes.push_back(node);
-					scene->addItem(node);
-					return;
+				else if (sub_type == "Div") {
+					node = new GUI::NODE::MATH::Div(drop_pos);
 				}
 			}
-			if (type == "LINK") {
+			else if (type == "LINK") {
 				if (sub_type == "LINK_POINTER_SCENE") {
-					event->acceptProposedAction();
-					auto node = new GUI::NODE::LINK::Pointer(drop_pos, CLASS::NODE::DATA::Type::SCENE);
-					node->pointer = FILE->active_scene->ptr;
-					active_node_tree->nodes.push_back(node);
-					scene->addItem(node);
-					return;
+					auto t_node = new GUI::NODE::LINK::Pointer(drop_pos, CLASS::NODE::DATA::Type::SCENE);
+					t_node->pointer = FILE->active_scene->ptr;
+					node = t_node;
 				}
-				if (sub_type == "LINK_GET_FIELD") {
-					event->acceptProposedAction();
-					auto node = new GUI::NODE::LINK::GET::Field(drop_pos);
-					active_node_tree->nodes.push_back(node);
-					scene->addItem(node);
-					return;
+				else if (sub_type == "LINK_GET_FIELD") {
+					node = new GUI::NODE::LINK::GET::Field(drop_pos);
 				}
-				if (sub_type == "SET_Transform_Euler_Rot_X") {
-					event->acceptProposedAction();
-					auto node = new GUI::NODE::LINK::SET::Euler_Rotation_X(drop_pos);
-					active_node_tree->nodes.push_back(node);
-					scene->addItem(node);
-					return;
+				else if (sub_type == "SET_Transform_Euler_Rot_X") {
+					node = new GUI::NODE::LINK::SET::Euler_Rotation_X(drop_pos);
 				}
 			}
-			if (type == "UTIL") {
+			else if (type == "UTIL") {
 				if (sub_type == "Print") {
-					event->acceptProposedAction();
-					auto node = new GUI::NODE::UTIL::Print(drop_pos);
-					active_node_tree->nodes.push_back(node);
-					scene->addItem(node);
-					return;
+					node = new GUI::NODE::UTIL::Print(drop_pos);
 				}
 			}
 		}
@@ -534,11 +504,16 @@ void GUI::WORKSPACE::Node_Viewport::dropEvent(QDropEvent* event) {
 			
 			auto object = reinterpret_cast<CLASS::Object*>(ptr);
 
-			auto node = new GUI::NODE::LINK::Pointer(drop_pos, CLASS::NODE::DATA::Type::OBJECT);
-			node->pointer = object;
+			auto t_node = new GUI::NODE::LINK::Pointer(drop_pos, CLASS::NODE::DATA::Type::OBJECT);
+			t_node->pointer = object;
+			node = t_node;
+			return;
+		}
+		if (node) {
 			active_node_tree->nodes.push_back(node);
 			scene->addItem(node);
-			return;
+			node->setPos(node->load_pos);
+			event->acceptProposedAction();
 		}
 	}
 }
