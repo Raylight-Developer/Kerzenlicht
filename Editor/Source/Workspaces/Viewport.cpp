@@ -48,7 +48,6 @@ GUI::WORKSPACE::Workspace_Viewport::Workspace_Viewport(Workspace_Manager* parent
 	viewport_realtime = new Viewport_Realtime(this);
 	container = QWidget::createWindowContainer(viewport_realtime);
 
-
 	container->setSizePolicy(QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Expanding);
 	container->setContentsMargins(0, 0, 0, 0);
 

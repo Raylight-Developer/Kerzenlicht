@@ -13,9 +13,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Shared">
-      <UniqueIdentifier>{c1f4378c-99c5-479f-ac0e-bb64aa666a7c}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Rendering\Renderer.cpp">
@@ -27,7 +24,13 @@
     <ClCompile Include="Source\Operators.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Rendering\OpenGl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Resources\glad.c">
+      <Filter>Resource Files</Filter>
+    </ClCompile>
     <ClCompile Include="Include\External\imgui-1.90\backends\imgui_impl_opengl3.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -58,12 +61,6 @@
     <ClCompile Include="Source\Rendering\Vulkan.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Shared\Source\glad.c">
-      <Filter>Shared</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Rendering\OpenGl.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\External\stb_image.h">
@@ -76,6 +73,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Include\Operators.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Rendering\OpenGl.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Include\External\imgui-1.90\backends\imgui_impl_opengl3.h">
@@ -109,9 +109,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Include\Rendering\Vulkan.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Rendering\OpenGl.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

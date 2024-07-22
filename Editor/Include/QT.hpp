@@ -4,6 +4,8 @@
 
 #undef FILE
 
+#include <qopenglfunctions_4_5_core.h>
+#include <QtOpenGLWidgets>
 #include <QtWidgets>
 #include <QtCore>
 #include <QtGui>

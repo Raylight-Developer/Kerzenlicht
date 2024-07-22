@@ -31,12 +31,12 @@
 #include <set>
 
 #ifdef COMPILE_RENDERER
+	#include <glad/glad.h>
 #endif
 
 #ifdef COMPILE_EDITOR
-#endif
 
-#include <glad/glad.h>
+#endif
 
 #include <glm/glm.hpp>
 #include <glm/gtx/spline.hpp>
