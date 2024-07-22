@@ -103,6 +103,16 @@ CLASS::Node_Tree::Node_Tree(const GUI::NODE::Node_Tree* gui_tree) :
 				}
 				break;
 			}
+			case NODE::Type::UTIL: {
+				switch (static_cast<NODE::UTIL::Type>(gui_node->sub_type)) {
+					case NODE::UTIL::Type::PRINT: {
+						auto t_node = new NODE::UTIL::Print();
+						node = t_node;
+						break;
+					}
+				}
+				break;
+			}
 		}
 		nodes.push_back(node);
 		node_map[gui_node] = node;
@@ -250,6 +260,20 @@ dvec1 CLASS::NODE::Data::getDouble() const {
 
 CLASS::Scene* CLASS::NODE::Data::getScene() const {
 	return any_cast<CLASS::Scene*>(data);
+}
+
+CLASS::Object* CLASS::NODE::Data::getObject() const {
+	return any_cast<CLASS::Object*>(data);
+}
+
+string CLASS::NODE::Data::to_string() const {
+	switch (type) {
+		case DATA::Type::TRANSFORM: return any_cast<Transform>(data).to_string();
+		case DATA::Type::DOUBLE:    return std::to_string(any_cast<dvec1>(data));
+		case DATA::Type::UINT:      return std::to_string(static_cast<dvec1>(any_cast<uint64>(data)));
+		case DATA::Type::INT:       return std::to_string(static_cast<dvec1>(any_cast<int64>(data)));
+	}
+	return "";
 }
 
 CLASS::NODE::Port::Port(Node* node) :

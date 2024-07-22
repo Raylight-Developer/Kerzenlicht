@@ -135,7 +135,7 @@ namespace CLASS {
 			};
 		}
 		namespace MATH {
-			enum struct Type { RAMP, MAP, ADD, DIV, MUL, SUB };
+			enum struct Type { NONE, RAMP, MAP, ADD, DIV, MUL, SUB };
 			struct MATH : Node {
 				PORT::Data_I_Port* i_value_a;
 				PORT::Data_I_Port* i_value_b;
@@ -144,19 +144,19 @@ namespace CLASS {
 				MATH();
 			};
 			struct Add : MATH {
-				Add() {};
+				Add();;
 				NODE::Data getData(const uint16& slot_id) const override;
 			};
 			struct Sub : MATH {
-				Sub() {};
+				Sub();;
 				NODE::Data getData(const uint16& slot_id) const override;
 			};
 			struct Mul : MATH {
-				Mul() {};
+				Mul();;
 				NODE::Data getData(const uint16& slot_id) const override;
 			};
 			struct Div : MATH {
-				Div() {};
+				Div();;
 				NODE::Data getData(const uint16& slot_id) const override;
 			};
 		}
@@ -218,7 +218,7 @@ namespace CLASS {
 			}
 		}
 		namespace UTIL {
-			enum struct Type { COLLAPSE, EXPAND, SWITCH, CAST, VIEW };
+			enum struct Type { COLLAPSE, EXPAND, SWITCH, PRINT, CAST, VIEW };
 			struct Cast : Node {
 				PORT::Data_I_Port* i_value;
 				PORT::Data_O_Port* o_value;
@@ -255,6 +255,15 @@ namespace CLASS {
 				enum struct Type { };
 
 			}
+			struct Print : Node {
+				PORT::Exec_I_Port* i_exec;
+				PORT::Data_I_Port* i_value;
+				PORT::Exec_O_Port* o_exec;
+
+				Print();
+
+				void exec(const uint16& slot_id = 0) override;
+			};
 			struct View : Node {
 				PORT::Data_I_Port* port;
 

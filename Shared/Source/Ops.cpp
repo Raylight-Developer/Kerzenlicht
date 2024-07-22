@@ -1,4 +1,5 @@
 #include "Ops.hpp"
+#include "Lace.hpp"
 
 vector<string> f_split(const string& input) {
 	vector<string> result;
@@ -227,4 +228,10 @@ dmat4 CLASS::Transform::f_compile() const {
 		}
 	}
 	return translation_matrix * rotation_matrix * scale_matrix;
+}
+
+string CLASS::Transform::to_string() const {
+	Lace value;
+	value << position << " | " << euler_rotation << " | " << scale;
+	return value.str();
 }

@@ -514,6 +514,15 @@ void GUI::WORKSPACE::Node_Viewport::dropEvent(QDropEvent* event) {
 					return;
 				}
 			}
+			if (type == "UTIL") {
+				if (sub_type == "Print") {
+					event->acceptProposedAction();
+					auto node = new GUI::NODE::UTIL::Print(drop_pos);
+					active_node_tree->nodes.push_back(node);
+					scene->addItem(node);
+					return;
+				}
+			}
 		}
 		else if (event->mimeData()->text() == "OBJECT") {
 			event->acceptProposedAction();
@@ -597,6 +606,8 @@ GUI::WORKSPACE::Node_Shelf::Node_Shelf(Workspace_Node_Editor* parent) :
 	auto tree_link_2120  = new Tree_Item(tree_link_212, "X"             , 4, { { 1000, "LINK" }, { 1001, "GET_Transform_Scale_X"     } });
 	auto tree_link_2121  = new Tree_Item(tree_link_212, "Y"             , 4, { { 1000, "LINK" }, { 1001, "GET_Transform_Scale_Y"     } });
 	auto tree_link_2122  = new Tree_Item(tree_link_212, "Z"             , 4, { { 1000, "LINK" }, { 1001, "GET_Transform_Scale_Z"     } });
+
+	auto tree_util_0     = new Tree_Item(tree_util     ,"Print"         , 1, { { 1000, "UTIL" }, { 1001, "Print"                     } });
 }
 
 void GUI::WORKSPACE::Node_Viewport::dragMoveEvent(QDragMoveEvent* event) {

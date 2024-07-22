@@ -249,7 +249,7 @@ void GUI::WORKSPACE::Viewport::f_updateTick() {
 	last_delta = chrono::steady_clock::now();
 	for (const CLASS::Object* object : FILE->active_scene->ptr->objects)
 		if (object->nodes)
-			object->nodes->exec(&delta);
+			object->nodes->exec(&delta);  // TODO Fix not loading without Execute Load To View
 	frame_counter++;
 	f_uploadData();
 	requestUpdate();

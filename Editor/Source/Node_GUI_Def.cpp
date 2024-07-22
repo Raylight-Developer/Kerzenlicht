@@ -2,9 +2,7 @@
 
 #include "Object/Object.hpp"
 
-using namespace GUI::NODE;
-
-EXEC::Counter::Counter(const ivec2& pos) {
+GUI::NODE::EXEC::Counter::Counter(const ivec2& pos) {
 	label = "Tick Counter";
 	type = CLASS::NODE::Type::EXEC;
 	sub_type = e_to_u(CLASS::NODE::EXEC::Type::COUNTER);
@@ -64,7 +62,7 @@ GUI::NODE::EXEC::Script::Script(const ivec2& pos) {
 	}
 }
 
-void EXEC::Script::clearIO() {
+void GUI::NODE::EXEC::Script::clearIO() {
 	for (auto it : inputs) {
 		delete it;
 	}
@@ -75,35 +73,35 @@ void EXEC::Script::clearIO() {
 	outputs.clear();
 }
 
-void EXEC::Script::addDataInput(const uint16& slot_id, const string& label, const CLASS::NODE::DATA::Type& type, const CLASS::NODE::DATA::Modifier& modifier) {
+void GUI::NODE::EXEC::Script::addDataInput(const uint16& slot_id, const string& label, const CLASS::NODE::DATA::Type& type, const CLASS::NODE::DATA::Modifier& modifier) {
 	PORT::Data_I_Port* value = new PORT::Data_I_Port(this, slot_id, QString::fromStdString(label), type, modifier);
 	inputs.push_back(value);
 	value->rect.moveTopLeft(value->rect.topLeft() + QPointF(0, 20));
 	rect.setHeight(60 + max(inputs.size(), outputs.size()) * 20);
 };
 
-void EXEC::Script::addDataOutput(const uint16& slot_id, const string& label, const CLASS::NODE::DATA::Type& type, const CLASS::NODE::DATA::Modifier& modifier) {
+void GUI::NODE::EXEC::Script::addDataOutput(const uint16& slot_id, const string& label, const CLASS::NODE::DATA::Type& type, const CLASS::NODE::DATA::Modifier& modifier) {
 	PORT::Data_O_Port* value = new PORT::Data_O_Port(this, slot_id, QString::fromStdString(label), type, modifier);
 	outputs.push_back(value);
 	value->rect.moveTopLeft(value->rect.topLeft() + QPointF(0, 20));
 	rect.setHeight(60 + max(inputs.size(), outputs.size()) * 20);
 };
 
-void EXEC::Script::addExecInput(const uint16& slot_id, const string& label) {
+void GUI::NODE::EXEC::Script::addExecInput(const uint16& slot_id, const string& label) {
 	PORT::Exec_I_Port* value = new PORT::Exec_I_Port(this, slot_id, QString::fromStdString(label));
 	inputs.push_back(value);
 	value->rect.moveTopLeft(value->rect.topLeft() + QPointF(0, 20));
 	rect.setHeight(60 + max(inputs.size(), outputs.size()) * 20);
 };
 
-void EXEC::Script::addExecOutput(const uint16& slot_id, const string& label) {
+void GUI::NODE::EXEC::Script::addExecOutput(const uint16& slot_id, const string& label) {
 	PORT::Exec_O_Port* value = new PORT::Exec_O_Port(this, slot_id, QString::fromStdString(label));
 	outputs.push_back(value);
 	value->rect.moveTopLeft(value->rect.topLeft() + QPointF(0, 20));
 	rect.setHeight(60 + max(inputs.size(), outputs.size()) * 20);
 };
 
-void EXEC::Script::reloadFunctions() {
+void GUI::NODE::EXEC::Script::reloadFunctions() {
 	FARPROC buildAddress = GetProcAddress(dynlib, (script_identifier->text().toStdString() + "_buildGui").c_str());
 	if (buildAddress != nullptr) {
 		buildGuiFunc = (void(*)(Script*))buildAddress;
@@ -114,18 +112,18 @@ void EXEC::Script::reloadFunctions() {
 	}
 }
 
-void EXEC::Script::reloadDll() {
+void GUI::NODE::EXEC::Script::reloadDll() {
 	unloadDLL(dynlib);
 	loadDLL(dynlib);
 	reloadFunctions();
 }
 
-void EXEC::Script::recompile(const HINSTANCE& library) {
+void GUI::NODE::EXEC::Script::recompile(const HINSTANCE& library) {
 	dynlib = library;
 	reloadFunctions();
 }
 
-EXEC::Tick::Tick(const ivec2& pos) {
+GUI::NODE::EXEC::Tick::Tick(const ivec2& pos) {
 	label = "Tick Update";
 	type = CLASS::NODE::Type::EXEC;
 	sub_type = e_to_u(CLASS::NODE::EXEC::Type::TICK);
@@ -139,7 +137,7 @@ EXEC::Tick::Tick(const ivec2& pos) {
 	load_pos = QPointF(pos.x, pos.y);
 }
 
-LINK::Pointer::Pointer(const ivec2& pos, const CLASS::NODE::DATA::Type& pointer_type) {
+GUI::NODE::LINK::Pointer::Pointer(const ivec2& pos, const CLASS::NODE::DATA::Type& pointer_type) {
 	label = "Pointer";
 	type = CLASS::NODE::Type::LINK;
 	sub_type = e_to_u(CLASS::NODE::LINK::Type::POINTER);
@@ -157,7 +155,7 @@ LINK::Pointer::Pointer(const ivec2& pos, const CLASS::NODE::DATA::Type& pointer_
 	load_pos = QPointF(pos.x, pos.y);
 }
 
-void LINK::Pointer::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) {
+void GUI::NODE::LINK::Pointer::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) {
 	Node::paint(painter, option, widget);
 	if (pointer) {
 		painter->setBrush(QColor(25, 25, 25));
@@ -177,7 +175,7 @@ void LINK::Pointer::paint(QPainter* painter, const QStyleOptionGraphicsItem* opt
 	}
 }
 
-LINK::Get::Get(const ivec2& pos) {
+GUI::NODE::LINK::Get::Get(const ivec2& pos) {
 	label = "Get";
 	type = CLASS::NODE::Type::LINK;
 	sub_type = e_to_u(CLASS::NODE::LINK::Type::GET);
@@ -190,7 +188,7 @@ LINK::Get::Get(const ivec2& pos) {
 	load_pos = QPointF(pos.x, pos.y);
 }
 
-LINK::GET::Field::Field(const ivec2& pos) :
+GUI::NODE::LINK::GET::Field::Field(const ivec2& pos) :
 	Get(pos)
 {
 	label = "Get Field";
@@ -215,7 +213,7 @@ LINK::GET::Field::Field(const ivec2& pos) :
 	rect.setHeight(60 + max(inputs.size(), outputs.size()) * 20);
 }
 
-LINK::Set::Set(const ivec2& pos) {
+GUI::NODE::LINK::Set::Set(const ivec2& pos) {
 	label = "Set";
 	type = CLASS::NODE::Type::LINK;
 	sub_type = e_to_u(CLASS::NODE::LINK::Type::SET);
@@ -231,13 +229,11 @@ LINK::Set::Set(const ivec2& pos) {
 	load_pos = QPointF(pos.x, pos.y);
 }
 
-LINK::SET::Euler_Rotation_X::Euler_Rotation_X(const ivec2& pos) :
+GUI::NODE::LINK::SET::Euler_Rotation_X::Euler_Rotation_X(const ivec2& pos) :
 	Set(pos)
 {
 	label = "Set Euler Rotation X";
 	mini_type = CLASS::NODE::LINK::SET::Type::EULER_ROTATION_X;
-
-	
 
 	i_exec    = new PORT::Exec_I_Port(this, 0, "Exec");
 	i_pointer = new PORT::Data_I_Port(this, 1, "Pointer", CLASS::NODE::DATA::Type::OBJECT);
@@ -255,8 +251,9 @@ LINK::SET::Euler_Rotation_X::Euler_Rotation_X(const ivec2& pos) :
 	rect.setHeight(40 + max(inputs.size(), outputs.size()) * 20);
 }
 
-MATH::MATH::MATH(const ivec2& pos) {
+GUI::NODE::MATH::MATH::MATH(const ivec2& pos) {
 	type = CLASS::NODE::Type::MATH;
+	sub_type = e_to_u(CLASS::NODE::MATH::Type::NONE);
 
 	rect = QRectF(-100, -20, 200, 40);
 
@@ -269,36 +266,55 @@ MATH::MATH::MATH(const ivec2& pos) {
 	inputs.push_back(in_b);
 	outputs.push_back(out_a);
 
-	data_type = CLASS::NODE::DATA::Type::ANY;
-
 	rect.setHeight(40 + max(inputs.size(), outputs.size()) * 20);
 	load_pos = QPointF(pos.x, pos.y);
 }
 
-MATH::Add::Add(const ivec2& pos) :
+GUI::NODE::MATH::Add::Add(const ivec2& pos) :
 	MATH(pos)
 {
 	label = "Add";
 	sub_type = e_to_u(CLASS::NODE::MATH::Type::ADD);
 }
 
-MATH::Sub::Sub(const ivec2& pos) :
+GUI::NODE::MATH::Sub::Sub(const ivec2& pos) :
 	MATH(pos)
 {
 	label = "Subtract";
 	sub_type = e_to_u(CLASS::NODE::MATH::Type::SUB);
 }
 
-MATH::Mul::Mul(const ivec2& pos) :
+GUI::NODE::MATH::Mul::Mul(const ivec2& pos) :
 	MATH(pos)
 {
 	label = "Multiply";
 	sub_type = e_to_u(CLASS::NODE::MATH::Type::MUL);
 }
 
-MATH::Div::Div(const ivec2& pos) :
+GUI::NODE::MATH::Div::Div(const ivec2& pos) :
 	MATH(pos)
 {
 	label = "Divide";
 	sub_type = e_to_u(CLASS::NODE::MATH::Type::DIV);
+}
+
+GUI::NODE::UTIL::Print::Print(const ivec2& pos) {
+	label = "Print";
+	type = CLASS::NODE::Type::UTIL;
+	sub_type = e_to_u(CLASS::NODE::UTIL::Type::PRINT);
+
+	rect = QRectF(-100, -20, 200, 40);
+
+	i_exec  = new PORT::Exec_I_Port(this, 0, "Exec");
+	i_value = new PORT::Data_I_Port(this, 1, "Value", CLASS::NODE::DATA::Type::ANY);
+
+	o_exec  = new PORT::Exec_O_Port(this, 0, "Exec");
+
+	inputs.push_back(i_exec);
+	inputs.push_back(i_value);
+
+	outputs.push_back(o_exec);
+
+	rect.setHeight(40 + max(inputs.size(), outputs.size()) * 20);
+	load_pos = QPointF(pos.x, pos.y);
 }

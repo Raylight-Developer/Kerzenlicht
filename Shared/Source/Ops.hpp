@@ -52,6 +52,7 @@ namespace CLASS {
 		Transform operator*(const dvec1& other) const;
 
 		dmat4 f_compile() const;
+		string to_string() const;
 	};
 
 	template<typename T>

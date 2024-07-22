@@ -107,8 +107,6 @@ namespace GUI {
 				PORT::Data_I_Port* in_b;
 				PORT::Data_O_Port* out_a;
 
-				CLASS::NODE::DATA::Type data_type;
-
 				MATH(const ivec2& pos);
 			};
 			struct Add : MATH {
@@ -125,6 +123,13 @@ namespace GUI {
 			};
 		}
 		namespace UTIL {
+			struct Print : Node {
+				PORT::Exec_I_Port* i_exec;
+				PORT::Data_I_Port* i_value;
+				PORT::Exec_O_Port* o_exec;
+
+				Print(const ivec2& pos);
+			};
 		}
 	}
 }
