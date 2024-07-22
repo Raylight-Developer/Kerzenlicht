@@ -21,30 +21,25 @@ CLASS::Node_Tree::Node_Tree(const GUI::NODE::Node_Tree* gui_tree) :
 	unordered_map<GUI::NODE::Node*, Node*> node_map;
 
 	for (GUI::NODE::Node* gui_node : gui_tree->nodes) {
+		Node* node = nullptr;
 		switch (gui_node->type) {
 			case NODE::Type::EXEC: {
 				switch (static_cast<NODE::EXEC::Type>(gui_node->sub_type)) {
 					case NODE::EXEC::Type::SCRIPT: {
-						auto node = new NODE::EXEC::Script();
-						node->pos = ivec2(gui_node->rect.topLeft().x(), gui_node->rect.topLeft().y());
-						node->script_id = static_cast<GUI::NODE::EXEC::Script*>(gui_node)->script_identifier->text().toStdString();
-						nodes.push_back(node);
-						node_map[gui_node] = node;
+						auto t_node = new NODE::EXEC::Script();
+						t_node->script_id = static_cast<GUI::NODE::EXEC::Script*>(gui_node)->script_identifier->text().toStdString();
+						node = t_node;
 						break;
 					}
 					case NODE::EXEC::Type::COUNTER: {
-						auto node = new NODE::EXEC::Counter();
-						node->pos = ivec2(gui_node->rect.topLeft().x(), gui_node->rect.topLeft().y());
-						nodes.push_back(node);
-						node_map[gui_node] = node;
+						auto t_node = new NODE::EXEC::Counter();
+						node = t_node;
 						break;
 					}
 					case NODE::EXEC::Type::TICK: {
-						auto node = new NODE::EXEC::Tick();
-						node->pos = ivec2(gui_node->rect.topLeft().x(), gui_node->rect.topLeft().y());
-						nodes.push_back(node);
-						node_map[gui_node] = node;
-						tick = node;
+						auto t_node = new NODE::EXEC::Tick();
+						tick = t_node;
+						node = t_node;
 						break;
 					}
 				}
@@ -53,22 +48,18 @@ CLASS::Node_Tree::Node_Tree(const GUI::NODE::Node_Tree* gui_tree) :
 			case NODE::Type::LINK: {
 				switch (static_cast<NODE::LINK::Type>(gui_node->sub_type)) {
 					case NODE::LINK::Type::POINTER: {
-						auto node = new NODE::LINK::Pointer();
-						node->pos = ivec2(gui_node->rect.topLeft().x(), gui_node->rect.topLeft().y());
-						node->pointer_type = static_cast<GUI::NODE::LINK::Pointer*>(gui_node)->pointer_type;
-						node->pointer = static_cast<GUI::NODE::LINK::Pointer*>(gui_node)->pointer;
-						nodes.push_back(node);
-						node_map[gui_node] = node;
+						auto t_node = new NODE::LINK::Pointer();
+						t_node->pointer_type = static_cast<GUI::NODE::LINK::Pointer*>(gui_node)->pointer_type;
+						t_node->pointer = static_cast<GUI::NODE::LINK::Pointer*>(gui_node)->pointer;
+						node = t_node;
 						break;
 					}
 					case NODE::LINK::Type::GET: {
 						switch (static_cast<GUI::NODE::LINK::Get*>(gui_node)->mini_type) {
 							case NODE::LINK::GET::Type::FIELD: {
-								auto node = new NODE::LINK::GET::Field();
-								node->pos = ivec2(gui_node->rect.topLeft().x(), gui_node->rect.topLeft().y());
-								node->field = static_cast<GUI::NODE::LINK::GET::Field*>(gui_node)->field->text().toStdString();
-								nodes.push_back(node);
-								node_map[gui_node] = node;
+								auto t_node = new NODE::LINK::GET::Field();
+								t_node->field = static_cast<GUI::NODE::LINK::GET::Field*>(gui_node)->field->text().toStdString();
+								node = t_node;
 								break;
 							}
 						}
@@ -77,10 +68,8 @@ CLASS::Node_Tree::Node_Tree(const GUI::NODE::Node_Tree* gui_tree) :
 					case NODE::LINK::Type::SET: {
 						switch (static_cast<GUI::NODE::LINK::Set*>(gui_node)->mini_type) {
 							case NODE::LINK::SET::Type::EULER_ROTATION_X: {
-								auto node = new NODE::LINK::SET::Euler_Rotation_X();
-								node->pos = ivec2(gui_node->rect.topLeft().x(), gui_node->rect.topLeft().y());
-								nodes.push_back(node);
-								node_map[gui_node] = node;
+								auto t_node = new NODE::LINK::SET::Euler_Rotation_X();
+								node = t_node;
 								break;
 							}
 						}
@@ -92,37 +81,32 @@ CLASS::Node_Tree::Node_Tree(const GUI::NODE::Node_Tree* gui_tree) :
 			case NODE::Type::MATH: {
 				switch (static_cast<NODE::MATH::Type>(gui_node->sub_type)) {
 					case NODE::MATH::Type::ADD: {
-						auto node = new NODE::MATH::Add();
-						node->pos = ivec2(gui_node->rect.topLeft().x(), gui_node->rect.topLeft().y());
-						nodes.push_back(node);
-						node_map[gui_node] = node;
+						auto t_node = new NODE::MATH::Add();
+						node = t_node;
 						break;
 					}
 					case NODE::MATH::Type::SUB: {
-						auto node = new NODE::MATH::Sub();
-						node->pos = ivec2(gui_node->rect.topLeft().x(), gui_node->rect.topLeft().y());
-						nodes.push_back(node);
-						node_map[gui_node] = node;
+						auto t_node = new NODE::MATH::Sub();
+						node = t_node;
 						break;
 					}
 					case NODE::MATH::Type::MUL: {
-						auto node = new NODE::MATH::Mul();
-						node->pos = ivec2(gui_node->rect.topLeft().x(), gui_node->rect.topLeft().y());
-						nodes.push_back(node);
-						node_map[gui_node] = node;
+						auto t_node = new NODE::MATH::Mul();
+						node = t_node;
 						break;
 					}
 					case NODE::MATH::Type::DIV: {
-						auto node = new NODE::MATH::Div();
-						node->pos = ivec2(gui_node->rect.topLeft().x(), gui_node->rect.topLeft().y());
-						nodes.push_back(node);
-						node_map[gui_node] = node;
+						auto t_node = new NODE::MATH::Div();
+						node = t_node;
 						break;
 					}
 				}
 				break;
 			}
 		}
+		nodes.push_back(node);
+		node_map[gui_node] = node;
+		FILE->node_map[node] = gui_node;
 	}
 	//Connections
 	for (GUI::NODE::Node* gui_node : gui_tree->nodes) {
@@ -177,7 +161,6 @@ void CLASS::Node_Tree::exec(const dvec1* delta) const {
 CLASS::Node::Node() {
 	type = NODE::Type::NONE;
 	sub_type = 0;
-	pos = ivec2(0);
 }
 
 CLASS::Node::~Node() {

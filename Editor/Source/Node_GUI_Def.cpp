@@ -10,7 +10,6 @@ EXEC::Counter::Counter(const ivec2& pos) {
 	sub_type = e_to_u(CLASS::NODE::EXEC::Type::COUNTER);
 
 	rect = QRectF(-100, -20, 200, 40);
-	rect.moveTo(QPointF(pos.x, pos.y));
 
 	i_exec  = new PORT::Exec_I_Port(this, 0, "Tick");
 
@@ -22,6 +21,7 @@ EXEC::Counter::Counter(const ivec2& pos) {
 	outputs.push_back(o_count);
 
 	rect.setHeight(40 + max(inputs.size(), outputs.size()) * 20);
+	load_pos = QPointF(pos.x, pos.y);
 }
 
 GUI::NODE::EXEC::Script::Script(const ivec2& pos) {
@@ -32,7 +32,7 @@ GUI::NODE::EXEC::Script::Script(const ivec2& pos) {
 	buildGuiFunc = nullptr;
 
 	rect = QRectF(-100, -20, 200, 40);
-	rect.moveTo(QPointF(pos.x, pos.y));
+	load_pos = QPointF(pos.x, pos.y);
 
 	QGraphicsProxyWidget* proxyWidget_id = new QGraphicsProxyWidget(this);
 	script_identifier = new GUI::Value_Input();
@@ -131,12 +131,12 @@ EXEC::Tick::Tick(const ivec2& pos) {
 	sub_type = e_to_u(CLASS::NODE::EXEC::Type::TICK);
 
 	rect = QRectF(-100, -20, 200, 40);
-	rect.moveTo(QPointF(pos.x, pos.y));
 
 	outputs.push_back(new PORT::Exec_O_Port(this, 0, "Tick"));
 	outputs.push_back(new PORT::Data_O_Port(this, 1, "Delta", CLASS::NODE::DATA::Type::DOUBLE));
 
 	rect.setHeight(40 + max(inputs.size(), outputs.size()) * 20);
+	load_pos = QPointF(pos.x, pos.y);
 }
 
 LINK::Pointer::Pointer(const ivec2& pos, const CLASS::NODE::DATA::Type& pointer_type) {
@@ -148,13 +148,13 @@ LINK::Pointer::Pointer(const ivec2& pos, const CLASS::NODE::DATA::Type& pointer_
 	pointer = nullptr;
 
 	rect = QRectF(-100, -20, 200, 40);
-	rect.moveTo(QPointF(pos.x, pos.y));
 
 	o_pointer = new PORT::Data_O_Port(this, 0, "Pointer", pointer_type);
 
 	outputs.push_back(o_pointer);
 
 	rect.setHeight(40 + max(inputs.size(), outputs.size()) * 20);
+	load_pos = QPointF(pos.x, pos.y);
 }
 
 void LINK::Pointer::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) {
@@ -187,6 +187,7 @@ LINK::Get::Get(const ivec2& pos) {
 	o_value   = nullptr;
 
 	rect = QRectF(-100, -20, 200, 40);
+	load_pos = QPointF(pos.x, pos.y);
 }
 
 LINK::GET::Field::Field(const ivec2& pos) :
@@ -196,8 +197,6 @@ LINK::GET::Field::Field(const ivec2& pos) :
 	type = CLASS::NODE::Type::LINK;
 	sub_type = e_to_u(CLASS::NODE::LINK::Type::GET);
 	mini_type = CLASS::NODE::LINK::GET::Type::FIELD;
-
-	rect.moveTo(QPointF(pos.x, pos.y));
 
 	QGraphicsProxyWidget* proxyWidget_id = new QGraphicsProxyWidget(this);
 	field = new GUI::Value_Input();
@@ -229,6 +228,7 @@ LINK::Set::Set(const ivec2& pos) {
 	o_value   = nullptr;
 
 	rect = QRectF(-100, -20, 200, 40);
+	load_pos = QPointF(pos.x, pos.y);
 }
 
 LINK::SET::Euler_Rotation_X::Euler_Rotation_X(const ivec2& pos) :
@@ -237,7 +237,7 @@ LINK::SET::Euler_Rotation_X::Euler_Rotation_X(const ivec2& pos) :
 	label = "Set Euler Rotation X";
 	mini_type = CLASS::NODE::LINK::SET::Type::EULER_ROTATION_X;
 
-	rect.moveTo(QPointF(pos.x, pos.y));
+	
 
 	i_exec    = new PORT::Exec_I_Port(this, 0, "Exec");
 	i_pointer = new PORT::Data_I_Port(this, 1, "Pointer", CLASS::NODE::DATA::Type::OBJECT);
@@ -259,7 +259,6 @@ MATH::MATH::MATH(const ivec2& pos) {
 	type = CLASS::NODE::Type::MATH;
 
 	rect = QRectF(-100, -20, 200, 40);
-	rect.moveTo(QPointF(pos.x, pos.y));
 
 	in_a  = new PORT::Data_I_Port(this, 0, "A", CLASS::NODE::DATA::Type::ANY);
 	in_b  = new PORT::Data_I_Port(this, 1, "B", CLASS::NODE::DATA::Type::ANY);
@@ -273,6 +272,7 @@ MATH::MATH::MATH(const ivec2& pos) {
 	data_type = CLASS::NODE::DATA::Type::ANY;
 
 	rect.setHeight(40 + max(inputs.size(), outputs.size()) * 20);
+	load_pos = QPointF(pos.x, pos.y);
 }
 
 MATH::Add::Add(const ivec2& pos) :

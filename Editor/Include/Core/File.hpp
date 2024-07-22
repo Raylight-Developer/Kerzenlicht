@@ -49,11 +49,12 @@ namespace CLASS {
 	struct File {
 		vector<OBJECT::Data*> object_data;
 		vector<Material*> materials;
-		vector<Node_Tree*> nodes;
+		vector<Node_Tree*> node_trees;
 		vector<Object*> objects;
 		vector<Scene*> scenes;
 
-		unordered_map<Node_Tree*, GUI::NODE::Node_Tree*> node_map;
+		unordered_map<Node_Tree*, GUI::NODE::Node_Tree*> nodetree_map;
+		unordered_map<Node*, GUI::NODE::Node*> node_map;
 		Observable_Ptr<Object>* active_object;
 		Observable_Ptr<Scene>* active_scene;
 		vector<Object*> selected_objects;
@@ -68,7 +69,7 @@ namespace CLASS {
 		string f_printFile();
 
 		void              f_loadHeader     (const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map);
-		CLASS::Node_Tree* f_loadNodeTree   (const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map, unordered_map<Node*, GUI::NODE::Node*>& node_gui_map);
+		CLASS::Node_Tree* f_loadNodeTree   (const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map);
 		Material*         f_loadMaterial   (const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map);
 		OBJECT::Data*     f_loadData       (const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map);
 		OBJECT::Data*     f_loadAtmosphere (const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map);
@@ -86,7 +87,7 @@ namespace CLASS {
 		OBJECT::Data*     f_loadVfx        (const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map);
 		Object*           f_loadObject     (const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map);
 		Scene*            f_loadScene      (const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map);
-		void              f_loadBuild      (const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map, const unordered_map<Node*, GUI::NODE::Node*>& node_gui_map);
+		void              f_loadBuild      (const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map);
 
 		void f_saveHeader     (Lace& lace);
 		void f_saveNodeTree   (Lace& lace, Node_Tree*          data     , const uint64& i);

@@ -92,9 +92,6 @@
     <ClCompile Include="Source\Workspaces\Node_Editor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Viewport_Realtime.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Core\Nodes.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -186,9 +183,6 @@
     </ClInclude>
     <ClInclude Include="Resources\Documentation\Layout.hpp" />
     <ClInclude Include="Include\Workspaces\Node_Editor.hpp">
-      <Filter>Header Files\GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Viewport_Realtime.hpp">
       <Filter>Header Files\GUI</Filter>
     </ClInclude>
     <ClInclude Include="Include\Core\Nodes.hpp">

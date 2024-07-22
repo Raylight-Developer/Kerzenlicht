@@ -13,7 +13,7 @@ CLASS::Scene::~Scene() {
 }
 
 CLASS::File::File() {
-	nodes = vector<CLASS::Node_Tree*>();
+	node_trees = vector<CLASS::Node_Tree*>();
 	object_data = vector<CLASS::OBJECT::Data*>();
 	materials = vector<CLASS::Material*>();
 	objects = vector<CLASS::Object*>();
@@ -33,7 +33,6 @@ CLASS::File::File() {
 void CLASS::File::f_loadFile(const string& file_path) {
 	ifstream file(file_path, ios::binary);
 	map<uint64, void*> pointer_map;
-	unordered_map<Node*, GUI::NODE::Node*>	node_gui_map;
 
 	if (file.is_open()) {
 		vector<vector<string>> data = vector<vector<string>>();
@@ -65,12 +64,12 @@ void CLASS::File::f_loadFile(const string& file_path) {
 					if      (is_processing == Parse_Type::BUILD_STEPS and tokens[0] == "└Build-Steps") {
 						*LOG << ENDL << HTML_GREEN << "[File]" << HTML_RESET << " Reading: Build..."; FLUSH
 						is_processing = Parse_Type::NONE;
-						f_loadBuild(data, pointer_map, node_gui_map);
+						f_loadBuild(data, pointer_map);
 					}
 					else if (is_processing == Parse_Type::NODE_TREE and tokens[0] == "└Node-Tree") {
 						*LOG << ENDL << HTML_BLUE << "[File]" << HTML_RESET << " Reading: Node-Tree..."; FLUSH
 						is_processing = Parse_Type::NONE;
-						nodes.push_back(f_loadNodeTree(data, pointer_map, node_gui_map));
+						node_trees.push_back(f_loadNodeTree(data, pointer_map));
 					}
 					else if (is_processing == Parse_Type::MATERIAL and tokens[0] == "└Material") {
 						*LOG << ENDL << HTML_BLUE << "[File]" << HTML_RESET << " Reading: Material..."; FLUSH
@@ -113,7 +112,7 @@ void CLASS::File::f_loadFile(const string& file_path) {
 void CLASS::File::f_loadHeader(const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map) {
 }
 
-CLASS::Node_Tree* CLASS::File::f_loadNodeTree(const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map, unordered_map<Node*, GUI::NODE::Node*>& node_gui_map) {
+CLASS::Node_Tree* CLASS::File::f_loadNodeTree(const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map) {
 	auto node_tree = new CLASS::Node_Tree();
 	auto gui_node_tree = new GUI::NODE::Node_Tree();
 
@@ -140,13 +139,11 @@ CLASS::Node_Tree* CLASS::File::f_loadNodeTree(const vector<vector<string>>& toke
 			if (read_data[0][2] == "EXEC") {
 				if (read_data[0][4] == "Script") {
 					node = new NODE::EXEC::Script();
-					node->pos = ivec2(str_to_i(read_data[0][9], read_data[0][10]));
 					gui_node = new GUI::NODE::EXEC::Script(str_to_i(read_data[0][9], read_data[0][10]));
 					static_cast<GUI::NODE::EXEC::Script*>(gui_node)->script_identifier->setText(QString::fromStdString(f_join(read_data[2])));
 				}
 				else if (read_data[0][4] == "Tick") {
 					node = new NODE::EXEC::Tick();
-					node->pos = ivec2(str_to_i(read_data[0][9], read_data[0][10]));
 					gui_node = new GUI::NODE::EXEC::Tick(str_to_i(read_data[0][9], read_data[0][10]));
 					node_tree->tick = static_cast<NODE::EXEC::Tick*>(node);
 				}
@@ -156,7 +153,6 @@ CLASS::Node_Tree* CLASS::File::f_loadNodeTree(const vector<vector<string>>& toke
 					auto pointer = new NODE::LINK::Pointer();
 					pointer->pointer_type = static_cast<NODE::DATA::Type>(str_to_u(read_data[2][1]));
 					node = pointer;
-					node->pos = ivec2(str_to_i(read_data[0][9], read_data[0][10]));
 					gui_node = new GUI::NODE::LINK::Pointer(str_to_i(read_data[0][9], read_data[0][10]), static_cast<NODE::DATA::Type>(str_to_u(read_data[2][1])));
 				}
 				else if (read_data[0][4] == "GET") {
@@ -164,7 +160,6 @@ CLASS::Node_Tree* CLASS::File::f_loadNodeTree(const vector<vector<string>>& toke
 						auto field = new NODE::LINK::GET::Field();
 						field->field = f_join(read_data[2]);
 						node = field;
-						node->pos = ivec2(str_to_i(read_data[0][11], read_data[0][12]));
 						auto gui_field = new GUI::NODE::LINK::GET::Field(str_to_i(read_data[0][11], read_data[0][12]));
 						gui_node = gui_field;
 						gui_field->field->setText(QString::fromStdString(f_join(read_data[2])));
@@ -175,7 +170,6 @@ CLASS::Node_Tree* CLASS::File::f_loadNodeTree(const vector<vector<string>>& toke
 						if      (read_data[0][8] == "EULER_ROTATION") {
 							if      (read_data[0][10] == "X") {
 								node = new NODE::LINK::SET::Euler_Rotation_X();
-								node->pos = ivec2(str_to_i(read_data[0][15], read_data[0][16]));
 								gui_node = new GUI::NODE::LINK::SET::Euler_Rotation_X(str_to_i(read_data[0][15], read_data[0][16]));
 							}
 						}
@@ -185,22 +179,18 @@ CLASS::Node_Tree* CLASS::File::f_loadNodeTree(const vector<vector<string>>& toke
 			else if (read_data[0][2] == "MATH") {
 				if      (read_data[0][4] == "Add") {
 					node = new NODE::MATH::Add();
-					node->pos = ivec2(str_to_i(read_data[0][9], read_data[0][10]));
 					gui_node = new GUI::NODE::MATH::Add(str_to_i(read_data[0][9], read_data[0][10]));
 				}
 				else if (read_data[0][4] == "Sub") {
 					node = new NODE::MATH::Sub();
-					node->pos = ivec2(str_to_i(read_data[0][9], read_data[0][10]));
 					gui_node = new GUI::NODE::MATH::Sub(str_to_i(read_data[0][9], read_data[0][10]));
 				}
 				else if (read_data[0][4] == "Mul") {
 					node = new NODE::MATH::Mul();
-					node->pos = ivec2(str_to_i(read_data[0][9], read_data[0][10]));
 					gui_node = new GUI::NODE::MATH::Mul(str_to_i(read_data[0][9], read_data[0][10]));
 				}
 				else if (read_data[0][4] == "Div") {
 					node = new NODE::MATH::Div();
-					node->pos = ivec2(str_to_i(read_data[0][9], read_data[0][10]));
 					gui_node = new GUI::NODE::MATH::Div(str_to_i(read_data[0][9], read_data[0][10]));
 				}
 			}
@@ -211,9 +201,9 @@ CLASS::Node_Tree* CLASS::File::f_loadNodeTree(const vector<vector<string>>& toke
 			}
 
 			pointer_map[str_to_ul(read_data[1][1])] = node;
-			node_gui_map[node] = gui_node;
-			node_tree->nodes.push_back(node);
 			gui_node_tree->nodes.push_back(gui_node);
+			node_tree->nodes.push_back(node);
+			node_map[node] = gui_node;
 		}
 		else if (tokens[0] == "┌Build-E") {
 			is_processing = true;
@@ -232,10 +222,10 @@ CLASS::Node_Tree* CLASS::File::f_loadNodeTree(const vector<vector<string>>& toke
 				port_r->incoming_connections.push_back(port_l);
 
 				auto gui_port_l = static_cast<GUI::NODE::PORT::Exec_O_Port*>(
-					node_gui_map[static_cast<CLASS::Node*>(pointer_map[str_to_ul(sub_tokens[1])])]->outputs[str_to_ul(sub_tokens[2])]
+					node_map[static_cast<CLASS::Node*>(pointer_map[str_to_ul(sub_tokens[1])])]->outputs[str_to_ul(sub_tokens[2])]
 				);
 				auto gui_port_r = static_cast<GUI::NODE::PORT::Exec_I_Port*>(
-					node_gui_map[static_cast<CLASS::Node*>(pointer_map[str_to_ul(sub_tokens[5])])]->inputs[str_to_ul(sub_tokens[3])]
+					node_map[static_cast<CLASS::Node*>(pointer_map[str_to_ul(sub_tokens[5])])]->inputs[str_to_ul(sub_tokens[3])]
 				);
 				gui_port_l->connection = new GUI::NODE::Connection(gui_port_l, gui_port_r);
 				gui_port_r->incoming_connections.push_back(gui_port_l->connection);
@@ -258,10 +248,10 @@ CLASS::Node_Tree* CLASS::File::f_loadNodeTree(const vector<vector<string>>& toke
 				port_l->outgoing_connections.push_back(port_r);
 				
 				auto gui_port_l = static_cast<GUI::NODE::PORT::Data_O_Port*>(
-					node_gui_map[static_cast<CLASS::Node*>(pointer_map[str_to_ul(sub_tokens[1])])]->outputs[str_to_ul(sub_tokens[2])]
+					node_map[static_cast<CLASS::Node*>(pointer_map[str_to_ul(sub_tokens[1])])]->outputs[str_to_ul(sub_tokens[2])]
 				);
 				auto gui_port_r = static_cast<GUI::NODE::PORT::Data_I_Port*>(
-					node_gui_map[static_cast<CLASS::Node*>(pointer_map[str_to_ul(sub_tokens[5])])]->inputs[str_to_ul(sub_tokens[3])]
+					node_map[static_cast<CLASS::Node*>(pointer_map[str_to_ul(sub_tokens[5])])]->inputs[str_to_ul(sub_tokens[3])]
 				);
 				gui_port_r->connection = new GUI::NODE::Connection(gui_port_l, gui_port_r);
 				gui_port_l->outgoing_connections.push_back(gui_port_r->connection);
@@ -271,7 +261,7 @@ CLASS::Node_Tree* CLASS::File::f_loadNodeTree(const vector<vector<string>>& toke
 			read_data.push_back(tokens);
 		}
 	}
-	this->node_map[node_tree] = gui_node_tree;
+	this->nodetree_map[node_tree] = gui_node_tree;
 	pointer_map[str_to_ul(token_data[1][1])] = node_tree;
 	return node_tree;
 }
@@ -530,7 +520,7 @@ CLASS::Scene* CLASS::File::f_loadScene(const vector<vector<string>>& token_data,
 	return scene;
 }
 
-void CLASS::File::f_loadBuild(const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map, const unordered_map<Node*, GUI::NODE::Node*>& node_gui_map) {
+void CLASS::File::f_loadBuild(const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map) {
 	bool is_processing = false;
 	vector<vector<string>> read_data = vector<vector<string>>();
 	for (const vector<string>& tokens : token_data) {
@@ -577,7 +567,7 @@ void CLASS::File::f_loadBuild(const vector<vector<string>>& token_data, map<uint
 				auto ptr = static_cast<NODE::LINK::Pointer*>(pointer_map[str_to_ul(sub_tokens[1])]);
 				ptr->pointer = static_cast<CLASS::Object*>(pointer_map[str_to_ul(sub_tokens[3])]);
 
-				auto gui_ptr = static_cast<GUI::NODE::LINK::Pointer*>(node_gui_map.at(ptr));
+				auto gui_ptr = static_cast<GUI::NODE::LINK::Pointer*>(node_map.at(ptr));
 				gui_ptr->pointer = static_cast<CLASS::Object*>(pointer_map[str_to_ul(sub_tokens[3])]);
 			}
 		}
@@ -614,9 +604,9 @@ string CLASS::File::f_printFile() {
 	lace NL "└Materials";
 
 	count = 0;
-	lace NL "┌Node-Trees( " << nodes.size() << " )";
+	lace NL "┌Node-Trees( " << node_trees.size() << " )";
 	lace A
-	for (CLASS::Node_Tree* node : nodes)
+	for (CLASS::Node_Tree* node : node_trees)
 		f_saveNodeTree(lace, node, count++);
 	lace R
 	lace NL "└Node-Trees";
@@ -663,7 +653,7 @@ void CLASS::File::f_saveNodeTree(Lace& lace, CLASS::Node_Tree* data, const uint6
 	lace NL ptr_to_str(data);
 	lace NL "┌Nodes( " << data->nodes.size() << " )";
 	lace A
-	for (const CLASS::Node* node : data->nodes) {
+	for (CLASS::Node* node : data->nodes) {
 		switch (node->type) {
 			case NODE::Type::CONSTRAINT: {
 				switch (static_cast<NODE::CONSTRAINT::Type>(node->sub_type)) {
@@ -676,20 +666,20 @@ void CLASS::File::f_saveNodeTree(Lace& lace, CLASS::Node_Tree* data, const uint6
 			case NODE::Type::EXEC: {
 				switch (static_cast<NODE::EXEC::Type>(node->sub_type)) {
 					case NODE::EXEC::Type::COUNTER: {
-						lace NL "┌Node :: EXEC :: Counter [ " << j++ << " ] ( " << node->pos << " )";
+						lace NL "┌Node :: EXEC :: Counter [ " << j++ << " ] ( " << node_map[node]->scenePos() << " )";
 						lace NL S() << ptr_to_str(node);
 						lace NL "└Node";
 						break;
 					}
 					case NODE::EXEC::Type::SCRIPT: {
-						lace NL "┌Node :: EXEC :: Script [ " << j++ << " ] ( " << node->pos << " )";
+						lace NL "┌Node :: EXEC :: Script [ " << j++ << " ] ( " << node_map[node]->scenePos() << " )";
 						lace NL S() << ptr_to_str(node);
-						lace NL S() << static_cast<const CLASS::NODE::EXEC::Script*>(node)->script_id;
+						lace NL S() << static_cast<CLASS::NODE::EXEC::Script*>(node)->script_id;
 						lace NL "└Node";
 						break;
 					}
 					case NODE::EXEC::Type::TICK: {
-						lace NL "┌Node :: EXEC :: Tick [ " << j++ << " ] ( " << node->pos << " )";
+						lace NL "┌Node :: EXEC :: Tick [ " << j++ << " ] ( " << node_map[node]->scenePos() << " )";
 						lace NL S() << ptr_to_str(node);
 						lace NL "└Node";
 						break;
@@ -700,18 +690,18 @@ void CLASS::File::f_saveNodeTree(Lace& lace, CLASS::Node_Tree* data, const uint6
 			case NODE::Type::LINK: {
 				switch (static_cast<NODE::LINK::Type>(node->sub_type)) {
 					case NODE::LINK::Type::POINTER: {
-						lace NL "┌Node :: LINK :: Pointer [ " << j++ << " ] ( " << node->pos << " )";
+						lace NL "┌Node :: LINK :: Pointer [ " << j++ << " ] ( " << node_map[node]->scenePos() << " )";
 						lace NL S() << ptr_to_str(node);
-						lace NL S() << "Type " << e_to_u(static_cast<const NODE::LINK::Pointer*>(node)->pointer_type);
+						lace NL S() << "Type " << e_to_u(static_cast<NODE::LINK::Pointer*>(node)->pointer_type);
 						lace NL "└Node";
 						break;
 					}
 					case NODE::LINK::Type::GET: {
-						switch (static_cast<const CLASS::NODE::LINK::Get*>(node)->mini_type) {
+						switch (static_cast<CLASS::NODE::LINK::Get*>(node)->mini_type) {
 							case NODE::LINK::GET::Type::FIELD: {
-								lace NL "┌Node :: LINK :: GET :: FIELD [ " << j++ << " ] ( " << node->pos << " )";
+								lace NL "┌Node :: LINK :: GET :: FIELD [ " << j++ << " ] ( " << node_map[node]->scenePos()  << " )";
 								lace NL S() << ptr_to_str(node);
-								lace NL S() << static_cast<const NODE::LINK::GET::Field*>(node)->field;
+								lace NL S() << static_cast<NODE::LINK::GET::Field*>(node)->field;
 								lace NL "└Node";
 								break;
 							}
@@ -719,9 +709,9 @@ void CLASS::File::f_saveNodeTree(Lace& lace, CLASS::Node_Tree* data, const uint6
 						break;
 					}
 					case NODE::LINK::Type::SET: {
-						switch (static_cast<const CLASS::NODE::LINK::Set*>(node)->mini_type) {
+						switch (static_cast<CLASS::NODE::LINK::Set*>(node)->mini_type) {
 							case NODE::LINK::SET::Type::EULER_ROTATION_X: {
-								lace NL "┌Node :: LINK :: SET :: TRANSFORM :: EULER_ROTATION :: X [ " << j++ << " ] ( " << node->pos << " )";
+								lace NL "┌Node :: LINK :: SET :: TRANSFORM :: EULER_ROTATION :: X [ " << j++ << " ] ( " << node_map[node]->scenePos() << " )";
 								lace NL S() << ptr_to_str(node);
 								lace NL "└Node";
 								break;
@@ -735,25 +725,25 @@ void CLASS::File::f_saveNodeTree(Lace& lace, CLASS::Node_Tree* data, const uint6
 			case NODE::Type::MATH: {
 				switch (static_cast<NODE::MATH::Type>(node->sub_type)) {
 					case NODE::MATH::Type::ADD: {
-						lace NL "┌Node :: MATH :: Add [ " << j++ << " ] ( " << node->pos << " )";
+						lace NL "┌Node :: MATH :: Add [ " << j++ << " ] ( " << node_map[node]->scenePos() << " )";
 						lace NL S() << ptr_to_str(node);
 						lace NL "└Node";
 						break;
 					}
 					case NODE::MATH::Type::SUB: {
-						lace NL "┌Node :: MATH :: Sub [ " << j++ << " ] ( " << node->pos << " )";
+						lace NL "┌Node :: MATH :: Sub [ " << j++ << " ] ( " << node_map[node]->scenePos() << " )";
 						lace NL S() << ptr_to_str(node);
 						lace NL "└Node";
 						break;
 					}
 					case NODE::MATH::Type::MUL: {
-						lace NL "┌Node :: MATH :: Mul [ " << j++ << " ] ( " << node->pos << " )";
+						lace NL "┌Node :: MATH :: Mul [ " << j++ << " ] ( " << node_map[node]->scenePos() << " )";
 						lace NL S() << ptr_to_str(node);
 						lace NL "└Node";
 						break;
 					}
 					case NODE::MATH::Type::DIV: {
-						lace NL "┌Node :: MATH :: Div [ " << j++ << " ] ( " << node->pos << " )";
+						lace NL "┌Node :: MATH :: Div [ " << j++ << " ] ( " << node_map[node]->scenePos() << " )";
 						lace NL S() << ptr_to_str(node);
 						lace NL "└Node";
 						break;
@@ -764,7 +754,7 @@ void CLASS::File::f_saveNodeTree(Lace& lace, CLASS::Node_Tree* data, const uint6
 			case NODE::Type::UTIL: {
 				switch (static_cast<NODE::UTIL::Type>(node->sub_type)) {
 					case NODE::UTIL::Type::VIEW: {
-						lace NL "┌Node :: UTIL :: View [ " << j++ << " ] ( " << node->pos << " )";
+						lace NL "┌Node :: UTIL :: View [ " << j++ << " ] ( " << node_map[node]->scenePos() << " )";
 						lace NL S() << ptr_to_str(node);
 						lace NL "└Node";
 						break;

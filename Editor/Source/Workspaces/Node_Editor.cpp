@@ -32,11 +32,11 @@ GUI::WORKSPACE::Workspace_Node_Editor::Workspace_Node_Editor(Workspace_Manager* 
 		if (viewport->active_node_tree and FILE->active_object->ptr) {
 			*LOG << ENDL << HTML_MAGENTA << "[Translation]" << HTML_RESET << " Compiling Nodes..."; FLUSH
 
-			FILE->nodes.erase(std::find(FILE->nodes.begin(), FILE->nodes.end(), FILE->active_object->ptr->nodes));
+			FILE->node_trees.erase(std::find(FILE->node_trees.begin(), FILE->node_trees.end(), FILE->active_object->ptr->nodes));
 
-			auto it = FILE->node_map.find(FILE->active_object->ptr->nodes);
-			if (it != FILE->node_map.end()) {
-				FILE->node_map.erase(it);
+			auto it = FILE->nodetree_map.find(FILE->active_object->ptr->nodes);
+			if (it != FILE->nodetree_map.end()) {
+				FILE->nodetree_map.erase(it);
 			}
 
 			// TODO memory leak?
@@ -44,8 +44,8 @@ GUI::WORKSPACE::Workspace_Node_Editor::Workspace_Node_Editor(Workspace_Manager* 
 
 			auto node = new CLASS::Node_Tree(viewport->active_node_tree);
 			FILE->active_object->ptr->nodes = node;
-			FILE->nodes.push_back(node);
-			FILE->node_map[node] = viewport->active_node_tree;
+			FILE->node_trees.push_back(node);
+			FILE->nodetree_map[node] = viewport->active_node_tree;
 
 			*LOG << ENDL << HTML_GREEN << "[Translation]" << HTML_RESET << " Compiled Nodes"; FLUSH
 		}
@@ -55,7 +55,7 @@ GUI::WORKSPACE::Workspace_Node_Editor::Workspace_Node_Editor(Workspace_Manager* 
 			*LOG << ENDL << HTML_MAGENTA << "[DLL Compilation]" << HTML_RESET << " Compiling Solution..."; FLUSH
 
 			auto node_tree = FILE->active_object->ptr->nodes;
-			auto gui_node_tree = FILE->node_map[node_tree];
+			auto gui_node_tree = FILE->nodetree_map[node_tree];
 			
 			HINSTANCE dynlib;
 			recompileDLL(dynlib);
@@ -89,9 +89,9 @@ GUI::WORKSPACE::Node_Viewport::Node_Viewport(Workspace_Node_Editor* parent) :
 	move_selection = {};
 	active_node_tree = nullptr;
 	scene = new QGraphicsScene(this);
-	selection_rect = new QGraphicsRectItem(QRectF(0,0,0,0));
+	selection_rect = new QGraphicsRectItem(QRectF(0, 0, 0, 0));
 	selection_rect->setBrush(QColor(255, 135, 25, 50));
-	selection_rect->setPen(QPen(QColor(255,135,25,200), 2.5));
+	selection_rect->setPen(QPen(QColor(255, 135, 25, 200), 2.5));
 	selection_rect->setZValue(10);
 	selection_rect->hide();
 
@@ -119,9 +119,10 @@ void GUI::WORKSPACE::Node_Viewport::f_objectChanged(CLASS::Object* object) {
 		}
 	}
 	if (object) {
-		active_node_tree = FILE->node_map[object->nodes];
-		for (auto node : FILE->node_map[object->nodes]->nodes) {
+		active_node_tree = FILE->nodetree_map[object->nodes];
+		for (auto node : FILE->nodetree_map[object->nodes]->nodes) {
 			scene->addItem(node);
+			node->setPos(node->load_pos);
 		}
 	}
 	else active_node_tree = nullptr;
@@ -374,6 +375,7 @@ void GUI::WORKSPACE::Node_Viewport::mouseMoveEvent(QMouseEvent* event) {
 				const QPointF delta = node->real_pos + mapToScene(event->pos()) - move_pos;
 				node->setPos(f_roundToNearest(delta.x(), 10.0), f_roundToNearest(delta.y(), 10.0));
 				node->real_pos = delta;
+				node->load_pos = node->scenePos();
 			}
 			move_pos = mapToScene(event->pos());
 		}
