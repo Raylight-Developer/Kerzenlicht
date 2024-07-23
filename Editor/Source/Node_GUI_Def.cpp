@@ -22,43 +22,46 @@ GUI::NODE::EXEC::Counter::Counter(const ivec2& pos) {
 	load_pos = QPointF(pos.x, pos.y);
 }
 
-GUI::NODE::EXEC::Script::Script(const ivec2& pos) {
+GUI::NODE::EXEC::Script::Script(const ivec2& pos, const string& script_id) {
 	label = "Script";
 	type = CLASS::NODE::Type::EXEC;
 	sub_type = e_to_u(CLASS::NODE::EXEC::Type::SCRIPT);
 
 	buildGuiFunc = nullptr;
+	dynlib = NULL;
 
-	rect = QRectF(-100, -20, 200, 40);
+	rect = QRectF(-100, -20, 200, 60);
 	load_pos = QPointF(pos.x, pos.y);
 
-	QGraphicsProxyWidget* proxyWidget_id = new QGraphicsProxyWidget(this);
+	script_identifier_proxyWidget = new QGraphicsProxyWidget(this);
 	script_identifier = new GUI::Value_Input();
 	script_identifier->setFixedSize(90, 20);
 	script_identifier->setPlaceholderText("Script_ID");
-	script_identifier->setText("Script_ID");
-	proxyWidget_id->setWidget(script_identifier);
-	proxyWidget_id->setPos(boundingRect().topLeft() + QPointF(40, 30));
+	script_identifier->setText(QString::fromStdString(script_id));
+	script_identifier_proxyWidget->setWidget(script_identifier);
+	script_identifier_proxyWidget->setPos(boundingRect().topLeft() + QPointF(40, 30));
 
-	QGraphicsProxyWidget* proxyWidget = new QGraphicsProxyWidget(this);
+	reload_proxyWidget = new QGraphicsProxyWidget(this);
 	reload = new GUI::Button();
 	reload->setFixedSize(20, 20);
-	proxyWidget->setWidget(reload);
-	proxyWidget->setPos(boundingRect().topLeft() + QPointF(140, 30));
+	reload_proxyWidget->setWidget(reload);
+	reload_proxyWidget->setPos(boundingRect().topLeft() + QPointF(140, 30));
 
 	QObject::connect(reload, &GUI::Button::clicked, [this]() {
-		reloadFunctions();
+		reloadDll();
 	});
 
-	loadDLL(dynlib);
+	if (script_id != "") {
+		loadDLL(dynlib);
 
-	FARPROC buildAddress = GetProcAddress(dynlib, (script_identifier->text().toStdString() + "_buildGui").c_str());
-	if (buildAddress != nullptr) {
-		buildGuiFunc = (void(*)(Script*))buildAddress;
-		buildGuiFunc(this);
-	}
-	else {
-		*LOG << ENDL << HTML_RED << "[DLL Binding]" << HTML_RESET << " Unable to resolve Script ID"; FLUSH
+		FARPROC buildAddress = GetProcAddress(dynlib, (script_identifier->text().toStdString() + "_buildGui").c_str());
+		if (buildAddress != nullptr) {
+			buildGuiFunc = (void(*)(Script*))buildAddress;
+			buildGuiFunc(this);
+		}
+		else {
+			*LOG << ENDL << HTML_RED << "[DLL Binding]" << HTML_RESET << " Unable to resolve Script ID"; FLUSH
+		}
 	}
 }
 

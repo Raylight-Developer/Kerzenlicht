@@ -35,12 +35,14 @@ namespace GUI {
 				Counter(const ivec2& pos);
 			};
 			struct Script : Node {
+				QGraphicsProxyWidget* script_identifier_proxyWidget;
+				QGraphicsProxyWidget* reload_proxyWidget;
 				GUI::Value_Input* script_identifier;
 				GUI::Button* reload;
 
 				HINSTANCE dynlib;
 
-				Script(const ivec2& pos);
+				Script(const ivec2& pos, const string& script_id = "");
 
 				virtual void clearIO();
 				virtual void addDataInput (const uint16& slot_id, const string& label, const CLASS::NODE::DATA::Type& type, const CLASS::NODE::DATA::Modifier& modifier = CLASS::NODE::DATA::Modifier::SINGLE);
@@ -53,6 +55,17 @@ namespace GUI {
 				void reloadFunctions();
 				void reloadDll();
 				void recompile(const HINSTANCE& library);
+			};
+			class Script_Node {
+			private:
+				Script* node;
+				Script_Node(Script* node) : node(node) {}
+			public:
+				virtual void clearIO() { node->clearIO(); };
+				virtual void addDataInput(const uint16& slot_id, const string& label, const CLASS::NODE::DATA::Type& type, const CLASS::NODE::DATA::Modifier& modifier = CLASS::NODE::DATA::Modifier::SINGLE) { node->addDataInput(slot_id, label, type, modifier); }
+				virtual void addDataOutput(const uint16& slot_id, const string& label, const CLASS::NODE::DATA::Type& type, const CLASS::NODE::DATA::Modifier& modifier = CLASS::NODE::DATA::Modifier::SINGLE) { node->addDataOutput(slot_id, label, type, modifier); }
+				virtual void addExecInput(const uint16& slot_id, const string& label) { node->addExecInput(slot_id, label); }
+				virtual void addExecOutput(const uint16& slot_id, const string& label) { node->addExecOutput(slot_id, label); }
 			};
 			struct Tick : Node {
 				Tick(const ivec2& pos);

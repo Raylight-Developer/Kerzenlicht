@@ -63,28 +63,31 @@ void EXEC::Sequence::exec(const uint16& slot_id) {
 	}
 }
 
-EXEC::Script::Script() {
+EXEC::Script::Script(const string& script_id) :
+	script_id(script_id)
+{
 	type = NODE::Type::EXEC;
 	sub_type = e_to_u(Type::SCRIPT);
-	script_id = "Script_ID";
 
 	getDataFunc = nullptr;
 	buildFunc = nullptr;
 	execFunc = nullptr;
 
-	loadDLL(dynlib);
+	if (script_id != "") {
+		loadDLL(dynlib);
 
-	FARPROC execAddress  = GetProcAddress(dynlib, (script_id + "_exec").c_str());
-	FARPROC dataAddress  = GetProcAddress(dynlib, (script_id + "_getData").c_str());
-	FARPROC buildAddress = GetProcAddress(dynlib, (script_id + "_build").c_str());
-	if (execAddress != nullptr and dataAddress != nullptr and buildAddress != nullptr) {
-		execFunc = (void(*)(Script*))execAddress;
-		getDataFunc = (Data*(*)(const Script*, const uint16&))dataAddress;
-		buildFunc = (void(*)(Script*))buildAddress;
-		buildFunc(this);
-	}
-	else {
-		*LOG << ENDL << HTML_RED << "[DLL Binding]" << HTML_RESET << " Unable to resolve Script ID"; FLUSH
+		FARPROC execAddress = GetProcAddress(dynlib, (script_id + "_exec").c_str());
+		FARPROC dataAddress = GetProcAddress(dynlib, (script_id + "_getData").c_str());
+		FARPROC buildAddress = GetProcAddress(dynlib, (script_id + "_build").c_str());
+		if (execAddress != nullptr and dataAddress != nullptr and buildAddress != nullptr) {
+			execFunc = (void(*)(Script*))execAddress;
+			getDataFunc = (Data * (*)(const Script*, const uint16&))dataAddress;
+			buildFunc = (void(*)(Script*))buildAddress;
+			buildFunc(this);
+		}
+		else {
+			*LOG << ENDL << HTML_RED << "[DLL Binding]" << HTML_RESET << " Unable to resolve Script ID"; FLUSH
+		}
 	}
 }
 

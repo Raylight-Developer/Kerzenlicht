@@ -442,9 +442,8 @@ CLASS::Node_Tree* CLASS::File::f_loadNodeTree(const vector<vector<string>>& toke
 			}
 			else if (read_data[0][2] == "EXEC") {
 				if (read_data[0][4] == "SCRIPT") {
-					node = new NODE::EXEC::Script();
-					gui_node = new GUI::NODE::EXEC::Script(str_to_i(read_data[2][1], read_data[2][2]));
-					static_cast<GUI::NODE::EXEC::Script*>(gui_node)->script_identifier->setText(QString::fromStdString(f_join(read_data[3])));
+					node = new NODE::EXEC::Script(f_join(read_data[3]));
+					gui_node = new GUI::NODE::EXEC::Script(str_to_i(read_data[2][1], read_data[2][2]), f_join(read_data[3]));
 				}
 				else if (read_data[0][4] == "TICK") {
 					node = new NODE::EXEC::Tick();
@@ -610,7 +609,7 @@ void CLASS::File::f_saveNodeTree(Lace& lace, CLASS::Node_Tree* data, const uint6
 				case NODE::EXEC::Type::SCRIPT: {
 					lace NL "┌Node :: EXEC :: SCRIPT [ " << j++ << " ]";
 					lace NL S() << ptr_to_str(node);
-					lace NL S() << "Pos " << node_map[node]->scenePos();;
+					lace NL S() << "Pos " << node_map[node]->scenePos();
 					lace NL S() << static_cast<CLASS::NODE::EXEC::Script*>(node)->script_id;
 					lace NL "└Node";
 					break;

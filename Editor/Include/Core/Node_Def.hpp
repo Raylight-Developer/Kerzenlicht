@@ -89,7 +89,7 @@ namespace CLASS {
 
 				map<string, Data> internal_data;
 
-				Script();
+				Script(const string& script_id = "");
 
 				// VIRTUAL required for functions used/called from DLL
 				virtual Data getInputData (const string& map_name) const;
