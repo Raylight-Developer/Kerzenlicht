@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<link rel="stylesheet" href="./Style.css"></link>
+<body>
+
+<h1>API</h1>
+
+<h3 class="Reserved">Node Methods</h3>
+<pre>
+<def>EXPORT</def> <voi>void</voi> <fun>[ID]_buildGui</fun>(<cla>Gui_Script</cla>* node) {
+}
+
+<def>EXPORT</def> <voi>void</voi> <fun>[ID]_build</fun>(<cla>Script</cla>* node) {
+}
+
+<def>EXPORT</def> <voi>void</voi> <fun>[ID]_exec</fun>(<cla>Script</cla>* node) {
+}
+
+<def>EXPORT</def> <cla>Data</cla> <fun>[ID]_getData</fun>(<cla>Script</cla>* node, <voi>const</voi> <cla>uint16</cla>& port_request) {
+}
+</pre>
+
+<h3 class="Reserved">Script</h3>
+<pre>
+<voi>void</voi> <fun>addDataInput </fun>(<cla>uint</cla> slot_id, <cla>string</cla> map_name, <cla>Data_Type</cla> type, <cla>Modifier</cla> modifier);
+<voi>void</voi> <fun>addDataOutput</fun>(<cla>uint</cla> slot_id, <cla>string</cla> map_name, <cla>Data_Type</cla> type, <cla>Modifier</cla> modifier);
+<voi>void</voi> <fun>addExecInput </fun>(<cla>uint</cla> slot_id, <cla>string</cla> map_name);
+<voi>void</voi> <fun>addExecOutput</fun>(<cla>uint</cla> slot_id, <cla>string</cla> map_name);
+
+<voi>void</voi> <fun>clearIO</fun>();
+
+<cla>Data_I_Port</cla>* <fun>getDataInput </fun>(<cla>string</cla> map_name);
+<cla>Data_O_Port</cla>* <fun>getDataOutput</fun>(<cla>string</cla> map_name);
+<cla>Exec_I_Port</cla>* <fun>getExecInput </fun>(<cla>string</cla> map_name);
+<cla>Exec_O_Port</cla>* <fun>getExecOutput</fun>(<cla>string</cla> map_name);
+
+<cla>Data</cla> <fun>getData</fun>(<cla>string</cla> map_name);
+</pre>
+
+<h3 class="Reserved">Gui_Script</h3>
+<pre>
+<voi>void</voi> <fun>addDataInput </fun>(<cla>uint</cla> slot_id, <cla>string</cla> map_name, <cla>Data_Type</cla> type, <cla>Modifier</cla> modifier);
+<voi>void</voi> <fun>addDataOutput</fun>(<cla>uint</cla> slot_id, <cla>string</cla> map_name, <cla>Data_Type</cla> type, <cla>Modifier</cla> modifier);
+<voi>void</voi> <fun>addExecInput </fun>(<cla>uint</cla> slot_id, <cla>string</cla> map_name);
+<voi>void</voi> <fun>addExecOutput</fun>(<cla>uint</cla> slot_id, <cla>string</cla> map_name);
+
+<voi>void</voi> <fun>clearIO</fun>();
+</pre>

@@ -69,9 +69,11 @@ EXEC::Script::Script(const string& script_id) :
 	type = NODE::Type::EXEC;
 	sub_type = e_to_u(Type::SCRIPT);
 
+	wrapper = new Script_Node(this);
 	getDataFunc = nullptr;
 	buildFunc = nullptr;
 	execFunc = nullptr;
+	dynlib = NULL;
 
 	if (script_id != "") {
 		loadDLL(dynlib);
@@ -80,10 +82,10 @@ EXEC::Script::Script(const string& script_id) :
 		FARPROC dataAddress = GetProcAddress(dynlib, (script_id + "_getData").c_str());
 		FARPROC buildAddress = GetProcAddress(dynlib, (script_id + "_build").c_str());
 		if (execAddress != nullptr and dataAddress != nullptr and buildAddress != nullptr) {
-			execFunc = (void(*)(Script*))execAddress;
-			getDataFunc = (Data * (*)(const Script*, const uint16&))dataAddress;
-			buildFunc = (void(*)(Script*))buildAddress;
-			buildFunc(this);
+			execFunc = (void(*)(Script_Node*))execAddress;
+			getDataFunc = (Data(*)(const Script_Node*, const uint16&))dataAddress;
+			buildFunc = (void(*)(Script_Node*))buildAddress;
+			buildFunc(wrapper);
 		}
 		else {
 			*LOG << ENDL << HTML_RED << "[DLL Binding]" << HTML_RESET << " Unable to resolve Script ID"; FLUSH
@@ -120,10 +122,10 @@ void EXEC::Script::reloadFunctions() {
 	FARPROC dataAddress  = GetProcAddress(dynlib, (script_id + "_getData").c_str());
 	FARPROC buildAddress = GetProcAddress(dynlib, (script_id + "_build").c_str());
 	if (execAddress != nullptr and dataAddress != nullptr and buildAddress != nullptr) {
-		execFunc = (void(*)(Script*))execAddress;
-		getDataFunc = (Data*(*)(const Script*, const uint16&))dataAddress;
-		buildFunc = (void(*)(Script*))buildAddress;
-		buildFunc(this);
+		execFunc = (void(*)(Script_Node*))execAddress;
+		getDataFunc = (Data(*)(const Script_Node*, const uint16&))dataAddress;
+		buildFunc = (void(*)(Script_Node*))buildAddress;
+		buildFunc(wrapper);
 	}
 	else {
 		*LOG << ENDL << HTML_RED << "[DLL Binding]" << HTML_RESET << " Unable to resolve Script ID"; FLUSH
@@ -153,31 +155,72 @@ void EXEC::Script::clearIO() {
 }
 
 void EXEC::Script::exec(const uint16& slot_id) {
-	if (execFunc) execFunc(this);
-	outputs[0]->exec();
+	if (execFunc) {
+		execFunc(wrapper);
+	}
 }
 
 Data EXEC::Script::getData(const uint16& slot_id) const {
 	if (getDataFunc) {
-		Data* copy = getDataFunc(this, slot_id);
-		Data static_copy = *copy;
-		delete copy;
-		return static_copy;
+		return getDataFunc(wrapper, slot_id);
 	}
 	return Data();
 }
 
-Data EXEC::Script::getInputData(const string& map_name) const {
+Data EXEC::Script::getPortData(const string& map_name) const {
 	auto it = data_inputs.find(map_name);
-	if (it != data_inputs.end())
+	if (it != data_inputs.end()) {
 		return data_inputs.at(map_name)->getData();
+	}
 	return Data();
 }
 
 void CLASS::NODE::EXEC::Script::recompile(const HINSTANCE& library) {
-	//clearIO();
 	dynlib = library;
 	reloadFunctions();
+}
+
+CLASS::NODE::EXEC::Script_Node::Script_Node(Script* node) :
+	node(node)
+{}
+Data CLASS::NODE::EXEC::Script_Node::getData(const string& map_name) const {
+	return node->getPortData(map_name);
+}
+void CLASS::NODE::EXEC::Script_Node::addDataInput (const uint16& slot_id, const string& map_name, const DATA::Type& type, const DATA::Modifier& modifier) const {
+	node->addDataInput (slot_id, map_name, type, modifier);
+}
+void CLASS::NODE::EXEC::Script_Node::addDataOutput(const uint16& slot_id, const string& map_name, const DATA::Type& type, const DATA::Modifier& modifier) const {
+	node->addDataOutput(slot_id, map_name, type, modifier);
+}
+void CLASS::NODE::EXEC::Script_Node::addExecInput (const uint16& slot_id, const string& map_name) const {
+	node->addExecInput (slot_id, map_name);
+}
+void CLASS::NODE::EXEC::Script_Node::addExecOutput(const uint16& slot_id, const string& map_name) const {
+	node->addExecOutput(slot_id, map_name);
+}
+void CLASS::NODE::EXEC::Script_Node::clearIO() const {
+	node->clearIO();
+}
+
+PORT::Data_I_Port* CLASS::NODE::EXEC::Script_Node::getDataInput (const string& map_name) const {
+	if (node->data_inputs .find(map_name) != node->data_inputs .end())
+		return node->data_inputs .at(map_name);
+	return nullptr;
+}
+PORT::Data_O_Port* CLASS::NODE::EXEC::Script_Node::getDataOutput(const string& map_name) const {
+	if (node->data_outputs.find(map_name) != node->data_outputs.end())
+		return node->data_outputs.at(map_name);
+	return nullptr;
+}
+PORT::Exec_I_Port* CLASS::NODE::EXEC::Script_Node::getExecInput (const string& map_name) const {
+	if (node->exec_inputs .find(map_name) != node->exec_inputs .end())
+		return node->exec_inputs .at(map_name);
+	return nullptr;
+}
+PORT::Exec_O_Port* CLASS::NODE::EXEC::Script_Node::getExecOutput(const string& map_name) const {
+	if (node->exec_outputs.find(map_name) != node->exec_outputs.end())
+		return node->exec_outputs.at(map_name);
+	return nullptr;
 }
 
 EXEC::Tick::Tick() {
@@ -251,10 +294,12 @@ Data LINK::GET::Field::getData(const uint16& slot_id) const {
 				return Data(pointer_ref.getObject()->transform.euler_rotation.x, DATA::Type::DOUBLE);
 			if (field == "node_transform.euler.x")
 				return Data(pointer_ref.getObject()->node_transform.euler_rotation.x, DATA::Type::DOUBLE);
+			break;
 		}
 		case DATA::Type::SCENE: {
 			if (field == "current_frame")
 				return Data(pointer_ref.getScene()->current_frame, DATA::Type::INT);
+			break;
 		}
 	}
 	return NODE::Data();

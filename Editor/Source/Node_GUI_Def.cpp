@@ -27,6 +27,7 @@ GUI::NODE::EXEC::Script::Script(const ivec2& pos, const string& script_id) {
 	type = CLASS::NODE::Type::EXEC;
 	sub_type = e_to_u(CLASS::NODE::EXEC::Type::SCRIPT);
 
+	wrapper = new Script_Node(this);
 	buildGuiFunc = nullptr;
 	dynlib = NULL;
 
@@ -56,8 +57,8 @@ GUI::NODE::EXEC::Script::Script(const ivec2& pos, const string& script_id) {
 
 		FARPROC buildAddress = GetProcAddress(dynlib, (script_identifier->text().toStdString() + "_buildGui").c_str());
 		if (buildAddress != nullptr) {
-			buildGuiFunc = (void(*)(Script*))buildAddress;
-			buildGuiFunc(this);
+			buildGuiFunc = (void(*)(Script_Node*))buildAddress;
+			buildGuiFunc(wrapper);
 		}
 		else {
 			*LOG << ENDL << HTML_RED << "[DLL Binding]" << HTML_RESET << " Unable to resolve Script ID"; FLUSH
@@ -107,8 +108,8 @@ void GUI::NODE::EXEC::Script::addExecOutput(const uint16& slot_id, const string&
 void GUI::NODE::EXEC::Script::reloadFunctions() {
 	FARPROC buildAddress = GetProcAddress(dynlib, (script_identifier->text().toStdString() + "_buildGui").c_str());
 	if (buildAddress != nullptr) {
-		buildGuiFunc = (void(*)(Script*))buildAddress;
-		buildGuiFunc(this);
+		buildGuiFunc = (void(*)(Script_Node*))buildAddress;
+		buildGuiFunc(wrapper);
 	}
 	else {
 		*LOG << ENDL << HTML_RED << "[DLL Binding]" << HTML_RESET << " Unable to resolve Script ID"; FLUSH
@@ -124,6 +125,25 @@ void GUI::NODE::EXEC::Script::reloadDll() {
 void GUI::NODE::EXEC::Script::recompile(const HINSTANCE& library) {
 	dynlib = library;
 	reloadFunctions();
+}
+
+GUI::NODE::EXEC::Script_Node::Script_Node(Script* node) :
+	node(node)
+{}
+void GUI::NODE::EXEC::Script_Node::clearIO() const {
+	node->clearIO();
+}
+void GUI::NODE::EXEC::Script_Node::addDataInput (const uint16& slot_id, const string& label, const CLASS::NODE::DATA::Type& type, const CLASS::NODE::DATA::Modifier& modifier) const {
+	node->addDataInput (slot_id, label, type, modifier);
+}
+void GUI::NODE::EXEC::Script_Node::addDataOutput(const uint16& slot_id, const string& label, const CLASS::NODE::DATA::Type& type, const CLASS::NODE::DATA::Modifier& modifier) const {
+	node->addDataOutput(slot_id, label, type, modifier);
+}
+void GUI::NODE::EXEC::Script_Node::addExecInput (const uint16& slot_id, const string& label) const {
+	node->addExecInput (slot_id, label);
+}
+void GUI::NODE::EXEC::Script_Node::addExecOutput(const uint16& slot_id, const string& label) const {
+	node->addExecOutput(slot_id, label);
 }
 
 GUI::NODE::EXEC::Tick::Tick(const ivec2& pos) {

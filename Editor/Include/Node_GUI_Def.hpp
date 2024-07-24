@@ -13,6 +13,12 @@
 
 // FWD DECL THIS
 namespace GUI {
+	namespace NODE {
+		namespace EXEC {
+			struct Script;
+			class Script_Node;
+		}
+	}
 }
 
 // DECL
@@ -41,16 +47,17 @@ namespace GUI {
 				GUI::Button* reload;
 
 				HINSTANCE dynlib;
+				Script_Node* wrapper;
 
 				Script(const ivec2& pos, const string& script_id = "");
 
-				virtual void clearIO();
-				virtual void addDataInput (const uint16& slot_id, const string& label, const CLASS::NODE::DATA::Type& type, const CLASS::NODE::DATA::Modifier& modifier = CLASS::NODE::DATA::Modifier::SINGLE);
-				virtual void addDataOutput(const uint16& slot_id, const string& label, const CLASS::NODE::DATA::Type& type, const CLASS::NODE::DATA::Modifier& modifier = CLASS::NODE::DATA::Modifier::SINGLE);
-				virtual void addExecInput (const uint16& slot_id, const string& label);
-				virtual void addExecOutput(const uint16& slot_id, const string& label);
+				void clearIO();
+				void addDataInput (const uint16& slot_id, const string& label, const CLASS::NODE::DATA::Type& type, const CLASS::NODE::DATA::Modifier& modifier = CLASS::NODE::DATA::Modifier::SINGLE);
+				void addDataOutput(const uint16& slot_id, const string& label, const CLASS::NODE::DATA::Type& type, const CLASS::NODE::DATA::Modifier& modifier = CLASS::NODE::DATA::Modifier::SINGLE);
+				void addExecInput (const uint16& slot_id, const string& label);
+				void addExecOutput(const uint16& slot_id, const string& label);
 
-				void (*buildGuiFunc)(Script*);
+				void (*buildGuiFunc)(Script_Node*);
 
 				void reloadFunctions();
 				void reloadDll();
@@ -59,13 +66,13 @@ namespace GUI {
 			class Script_Node {
 			private:
 				Script* node;
-				Script_Node(Script* node) : node(node) {}
 			public:
-				virtual void clearIO() { node->clearIO(); };
-				virtual void addDataInput(const uint16& slot_id, const string& label, const CLASS::NODE::DATA::Type& type, const CLASS::NODE::DATA::Modifier& modifier = CLASS::NODE::DATA::Modifier::SINGLE) { node->addDataInput(slot_id, label, type, modifier); }
-				virtual void addDataOutput(const uint16& slot_id, const string& label, const CLASS::NODE::DATA::Type& type, const CLASS::NODE::DATA::Modifier& modifier = CLASS::NODE::DATA::Modifier::SINGLE) { node->addDataOutput(slot_id, label, type, modifier); }
-				virtual void addExecInput(const uint16& slot_id, const string& label) { node->addExecInput(slot_id, label); }
-				virtual void addExecOutput(const uint16& slot_id, const string& label) { node->addExecOutput(slot_id, label); }
+				Script_Node(Script* node);
+				virtual void clearIO() const;
+				virtual void addDataInput (const uint16& slot_id, const string& label, const CLASS::NODE::DATA::Type& type, const CLASS::NODE::DATA::Modifier& modifier = CLASS::NODE::DATA::Modifier::SINGLE) const;
+				virtual void addDataOutput(const uint16& slot_id, const string& label, const CLASS::NODE::DATA::Type& type, const CLASS::NODE::DATA::Modifier& modifier = CLASS::NODE::DATA::Modifier::SINGLE) const;
+				virtual void addExecInput (const uint16& slot_id, const string& label) const;
+				virtual void addExecOutput(const uint16& slot_id, const string& label) const;
 			};
 			struct Tick : Node {
 				Tick(const ivec2& pos);

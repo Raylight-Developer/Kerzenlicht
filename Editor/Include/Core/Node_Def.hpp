@@ -26,6 +26,8 @@ namespace CLASS {
 		}
 		namespace EXEC {
 			enum struct Type;
+			struct Script;
+			class Script_Node;
 		}
 		namespace MATH {
 			enum struct Type;
@@ -61,7 +63,7 @@ namespace CLASS {
 			enum struct Type { SURFACE_DEFORM, KEYFRAMING, SHRINKWRAP, ARMATURE, SMOOTH };
 		}
 		namespace EXEC {
-			enum struct Type { SEQUENCE, COUNTER, SCRIPT, START, TIMER, TICK, FOR };
+			enum struct Type { SEQUENCE, COUNTER, SCRIPT, START, TIMER, TICK, FOR, IF };
 			struct Sequence : Node {
 				uint8 count;
 
@@ -92,26 +94,54 @@ namespace CLASS {
 				Script(const string& script_id = "");
 
 				// VIRTUAL required for functions used/called from DLL
-				virtual Data getInputData (const string& map_name) const;
-				virtual void addDataInput (const uint16& slot_id, const string& map_name, const DATA::Type& type, const DATA::Modifier& modifier = DATA::Modifier::SINGLE);
-				virtual void addDataOutput(const uint16& slot_id, const string& map_name, const DATA::Type& type, const DATA::Modifier& modifier = DATA::Modifier::SINGLE);
-				virtual void addExecInput (const uint16& slot_id, const string& map_name);
-				virtual void addExecOutput(const uint16& slot_id, const string& map_name);
-				virtual void clearIO();
+				Data getPortData (const string& map_name) const;
+				void addDataInput (const uint16& slot_id, const string& map_name, const DATA::Type& type, const DATA::Modifier& modifier = DATA::Modifier::SINGLE);
+				void addDataOutput(const uint16& slot_id, const string& map_name, const DATA::Type& type, const DATA::Modifier& modifier = DATA::Modifier::SINGLE);
+				void addExecInput (const uint16& slot_id, const string& map_name);
+				void addExecOutput(const uint16& slot_id, const string& map_name);
+				void clearIO();
 
 				void recompile(const HINSTANCE& library);
-			private:
-				HINSTANCE dynlib;
 
-				Data* (*getDataFunc)(const Script*, const uint16&);
-				void (*buildFunc)(Script*);
-				void (*execFunc)(Script*);
+				HINSTANCE dynlib;
+				Script_Node* wrapper;
+
+				Data (*getDataFunc)(const Script_Node*, const uint16&);
+				void (*buildFunc)(Script_Node*);
+				void (*execFunc)(Script_Node*);
 
 				void exec(const uint16& slot_id = 0) override;
 				Data getData(const uint16& slot_id) const override;
 
 				void reloadFunctions();
 				void reloadDll();
+			};
+			class Script_Node {
+			private:
+				Script* node;
+			public:
+				Script_Node(Script* node);
+				// Create a new port
+				virtual void addDataInput (const uint16& slot_id, const string& map_name, const DATA::Type& type, const DATA::Modifier& modifier = DATA::Modifier::SINGLE) const;
+				// Create a new port
+				virtual void addDataOutput(const uint16& slot_id, const string& map_name, const DATA::Type& type, const DATA::Modifier& modifier = DATA::Modifier::SINGLE) const;
+				// Create a new port
+				virtual void addExecInput (const uint16& slot_id, const string& map_name) const;
+				// Create a new port
+				virtual void addExecOutput(const uint16& slot_id, const string& map_name) const;
+				// Clear All Inputs and Outputs, destroying their connections.
+				virtual void clearIO() const;
+
+				// Get pointer to the specified Port
+				virtual PORT::Data_I_Port* getDataInput (const string& map_name) const;
+				// Get pointer to the specified Port
+				virtual PORT::Data_O_Port* getDataOutput(const string& map_name) const;
+				// Get pointer to the specified Port
+				virtual PORT::Exec_I_Port* getExecInput (const string& map_name) const;
+				// Get pointer to the specified Port
+				virtual PORT::Exec_O_Port* getExecOutput(const string& map_name) const;
+				// Fetch the data from a Port
+				virtual Data getData(const string& map_name) const;
 			};
 			struct Timer : Node {
 				PORT::Exec_O_Port* port;
@@ -218,7 +248,7 @@ namespace CLASS {
 			}
 		}
 		namespace UTIL {
-			enum struct Type { COLLAPSE, EXPAND, SWITCH, PRINT, CAST, VIEW };
+			enum struct Type { COLLAPSE, EXPAND, SWITCH, PRINT, CAST, VIEW, LOG };
 			struct Cast : Node {
 				PORT::Data_I_Port* i_value;
 				PORT::Data_O_Port* o_value;

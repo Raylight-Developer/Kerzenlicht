@@ -10,9 +10,7 @@ namespace CLASS {
 	struct Node;
 	struct Node_Tree;
 	namespace NODE {
-		enum struct Type {
-			NONE, CONSTRAINT, GENERATE, PHYSICS, MODIFY, EXEC, MATH, LINK, UTIL
-		};
+		enum struct Type { NONE, CONSTRAINT, GENERATE, PHYSICS, MODIFY, EXEC, MATH, LINK, UTIL };
 		struct Data;
 		namespace DATA {
 			enum struct Type {
@@ -23,11 +21,7 @@ namespace CLASS {
 				VEC2, VEC3, VEC4, UVEC2, UVEC3, UVEC4, IVEC2, IVEC3, IVEC4,
 				TRANSFORM, TEXTURE, OBJECT, SCENE, DATA,
 			};
-			enum struct Modifier {
-				SINGLE,
-				VECTOR,
-				MAP
-			};
+			enum struct Modifier { NONE, SINGLE, VECTOR, MAP };
 		}
 		struct Port;
 		namespace PORT {
@@ -39,19 +33,19 @@ namespace CLASS {
 		}
 // Core/Node_Def.hpp ------------------------------------------------------------------------------
 		namespace CONSTRAINT {
-			enum struct Type { PARENT };
+			enum struct Type { NONE, PARENT };
 		}
 		namespace GENERATE {
-			enum struct Type { SUBDIVISION, TRIANGULATE, WIREFRAME, SOLIDIFY, BOOLEAN, MIRROR, ARRAY, BEVEL };
+			enum struct Type { NONE, SUBDIVISION, TRIANGULATE, WIREFRAME, SOLIDIFY, BOOLEAN, MIRROR, ARRAY, BEVEL };
 		}
 		namespace PHYSICS {
-			enum struct Type { COLLISION, CACHE, CLOTH, FLUID, RIGID, SOFT, GAS };
+			enum struct Type { NONE, COLLISION, CACHE, CLOTH, FLUID, RIGID, SOFT, GAS };
 		}
 		namespace MODIFY {
-			enum struct Type { SURFACE_DEFORM, KEYFRAMING, SHRINKWRAP, ARMATURE, SMOOTH };
+			enum struct Type { NONE, SURFACE_DEFORM, KEYFRAMING, SHRINKWRAP, ARMATURE, SMOOTH };
 		}
 		namespace EXEC {
-			enum struct Type { SEQUENCE, COUNTER, SCRIPT, START, TIMER, TICK, FOR };
+			enum struct Type { NONE, SEQUENCE, COUNTER, SCRIPT, START, TIMER, TICK, FOR };
 			struct Sequence;
 			struct Counter;
 			struct Script;
@@ -59,10 +53,10 @@ namespace CLASS {
 			struct Tick;
 		}
 		namespace MATH {
-			enum struct Type { RAMP, MAP, ADD, DIV, MUL, SUB };
+			enum struct Type { NONE, RAMP, MAP, ADD, DIV, MUL, SUB };
 		}
 		namespace LINK {
-			enum struct Type { VARIABLE, POINTER, SELF, GET, SET };
+			enum struct Type { NONE, VARIABLE, POINTER, SELF, GET, SET };
 			namespace GET {
 				enum struct Type { NONE, EULER_ROTATION_X, EULER_ROTATION_Y, EULER_ROTATION_Z, FIELD };
 			}
@@ -71,9 +65,9 @@ namespace CLASS {
 			}
 		}
 		namespace UTIL {
-			enum struct Type { COLLAPSE, EXPAND, SWITCH, CAST, VIEW };
+			enum struct Type { NONE, COLLAPSE, EXPAND, SWITCH, PRINT, CAST, VIEW, LOG };
 			namespace CAST {
-				enum struct Type { UINT_TO_DOUBLE };
+				enum struct Type { NONE, UINT_TO_DOUBLE };
 			}
 		}
 	};
@@ -83,13 +77,13 @@ namespace CLASS {
 // Object/Data.hpp --------------------------------------------------------------------------------
 		struct Data;
 		namespace DATA {
-			enum struct Type { ATMOSPHERE, PRIMITIVE, SKELETON, CAMERA, VOLUME, CURVE, EMPTY, FORCE, GROUP, LIGHT, MESH, SFX, VFX };
+			enum struct Type { NONE, ATMOSPHERE, PRIMITIVE, SKELETON, CAMERA, VOLUME, CURVE, EMPTY, FORCE, GROUP, LIGHT, MESH, SFX, VFX };
 // Object/Data/Atmosphere.hpp ---------------------------------------------------------------------
 			struct Atmosphere;
 // Object/Data/Primitive.hpp ----------------------------------------------------------------------
 			struct Primitive;
 			namespace PRIMITIVE {
-				enum struct Type { ELLIPSOID, CYLINDER, CAPSULE, SPHERE, TORUS, CONE, BOX };
+				enum struct Type { NONE, ELLIPSOID, CYLINDER, CAPSULE, SPHERE, TORUS, CONE, BOX };
 				struct Ellipsoid;
 				struct Cylinder;
 				struct Capsule;
@@ -108,7 +102,7 @@ namespace CLASS {
 // Object/Data/Volume.hpp -------------------------------------------------------------------------
 			struct Volume;
 			namespace VOLUME {
-				enum struct Type { HETEROGENEOUS, HOMOGENEOUS };
+				enum struct Type { NONE, HETEROGENEOUS, HOMOGENEOUS };
 				namespace HETEROGENEOUS {
 					struct Particle;
 					struct Domain;
@@ -120,14 +114,14 @@ namespace CLASS {
 // Object/Data/Empty.hpp --------------------------------------------------------------------------
 			struct Empty;
 			namespace EMPTY {
-				enum struct Type { POINT, AXES };
+				enum struct Type { NONE, POINT, AXES };
 				struct Point;
 				struct Axes;
 			}
 // Object/Data/Force.hpp --------------------------------------------------------------------------
 			struct Force;
 			namespace FORCE {
-				enum struct Type { TURBULENCE, BROWNIAN, HARMONIC, MAGNETIC, VORTEX, CURVE, POINT, DRAG, WIND };
+				enum struct Type { NONE, TURBULENCE, BROWNIAN, HARMONIC, MAGNETIC, VORTEX, CURVE, POINT, DRAG, WIND };
 				struct Turublence;
 				struct Brownian;
 				struct Harmonic;
@@ -143,7 +137,7 @@ namespace CLASS {
 // Object/Data/Light.hpp --------------------------------------------------------------------------
 			struct Light;
 			namespace LIGHT {
-				enum struct Type { DIRECTIONAL , POINT , AREA, SPOT };
+				enum struct Type { NONE, DIRECTIONAL , POINT , AREA, SPOT };
 
 				struct Directional;
 				struct Point;
@@ -166,22 +160,22 @@ namespace CLASS {
 	struct Material;
 	namespace MATERIAL {
 		namespace NODE {
-			enum struct Type { SHADER, MATH, IO };
+			enum struct Type { NONE, SHADER, MATH, IO };
 			namespace SHADER {
-				enum struct Type { COMPLETE, VOLUME };
+				enum struct Type { NONE, COMPLETE, VOLUME };
 			}
 			namespace MATH {
-				enum struct Type { DISTANCE };
+				enum struct Type { NONE, DISTANCE };
 			}
 			namespace IO {
-				enum struct Type { ACTIVE_SCENE, OBJECT_THIS, OBJECT_INPUT };
+				enum struct Type { NONE, ACTIVE_SCENE, OBJECT_THIS, OBJECT_INPUT };
 			}
 		}
 	}
 }
 
 namespace WORKSPACE {
-	enum struct Type { PROPERTIES, VIEWPORT, OUTLINER, NODES, API, LOG };
+	enum struct Type { NONE, PROPERTIES, VIEWPORT, OUTLINER, NODES, API, LOG };
 }
 
 namespace GUI {

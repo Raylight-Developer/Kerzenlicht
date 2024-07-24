@@ -21,7 +21,7 @@
     <ClInclude Include="Include\framework.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\DLL.h">
+    <ClInclude Include="Include\Dll_Include.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

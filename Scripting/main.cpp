@@ -1,46 +1,36 @@
-#include "DLL.h"
-
-#include "Include.hpp"
-#include "Core/Nodes.hpp"
-#include "Core/Node_Def.hpp"
-
-#include "Node_GUI.hpp"
-#include "Node_GUI_Def.hpp"
-
-using namespace CLASS::NODE;
-
+#include "Dll_Include.hpp"
 
 extern "C" {
-	EXPORT void Script_ID_buildGui(GUI::NODE::EXEC::Script* node) {
+	EXPORT void Script_ID_buildGui(Gui_Script* node) {
+		node->clearIO();
+
+		node->addExecInput(0, "I Exec");
+		node->addDataInput(1, "I Value", Data_Type::DOUBLE);
+		
+		node->addExecOutput(0, "O Exec");
+		node->addDataOutput(1, "O Value", Data_Type::DOUBLE);
+	}
+
+	EXPORT void Script_ID_build(Script* node) {
 		node->clearIO();
 		
 		node->addExecInput(0, "I Exec");
-		node->addDataInput(1, "I Value", DATA::Type::DOUBLE);
+		node->addDataInput(1, "I Value", Data_Type::DOUBLE);
 		
 		node->addExecOutput(0, "O Exec");
-		node->addDataOutput(1, "O Value", DATA::Type::DOUBLE);
+		node->addDataOutput(1, "O Value", Data_Type::DOUBLE);
+		
+		node->getDataInput("I Value")->default_value = Data(2.5, Data_Type::DOUBLE);
 	}
 
-	EXPORT void Script_ID_build(EXEC::Script* node) {
-		node->clearIO();
-		
-		node->addExecInput(0, "I Exec");
-		node->addDataInput(1, "I Value", DATA::Type::DOUBLE);
-		
-		node->addExecOutput(0, "O Exec");
-		node->addDataOutput(1, "O Value", DATA::Type::DOUBLE);
-		
-		node->data_inputs["I Value"]->default_value = Data(2.5, DATA::Type::DOUBLE);
+	EXPORT void Script_ID_exec(Script* node) {
+		node->getExecOutput("O Exec")->exec();
 	}
 
-	EXPORT void Script_ID_exec(EXEC::Script* node) {
-		node->exec_outputs["O Exec"]->exec();
-	}
-
-	EXPORT Data* Script_ID_getData(const EXEC::Script* node, const uint16& port_request) {
+	EXPORT Data Script_ID_getData(Script* node, const uint16& port_request) {
 		if (port_request == 1) {
-			return new Data(node->data_inputs.at("I Value")->getData() * Data(5.0));
+			return node->getData("I Value") * Data(5.0);
 		}
-		return new Data();
+		return Data();
 	}
 }
