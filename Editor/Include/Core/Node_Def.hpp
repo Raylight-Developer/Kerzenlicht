@@ -92,6 +92,7 @@ namespace CLASS {
 				map<string, Data> internal_data;
 
 				Script(const string& script_id = "");
+				~Script();
 
 				// VIRTUAL required for functions used/called from DLL
 				Data getPortData (const string& map_name) const;
@@ -122,13 +123,13 @@ namespace CLASS {
 			public:
 				Script_Node(Script* node);
 				// Create a new port
-				virtual void addDataInput (const uint16& slot_id, const string& map_name, const DATA::Type& type, const DATA::Modifier& modifier = DATA::Modifier::SINGLE) const;
+				virtual void addDataInput (const string& map_name, const DATA::Type& type, const DATA::Modifier& modifier = DATA::Modifier::SINGLE) const;
 				// Create a new port
-				virtual void addDataOutput(const uint16& slot_id, const string& map_name, const DATA::Type& type, const DATA::Modifier& modifier = DATA::Modifier::SINGLE) const;
+				virtual void addDataOutput(const string& map_name, const DATA::Type& type, const DATA::Modifier& modifier = DATA::Modifier::SINGLE) const;
 				// Create a new port
-				virtual void addExecInput (const uint16& slot_id, const string& map_name) const;
+				virtual void addExecInput (const string& map_name) const;
 				// Create a new port
-				virtual void addExecOutput(const uint16& slot_id, const string& map_name) const;
+				virtual void addExecOutput(const string& map_name) const;
 				// Clear All Inputs and Outputs, destroying their connections.
 				virtual void clearIO() const;
 
@@ -226,7 +227,7 @@ namespace CLASS {
 				enum struct Type { NONE, EULER_ROTATION_X, EULER_ROTATION_Y, EULER_ROTATION_Z, FIELD };
 				struct Field : Get {
 					string field;
-					Field();
+					Field(const string& field = "");
 
 					NODE::Data getData(const uint16& slot_id) const override;
 				};
@@ -248,7 +249,7 @@ namespace CLASS {
 			}
 		}
 		namespace UTIL {
-			enum struct Type { COLLAPSE, EXPAND, SWITCH, PRINT, CAST, VIEW, LOG };
+			enum struct Type { COLLAPSE, EXPAND, SWITCH, PRINT, CAST, VIEW, LOGS };
 			struct Cast : Node {
 				PORT::Data_I_Port* i_value;
 				PORT::Data_O_Port* o_value;

@@ -29,6 +29,7 @@ GUI::NODE::EXEC::Script::Script(const ivec2& pos, const string& script_id) {
 
 	wrapper = new Script_Node(this);
 	buildGuiFunc = nullptr;
+	paintGuiFunc = nullptr;
 	dynlib = NULL;
 
 	rect = QRectF(-100, -20, 200, 60);
@@ -55,8 +56,12 @@ GUI::NODE::EXEC::Script::Script(const ivec2& pos, const string& script_id) {
 	if (script_id != "") {
 		loadDLL(dynlib);
 
+		FARPROC paintAddress = GetProcAddress(dynlib, (script_identifier->text().toStdString() + "_renderGui").c_str());
+		if (paintAddress) {
+			paintGuiFunc = (void(*)(Script_Node*, QPainter*, const QStyleOptionGraphicsItem*, QWidget*))paintAddress;
+		}
 		FARPROC buildAddress = GetProcAddress(dynlib, (script_identifier->text().toStdString() + "_buildGui").c_str());
-		if (buildAddress != nullptr) {
+		if (buildAddress) {
 			buildGuiFunc = (void(*)(Script_Node*))buildAddress;
 			buildGuiFunc(wrapper);
 		}
@@ -64,6 +69,9 @@ GUI::NODE::EXEC::Script::Script(const ivec2& pos, const string& script_id) {
 			*LOG << ENDL << HTML_RED << "[DLL Binding]" << HTML_RESET << " Unable to resolve Script ID"; FLUSH
 		}
 	}
+}
+GUI::NODE::EXEC::Script::~Script() {
+	delete wrapper;
 }
 
 void GUI::NODE::EXEC::Script::clearIO() {
@@ -82,30 +90,45 @@ void GUI::NODE::EXEC::Script::addDataInput(const uint16& slot_id, const string& 
 	inputs.push_back(value);
 	value->rect.moveTopLeft(value->rect.topLeft() + QPointF(0, 20));
 	rect.setHeight(60 + max(inputs.size(), outputs.size()) * 20);
-};
+}
 
 void GUI::NODE::EXEC::Script::addDataOutput(const uint16& slot_id, const string& label, const CLASS::NODE::DATA::Type& type, const CLASS::NODE::DATA::Modifier& modifier) {
 	PORT::Data_O_Port* value = new PORT::Data_O_Port(this, slot_id, QString::fromStdString(label), type, modifier);
 	outputs.push_back(value);
 	value->rect.moveTopLeft(value->rect.topLeft() + QPointF(0, 20));
 	rect.setHeight(60 + max(inputs.size(), outputs.size()) * 20);
-};
+}
 
 void GUI::NODE::EXEC::Script::addExecInput(const uint16& slot_id, const string& label) {
 	PORT::Exec_I_Port* value = new PORT::Exec_I_Port(this, slot_id, QString::fromStdString(label));
 	inputs.push_back(value);
 	value->rect.moveTopLeft(value->rect.topLeft() + QPointF(0, 20));
 	rect.setHeight(60 + max(inputs.size(), outputs.size()) * 20);
-};
+}
 
 void GUI::NODE::EXEC::Script::addExecOutput(const uint16& slot_id, const string& label) {
 	PORT::Exec_O_Port* value = new PORT::Exec_O_Port(this, slot_id, QString::fromStdString(label));
 	outputs.push_back(value);
 	value->rect.moveTopLeft(value->rect.topLeft() + QPointF(0, 20));
 	rect.setHeight(60 + max(inputs.size(), outputs.size()) * 20);
-};
+}
+
+void GUI::NODE::EXEC::Script::renderDefault(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) {
+	Node::paint(painter, option, widget);
+}
+
+void GUI::NODE::EXEC::Script::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) {
+	if (paintGuiFunc)
+		paintGuiFunc(wrapper, painter, option, widget);
+	else
+		Node::paint(painter, option, widget);
+}
 
 void GUI::NODE::EXEC::Script::reloadFunctions() {
+	FARPROC paintAddress = GetProcAddress(dynlib, (script_identifier->text().toStdString() + "_renderGui").c_str());
+	if (paintAddress) {
+		paintGuiFunc = (void(*)(Script_Node*, QPainter*, const QStyleOptionGraphicsItem*, QWidget*))paintAddress;
+	}
 	FARPROC buildAddress = GetProcAddress(dynlib, (script_identifier->text().toStdString() + "_buildGui").c_str());
 	if (buildAddress != nullptr) {
 		buildGuiFunc = (void(*)(Script_Node*))buildAddress;
@@ -133,17 +156,29 @@ GUI::NODE::EXEC::Script_Node::Script_Node(Script* node) :
 void GUI::NODE::EXEC::Script_Node::clearIO() const {
 	node->clearIO();
 }
-void GUI::NODE::EXEC::Script_Node::addDataInput (const uint16& slot_id, const string& label, const CLASS::NODE::DATA::Type& type, const CLASS::NODE::DATA::Modifier& modifier) const {
-	node->addDataInput (slot_id, label, type, modifier);
+void GUI::NODE::EXEC::Script_Node::addDataInput (const string& label, const CLASS::NODE::DATA::Type& type, const CLASS::NODE::DATA::Modifier& modifier) const {
+	node->addDataInput (static_cast<uint16>(node->inputs .size()), label, type, modifier);
 }
-void GUI::NODE::EXEC::Script_Node::addDataOutput(const uint16& slot_id, const string& label, const CLASS::NODE::DATA::Type& type, const CLASS::NODE::DATA::Modifier& modifier) const {
-	node->addDataOutput(slot_id, label, type, modifier);
+void GUI::NODE::EXEC::Script_Node::addDataOutput(const string& label, const CLASS::NODE::DATA::Type& type, const CLASS::NODE::DATA::Modifier& modifier) const {
+	node->addDataOutput(static_cast<uint16>(node->outputs.size()), label, type, modifier);
 }
-void GUI::NODE::EXEC::Script_Node::addExecInput (const uint16& slot_id, const string& label) const {
-	node->addExecInput (slot_id, label);
+void GUI::NODE::EXEC::Script_Node::addExecInput (const string& label) const {
+	node->addExecInput (static_cast<uint16>(node->inputs .size()), label);
 }
-void GUI::NODE::EXEC::Script_Node::addExecOutput(const uint16& slot_id, const string& label) const {
-	node->addExecOutput(slot_id, label);
+void GUI::NODE::EXEC::Script_Node::addExecOutput(const string& label) const {
+	node->addExecOutput(static_cast<uint16>(node->outputs.size()), label);
+}
+void GUI::NODE::EXEC::Script_Node::renderDefault(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) const {
+	node->renderDefault(painter, option, widget);
+}
+bool GUI::NODE::EXEC::Script_Node::isSelected() const {
+	return node->isSelected();
+}
+QRectF GUI::NODE::EXEC::Script_Node::rect() const {
+	return node->rect;
+}
+QString GUI::NODE::EXEC::Script_Node::label() const {
+	return node->label;
 }
 
 GUI::NODE::EXEC::Tick::Tick(const ivec2& pos) {

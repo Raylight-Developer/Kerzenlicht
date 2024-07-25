@@ -11,6 +11,10 @@
 #include "Node_GUI.hpp"
 #include "Node_GUI_Def.hpp"
 
+#include "Core/File.hpp"
+#include "Object/Object.hpp"
+#include "Object/Data.hpp"
+
 using Data = CLASS::NODE::Data;
 using Data_Type = CLASS::NODE::DATA::Type;
 using Script = CLASS::NODE::EXEC::Script_Node;

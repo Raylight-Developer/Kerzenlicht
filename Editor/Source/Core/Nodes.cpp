@@ -26,8 +26,7 @@ CLASS::Node_Tree::Node_Tree(const GUI::NODE::Node_Tree* gui_tree) :
 			case NODE::Type::EXEC: {
 				switch (static_cast<NODE::EXEC::Type>(gui_node->sub_type)) {
 					case NODE::EXEC::Type::SCRIPT: {
-						auto t_node = new NODE::EXEC::Script();
-						t_node->script_id = static_cast<GUI::NODE::EXEC::Script*>(gui_node)->script_identifier->text().toStdString();
+						auto t_node = new NODE::EXEC::Script(static_cast<GUI::NODE::EXEC::Script*>(gui_node)->script_identifier->text().toStdString());
 						node = t_node;
 						break;
 					}
@@ -602,7 +601,7 @@ void CLASS::File::f_saveNodeTree(Lace& lace, CLASS::Node_Tree* data, const uint6
 				case NODE::EXEC::Type::COUNTER: {
 					lace NL "┌Node :: EXEC :: COUNTER [ " << j++ << " ]";
 					lace NL S() << ptr_to_str(node);
-					lace NL S() << "Pos " << node_map[node]->scenePos();;
+					lace NL S() << "Pos " << node_map[node]->scenePos();
 					lace NL "└Node";
 					break;
 				}
@@ -617,7 +616,7 @@ void CLASS::File::f_saveNodeTree(Lace& lace, CLASS::Node_Tree* data, const uint6
 				case NODE::EXEC::Type::TICK: {
 					lace NL "┌Node :: EXEC :: TICK [ " << j++ << " ]";
 					lace NL S() << ptr_to_str(node);
-					lace NL S() << "Pos " << node_map[node]->scenePos();;
+					lace NL S() << "Pos " << node_map[node]->scenePos();
 					lace NL "└Node";
 					break;
 				}
@@ -629,7 +628,7 @@ void CLASS::File::f_saveNodeTree(Lace& lace, CLASS::Node_Tree* data, const uint6
 				case NODE::LINK::Type::POINTER: {
 					lace NL "┌Node :: LINK :: POINTER [ " << j++ << " ]";
 					lace NL S() << ptr_to_str(node);
-					lace NL S() << "Pos " << node_map[node]->scenePos();;
+					lace NL S() << "Pos " << node_map[node]->scenePos();
 					lace NL S() << "Type " << e_to_u(static_cast<NODE::LINK::Pointer*>(node)->pointer_type);
 					lace NL "└Node";
 					break;
@@ -652,7 +651,7 @@ void CLASS::File::f_saveNodeTree(Lace& lace, CLASS::Node_Tree* data, const uint6
 					case NODE::LINK::SET::Type::EULER_ROTATION_X: {
 						lace NL "┌Node :: LINK :: SET :: TRANSFORM :: EULER_ROTATION :: X [ " << j++ << " ]";
 						lace NL S() << ptr_to_str(node);
-						lace NL S() << "Pos " << node_map[node]->scenePos();;
+						lace NL S() << "Pos " << node_map[node]->scenePos();
 						lace NL "└Node";
 						break;
 					}
@@ -667,28 +666,28 @@ void CLASS::File::f_saveNodeTree(Lace& lace, CLASS::Node_Tree* data, const uint6
 				case NODE::MATH::Type::ADD: {
 					lace NL "┌Node :: MATH :: ADD [ " << j++ << " ]";
 					lace NL S() << ptr_to_str(node);
-					lace NL S() << "Pos " << node_map[node]->scenePos();;
+					lace NL S() << "Pos " << node_map[node]->scenePos();
 					lace NL "└Node";
 					break;
 				}
 				case NODE::MATH::Type::SUB: {
 					lace NL "┌Node :: MATH :: SUB [ " << j++ << " ]";
 					lace NL S() << ptr_to_str(node);
-					lace NL S() << "Pos " << node_map[node]->scenePos();;
+					lace NL S() << "Pos " << node_map[node]->scenePos();
 					lace NL "└Node";
 					break;
 				}
 				case NODE::MATH::Type::MUL: {
 					lace NL "┌Node :: MATH :: MUL [ " << j++ << " ]";
 					lace NL S() << ptr_to_str(node);
-					lace NL S() << "Pos " << node_map[node]->scenePos();;
+					lace NL S() << "Pos " << node_map[node]->scenePos();
 					lace NL "└Node";
 					break;
 				}
 				case NODE::MATH::Type::DIV: {
 					lace NL "┌Node :: MATH :: DIV [ " << j++ << " ]";
 					lace NL S() << ptr_to_str(node);
-					lace NL S() << "Pos " << node_map[node]->scenePos();;
+					lace NL S() << "Pos " << node_map[node]->scenePos();
 					lace NL "└Node";
 					break;
 				}
@@ -700,14 +699,14 @@ void CLASS::File::f_saveNodeTree(Lace& lace, CLASS::Node_Tree* data, const uint6
 				case NODE::UTIL::Type::PRINT: {
 					lace NL "┌Node :: UTIL :: PRINT [ " << j++ << " ]";
 					lace NL S() << ptr_to_str(node);
-					lace NL S() << "Pos " << node_map[node]->scenePos();;
+					lace NL S() << "Pos " << node_map[node]->scenePos();
 					lace NL "└Node";
 					break;
 				}
 				case NODE::UTIL::Type::VIEW: {
 					lace NL "┌Node :: UTIL :: VIEW [ " << j++ << " ]";
 					lace NL S() << ptr_to_str(node);
-					lace NL S() << "Pos " << node_map[node]->scenePos();;
+					lace NL S() << "Pos " << node_map[node]->scenePos();
 					lace NL "└Node";
 					break;
 				}

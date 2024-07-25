@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<link rel="stylesheet" href="./Style.css"></link>
+<body>
+	<h1>NODE API</h1>
+	<h3>Methods</h3>
+	<pre>
+	<com> *Required</com>
+	<def>EXPORT</def> <voi>void</voi> <fun>[ID]_build</fun>(<a href="Script.html"><cla>Script</cla></a>* node);
+
+	<com> *Required</com>
+	<def>EXPORT</def> <voi>void</voi> <fun>[ID]_buildGui</fun>(<a href="Gui_Script.html"><cla>Gui_Script</cla></a>* node);
+
+	-Optional
+	<def>EXPORT</def> <voi>void</voi> <fun>[ID]_exec</fun>(<a href="Script.html"><cla>Script</cla></a>* node);
+
+	-Optional
+	<def>EXPORT</def> <a href="Data.html"><cla>Data</cla></a> <fun>[ID]_getData</fun>(<a href="Script.html"><cla>Script</cla></a>* node, <voi>const</voi> <cla>uint16</cla>& port_request);
+
+	-Optional
+	<def>EXPORT</def> <voi>void</voi> <fun>[ID]_renderGui</fun>(<a href="Gui_Script.html"><cla>Gui_Script</cla></a>* node, <cla>QPainter</cla>* painter, <voi>const</voi> <cla>QStyleOptionGraphicsItem</cla>* option, <cla>QWidget</cla>* widget);
+	</pre>
+</body>

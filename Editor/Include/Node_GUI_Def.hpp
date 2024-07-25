@@ -50,29 +50,38 @@ namespace GUI {
 				Script_Node* wrapper;
 
 				Script(const ivec2& pos, const string& script_id = "");
-
+				~Script();
 				void clearIO();
 				void addDataInput (const uint16& slot_id, const string& label, const CLASS::NODE::DATA::Type& type, const CLASS::NODE::DATA::Modifier& modifier = CLASS::NODE::DATA::Modifier::SINGLE);
 				void addDataOutput(const uint16& slot_id, const string& label, const CLASS::NODE::DATA::Type& type, const CLASS::NODE::DATA::Modifier& modifier = CLASS::NODE::DATA::Modifier::SINGLE);
 				void addExecInput (const uint16& slot_id, const string& label);
 				void addExecOutput(const uint16& slot_id, const string& label);
+				void renderDefault(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget);
 
 				void (*buildGuiFunc)(Script_Node*);
+				void (*paintGuiFunc)(Script_Node*, QPainter*, const QStyleOptionGraphicsItem*, QWidget*);
 
 				void reloadFunctions();
 				void reloadDll();
 				void recompile(const HINSTANCE& library);
+				void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) override;
 			};
 			class Script_Node {
 			private:
 				Script* node;
 			public:
 				Script_Node(Script* node);
+				virtual void addDataInput (const string& label, const CLASS::NODE::DATA::Type& type, const CLASS::NODE::DATA::Modifier& modifier = CLASS::NODE::DATA::Modifier::SINGLE) const;
+				virtual void addDataOutput(const string& label, const CLASS::NODE::DATA::Type& type, const CLASS::NODE::DATA::Modifier& modifier = CLASS::NODE::DATA::Modifier::SINGLE) const;
+				virtual void addExecInput (const string& label) const;
+				virtual void addExecOutput(const string& label) const;
 				virtual void clearIO() const;
-				virtual void addDataInput (const uint16& slot_id, const string& label, const CLASS::NODE::DATA::Type& type, const CLASS::NODE::DATA::Modifier& modifier = CLASS::NODE::DATA::Modifier::SINGLE) const;
-				virtual void addDataOutput(const uint16& slot_id, const string& label, const CLASS::NODE::DATA::Type& type, const CLASS::NODE::DATA::Modifier& modifier = CLASS::NODE::DATA::Modifier::SINGLE) const;
-				virtual void addExecInput (const uint16& slot_id, const string& label) const;
-				virtual void addExecOutput(const uint16& slot_id, const string& label) const;
+
+				virtual void renderDefault(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) const;
+
+				virtual bool isSelected() const;
+				virtual QRectF rect() const;
+				virtual QString label() const;
 			};
 			struct Tick : Node {
 				Tick(const ivec2& pos);

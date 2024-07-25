@@ -1,6 +1,6 @@
 * {
-	font-family: 'Courier New', monospace;
-	font-size: medium;
+	font-family: 'Roboto', monospace;
+	font-size: 15px;
 	background: transparent;
 	color: rgb(220,220,220);
 	border-style: solid;
@@ -11,7 +11,7 @@
 }
 a {
 	color: rgb(85, 155, 215);
-	text-decoration: none;
+	text-decoration: underline;
 }
 h1 {
 	font-size: xx-large;
@@ -92,4 +92,7 @@ fun {
 }
 .var {
 	color: rgb(155,220,255);
+}
+com {
+	color: rgb(85, 165, 75)
 }
