@@ -12,7 +12,7 @@ GUI::NODE::EXEC::Counter::Counter(const ivec2& pos) {
 	i_exec  = new PORT::Exec_I_Port(this, 0, "Tick");
 
 	o_exec  = new PORT::Exec_O_Port(this, 0, "Tick");
-	o_count = new PORT::Data_O_Port(this, 1, "Count", CLASS::NODE::DATA::Type::UINT);
+	o_count = new PORT::Data_O_Port(this, 1, "Count", CLASS::DATA::Type::UINT);
 
 	inputs.push_back(i_exec);
 	outputs.push_back(o_exec);
@@ -85,14 +85,14 @@ void GUI::NODE::EXEC::Script::clearIO() {
 	outputs.clear();
 }
 
-void GUI::NODE::EXEC::Script::addDataInput(const uint16& slot_id, const string& label, const CLASS::NODE::DATA::Type& type, const CLASS::NODE::DATA::Modifier& modifier) {
+void GUI::NODE::EXEC::Script::addDataInput(const uint16& slot_id, const string& label, const CLASS::DATA::Type& type, const CLASS::DATA::Modifier& modifier) {
 	PORT::Data_I_Port* value = new PORT::Data_I_Port(this, slot_id, QString::fromStdString(label), type, modifier);
 	inputs.push_back(value);
 	value->rect.moveTopLeft(value->rect.topLeft() + QPointF(0, 20));
 	rect.setHeight(60 + max(inputs.size(), outputs.size()) * 20);
 }
 
-void GUI::NODE::EXEC::Script::addDataOutput(const uint16& slot_id, const string& label, const CLASS::NODE::DATA::Type& type, const CLASS::NODE::DATA::Modifier& modifier) {
+void GUI::NODE::EXEC::Script::addDataOutput(const uint16& slot_id, const string& label, const CLASS::DATA::Type& type, const CLASS::DATA::Modifier& modifier) {
 	PORT::Data_O_Port* value = new PORT::Data_O_Port(this, slot_id, QString::fromStdString(label), type, modifier);
 	outputs.push_back(value);
 	value->rect.moveTopLeft(value->rect.topLeft() + QPointF(0, 20));
@@ -156,10 +156,10 @@ GUI::NODE::EXEC::Script_Node::Script_Node(Script* node) :
 void GUI::NODE::EXEC::Script_Node::clearIO() const {
 	node->clearIO();
 }
-void GUI::NODE::EXEC::Script_Node::addDataInput (const string& label, const CLASS::NODE::DATA::Type& type, const CLASS::NODE::DATA::Modifier& modifier) const {
+void GUI::NODE::EXEC::Script_Node::addDataInput (const string& label, const CLASS::DATA::Type& type, const CLASS::DATA::Modifier& modifier) const {
 	node->addDataInput (static_cast<uint16>(node->inputs .size()), label, type, modifier);
 }
-void GUI::NODE::EXEC::Script_Node::addDataOutput(const string& label, const CLASS::NODE::DATA::Type& type, const CLASS::NODE::DATA::Modifier& modifier) const {
+void GUI::NODE::EXEC::Script_Node::addDataOutput(const string& label, const CLASS::DATA::Type& type, const CLASS::DATA::Modifier& modifier) const {
 	node->addDataOutput(static_cast<uint16>(node->outputs.size()), label, type, modifier);
 }
 void GUI::NODE::EXEC::Script_Node::addExecInput (const string& label) const {
@@ -189,13 +189,13 @@ GUI::NODE::EXEC::Tick::Tick(const ivec2& pos) {
 	rect = QRectF(-100, -20, 200, 40);
 
 	outputs.push_back(new PORT::Exec_O_Port(this, 0, "Tick"));
-	outputs.push_back(new PORT::Data_O_Port(this, 1, "Delta", CLASS::NODE::DATA::Type::DOUBLE));
+	outputs.push_back(new PORT::Data_O_Port(this, 1, "Delta", CLASS::DATA::Type::DOUBLE));
 
 	rect.setHeight(40 + max(inputs.size(), outputs.size()) * 20);
 	load_pos = QPointF(pos.x, pos.y);
 }
 
-GUI::NODE::LINK::Pointer::Pointer(const ivec2& pos, const CLASS::NODE::DATA::Type& pointer_type) {
+GUI::NODE::LINK::Pointer::Pointer(const ivec2& pos, const CLASS::DATA::Type& pointer_type) {
 	label = "Pointer";
 	type = CLASS::NODE::Type::LINK;
 	sub_type = e_to_u(CLASS::NODE::LINK::Type::POINTER);
@@ -221,11 +221,11 @@ void GUI::NODE::LINK::Pointer::paint(QPainter* painter, const QStyleOptionGraphi
 
 		painter->setPen(Qt::white);
 		switch (pointer_type) {
-			case CLASS::NODE::DATA::Type::OBJECT: {
+			case CLASS::DATA::Type::OBJECT: {
 				painter->drawText(QRectF(rect.topLeft() + QPointF(14, 30), QSize(100, 20)), Qt::AlignLeft, QString::fromStdString(static_cast<CLASS::Object*>(pointer)->name));
 				break;
 			}
-			case CLASS::NODE::DATA::Type::SCENE: {
+			case CLASS::DATA::Type::SCENE: {
 				painter->drawText(QRectF(rect.topLeft() + QPointF(14, 30), QSize(100, 20)), Qt::AlignLeft, "Active Scene");
 				break;
 			}
@@ -261,9 +261,9 @@ GUI::NODE::LINK::GET::Field::Field(const ivec2& pos) :
 	proxyWidget_id->setWidget(field);
 	proxyWidget_id->setPos(boundingRect().topLeft() + QPointF(10, 50));
 
-	i_pointer = new PORT::Data_I_Port(this, 0, "Pointer", CLASS::NODE::DATA::Type::ANY);
+	i_pointer = new PORT::Data_I_Port(this, 0, "Pointer", CLASS::DATA::Type::ANY);
 
-	o_value   = new PORT::Data_O_Port(this, 0, "Value", CLASS::NODE::DATA::Type::ANY);
+	o_value   = new PORT::Data_O_Port(this, 0, "Value", CLASS::DATA::Type::ANY);
 
 	inputs.push_back(i_pointer);
 	outputs.push_back(o_value);
@@ -294,11 +294,11 @@ GUI::NODE::LINK::SET::Euler_Rotation_X::Euler_Rotation_X(const ivec2& pos) :
 	mini_type = CLASS::NODE::LINK::SET::Type::EULER_ROTATION_X;
 
 	i_exec    = new PORT::Exec_I_Port(this, 0, "Exec");
-	i_pointer = new PORT::Data_I_Port(this, 1, "Pointer", CLASS::NODE::DATA::Type::OBJECT);
-	i_value   = new PORT::Data_I_Port(this, 2, "Input Value", CLASS::NODE::DATA::Type::DOUBLE);
+	i_pointer = new PORT::Data_I_Port(this, 1, "Pointer", CLASS::DATA::Type::OBJECT);
+	i_value   = new PORT::Data_I_Port(this, 2, "Input Value", CLASS::DATA::Type::DOUBLE);
 
 	o_exec    = new PORT::Exec_O_Port(this, 0, "Exec");
-	o_value   = new PORT::Data_O_Port(this, 1, "Output Value", CLASS::NODE::DATA::Type::DOUBLE);
+	o_value   = new PORT::Data_O_Port(this, 1, "Output Value", CLASS::DATA::Type::DOUBLE);
 
 	inputs.push_back(i_exec);
 	inputs.push_back(i_pointer);
@@ -316,10 +316,10 @@ GUI::NODE::MATH::MATH::MATH(const ivec2& pos) {
 
 	rect = QRectF(-100, -20, 200, 40);
 
-	in_a  = new PORT::Data_I_Port(this, 0, "A", CLASS::NODE::DATA::Type::ANY);
-	in_b  = new PORT::Data_I_Port(this, 1, "B", CLASS::NODE::DATA::Type::ANY);
+	in_a  = new PORT::Data_I_Port(this, 0, "A", CLASS::DATA::Type::ANY);
+	in_b  = new PORT::Data_I_Port(this, 1, "B", CLASS::DATA::Type::ANY);
 
-	out_a = new PORT::Data_O_Port(this, 0, "Res", CLASS::NODE::DATA::Type::ANY);
+	out_a = new PORT::Data_O_Port(this, 0, "Res", CLASS::DATA::Type::ANY);
 
 	inputs.push_back(in_a);
 	inputs.push_back(in_b);
@@ -365,7 +365,7 @@ GUI::NODE::UTIL::Print::Print(const ivec2& pos) {
 	rect = QRectF(-100, -20, 200, 40);
 
 	i_exec  = new PORT::Exec_I_Port(this, 0, "Exec");
-	i_value = new PORT::Data_I_Port(this, 1, "Value", CLASS::NODE::DATA::Type::ANY);
+	i_value = new PORT::Data_I_Port(this, 1, "Value", CLASS::DATA::Type::ANY);
 
 	o_exec  = new PORT::Exec_O_Port(this, 0, "Exec");
 

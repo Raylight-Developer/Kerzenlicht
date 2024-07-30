@@ -181,102 +181,8 @@ CLASS::Node::~Node() {
 	for (CLASS::NODE::Port* port : outputs) delete port;
 }
 
-CLASS::NODE::Data CLASS::Node::getData(const uint16& slot_id) const {
-	return NODE::Data();
-}
-
-CLASS::NODE::Data::Data() {
-	data = nullptr;
-	type = DATA::Type::NONE;
-	modifier = DATA::Modifier::SINGLE;
-}
-
-CLASS::NODE::Data::Data(const any& data, const DATA::Type& type, const DATA::Modifier& modifier) :
-	data(data),
-	type(type),
-	modifier(modifier)
-{}
-
-CLASS::NODE::Data::Data(const string& data) : data(data) {
-	modifier = DATA::Modifier::SINGLE; type = DATA::Type::STRING;
-}
-CLASS::NODE::Data::Data(const dvec1& data) : data(data) {
-	modifier = DATA::Modifier::SINGLE; type = DATA::Type::DOUBLE;
-}
-CLASS::NODE::Data::Data(const bool& data) : data(data) {
-	modifier = DATA::Modifier::SINGLE; type = DATA::Type::BOOL;
-}
-CLASS::NODE::Data::Data(const uint64& data) : data(data) {
-	modifier = DATA::Modifier::SINGLE; type = DATA::Type::UINT;
-}
-CLASS::NODE::Data::Data(const int64& data) : data(data) {
-	modifier = DATA::Modifier::SINGLE; type = DATA::Type::INT;
-}
-
-CLASS::NODE::Data CLASS::NODE::Data::operator+(const Data & other) {
-	if (type == other.type) {
-		switch (type) {
-			case DATA::Type::DOUBLE: return Data(any_cast<dvec1>(data) + any_cast<dvec1>(other.data), type);
-		}
-	}
+CLASS::Data CLASS::Node::getData(const uint16& slot_id) const {
 	return Data();
-}
-CLASS::NODE::Data CLASS::NODE::Data::operator-(const Data& other) {
-	if (type == other.type) {
-		switch (type) {
-			case DATA::Type::DOUBLE: return Data(any_cast<dvec1>(data) - any_cast<dvec1>(other.data), type);
-		}
-	}
-	return Data();
-}
-
-CLASS::NODE::Data CLASS::NODE::Data::operator*(const Data& other) {
-	if (type == other.type) {
-		switch (type) {
-			case DATA::Type::DOUBLE: return Data(any_cast<dvec1>(data) * any_cast<dvec1>(other.data), type);
-		}
-	}
-	return Data();
-}
-
-CLASS::NODE::Data CLASS::NODE::Data::operator/(const Data& other) {
-	if (type == other.type) {
-		switch (type) {
-			case DATA::Type::DOUBLE: return Data(any_cast<dvec1>(data) / any_cast<dvec1>(other.data), type);
-		}
-	}
-	return Data();
-}
-
-uint64 CLASS::NODE::Data::getUint() const {
-	return any_cast<uint64>(data);
-}
-
-dvec1 CLASS::NODE::Data::getDouble() const {
-	switch (type) {
-		case DATA::Type::DOUBLE: return any_cast<dvec1>(data);
-		case DATA::Type::UINT: return static_cast<dvec1>(any_cast<uint64>(data));
-		case DATA::Type::INT: return static_cast<dvec1>(any_cast<int64>(data));
-	}
-	return 0.0;
-}
-
-CLASS::Scene* CLASS::NODE::Data::getScene() const {
-	return any_cast<CLASS::Scene*>(data);
-}
-
-CLASS::Object* CLASS::NODE::Data::getObject() const {
-	return any_cast<CLASS::Object*>(data);
-}
-
-string CLASS::NODE::Data::to_string() const {
-	switch (type) {
-		case DATA::Type::TRANSFORM: return any_cast<Transform>(data).to_string();
-		case DATA::Type::DOUBLE:    return std::to_string(any_cast<dvec1>(data));
-		case DATA::Type::UINT:      return std::to_string(static_cast<dvec1>(any_cast<uint64>(data)));
-		case DATA::Type::INT:       return std::to_string(static_cast<dvec1>(any_cast<int64>(data)));
-	}
-	return "";
 }
 
 CLASS::NODE::Port::Port(Node* node) :
@@ -284,6 +190,10 @@ CLASS::NODE::Port::Port(Node* node) :
 {
 	type = PORT::Type::NONE;
 	slot_id = 0;
+}
+
+CLASS::Data CLASS::NODE::Port::getData() const {
+	return Data();
 }
 
 CLASS::NODE::PORT::Data_I_Port::Data_I_Port(Node* node, const uint16& slot_id, const DATA::Type& type, const DATA::Modifier& modifier) :
@@ -310,7 +220,7 @@ CLASS::NODE::PORT::Data_I_Port::~Data_I_Port() {
 	}
 }
 
-CLASS::NODE::Data CLASS::NODE::PORT::Data_I_Port::getData() const {
+CLASS::Data CLASS::NODE::PORT::Data_I_Port::getData() const {
 	if (connection) return connection->getData();
 	return default_value;
 }
@@ -332,7 +242,7 @@ CLASS::NODE::PORT::Data_O_Port::~Data_O_Port() {
 	}
 }
 
-CLASS::NODE::Data CLASS::NODE::PORT::Data_O_Port::getData() const {
+CLASS::Data CLASS::NODE::PORT::Data_O_Port::getData() const {
 	return node->getData(slot_id);
 }
 
@@ -379,46 +289,6 @@ void CLASS::NODE::PORT::Exec_O_Port::exec() const {
 	if (connection) connection->exec(); // TODO can crash on recompilation of nodes
 }
 
-QColor typeColor(const CLASS::NODE::DATA::Type& type) {
-	switch (type) {
-		case CLASS::NODE::DATA::Type::NONE:   return QColor(  0,   0,   0);
-		case CLASS::NODE::DATA::Type::ANY:    return QColor(150, 150, 150);
-		case CLASS::NODE::DATA::Type::STRING: return QColor(215, 155, 135);
-		case CLASS::NODE::DATA::Type::DOUBLE: return QColor( 95, 230,  95);
-		case CLASS::NODE::DATA::Type::BOOL:   return QColor(240, 100, 175);
-		case CLASS::NODE::DATA::Type::UINT:   return QColor(105, 125,  60);
-		case CLASS::NODE::DATA::Type::INT:    return QColor( 40, 130,  40);
-
-		case CLASS::NODE::DATA::Type::TRANSFORM: return QColor( 85,  85, 240);
-		case CLASS::NODE::DATA::Type::TEXTURE:   return QColor(240,  85,  85);
-		case CLASS::NODE::DATA::Type::OBJECT:    return QColor(250, 175, 100);
-		case CLASS::NODE::DATA::Type::SCENE:     return QColor( 85, 195, 240);
-		case CLASS::NODE::DATA::Type::DATA:      return QColor(210, 240,  85);
-
-		case CLASS::NODE::DATA::Type::VEC2:
-		case CLASS::NODE::DATA::Type::VEC3:
-		case CLASS::NODE::DATA::Type::VEC4:
-		case CLASS::NODE::DATA::Type::IVEC2:
-		case CLASS::NODE::DATA::Type::IVEC3:
-		case CLASS::NODE::DATA::Type::IVEC4:
-		case CLASS::NODE::DATA::Type::UVEC2:
-		case CLASS::NODE::DATA::Type::UVEC3:
-		case CLASS::NODE::DATA::Type::UVEC4: return QColor(165, 110, 230);
-
-		case CLASS::NODE::DATA::Type::MAT2:
-		case CLASS::NODE::DATA::Type::MAT3:
-		case CLASS::NODE::DATA::Type::MAT4:
-		case CLASS::NODE::DATA::Type::IMAT2:
-		case CLASS::NODE::DATA::Type::IMAT3:
-		case CLASS::NODE::DATA::Type::IMAT4:
-		case CLASS::NODE::DATA::Type::UMAT2:
-		case CLASS::NODE::DATA::Type::UMAT3:
-		case CLASS::NODE::DATA::Type::UMAT4: return QColor(230, 180, 240);
-	}
-	return QColor(0, 0, 0);
-}
-
-
 CLASS::Node_Tree* CLASS::File::f_loadNodeTree(const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map) {
 	auto node_tree = new CLASS::Node_Tree();
 	auto gui_node_tree = new GUI::NODE::Node_Tree();
@@ -457,9 +327,9 @@ CLASS::Node_Tree* CLASS::File::f_loadNodeTree(const vector<vector<string>>& toke
 			else if (read_data[0][2] == "LINK") {
 				if      (read_data[0][4] == "POINTER") {
 					auto pointer = new NODE::LINK::Pointer();
-					pointer->pointer_type = static_cast<NODE::DATA::Type>(str_to_u(read_data[3][1]));
+					pointer->pointer_type = static_cast<DATA::Type>(str_to_u(read_data[3][1]));
 					node = pointer;
-					gui_node = new GUI::NODE::LINK::Pointer(str_to_i(read_data[2][1], read_data[2][2]), static_cast<NODE::DATA::Type>(str_to_u(read_data[3][1])));
+					gui_node = new GUI::NODE::LINK::Pointer(str_to_i(read_data[2][1], read_data[2][2]), static_cast<DATA::Type>(str_to_u(read_data[3][1])));
 				}
 				else if (read_data[0][4] == "GET") {
 					if      (read_data[0][6] == "FIELD") {

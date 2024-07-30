@@ -1,8 +1,9 @@
 #pragma once
 
 #include "Include.hpp"
-
 #include "Ops.hpp"
+
+#include "Core/Data_Property.hpp"
 #include "Core/Node_Def.hpp"
 
 #include "Data.hpp"
@@ -11,6 +12,7 @@
 // FWD DECL OTHER
 namespace CLASS {
 	struct Scene;
+	struct Data;
 }
 
 // FWD DECL THIS
@@ -27,6 +29,7 @@ namespace CLASS {
 		Transform transform;
 		Transform node_transform;
 		vector<Material*> materials;
+		unordered_map<string, CLASS::Data> properties;
 
 		bool viewport_visibility;
 		bool render_visibility;

@@ -11,6 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Include\Core\Data_Property.hpp" />
     <ClInclude Include="Include\Core\Compiler.hpp" />
     <ClInclude Include="Include\Workspaces\Node_Editor.hpp" />
     <ClInclude Include="Include\Core\Nodes.hpp" />
@@ -51,6 +52,7 @@
     <ClInclude Include="Include\Core\Python_API.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\Core\Data_Property.cpp" />
     <ClCompile Include="Source\Core\Node_Def.cpp" />
     <ClCompile Include="Source\Core\Compiler.cpp" />
     <ClCompile Include="Source\Core\Nodes.cpp" />

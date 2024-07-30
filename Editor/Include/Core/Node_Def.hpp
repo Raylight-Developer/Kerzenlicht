@@ -5,6 +5,7 @@
 #include "QT.hpp"
 #include "Nodes.hpp"
 #include "Compiler.hpp"
+#include "Data_Property.hpp"
 
 // FWD DECL OTHER
 
@@ -176,19 +177,19 @@ namespace CLASS {
 			};
 			struct Add : MATH {
 				Add();;
-				NODE::Data getData(const uint16& slot_id) const override;
+				Data getData(const uint16& slot_id) const override;
 			};
 			struct Sub : MATH {
 				Sub();;
-				NODE::Data getData(const uint16& slot_id) const override;
+				Data getData(const uint16& slot_id) const override;
 			};
 			struct Mul : MATH {
 				Mul();;
-				NODE::Data getData(const uint16& slot_id) const override;
+				Data getData(const uint16& slot_id) const override;
 			};
 			struct Div : MATH {
 				Div();;
-				NODE::Data getData(const uint16& slot_id) const override;
+				Data getData(const uint16& slot_id) const override;
 			};
 		}
 		namespace LINK {
@@ -201,7 +202,7 @@ namespace CLASS {
 
 				Pointer();
 
-				NODE::Data getData(const uint16& slot_id) const override;
+				Data getData(const uint16& slot_id) const override;
 			};
 			struct Get : Node {
 				PORT::Data_I_Port* i_pointer;
@@ -229,7 +230,7 @@ namespace CLASS {
 					string field;
 					Field(const string& field = "");
 
-					NODE::Data getData(const uint16& slot_id) const override;
+					Data getData(const uint16& slot_id) const override;
 				};
 			}
 			namespace SET {
@@ -261,7 +262,7 @@ namespace CLASS {
 				struct Uint_To_Double : Cast {
 					Uint_To_Double();
 
-					NODE::Data getData(const uint16& slot_id) const override;
+					Data getData(const uint16& slot_id) const override;
 				};
 			}
 			struct Expand : Node {
@@ -269,7 +270,7 @@ namespace CLASS {
 
 				Expand();
 
-				NODE::Data getData(const uint16& slot_id) const override;
+				Data getData(const uint16& slot_id) const override;
 			};
 			namespace EXPAND {
 				enum struct Type { };
@@ -280,7 +281,7 @@ namespace CLASS {
 
 				Collapse();
 
-				NODE::Data getData(const uint16& slot_id) const override;
+				Data getData(const uint16& slot_id) const override;
 			};
 			namespace COLLAPSE {
 				enum struct Type { };
@@ -300,7 +301,7 @@ namespace CLASS {
 
 				View();
 
-				NODE::Data getData(const uint16& slot_id) const override;
+				Data getData(const uint16& slot_id) const override;
 			};
 			namespace VIEW {
 				enum struct Type {  };

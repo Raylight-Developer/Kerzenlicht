@@ -7,6 +7,7 @@
 
 #include "Core/Nodes.hpp"
 #include "Core/Node_Def.hpp"
+#include "Core/Data_Property.hpp"
 
 // FWD DECL OTHER
 
@@ -75,30 +76,30 @@ namespace GUI {
 			struct Data_I_Port : Port {
 				Connection* connection; // src
 
-				CLASS::NODE::DATA::Modifier modifier;
-				CLASS::NODE::DATA::Type data_type;
+				CLASS::DATA::Modifier modifier;
+				CLASS::DATA::Type data_type;
 
-				CLASS::NODE::DATA::Type any_data_type;
+				CLASS::DATA::Type any_data_type;
 
-				Data_I_Port(Node* parent, const uint16& slot_id, const QString& label, const CLASS::NODE::DATA::Type& type, const CLASS::NODE::DATA::Modifier& modifier = CLASS::NODE::DATA::Modifier::SINGLE);
+				Data_I_Port(Node* parent, const uint16& slot_id, const QString& label, const CLASS::DATA::Type& type, const CLASS::DATA::Modifier& modifier = CLASS::DATA::Modifier::SINGLE);
 				~Data_I_Port();
 
-				void setDataType(const CLASS::NODE::DATA::Type& type);
+				void setDataType(const CLASS::DATA::Type& type);
 				void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget = nullptr) override;
 			};
 
 			struct Data_O_Port : Port {
 				vector<Connection*> outgoing_connections; // ref
 
-				CLASS::NODE::DATA::Modifier modifier;
-				CLASS::NODE::DATA::Type data_type;
+				CLASS::DATA::Modifier modifier;
+				CLASS::DATA::Type data_type;
 
-				CLASS::NODE::DATA::Type any_data_type;
+				CLASS::DATA::Type any_data_type;
 
-				Data_O_Port(Node* parent, const uint16& slot_id, const QString& label, const CLASS::NODE::DATA::Type& type, const CLASS::NODE::DATA::Modifier& modifier = CLASS::NODE::DATA::Modifier::SINGLE);
+				Data_O_Port(Node* parent, const uint16& slot_id, const QString& label, const CLASS::DATA::Type& type, const CLASS::DATA::Modifier& modifier = CLASS::DATA::Modifier::SINGLE);
 				~Data_O_Port();
 
-				void setDataType(const CLASS::NODE::DATA::Type& type);
+				void setDataType(const CLASS::DATA::Type& type);
 				void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget = nullptr) override;
 			};
 
@@ -126,7 +127,7 @@ namespace GUI {
 			QPointF pos_l;
 			QPointF pos_r;
 
-			CLASS::NODE::DATA::Type data_type;
+			CLASS::DATA::Type data_type;
 			QColor color;
 
 			Connection(Port* port_l, Port* port_r);

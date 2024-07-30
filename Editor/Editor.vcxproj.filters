@@ -107,6 +107,7 @@
     <ClCompile Include="Source\Workspaces\Shelf.cpp" />
     <ClCompile Include="Source\Node_GUI_Def.cpp" />
     <ClCompile Include="Source\Core\Session.cpp" />
+    <ClCompile Include="Source\Core\Data_Property.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\Object\Data\Camera.hpp">
@@ -212,6 +213,7 @@
     <ClInclude Include="Include\Workspaces\Viewport.hpp">
       <Filter>Header Files\GUI</Filter>
     </ClInclude>
+    <ClInclude Include="Include\Core\Data_Property.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Source Files">

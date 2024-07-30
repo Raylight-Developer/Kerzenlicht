@@ -10,6 +10,7 @@ CLASS::Object::Object() {
 	node_transform = Transform();
 	transform_matrix = dmat4(1.0);
 	materials = {};
+	properties = {};
 
 	render_visibility = true;
 	viewport_visibility = true;
