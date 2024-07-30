@@ -23,8 +23,8 @@ CLASS::File::File() {
 	active_scene = new Observable_Ptr<Scene>();
 
 	default_camera = new Object();
-	default_camera->transform.position = dvec3(-2.5, 1.5, -2.5);
-	default_camera->transform.euler_rotation = dvec3(20, 45, 0);
+	default_camera->transform.position = dvec3(2.5, 1.5, 2.5);
+	default_camera->transform.euler_rotation = dvec3(-20, 45, 0);
 	default_camera->data = new OBJECT::Data(OBJECT::DATA::Type::CAMERA, new OBJECT::DATA::Camera());
 
 	version = "ERROR";
@@ -107,6 +107,11 @@ void CLASS::File::f_loadFile(const string& file_path) {
 		*LOG << ENDL << HTML_RED << "[File]" << HTML_RESET << " Error Opening File"; FLUSH
 	}
 	*LOG << ENDL << HTML_GREEN << "[File]" << HTML_RESET << " Loaded"; FLUSH
+	#ifdef LOG2
+		cout << endl << "Objects     [" << objects.size() << "]";
+		cout << endl << "Object Data [" << object_data.size() << "]";
+		cout << endl << "Pointer_Map [" << pointer_map.size() << "]";
+	#endif
 }
 
 void CLASS::File::f_loadHeader(const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map) {
@@ -245,12 +250,19 @@ CLASS::OBJECT::Data* CLASS::File::f_loadMesh(const vector<vector<string>>& token
 	for (const vector<string>& tokens : token_data) {
 		if (
 			tokens[0] == "┌Vertices(" or
-			//tokens[0] == "┌Normals(" or
-			tokens[0] == "┌Faces("// or
-			//tokens[0] == "┌UVs("
+			tokens[0] == "┌Normals(" or
+			tokens[0] == "┌Faces(" or
+			tokens[0] == "┌UVs("
 		) {
 			is_processing = true;
 			read_data.clear();
+		}
+		else if (
+			tokens[0] == "┌Vertex-Group"
+		) {
+			is_processing = true;
+			read_data.clear();
+			read_data.push_back(tokens);
 		}
 		else if (tokens[0] == "└Vertices") {
 			is_processing = false;
@@ -258,37 +270,38 @@ CLASS::OBJECT::Data* CLASS::File::f_loadMesh(const vector<vector<string>>& token
 				mesh->vertices.push_back(new CLASS::OBJECT::DATA::MESH::Vertex(str_to_d(token_data[1], token_data[2], token_data[3])));
 			}
 		}
+		else if (tokens[0] == "└Vertex-Group") {
+			is_processing = false;
+			for (const string& index : read_data[1]) {
+				mesh->vertex_groups[f_join(read_data[0], " ", 4)].push_back(mesh->vertices[str_to_d(index)]);
+			}
+		}
 		else if (tokens[0] == "└Faces") {
 			is_processing = false;
 			for (const vector<string>& token_data : read_data) {
 				CLASS::OBJECT::DATA::MESH::Face* face = new CLASS::OBJECT::DATA::MESH::Face();
-				for (uint i = 1; i < token_data.size(); i++)
-					face->vertices.push_back(mesh->vertices[str_to_ul(token_data[i])]);
-				//face->vertices.push_back(mesh->vertices[str_to_ul(token_data[3])]);
-				//face->vertices.push_back(mesh->vertices[str_to_ul(token_data[4])]);
+				for (uint i = 0; i < str_to_u(token_data[1]); i++) {
+					face->vertices.push_back(mesh->vertices[str_to_ul(token_data[2+i])]);
+				}
 				mesh->faces.push_back(face);
 			}
 		}
-		//else if (tokens[0] == "└Normals") {
-		//	is_processing = false;
-		//	for (const vector<string>& token_data : read_data) {
-		//		mesh->normals[0][mesh->faces[str_to_ul(token_data[0])]] = {
-		//			str_to_d(token_data[1], token_data[2], token_data[3]),
-		//			str_to_d(token_data[4], token_data[5], token_data[6]),
-		//			str_to_d(token_data[7], token_data[8], token_data[9])
-		//		};
-		//	}
-		//}
-		//else if (tokens[0] == "└UVs") {
-		//	is_processing = false;
-		//	for (const vector<string>& token_data : read_data) {
-		//		mesh->uvs[0][mesh->faces[str_to_ul(token_data[0])]] = {
-		//			str_to_d(token_data[1], token_data[2]),
-		//			str_to_d(token_data[3], token_data[4]),
-		//			str_to_d(token_data[5], token_data[6])
-		//		};
-		//	}
-		//}
+		else if (tokens[0] == "└Normals") {
+			is_processing = false;
+			for (const vector<string>& token_data : read_data) {
+				for (uint i = 0; i < str_to_u(token_data[1]); i ++) {
+					mesh->normals[mesh->faces[str_to_ul(token_data[0])]].push_back(str_to_d(token_data[2+i*3], token_data[3+i*3], token_data[4+i*3]));
+				}
+			}
+		}
+		else if (tokens[0] == "└UVs") {
+			is_processing = false;
+			for (const vector<string>& token_data : read_data) {
+				for (uint i = 0; i < str_to_u(token_data[1]); i ++) {
+					mesh->uvs[mesh->faces[str_to_ul(token_data[0])]].push_back(str_to_d(token_data[2+i*2], token_data[3+i*2]));
+				}
+			}
+		}
 		else if (is_processing) {
 			read_data.push_back(tokens);
 		}
@@ -612,10 +625,12 @@ void CLASS::File::f_saveMesh(Lace& lace, const CLASS::OBJECT::Data* data, const 
 	}
 	lace R
 	lace NL "└Vertices";
+	lace NL "┌Vertex-Groups";
+	lace NL "└Vertex-Groups";
 	lace NL "┌Faces( " << mesh->faces.size() << " )";
 	lace A
 	for (uint64 i = 0; i < mesh->faces.size(); i++) {
-		lace NL i;
+		lace NL i SP mesh->vertices.size();
 		for (uint64 j = 0; j < mesh->faces[i]->vertices.size(); j++)
 			for (uint64 k = 0; k < mesh->vertices.size(); k++)
 				if (mesh->faces[i]->vertices[j] == mesh->vertices[k])
@@ -623,6 +638,10 @@ void CLASS::File::f_saveMesh(Lace& lace, const CLASS::OBJECT::Data* data, const 
 	}
 	lace R
 	lace NL "└Faces";
+	lace NL "┌Normals";
+	lace NL "└Normals";
+	lace NL "┌UVs";
+	lace NL "└UVs";
 	lace R
 	lace NL "└Data :: Mesh";
 }

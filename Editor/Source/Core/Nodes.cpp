@@ -128,7 +128,7 @@ CLASS::Node_Tree::Node_Tree(const GUI::NODE::Node_Tree* gui_tree) :
 							for (auto port_l : node_map[cast_port->connection->port_l->node]->outputs) {
 								if (port_l->slot_id == cast_port->connection->port_l->slot_id) {
 									static_cast<NODE::PORT::Data_I_Port*>(port_r)->connection = static_cast<NODE::PORT::Data_O_Port*>(port_l);
-#									ifdef LOG0
+#									ifdef LOG1
 										cout << endl << "Connect Data L_Node[" << getKeyByValue(node_map, port_l->node)->label.toStdString() << "] : " << port_l->slot_id << " To R_Node[" << gui_node->label.toStdString() << "] : " << port_r->slot_id;
 									#endif
 								}
@@ -147,7 +147,7 @@ CLASS::Node_Tree::Node_Tree(const GUI::NODE::Node_Tree* gui_tree) :
 							for (auto port_r : node_map[cast_port->connection->port_r->node]->inputs) {
 								if (port_r->slot_id == cast_port->connection->port_r->slot_id) {
 									static_cast<NODE::PORT::Exec_O_Port*>(port_l)->connection = static_cast<NODE::PORT::Exec_I_Port*>(port_r);
-									#ifdef LOG0
+									#ifdef LOG1
 										cout << endl << "Connect Exec L_Node[" << gui_node->label.toStdString() << "] : " << port_l->slot_id << " To R_Node[" << getKeyByValue(node_map, port_r->node)->label.toStdString() << "] : " << port_r->slot_id;
 									#endif
 								}

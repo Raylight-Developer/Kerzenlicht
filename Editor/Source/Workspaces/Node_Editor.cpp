@@ -99,7 +99,7 @@ void GUI::WORKSPACE::Node_Viewport::f_objectChanged(CLASS::Object* object) {
 			scene->removeItem(item);
 		}
 	}
-	if (object) {
+	if (object and object->node_tree) {
 		active_node_tree = FILE->nodetree_map[object->node_tree];
 		for (auto node : FILE->nodetree_map[object->node_tree]->nodes) {
 			scene->addItem(node);
@@ -133,7 +133,7 @@ void GUI::WORKSPACE::Node_Viewport::loadNodes() {
 
 		// TODO memory leak?
 		// delete ptr; // WILL CRASH ON SECOND ATTEMPT. [xmemory 1335] STOP Executing nodes before
-		#ifdef LOG0
+		#ifdef LOG1
 			cout << endl << "NT Map Size: " << FILE->nodetree_map.size();
 			cout << endl << "N  Map Size: " << FILE->node_map.size();
 			cout << endl << "NT Vec Size: " << FILE->node_trees.size();

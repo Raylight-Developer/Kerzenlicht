@@ -1,4 +1,6 @@
 import bpy, pip
+import mathutils as mu
+from math import *
 from typing import *
 
 pip.main(["install", "pandas"])
@@ -6,23 +8,39 @@ pip.main(["install", "tabulate"])
 
 RAD_DEG = 57.29577951308232
 
+def to_ptr(data: str) -> int:
+	hash_value = hash(data)
+	positive_hash_value = abs(hash_value)
+	max_13_digit_number = 10**13 - 1
+	scaled_hash_value = positive_hash_value % max_13_digit_number
+	return scaled_hash_value
+
 class Kerzenlicht_Bridge(bpy.types.Operator):
 	bl_idname = "kerzenlicht.parse"
-	bl_label = "Render KL"
+	bl_label = "KL File"
 	bl_options = {'REGISTER'}
+
+	filepath: bpy.props.StringProperty(subtype="FILE_PATH")
+	pointer_map = {}
 
 	def execute(self, context: bpy.types.Context):
 		self.parseKerzenlicht(context, context.blend_data)
 		return {"FINISHED"}
 
+	def invoke(self, context, event):
+		context.window_manager.fileselect_add(self)
+		return {'RUNNING_MODAL'}
+	
 	def parseKerzenlicht(self, context: bpy.types.Context, data: bpy.types.BlendData):
 		self.KL: List[str] = []
 
+		depsgraph = bpy.context.evaluated_depsgraph_get()
 		objects: List[bpy.types.Object] = []
 		for object in data.objects:
+			object: bpy.types.Object
 			if object.get("KL", False):
 				if object.type == "MESH":
-					objects.append(object)
+					objects.append(object.evaluated_get(depsgraph))
 
 		self.KL.append("┌Header")
 		self.KL.append(" Version 1.0.0")
@@ -35,72 +53,76 @@ class Kerzenlicht_Bridge(bpy.types.Operator):
 		self.KL.append(f"└Node-Trees")
 
 		self.KL.append(f"┌Data( {len(objects)} )")
-		self.parseData(data)
+		self.parseData(objects)
 		self.KL.append(f"└Data")
 
-		self.KL.append(f"┌└Objects( {len(objects)} )")
-		build = self.parseObjects(data)
-		self.KL.append(f"└└Objects")
+		self.KL.append(f"┌Objects( {len(objects)} )")
+		build = self.parseObjects(objects)
+		self.KL.append(f"└Objects")
 
 		self.KL.append(f"┌Scenes( 1 )")
 		self.KL.append(f" ┌Scene [ 0 ]")
+		self.KL.append(f"  * {to_ptr('scene'+bpy.context.scene.name_full)}")
 		self.KL.append(f"  ┌Objects")
-		for i, object in enumerate(objects):
-			self.KL.append(f"  {i} {object.name_full}")
+		for object in objects:
+			self.KL.append(f"  * {to_ptr('object'+object.name_full)}")
 		self.KL.append(f"  └Objects")
 		self.KL.append(f" └Scene")
 		self.KL.append(f"└Scenes")
 
 		self.KL.append(f"┌Build-Steps")
-		self.KL.append(f" Active-Scene 0")
+		self.KL.append(f" Active-Scene * {to_ptr('scene'+bpy.context.scene.name_full)}")
 		self.KL.append(f" ┌Object-Group")
 		self.KL.append(f" └Object-Group")
 		self.KL.append(f" ┌Object-Data")
 		for object, data in build.items():
-			self.KL.append(f"  {object} {data}")
+			self.KL.append(f"  * {object} * {data}")
 		self.KL.append(f" └Object-Data")
 		self.KL.append(f" ┌Object-Node")
 		self.KL.append(f" └Object-Node")
+		self.KL.append(f" ┌Node-Pointer")
+		self.KL.append(f" └Node-Pointer")
 		self.KL.append(f"└Build-Steps")
 
 		#print("\n".join(self.KL))
-		open("D:/Kerzenlicht Renderer/Runtime/Resources/Ganyu.krz", "w").write("\n".join(self.KL))
+		open(self.filepath, "w").write("\n".join(self.KL))
 
-	def parseData(self, data: bpy.types.BlendData):
+	def parseData(self, objects: List[bpy.types.Object]):
 		i = 0
-		for object in data.objects:
-			if object.get("KL", False):
-				if object.type == "MESH":
-					self.parseMesh(object.data, i)
-					i += 1
+		for object in objects:
+			if object.type == "MESH":
+				ptr = to_ptr("data"+object.data.name_full)
+				self.parseMesh(object, object.data, i, ptr)
+				i += 1
 
-	def parseMesh(self, data: bpy.types.Mesh, i: int):
+	def parseMesh(self, object: bpy.types.Object, data: bpy.types.Mesh, i: int, ptr: str):
 		self.KL.append(f" ┌Data :: Mesh [ {i} ] {data.name_full}")
 
+		self.KL.append(f"  * {ptr}")
 		self.KL.append(f"  ┌Vertices( {len(data.vertices)} )")
-
-		for j, data_b in enumerate(data.vertices):
-			vert: bpy.types.MeshVertex = data_b
-			self.KL.append(f"   {j} {-vert.co.x} {vert.co.z} {vert.co.y}")
+		matrix = mu.Euler((radians(0), radians(180), radians(180))).to_matrix().to_4x4()
+		for j, vert in enumerate(data.vertices):
+			vert: bpy.types.MeshVertex
+			vert_pos: mu.Vector = matrix @ vert.co
+			self.KL.append(f"   {j} {vert_pos.x} {vert_pos.y} {vert_pos.z}")
 
 		self.KL.append("  └Vertices")
-		self.KL.append(f"  ┌Normals( {len(data.polygons)} )")
+		self.KL.append(f"  ┌Vertex-Groups( {len(object.vertex_groups)} )")
 
-		for j, data_b in enumerate(data.polygons):
-			poly: bpy.types.MeshPolygon = data_b
-			normals = " ".join([f"{-nor.x} {nor.z} {nor.y}" for nor in [data.vertices[index].normal for index in poly.vertices]])
-			self.KL.append(f"   {j} {normals}")
+		for j, vertex_group in enumerate(object.vertex_groups):
+			vertices = []
+			vertex_group: bpy.types.VertexGroup = vertex_group
+			self.KL.append(f"   ┌Vertex-Group [ {j} ] {vertex_group.name}")
+			for k, vert in enumerate(data.vertices):
+				vert: bpy.types.MeshVertex
+				for group in vert.groups:
+					group: bpy.types.VertexGroupElement = group
+					if group.group == vertex_group.index:
+						vertices.append(str(k))
+			self.KL.append(f"    {' '.join(vertices)}")
+			self.KL.append("   └Vertex-Group")
 
-		self.KL.append("  └Normals")
-		self.KL.append(f"  ┌UVs( {len(data.polygons)} )")
-
-		uv_layer = data.uv_layers.active.data
-		for j, data_b in enumerate(data.polygons):
-			poly: bpy.types.MeshPolygon = data_b
-			uvs = " ".join([f"{uv_layer[loop_index].uv.x} {uv_layer[loop_index].uv.y}" for loop_index in range(poly.loop_start, poly.loop_start + poly.loop_total)])
-			self.KL.append(f"   {j} {uvs}")
-
-		self.KL.append("  └UVs")
+		self.KL.append("  └Vertex-Groups")
 		self.KL.append(f"  ┌Faces( {len(data.polygons)} )")
 
 		for j, data_b in enumerate(data.polygons):
@@ -109,19 +131,37 @@ class Kerzenlicht_Bridge(bpy.types.Operator):
 			self.KL.append(f"   {j} {len(poly.vertices)} {vertices}")
 
 		self.KL.append("  └Faces")
+		self.KL.append(f"  ┌Normals( {len(data.polygons)} )")
+
+		for j, poly in enumerate(data.polygons):
+			poly: bpy.types.MeshPolygon = poly
+			normals = " ".join([f"{nor.x} {nor.y} {nor.z}" for nor in [matrix @ normal for normal in [data.vertices[index].normal for index in poly.vertices]]])
+			self.KL.append(f"   {j} {len(poly.vertices)} {normals}")
+
+		self.KL.append("  └Normals")
+		self.KL.append(f"  ┌UVs( {len(data.polygons)} )")
+
+		uv_layer = data.uv_layers.active.data
+		for j, data_b in enumerate(data.polygons):
+			poly: bpy.types.MeshPolygon = data_b
+			uvs = " ".join([f"{uv_layer[loop_index].uv.x} {uv_layer[loop_index].uv.y}" for loop_index in range(poly.loop_start, poly.loop_start + poly.loop_total)])
+			self.KL.append(f"   {j} {len(poly.vertices)} {uvs}")
+
+		self.KL.append("  └UVs")
 
 		self.KL.append(f" └Data :: Mesh")
 
-	def parseObjects(self, data: bpy.types.BlendData):
-		objects = {}
-		for i, object in enumerate(data.objects):
-			if object.get("KL", False):
-				self.parseObject(object, i)
-				objects[i] = i
-		return objects
+	def parseObjects(self, objects: List[bpy.types.Object]):
+		object_map = {}
+		for i, object in enumerate(objects):
+			ptr = to_ptr("object"+object.name_full)
+			self.parseObject(object, i, ptr)
+			object_map[ptr] = to_ptr("data"+object.data.name_full)
+		return object_map
 
-	def parseObject(self, object: bpy.types.Object, i):
+	def parseObject(self, object: bpy.types.Object, i: int, ptr: str):
 		self.KL.append(f" ┌Object [ {i} ] {object.name_full}")
+		self.KL.append(f"  * {ptr}")
 		self.KL.append(f"  Position {-object.location.x} {object.location.z} {object.location.y}")
 		self.KL.append(f"  Rotation {90 - object.rotation_euler.x * RAD_DEG} {object.rotation_euler.z * RAD_DEG} {object.rotation_euler.y * RAD_DEG}")
 		self.KL.append(f"  Scale {object.scale.x} {object.scale.z} {object.scale.y}")
