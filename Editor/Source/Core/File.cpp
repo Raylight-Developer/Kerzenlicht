@@ -400,7 +400,7 @@ void CLASS::File::f_loadBuild(const vector<vector<string>>& token_data, map<uint
 		else if (tokens[0] == "└Object-Node") {
 			is_processing = false;
 			for (const vector<string>& sub_tokens : read_data) {
-				static_cast<CLASS::Object*>(pointer_map[str_to_ul(sub_tokens[1])])->nodes = static_cast<CLASS::Node_Tree*>(pointer_map[str_to_ul(sub_tokens[3])]);
+				static_cast<CLASS::Object*>(pointer_map[str_to_ul(sub_tokens[1])])->node_tree = static_cast<CLASS::Node_Tree*>(pointer_map[str_to_ul(sub_tokens[3])]);
 			}
 		}
 		else if (tokens[0] == "┌Node-Pointer") {
@@ -711,8 +711,8 @@ void CLASS::File::f_saveBuild(Lace& lace) {
 	lace NL "┌Object-Node";
 	lace A
 	for (auto object: objects) {
-		if (object->data->type != OBJECT::DATA::Type::NONE and object->nodes) {
-			lace NL ptr_to_str(object) SP ptr_to_str(object->nodes);
+		if (object->data->type != OBJECT::DATA::Type::NONE and object->node_tree) {
+			lace NL ptr_to_str(object) SP ptr_to_str(object->node_tree);
 		}
 	}
 	lace R
@@ -720,8 +720,8 @@ void CLASS::File::f_saveBuild(Lace& lace) {
 	lace NL "┌Node-Pointer";
 	lace A
 	for (auto object : objects) {
-		if (object->data->type != OBJECT::DATA::Type::NONE and object->nodes) {
-			for (auto node : object->nodes->nodes) {
+		if (object->data->type != OBJECT::DATA::Type::NONE and object->node_tree) {
+			for (auto node : object->node_tree->nodes) {
 				if (node->type == CLASS::NODE::Type::LINK and node->sub_type == e_to_u(CLASS::NODE::LINK::Type::POINTER)) {
 					lace NL ptr_to_str(node) SP ptr_to_str(static_cast<CLASS::NODE::LINK::Pointer*>(node)->pointer);
 				}

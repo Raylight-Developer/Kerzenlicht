@@ -29,32 +29,13 @@ GUI::WORKSPACE::Workspace_Node_Editor::Workspace_Node_Editor(Workspace_Manager* 
 
 	FILE->active_object->addCallback(this, [this]() { viewport->f_objectChanged(FILE->active_object->ptr); });
 	connect(load_in, &GUI::Button::pressed, [this]() {
-		if (viewport->active_node_tree and FILE->active_object->ptr) {
-			*LOG << ENDL << HTML_MAGENTA << "[Translation]" << HTML_RESET << " Compiling Nodes..."; FLUSH
-
-			FILE->node_trees.erase(std::find(FILE->node_trees.begin(), FILE->node_trees.end(), FILE->active_object->ptr->nodes));
-
-			auto it = FILE->nodetree_map.find(FILE->active_object->ptr->nodes);
-			if (it != FILE->nodetree_map.end()) {
-				FILE->nodetree_map.erase(it);
-			}
-
-			// TODO memory leak?
-			// delete FILE->active_object->ptr->nodes; // WILL CRASH ON SECOND ATTEMPT. [xmemory 1335] STOP Executing nodes before
-
-			auto node = new CLASS::Node_Tree(viewport->active_node_tree);
-			FILE->active_object->ptr->nodes = node;
-			FILE->node_trees.push_back(node);
-			FILE->nodetree_map[node] = viewport->active_node_tree;
-
-			*LOG << ENDL << HTML_GREEN << "[Translation]" << HTML_RESET << " Compiled Nodes"; FLUSH
-		}
+		viewport->loadNodes();
 	});
 	connect(compile, &GUI::Button::pressed, [this]() { // CAN CRASH. [xmemory 1335 and exec()] STOP Executing nodes before
 		if (viewport->active_node_tree and FILE->active_object->ptr) {
 			*LOG << ENDL << HTML_MAGENTA << "[DLL Compilation]" << HTML_RESET << " Compiling Solution..."; FLUSH
 
-			auto node_tree = FILE->active_object->ptr->nodes;
+			auto node_tree = FILE->active_object->ptr->node_tree;
 			auto gui_node_tree = FILE->nodetree_map[node_tree];
 			
 			HINSTANCE dynlib;
@@ -119,13 +100,47 @@ void GUI::WORKSPACE::Node_Viewport::f_objectChanged(CLASS::Object* object) {
 		}
 	}
 	if (object) {
-		active_node_tree = FILE->nodetree_map[object->nodes];
-		for (auto node : FILE->nodetree_map[object->nodes]->nodes) {
+		active_node_tree = FILE->nodetree_map[object->node_tree];
+		for (auto node : FILE->nodetree_map[object->node_tree]->nodes) {
 			scene->addItem(node);
 			node->setPos(node->load_pos);
 		}
 	}
 	else active_node_tree = nullptr;
+}
+
+void GUI::WORKSPACE::Node_Viewport::loadNodes() {
+	if (active_node_tree and FILE->active_object->ptr) {
+		*LOG << ENDL << HTML_MAGENTA << "[Translation]" << HTML_RESET << " Compiling Nodes..."; FLUSH
+
+		auto ptr = FILE->active_object->ptr->node_tree;
+		for (auto node : ptr->nodes) {
+			auto it = FILE->node_map.find(node);
+			if (it != FILE->node_map.end()) {
+				FILE->node_map.erase(it);
+			}
+		}
+		auto it = FILE->nodetree_map.find(ptr);
+		if (it != FILE->nodetree_map.end()) {
+			FILE->nodetree_map.erase(it);
+		}
+		FILE->node_trees.erase(std::find(FILE->node_trees.begin(), FILE->node_trees.end(), ptr));
+
+		auto node_tree = new CLASS::Node_Tree(active_node_tree);
+		FILE->active_object->ptr->node_tree = node_tree;
+		FILE->node_trees.push_back(node_tree);
+		FILE->nodetree_map[node_tree] = active_node_tree;
+
+		// TODO memory leak?
+		// delete ptr; // WILL CRASH ON SECOND ATTEMPT. [xmemory 1335] STOP Executing nodes before
+		#ifdef LOG0
+			cout << endl << "NT Map Size: " << FILE->nodetree_map.size();
+			cout << endl << "N  Map Size: " << FILE->node_map.size();
+			cout << endl << "NT Vec Size: " << FILE->node_trees.size();
+		#endif
+
+		*LOG << ENDL << HTML_GREEN << "[Translation]" << HTML_RESET << " Compiled Nodes"; FLUSH
+	}
 }
 
 void GUI::WORKSPACE::Node_Viewport::drawBackground(QPainter* painter, const QRectF& rect) {
@@ -196,61 +211,43 @@ void GUI::WORKSPACE::Node_Viewport::mouseReleaseEvent(QMouseEvent* event) {
 		if (connecting) {
 			if (auto item = scene->itemAt(mapToScene(event->pos()), transform())) {
 				if (auto drop_port = dynamic_cast<GUI::NODE::PORT::Data_I_Port*>(item)) {
-					bool exists = false;
-					if (!(drop_port->connection and drop_port->connection->port_r == connection->port_r)) {
-						if (auto source_port = dynamic_cast<GUI::NODE::PORT::Data_O_Port*>(connection->port_l)) {
-							if (drop_port->connection) {
-								delete drop_port->connection;
-							}
-							drop_port->connection = new GUI::NODE::Connection(source_port, drop_port);
-							source_port->outgoing_connections.push_back(drop_port->connection);
+					if (auto source_port = dynamic_cast<GUI::NODE::PORT::Data_O_Port*>(connection->port_l)) {
+						if (drop_port->connection) {
+							delete drop_port->connection;
 						}
+						drop_port->connection = new GUI::NODE::Connection(source_port, drop_port);
+						source_port->outgoing_connections.push_back(drop_port->connection);
+						loadNodes();
 					}
 				}
 				else if (auto drop_port = dynamic_cast<GUI::NODE::PORT::Data_O_Port*>(item)) {
-					bool exists = false;
-					for (auto conn : drop_port->outgoing_connections) {
-						if (conn->port_l == connection->port_l) {
-							exists = true;
+					if (auto source_port = dynamic_cast<GUI::NODE::PORT::Data_I_Port*>(connection->port_l)) {
+						if (source_port->connection) {
+							delete source_port->connection;
 						}
-					}
-					if (!exists) {
-						if (auto source_port = dynamic_cast<GUI::NODE::PORT::Data_I_Port*>(connection->port_l)) {
-							if (source_port->connection) {
-								delete source_port->connection;
-							}
-							source_port->connection = new GUI::NODE::Connection(drop_port, source_port);
-							drop_port->outgoing_connections.push_back(source_port->connection);
-						}
+						source_port->connection = new GUI::NODE::Connection(drop_port, source_port);
+						drop_port->outgoing_connections.push_back(source_port->connection);
+						loadNodes();
 					}
 				}
 				else if (auto drop_port = dynamic_cast<GUI::NODE::PORT::Exec_I_Port*>(item)) {
-					bool exists = false;
-					for (auto conn : drop_port->incoming_connections) {
-						if (conn->port_l == connection->port_l) {
-							exists = true;
+					if (auto source_port = dynamic_cast<GUI::NODE::PORT::Exec_O_Port*>(connection->port_l)) {
+						if (source_port->connection) {
+							delete source_port->connection;
 						}
-					}
-					if (!exists) {
-						if (auto source_port = dynamic_cast<GUI::NODE::PORT::Exec_O_Port*>(connection->port_l)) {
-							if (source_port->connection) {
-								delete source_port->connection;
-							}
-							source_port->connection = new GUI::NODE::Connection(source_port, drop_port);
-							drop_port->incoming_connections.push_back(source_port->connection);
-						}
+						source_port->connection = new GUI::NODE::Connection(source_port, drop_port);
+						drop_port->incoming_connections.push_back(source_port->connection);
+						loadNodes();
 					}
 				}
 				else if (auto drop_port = dynamic_cast<GUI::NODE::PORT::Exec_O_Port*>(item)) {
-					bool exists = false;
-					if (!(drop_port->connection and drop_port->connection->port_r == connection->port_r)) {
-						if (auto source_port = dynamic_cast<GUI::NODE::PORT::Exec_I_Port*>(connection->port_l)) {
-							if (drop_port->connection) {
-								delete drop_port->connection;
-							}
-							drop_port->connection = new GUI::NODE::Connection(drop_port, source_port);
-							source_port->incoming_connections.push_back(drop_port->connection);
+					if (auto source_port = dynamic_cast<GUI::NODE::PORT::Exec_I_Port*>(connection->port_l)) {
+						if (drop_port->connection) {
+							delete drop_port->connection;
 						}
+						drop_port->connection = new GUI::NODE::Connection(drop_port, source_port);
+						source_port->incoming_connections.push_back(drop_port->connection);
+						loadNodes();
 					}
 				}
 			}
@@ -328,37 +325,29 @@ void GUI::WORKSPACE::Node_Viewport::mouseMoveEvent(QMouseEvent* event) {
 			if (auto port_r = dynamic_cast<GUI::NODE::PORT::Data_I_Port*>(item)) {
 				if (port_r->connection) {
 					auto port_l = dynamic_cast<GUI::NODE::PORT::Data_O_Port*>(port_r->connection->port_l);
-					port_l->outgoing_connections.erase(std::find(port_l->outgoing_connections.begin(), port_l->outgoing_connections.end(), port_r->connection));
-
 					delete port_r->connection;
-					port_r->connection = nullptr;
+					loadNodes();
 				}
 			}
 			else if (auto port_l = dynamic_cast<GUI::NODE::PORT::Data_O_Port*>(item)) {
 				for (auto conn = port_l->outgoing_connections.begin(); conn != port_l->outgoing_connections.end();) {
 					auto port_r = dynamic_cast<GUI::NODE::PORT::Data_I_Port*>((*conn)->port_r);
-					conn = port_l->outgoing_connections.erase(conn);
-		
 					delete port_r->connection;
-					port_r->connection = nullptr;
+					loadNodes();
 				}
 			}
 			else if (auto port_r = dynamic_cast<GUI::NODE::PORT::Exec_I_Port*>(item)) {
 				for (auto conn = port_r->incoming_connections.begin(); conn != port_r->incoming_connections.end();) {
 					auto port_l = dynamic_cast<GUI::NODE::PORT::Exec_O_Port*>((*conn)->port_l);
-					conn = port_r->incoming_connections.erase(conn);
-		
 					delete port_l->connection;
-					port_l->connection = nullptr;
+					loadNodes();
 				}
 			}
 			else if (auto port_l = dynamic_cast<GUI::NODE::PORT::Exec_O_Port*>(item)) {
 				if (port_l->connection) {
 					auto port_r = dynamic_cast<GUI::NODE::PORT::Exec_I_Port*>(port_l->connection->port_r);
-					port_r->incoming_connections.erase(std::find(port_r->incoming_connections.begin(), port_r->incoming_connections.end(), port_l->connection));
-		
 					delete port_l->connection;
-					port_l->connection = nullptr;
+					loadNodes();
 				}
 			}
 		}
@@ -401,9 +390,11 @@ void GUI::WORKSPACE::Node_Viewport::keyPressEvent(QKeyEvent* event) {
 	if (event->key() == Qt::Key::Key_Delete) {
 		for (NODE::Node* node : selection) {
 			scene->removeItem(node);
+			active_node_tree->nodes.erase(std::find(active_node_tree->nodes.begin(), active_node_tree->nodes.end(), node));
 			delete node;
 		}
 		selection.clear();
+		loadNodes();
 	}
 }
 

@@ -109,12 +109,7 @@ GUI::NODE::PORT::Data_I_Port::Data_I_Port(Node* parent, const uint16& slot_id, c
 GUI::NODE::PORT::Data_I_Port::~Data_I_Port() {
 	if (connection) {
 		if (Data_O_Port* port = dynamic_cast<Data_O_Port*>(connection->port_l)) {
-			for (auto it = port->outgoing_connections.begin(); it != port->outgoing_connections.end(); ++it) {
-				if (*it == connection) {
-					port->outgoing_connections.erase(it);
-					break;
-				}
-			}
+			port->outgoing_connections.erase(std::find(port->outgoing_connections.begin(), port->outgoing_connections.end(), connection));
 		}
 		delete connection;
 		connection = nullptr;
@@ -155,6 +150,7 @@ GUI::NODE::PORT::Data_O_Port::~Data_O_Port() {
 		static_cast<Data_I_Port*>(connection->port_r)->connection = nullptr;
 		delete connection;
 	}
+	outgoing_connections.clear();
 }
 
 void GUI::NODE::PORT::Data_O_Port::setDataType(const CLASS::NODE::DATA::Type& type) {
@@ -188,6 +184,7 @@ GUI::NODE::PORT::Exec_I_Port::~Exec_I_Port() {
 		static_cast<Exec_O_Port*>(connection->port_l)->connection = nullptr;
 		delete connection;
 	}
+	incoming_connections.clear();
 }
 
 void GUI::NODE::PORT::Exec_I_Port::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) {
@@ -222,12 +219,7 @@ void GUI::NODE::PORT::Exec_O_Port::paint(QPainter* painter, const QStyleOptionGr
 GUI::NODE::PORT::Exec_O_Port::~Exec_O_Port() {
 	if (connection) {
 		if (Exec_I_Port* port = dynamic_cast<Exec_I_Port*>(connection->port_r)) {
-			for (auto it = port->incoming_connections.begin(); it != port->incoming_connections.end(); ++it) {
-				if (*it == connection) {
-					port->incoming_connections.erase(it);
-					break;
-				}
-			}
+			port->incoming_connections.erase(std::find(port->incoming_connections.begin(), port->incoming_connections.end(), connection));
 		}
 		delete connection;
 		connection = nullptr;
@@ -281,6 +273,27 @@ GUI::NODE::Connection::Connection(Port* port_l, Port* port_r) :
 		//port_l->onConnect(this);
 		//port_r->onConnect(this);
 		pos_r = mapFromItem(port_r, port_r->boundingRect().center());
+	}
+}
+
+GUI::NODE::Connection::~Connection() {
+	if (auto port = dynamic_cast<PORT::Exec_I_Port*>(port_r)) {
+		auto it = std::find(port->incoming_connections.begin(), port->incoming_connections.end(), this);
+		if (it != port->incoming_connections.end()) {
+			port->incoming_connections.erase(it);
+		}
+	}
+	if (auto port = dynamic_cast<PORT::Exec_O_Port*>(port_l)) {
+		port->connection = nullptr;
+	}
+	if (auto port = dynamic_cast<PORT::Data_I_Port*>(port_r)) {
+		port->connection = nullptr;
+	}
+	if (auto port = dynamic_cast<PORT::Data_O_Port*>(port_l)) {
+		auto it = std::find(port->outgoing_connections.begin(), port->outgoing_connections.end(), this);
+		if (it != port->outgoing_connections.end()) {
+			port->outgoing_connections.erase(it);
+		}
 	}
 }
 

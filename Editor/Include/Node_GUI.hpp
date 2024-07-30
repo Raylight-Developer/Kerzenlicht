@@ -130,6 +130,7 @@ namespace GUI {
 			QColor color;
 
 			Connection(Port* port_l, Port* port_r);
+			~Connection();
 
 			void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget = nullptr) override;
 			QRectF boundingRect() const override;

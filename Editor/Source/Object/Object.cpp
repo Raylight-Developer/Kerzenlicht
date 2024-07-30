@@ -4,7 +4,7 @@
 
 CLASS::Object::Object() {
 	data = nullptr;
-	nodes = nullptr;
+	node_tree = nullptr;
 	parent = nullptr;
 	transform = Transform();
 	node_transform = Transform();

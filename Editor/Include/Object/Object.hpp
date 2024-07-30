@@ -31,7 +31,7 @@ namespace CLASS {
 		bool viewport_visibility;
 		bool render_visibility;
 
-		CLASS::Node_Tree* nodes;
+		CLASS::Node_Tree* node_tree;
 
 		dmat4 transform_matrix;
 

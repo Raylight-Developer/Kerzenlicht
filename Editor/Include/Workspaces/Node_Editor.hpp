@@ -73,6 +73,7 @@ namespace GUI {
 			~Node_Viewport();
 
 			void f_objectChanged(CLASS::Object* object);
+			void loadNodes();
 
 			void drawBackground(QPainter* painter, const QRectF& rect) override;
 

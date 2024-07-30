@@ -120,7 +120,7 @@ CLASS::Node_Tree::Node_Tree(const GUI::NODE::Node_Tree* gui_tree) :
 	//Connections
 	for (GUI::NODE::Node* gui_node : gui_tree->nodes) {
 		for (GUI::NODE::Port* port : gui_node->inputs) {
-			if (port->type == NODE::PORT::Type::DATA_I) {
+			if (port->type == NODE::PORT::Type::DATA_I) { // TODO nullptr? Crash
 				auto cast_port = static_cast<GUI::NODE::PORT::Data_I_Port*>(port);
 				if (cast_port->connection) {
 					for (auto port_r : node_map[gui_node]->inputs) {
@@ -128,7 +128,9 @@ CLASS::Node_Tree::Node_Tree(const GUI::NODE::Node_Tree* gui_tree) :
 							for (auto port_l : node_map[cast_port->connection->port_l->node]->outputs) {
 								if (port_l->slot_id == cast_port->connection->port_l->slot_id) {
 									static_cast<NODE::PORT::Data_I_Port*>(port_r)->connection = static_cast<NODE::PORT::Data_O_Port*>(port_l);
-									cout << endl << "Connect Data L_Node[" << getKeyByValue(node_map, port_l->node)->label.toStdString() << "] : " << port_l->slot_id << " To R_Node[" << gui_node->label.toStdString() << "] : " << port_r->slot_id;
+#									ifdef LOG0
+										cout << endl << "Connect Data L_Node[" << getKeyByValue(node_map, port_l->node)->label.toStdString() << "] : " << port_l->slot_id << " To R_Node[" << gui_node->label.toStdString() << "] : " << port_r->slot_id;
+									#endif
 								}
 							}
 						}
@@ -145,7 +147,9 @@ CLASS::Node_Tree::Node_Tree(const GUI::NODE::Node_Tree* gui_tree) :
 							for (auto port_r : node_map[cast_port->connection->port_r->node]->inputs) {
 								if (port_r->slot_id == cast_port->connection->port_r->slot_id) {
 									static_cast<NODE::PORT::Exec_O_Port*>(port_l)->connection = static_cast<NODE::PORT::Exec_I_Port*>(port_r);
-									cout << endl << "Connect Exec L_Node[" << gui_node->label.toStdString() << "] : " << port_l->slot_id << " To R_Node[" << getKeyByValue(node_map, port_r->node)->label.toStdString() << "] : " << port_r->slot_id;
+									#ifdef LOG0
+										cout << endl << "Connect Exec L_Node[" << gui_node->label.toStdString() << "] : " << port_l->slot_id << " To R_Node[" << getKeyByValue(node_map, port_r->node)->label.toStdString() << "] : " << port_r->slot_id;
+									#endif
 								}
 							}
 						}
