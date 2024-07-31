@@ -1,7 +1,6 @@
 #include "Object/Data/Camera.hpp"
 
 #include "Object/Object.hpp"
-#include "Core/File.hpp"
 
 CLASS::OBJECT::DATA::Camera::Camera() {
 	focal_angle  = 50.0;

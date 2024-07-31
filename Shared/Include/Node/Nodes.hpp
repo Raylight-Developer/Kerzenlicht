@@ -1,16 +1,10 @@
 #pragma once
 
 #include "Include.hpp"
-#include "Ops.hpp"
 
 #include "Data_Property.hpp"
 
 // FWD DECL OTHER
-namespace GUI {
-	namespace NODE {
-		struct Node_Tree;
-	}
-}
 namespace CLASS {
 	struct Scene;
 	struct Object;
@@ -55,7 +49,6 @@ namespace CLASS {
 		NODE::EXEC::Tick* tick;   // ref
 
 		Node_Tree();
-		Node_Tree(const GUI::NODE::Node_Tree* gui_tree);
 		~Node_Tree();
 
 		void exec(const dvec1* delta) const;

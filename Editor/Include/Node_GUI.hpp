@@ -1,13 +1,13 @@
 #pragma once
 
-#include "Include.hpp"
+#include "Shared.hpp"
+
 #include "QT.hpp"
 
-#include "Core/Session.hpp"
+//#include "Core/Session.hpp"
 
-#include "Core/Nodes.hpp"
-#include "Core/Node_Def.hpp"
-#include "Core/Data_Property.hpp"
+#include "Node/Nodes.hpp"
+#include "Node/Node_Def.hpp"
 
 // FWD DECL OTHER
 
@@ -38,6 +38,8 @@ namespace GUI {
 
 			Node_Tree();
 			~Node_Tree();
+
+			CLASS::Node_Tree* toExecTree();
 		};
 		struct Node : QGraphicsItem {
 			QString label;

@@ -5,7 +5,7 @@
 		data << value.x() << " " << value.y();
 		return *this;
 	}
-
+	
 	Lace& Lace::operator<<(const QString& value) {
 		data << " " << value.toStdString();
 		return *this;

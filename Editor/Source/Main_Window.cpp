@@ -21,7 +21,7 @@ GUI::WORKSPACE::Main_Window::Main_Window(GUI::Application* app) :
 	setWindowTitle("Kerzenlicht");
 	setWindowIcon(QPixmap("./Resources/Icon.png"));
 
-	*LOG << "Kerzenlicht 1.0.0 Initialized"; FLUSH
+	*LOG << "Kerzenlicht 1.0.0 Initialized"; FLUSH;
 
 	file->f_loadFile("./Resources/Assets/Save.krz");
 
@@ -45,7 +45,7 @@ GUI::WORKSPACE::Main_Window::Main_Window(GUI::Application* app) :
 	log->resize(600, 400);
 	showMaximized();
 
-	*LOG << ENDL << HTML_GREEN << "Fully Initialized" << HTML_RESET; FLUSH
+	*LOG << ENDL << HTML_GREEN << "Fully Initialized" << HTML_RESET; FLUSH;
 }
 
 bool GUI::WORKSPACE::Main_Window::eventFilter(QObject* object, QEvent* event) {

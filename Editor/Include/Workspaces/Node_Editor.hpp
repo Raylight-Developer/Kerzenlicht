@@ -1,13 +1,14 @@
 #pragma once
 
-#include "Include.hpp"
+#include "Shared.hpp"
+
 #include "QT.hpp"
 
 #include "Ops.hpp"
 #include "Core/File.hpp"
 #include "Core/Session.hpp"
 
-#include "Core/Node_Def.hpp"
+#include "Node/Node_Def.hpp"
 
 #include "Node_GUI.hpp"
 #include "Node_GUI_Def.hpp"

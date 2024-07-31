@@ -1,40 +1,28 @@
 #pragma once
 
-#include "Include.hpp"
+#include "Shared.hpp"
 
-#include "Ops.hpp"
-#include "Lace.hpp"
+#include "Node/Nodes.hpp"
+#include "Node/Node_Def.hpp"
 
-#include "Nodes.hpp"
-#include "Node_Def.hpp"
 #include "Node_GUI.hpp"
 #include "Node_GUI_Def.hpp"
 
 #include "Object/Object.hpp"
 
-#include "Rendering/Material.hpp"
-
 // FWD DECL OTHER
 
 struct Log_Console;
 
+struct Scene; // Contains All Data For The Engine
+
 // FWD DECL THIS
 namespace CLASS {
 	struct File;  // Contains All Data For The Editor
-	struct Scene; // Contains All Data For The Engine
 }
 
 // DECL
 namespace CLASS {
-	struct Scene {
-		vector<Object*> objects;
-		Object* active_camera;
-		int64 current_frame;
-
-		Scene();
-		~Scene();
-	};
-
 	enum struct Parse_Type {
 		NONE,
 		BUILD_STEPS,
@@ -53,8 +41,8 @@ namespace CLASS {
 		vector<Object*> objects;
 		vector<Scene*> scenes;
 
-		unordered_map<Node_Tree*, GUI::NODE::Node_Tree*> nodetree_map;
-		unordered_map<Node*, GUI::NODE::Node*> node_map;
+		unordered_map<CLASS::Node_Tree*, GUI::NODE::Node_Tree*> nodetree_map;
+		unordered_map<CLASS::Node*, GUI::NODE::Node*> node_map;
 		Observable_Ptr<Object>* active_object;
 		Observable_Ptr<Scene>* active_scene;
 		vector<Object*> selected_objects;

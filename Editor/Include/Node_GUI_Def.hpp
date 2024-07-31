@@ -1,14 +1,17 @@
 #pragma once
 
-#include "Include.hpp"
+#include "Shared.hpp"
 
 #include "QT.hpp"
 
-#include "Core/Nodes.hpp"
-#include "Core/Compiler.hpp"
-#include "Core/Data_Property.hpp"
-
 #include "Node_GUI.hpp"
+
+#include "Core/Session.hpp"
+#include "Core/File.hpp"
+
+#include "Node/Nodes.hpp"
+#include "Node/Node_Def.hpp"
+#include "Node/Compiler.hpp"
 
 // FWD DECL OTHER
 
@@ -16,8 +19,8 @@
 namespace GUI {
 	namespace NODE {
 		namespace EXEC {
-			struct Script;
 			class Script_Node;
+			struct Script;
 		}
 	}
 }
@@ -34,7 +37,7 @@ namespace GUI {
 		namespace MODIFY {
 		}
 		namespace EXEC {
-			struct Counter : Node {
+			struct Counter : GUI::NODE::Node {
 				PORT::Data_O_Port* o_count;
 				PORT::Exec_I_Port* i_exec;
 				PORT::Exec_O_Port* o_exec;

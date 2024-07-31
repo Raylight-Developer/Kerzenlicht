@@ -1,7 +1,5 @@
 #include "Object/Object.hpp"
 
-#include "Core/File.hpp"
-
 CLASS::Object::Object() {
 	data = nullptr;
 	node_tree = nullptr;

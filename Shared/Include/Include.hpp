@@ -35,7 +35,7 @@
 #endif
 
 #ifdef COMPILE_EDITOR
-
+	#include "QtCore"
 #endif
 
 #include <glm/glm.hpp>

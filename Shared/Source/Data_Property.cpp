@@ -1,4 +1,4 @@
-#include "Core/Data_Property.hpp"
+#include "Data_Property.hpp"
 
 CLASS::Data::Data() {
 	data = nullptr;

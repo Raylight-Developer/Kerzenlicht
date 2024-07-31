@@ -1,11 +1,9 @@
 #pragma once
 
 #include "Include.hpp"
-
-#include "QT.hpp"
-#include "Nodes.hpp"
-#include "Compiler.hpp"
 #include "Data_Property.hpp"
+
+#include "Nodes.hpp"
 
 // FWD DECL OTHER
 
@@ -147,8 +145,6 @@ namespace CLASS {
 			};
 			struct Timer : Node {
 				PORT::Exec_O_Port* port;
-
-				QTimer timer;
 
 				Timer();
 

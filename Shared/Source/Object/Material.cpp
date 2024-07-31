@@ -1,4 +1,4 @@
-#include "Rendering/Material.hpp"
+#include "Object/Material.hpp"
 
 CLASS::Material::Material() {
 	name = "New Material";

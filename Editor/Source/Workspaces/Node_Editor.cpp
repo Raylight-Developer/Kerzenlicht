@@ -1,7 +1,8 @@
 #include "Workspaces/Node_Editor.hpp"
 
 #include "Workspaces/Manager.hpp"
-#include "Core/Compiler.hpp"
+
+#include "Node/Compiler.hpp"
 
 GUI::WORKSPACE::Workspace_Node_Editor::Workspace_Node_Editor(Workspace_Manager* parent) :
 	GUI::Linear_Contents(parent, QBoxLayout::Direction::TopToBottom),
@@ -33,7 +34,7 @@ GUI::WORKSPACE::Workspace_Node_Editor::Workspace_Node_Editor(Workspace_Manager* 
 	});
 	connect(compile, &GUI::Button::pressed, [this]() { // CAN CRASH. [xmemory 1335 and exec()] STOP Executing nodes before
 		if (viewport->active_node_tree and FILE->active_object->ptr) {
-			*LOG << ENDL << HTML_MAGENTA << "[DLL Compilation]" << HTML_RESET << " Compiling Solution..."; FLUSH
+			*LOG << ENDL << HTML_MAGENTA << "[DLL Compilation]" << HTML_RESET << " Compiling Solution..."; FLUSH;
 
 			auto node_tree = FILE->active_object->ptr->node_tree;
 			auto gui_node_tree = FILE->nodetree_map[node_tree];
@@ -52,7 +53,7 @@ GUI::WORKSPACE::Workspace_Node_Editor::Workspace_Node_Editor(Workspace_Manager* 
 				}
 			}
 
-			*LOG << ENDL << HTML_GREEN << "[DLL Compilation]" << HTML_RESET << " Compiled Solution"; FLUSH
+			*LOG << ENDL << HTML_GREEN << "[DLL Compilation]" << HTML_RESET << " Compiled Solution"; FLUSH;
 		}
 	});
 }
@@ -111,7 +112,7 @@ void GUI::WORKSPACE::Node_Viewport::f_objectChanged(CLASS::Object* object) {
 
 void GUI::WORKSPACE::Node_Viewport::loadNodes() {
 	if (active_node_tree and FILE->active_object->ptr) {
-		*LOG << ENDL << HTML_MAGENTA << "[Translation]" << HTML_RESET << " Compiling Nodes..."; FLUSH
+		*LOG << ENDL << HTML_MAGENTA << "[Translation]" << HTML_RESET << " Compiling Nodes..."; FLUSH;
 
 		auto ptr = FILE->active_object->ptr->node_tree;
 		for (auto node : ptr->nodes) {
@@ -126,7 +127,7 @@ void GUI::WORKSPACE::Node_Viewport::loadNodes() {
 		}
 		FILE->node_trees.erase(std::find(FILE->node_trees.begin(), FILE->node_trees.end(), ptr));
 
-		auto node_tree = new CLASS::Node_Tree(active_node_tree);
+		auto node_tree = active_node_tree->toExecTree();
 		FILE->active_object->ptr->node_tree = node_tree;
 		FILE->node_trees.push_back(node_tree);
 		FILE->nodetree_map[node_tree] = active_node_tree;
@@ -139,7 +140,7 @@ void GUI::WORKSPACE::Node_Viewport::loadNodes() {
 			cout << endl << "NT Vec Size: " << FILE->node_trees.size();
 		#endif
 
-		*LOG << ENDL << HTML_GREEN << "[Translation]" << HTML_RESET << " Compiled Nodes"; FLUSH
+		*LOG << ENDL << HTML_GREEN << "[Translation]" << HTML_RESET << " Compiled Nodes"; FLUSH;
 	}
 }
 

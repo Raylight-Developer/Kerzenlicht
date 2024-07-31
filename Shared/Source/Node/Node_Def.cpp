@@ -1,10 +1,6 @@
-#include "Core/Node_Def.hpp"
+#include "Node/Node_Def.hpp"
 
-#include "Node_GUI.hpp"
-#include "Object/Object.hpp"
-
-#include "Core/File.hpp"
-#include "Core/Session.hpp"
+#include "Node/Compiler.hpp"
 
 using namespace CLASS::NODE;
 
@@ -12,9 +8,9 @@ EXEC::Timer::Timer() {
 	type = NODE::Type::EXEC;
 	sub_type = e_to_u(Type::TIMER);
 	
-	timer.setInterval(50);
-	QObject::connect(&timer, &QTimer::timeout, [this]() {exec(0); });
-	timer.start();
+//timer.setInterval(50);
+//QObject::connect(&timer, &QTimer::timeout, [this]() {exec(0); });
+//timer.start();
 
 	port = new PORT::Exec_O_Port(this, 0);
 	outputs.push_back(port);
@@ -88,7 +84,7 @@ EXEC::Script::Script(const string& script_id) :
 			buildFunc(wrapper);
 		}
 		else {
-			*LOG << ENDL << HTML_RED << "[DLL Binding]" << HTML_RESET << " Unable to resolve Script ID"; FLUSH
+			//*LOG << ENDL << HTML_RED << "[DLL Binding]" << HTML_RESET << " Unable to resolve Script ID"; FLUSH;
 		}
 	}
 }
@@ -132,7 +128,7 @@ void EXEC::Script::reloadFunctions() {
 		buildFunc(wrapper);
 	}
 	else {
-		*LOG << ENDL << HTML_RED << "[DLL Binding]" << HTML_RESET << " Unable to resolve Script ID"; FLUSH
+		//*LOG << ENDL << HTML_RED << "[DLL Binding]" << HTML_RESET << " Unable to resolve Script ID"; FLUSH;
 	}
 }
 

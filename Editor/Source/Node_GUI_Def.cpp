@@ -66,7 +66,7 @@ GUI::NODE::EXEC::Script::Script(const ivec2& pos, const string& script_id) {
 			buildGuiFunc(wrapper);
 		}
 		else {
-			*LOG << ENDL << HTML_RED << "[DLL Binding]" << HTML_RESET << " Unable to resolve Script ID"; FLUSH
+			*LOG << ENDL << HTML_RED << "[DLL Binding]" << HTML_RESET << " Unable to resolve Script ID"; FLUSH;
 		}
 	}
 }
@@ -135,7 +135,7 @@ void GUI::NODE::EXEC::Script::reloadFunctions() {
 		buildGuiFunc(wrapper);
 	}
 	else {
-		*LOG << ENDL << HTML_RED << "[DLL Binding]" << HTML_RESET << " Unable to resolve Script ID"; FLUSH
+		*LOG << ENDL << HTML_RED << "[DLL Binding]" << HTML_RESET << " Unable to resolve Script ID"; FLUSH;
 	}
 }
 
@@ -376,4 +376,149 @@ GUI::NODE::UTIL::Print::Print(const ivec2& pos) {
 
 	rect.setHeight(40 + max(inputs.size(), outputs.size()) * 20);
 	load_pos = QPointF(pos.x, pos.y);
+}
+
+CLASS::Node_Tree* GUI::NODE::Node_Tree::toExecTree() {
+	auto tree = new CLASS::Node_Tree();
+	unordered_map<GUI::NODE::Node*, CLASS::Node*> node_map;
+
+	for (GUI::NODE::Node* gui_node : this->nodes) {
+		CLASS::Node* node = nullptr;
+		switch (gui_node->type) {
+			case CLASS::NODE::Type::EXEC: {
+				switch (static_cast<CLASS::NODE::EXEC::Type>(gui_node->sub_type)) {
+					case CLASS::NODE::EXEC::Type::SCRIPT: {
+						auto t_node = new CLASS::NODE::EXEC::Script(dynamic_cast<GUI::NODE::EXEC::Script*>(gui_node)->script_identifier->text().toStdString());
+						node = t_node;
+						break;
+					}
+					case CLASS::NODE::EXEC::Type::COUNTER: {
+						auto t_node = new CLASS::NODE::EXEC::Counter();
+						node = t_node;
+						break;
+					}
+					case CLASS::NODE::EXEC::Type::TICK: {
+						auto t_node = new CLASS::NODE::EXEC::Tick();
+						tree->tick = t_node;
+						node = t_node;
+						break;
+					}
+				}
+				break;
+			}
+			case CLASS::NODE::Type::LINK: {
+				switch (static_cast<CLASS::NODE::LINK::Type>(gui_node->sub_type)) {
+					case CLASS::NODE::LINK::Type::POINTER: {
+						auto t_node = new CLASS::NODE::LINK::Pointer();
+						t_node->pointer_type = dynamic_cast<GUI::NODE::LINK::Pointer*>(gui_node)->pointer_type;
+						t_node->pointer = dynamic_cast<GUI::NODE::LINK::Pointer*>(gui_node)->pointer;
+						node = t_node;
+						break;
+					}
+					case CLASS::NODE::LINK::Type::GET: {
+						switch (static_cast<GUI::NODE::LINK::Get*>(gui_node)->mini_type) {
+						case CLASS::NODE::LINK::GET::Type::FIELD: {
+							auto t_node = new CLASS::NODE::LINK::GET::Field();
+							t_node->field = dynamic_cast<GUI::NODE::LINK::GET::Field*>(gui_node)->field->text().toStdString();
+							node = t_node;
+							break;
+						}
+						}
+						break;
+					}
+					case CLASS::NODE::LINK::Type::SET: {
+						switch (static_cast<GUI::NODE::LINK::Set*>(gui_node)->mini_type) {
+							case CLASS::NODE::LINK::SET::Type::EULER_ROTATION_X: {
+								auto t_node = new CLASS::NODE::LINK::SET::Euler_Rotation_X();
+								node = t_node;
+								break;
+							}
+						}
+						break;
+					}
+				}
+				break;
+			}
+			case CLASS::NODE::Type::MATH: {
+				switch (static_cast<CLASS::NODE::MATH::Type>(gui_node->sub_type)) {
+					case CLASS::NODE::MATH::Type::ADD: {
+						auto t_node = new CLASS::NODE::MATH::Add();
+						node = t_node;
+						break;
+					}
+					case CLASS::NODE::MATH::Type::SUB: {
+						auto t_node = new CLASS::NODE::MATH::Sub();
+						node = t_node;
+						break;
+					}
+					case CLASS::NODE::MATH::Type::MUL: {
+						auto t_node = new CLASS::NODE::MATH::Mul();
+						node = t_node;
+						break;
+					}
+					case CLASS::NODE::MATH::Type::DIV: {
+						auto t_node = new CLASS::NODE::MATH::Div();
+						node = t_node;
+						break;
+					}
+				}
+				break;
+			}
+			case CLASS::NODE::Type::UTIL: {
+				switch (static_cast<CLASS::NODE::UTIL::Type>(gui_node->sub_type)) {
+					case CLASS::NODE::UTIL::Type::PRINT: {
+						auto t_node = new CLASS::NODE::UTIL::Print();
+						node = t_node;
+						break;
+					}
+				}
+				break;
+			}
+		}
+		tree->nodes.push_back(node);
+		node_map[gui_node] = node;
+		FILE->node_map[node] = gui_node;
+	}
+	//Connections
+	for (GUI::NODE::Node* gui_node : this->nodes) {
+		for (GUI::NODE::Port* port : gui_node->inputs) {
+			if (port->type == CLASS::NODE::PORT::Type::DATA_I) { // TODO nullptr? Crash
+				auto cast_port = static_cast<GUI::NODE::PORT::Data_I_Port*>(port);
+				if (cast_port->connection) {
+					for (auto port_r : node_map[gui_node]->inputs) {
+						if (port_r->slot_id == port->slot_id) {
+							for (auto port_l : node_map[cast_port->connection->port_l->node]->outputs) {
+								if (port_l->slot_id == cast_port->connection->port_l->slot_id) {
+									static_cast<CLASS::NODE::PORT::Data_I_Port*>(port_r)->connection = static_cast<CLASS::NODE::PORT::Data_O_Port*>(port_l);
+									#ifdef LOG1
+										cout << endl << "Connect Data L_Node[" << getKeyByValue(node_map, port_l->node)->label.toStdString() << "] : " << port_l->slot_id << " To R_Node[" << gui_node->label.toStdString() << "] : " << port_r->slot_id;
+									#endif
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		for (GUI::NODE::Port* port : gui_node->outputs) {
+			if (port->type == CLASS::NODE::PORT::Type::EXEC_O) {
+				auto cast_port = static_cast<GUI::NODE::PORT::Exec_O_Port*>(port);
+				if (cast_port->connection) {
+					for (auto port_l : node_map[gui_node]->outputs) {
+						if (port_l->slot_id == port->slot_id) {
+							for (auto port_r : node_map[cast_port->connection->port_r->node]->inputs) {
+								if (port_r->slot_id == cast_port->connection->port_r->slot_id) {
+									static_cast<CLASS::NODE::PORT::Exec_O_Port*>(port_l)->connection = static_cast<CLASS::NODE::PORT::Exec_I_Port*>(port_r);
+									#ifdef LOG1
+										cout << endl << "Connect Exec L_Node[" << gui_node->label.toStdString() << "] : " << port_l->slot_id << " To R_Node[" << getKeyByValue(node_map, port_r->node)->label.toStdString() << "] : " << port_r->slot_id;
+									#endif
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	return tree;
 }

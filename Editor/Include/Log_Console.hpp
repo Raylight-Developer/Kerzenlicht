@@ -1,9 +1,8 @@
 #pragma once
 
-#include "Include.hpp"
-#include "QT.hpp"
+#include "Shared.hpp"
 
-#include "Lace.hpp"
+#include "QT.hpp"
 
 #define ENDL "<br>"
 

@@ -49,11 +49,17 @@
     <Import Project="..\Editor\EditorSettings.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <IncludePath>$(ProjectDir)\Include;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <IncludePath>$(ProjectDir)\Include;$(IncludePath)</IncludePath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;COMPILE_EDITOR;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(ProjectDir)\Include\External\imgui-1.90;C:\Programs\Coding\Lib\glad;C:\Programs\Coding\Lib\glm 0.9.9.8;C:\Programs\Coding\Lib\glfw-3.3.8\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
@@ -63,10 +69,15 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>
+      </AdditionalLibraryDirectories>
     </Link>
     <PreLinkEvent>
       <Command>"$(VC_ExecutablePath_x64)\lib.exe" /out:"$(OutDir)\Shared.lib" "$(IntermediateOutputPath)*.obj"</Command>
     </PreLinkEvent>
+    <Lib>
+      <AdditionalLibraryDirectories>$(OutDir);</AdditionalLibraryDirectories>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -74,7 +85,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;COMPILE_EDITOR;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(ProjectDir)\Include\External\imgui-1.90;C:\Programs\Coding\Lib\glad;C:\Programs\Coding\Lib\glm 0.9.9.8;C:\Programs\Coding\Lib\glfw-3.3.8\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
@@ -86,18 +97,66 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>
+      </AdditionalLibraryDirectories>
     </Link>
     <PreLinkEvent>
       <Command>"$(VC_ExecutablePath_x64)\lib.exe" /out:"$(OutDir)\Shared.lib" "$(IntermediateOutputPath)*.obj"</Command>
     </PreLinkEvent>
+    <Lib>
+      <AdditionalLibraryDirectories>$(OutDir);</AdditionalLibraryDirectories>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Source\Include.hpp" />
-    <ClInclude Include="Source\Lace.hpp" />
-    <ClInclude Include="Source\Ops.hpp" />
+    <ClInclude Include="Include\Data_Property.hpp" />
+    <ClInclude Include="Include\Include.hpp" />
+    <ClInclude Include="Include\Lace.hpp" />
+    <ClInclude Include="Include\Node\Compiler.hpp" />
+    <ClInclude Include="Include\Node\Nodes.hpp" />
+    <ClInclude Include="Include\Node\Node_Def.hpp" />
+    <ClInclude Include="Include\Object\Material.hpp" />
+    <ClInclude Include="Include\Object\Data.hpp" />
+    <ClInclude Include="Include\Object\Data\Atmosphere.hpp" />
+    <ClInclude Include="Include\Object\Data\Camera.hpp" />
+    <ClInclude Include="Include\Object\Data\Curve.hpp" />
+    <ClInclude Include="Include\Object\Data\Empty.hpp" />
+    <ClInclude Include="Include\Object\Data\Force.hpp" />
+    <ClInclude Include="Include\Object\Data\Group.hpp" />
+    <ClInclude Include="Include\Object\Data\Light.hpp" />
+    <ClInclude Include="Include\Object\Data\Mesh.hpp" />
+    <ClInclude Include="Include\Object\Data\Primitive.hpp" />
+    <ClInclude Include="Include\Object\Data\Sfx.hpp" />
+    <ClInclude Include="Include\Object\Data\Skeleton.hpp" />
+    <ClInclude Include="Include\Object\Data\Vfx.hpp" />
+    <ClInclude Include="Include\Object\Data\Volume.hpp" />
+    <ClInclude Include="Include\Object\Object.hpp" />
+    <ClInclude Include="Include\Ops.hpp" />
+    <ClInclude Include="Include\Shared.hpp" />
+    <ClInclude Include="Include\Scene.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\Scene.cpp" />
+    <ClCompile Include="Source\Data_Property.cpp" />
     <ClCompile Include="Source\Lace.cpp" />
+    <ClCompile Include="Source\Node\Compiler.cpp" />
+    <ClCompile Include="Source\Node\Nodes.cpp" />
+    <ClCompile Include="Source\Node\Node_Def.cpp" />
+    <ClCompile Include="Source\Object\Material.cpp" />
+    <ClCompile Include="Source\Object\Data.cpp" />
+    <ClCompile Include="Source\Object\Data\Atmosphere.cpp" />
+    <ClCompile Include="Source\Object\Data\Camera.cpp" />
+    <ClCompile Include="Source\Object\Data\Curve.cpp" />
+    <ClCompile Include="Source\Object\Data\Empty.cpp" />
+    <ClCompile Include="Source\Object\Data\Force.cpp" />
+    <ClCompile Include="Source\Object\Data\Group.cpp" />
+    <ClCompile Include="Source\Object\Data\Light.cpp" />
+    <ClCompile Include="Source\Object\Data\Mesh.cpp" />
+    <ClCompile Include="Source\Object\Data\Primitive.cpp" />
+    <ClCompile Include="Source\Object\Data\Sfx.cpp" />
+    <ClCompile Include="Source\Object\Data\Skeleton.cpp" />
+    <ClCompile Include="Source\Object\Data\Vfx.cpp" />
+    <ClCompile Include="Source\Object\Data\Volume.cpp" />
+    <ClCompile Include="Source\Object\Object.cpp" />
     <ClCompile Include="Source\Ops.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

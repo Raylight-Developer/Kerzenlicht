@@ -2,12 +2,12 @@
 
 #include "Include.hpp"
 #include "Ops.hpp"
+#include "Data_Property.hpp"
 
-#include "Core/Data_Property.hpp"
-#include "Core/Node_Def.hpp"
+#include "Node/Node_Def.hpp"
 
 #include "Data.hpp"
-#include "Rendering/Material.hpp"
+#include "Material.hpp"
 
 // FWD DECL OTHER
 namespace CLASS {

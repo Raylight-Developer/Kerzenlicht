@@ -1,6 +1,7 @@
 #pragma once
 
-#include "Include.hpp"
+#include "Shared.hpp"
+
 #include "QT.hpp"
 #include "GUI.hpp"
 

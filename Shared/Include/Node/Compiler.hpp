@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Include.hpp"
+#include "Shared.hpp"
 
 void loadDLL(HINSTANCE& dynlib);
 void recompileDLL(HINSTANCE& dynlib);

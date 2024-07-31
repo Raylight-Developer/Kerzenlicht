@@ -1,6 +1,7 @@
 #pragma once
 
-#include "Include.hpp"
+#include "Shared.hpp"
+
 #include "Log_Console.hpp"
 
 namespace CLASS {
@@ -32,6 +33,6 @@ private:
 
 #define LOG Session::getInstance().getLog()
 #define FILE Session::getInstance().getFile()
-#define FLUSH Session::getInstance().getLog()->flush();
+#define FLUSH Session::getInstance().getLog()->flush()
 #define COUT_S Lace lace; lace <<
-#define COUT_E ; cout << lace.str();
+#define COUT_E ; cout << lace.str()

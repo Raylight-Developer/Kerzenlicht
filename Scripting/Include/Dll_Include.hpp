@@ -4,9 +4,10 @@
 
 #define EXPORT __declspec(dllexport)
 
-#include "Include.hpp"
-#include "Core/Nodes.hpp"
-#include "Core/Node_Def.hpp"
+#include "Shared.hpp"
+
+#include "Node/Nodes.hpp"
+#include "Node/Node_Def.hpp"
 
 #include "Node_GUI.hpp"
 #include "Node_GUI_Def.hpp"
@@ -15,7 +16,7 @@
 #include "Object/Object.hpp"
 #include "Object/Data.hpp"
 
-using Data = CLASS::NODE::Data;
-using Data_Type = CLASS::NODE::DATA::Type;
+using Data = CLASS::Data;
+using Data_Type = CLASS::DATA::Type;
 using Script = CLASS::NODE::EXEC::Script_Node;
 using Gui_Script = GUI::NODE::EXEC::Script_Node;

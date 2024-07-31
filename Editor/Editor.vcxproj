@@ -11,35 +11,17 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Include\Core\Data_Property.hpp" />
-    <ClInclude Include="Include\Core\Compiler.hpp" />
+    <ClInclude Include="Include\Core\File.hpp" />
     <ClInclude Include="Include\Workspaces\Node_Editor.hpp" />
-    <ClInclude Include="Include\Core\Nodes.hpp" />
-    <ClInclude Include="Include\Core\Node_Def.hpp" />
     <ClInclude Include="Include\Node_GUI.hpp" />
     <ClInclude Include="Include\Node_GUI_Def.hpp" />
     <ClInclude Include="Resources\Documentation\Layout.hpp" />
     <ClInclude Include="Include\Workspaces\Shelf.hpp" />
     <ClInclude Include="Include\Core\Session.hpp" />
     <QtMoc Include="Include\GUI.hpp" />
-    <ClInclude Include="Include\Object\Object.hpp" />
-    <ClInclude Include="Include\Object\Data.hpp" />
-    <ClInclude Include="Include\Object\Data\Atmosphere.hpp" />
-    <ClInclude Include="Include\Object\Data\Curve.hpp" />
-    <ClInclude Include="Include\Object\Data\Empty.hpp" />
-    <ClInclude Include="Include\Object\Data\Force.hpp" />
-    <ClInclude Include="Include\Object\Data\Group.hpp" />
-    <ClInclude Include="Include\Object\Data\Light.hpp" />
-    <ClInclude Include="Include\Object\Data\Primitive.hpp" />
-    <ClInclude Include="Include\Object\Data\Sfx.hpp" />
-    <ClInclude Include="Include\Object\Data\Skeleton.hpp" />
-    <ClInclude Include="Include\Object\Data\Vfx.hpp" />
-    <ClInclude Include="Include\Object\Data\Volume.hpp" />
     <ClInclude Include="Include\Main_Window.hpp" />
     <ClInclude Include="Include\QT.hpp" />
-    <ClInclude Include="Include\Object\Data\Mesh.hpp" />
     <ClInclude Include="Include\Workspaces\API.hpp" />
-    <ClInclude Include="Include\Rendering\Material.hpp" />
     <ClInclude Include="Include\Workspaces\File_View.hpp" />
     <ClInclude Include="Include\Workspaces\Header.hpp" />
     <ClInclude Include="Include\Log_Console.hpp" />
@@ -47,30 +29,11 @@
     <ClInclude Include="Include\Workspaces\Scene_Outliner.hpp" />
     <ClInclude Include="Include\Workspaces\Properties.hpp" />
     <ClInclude Include="Include\Workspaces\Viewport.hpp" />
-    <ClInclude Include="Include\Core\File.hpp" />
-    <ClInclude Include="Include\Object\Data\Camera.hpp" />
     <ClInclude Include="Include\Core\Python_API.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\Core\Data_Property.cpp" />
-    <ClCompile Include="Source\Core\Node_Def.cpp" />
-    <ClCompile Include="Source\Core\Compiler.cpp" />
-    <ClCompile Include="Source\Core\Nodes.cpp" />
+    <ClCompile Include="Source\Core\File.cpp" />
     <ClCompile Include="Source\GUI.cpp" />
-    <ClCompile Include="Source\Object\Data\Curve.cpp" />
-    <ClCompile Include="Source\Object\Data\Empty.cpp" />
-    <ClCompile Include="Source\Object\Data\Force.cpp" />
-    <ClCompile Include="Source\Object\Data\Group.cpp" />
-    <ClCompile Include="Source\Object\Data\Light.cpp" />
-    <ClCompile Include="Source\Object\Data\Primitive.cpp" />
-    <ClCompile Include="Source\Object\Data\Sfx.cpp" />
-    <ClCompile Include="Source\Object\Data\Skeleton.cpp" />
-    <ClCompile Include="Source\Object\Data\Vfx.cpp" />
-    <ClCompile Include="Source\Object\Data\Volume.cpp" />
-    <ClCompile Include="Source\Rendering\Material.cpp" />
-    <ClCompile Include="Source\Object\Data.cpp" />
-    <ClCompile Include="Source\Object\Data\Atmosphere.cpp" />
-    <ClCompile Include="Source\Object\Data\Mesh.cpp" />
     <ClCompile Include="Source\Main_Window.cpp" />
     <ClCompile Include="Source\QT.cpp" />
     <ClCompile Include="Source\Workspaces\API.cpp" />
@@ -81,11 +44,8 @@
     <ClCompile Include="Source\Workspaces\Scene_Outliner.cpp" />
     <ClCompile Include="Source\Workspaces\Properties.cpp" />
     <ClCompile Include="Source\Workspaces\Viewport.cpp" />
-    <ClCompile Include="Source\Object\Object.cpp" />
     <ClCompile Include="Source\Core\Python_API.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Source\Core\File.cpp" />
-    <ClCompile Include="Source\Object\Data\Camera.cpp" />
     <ClCompile Include="Source\Workspaces\Node_Editor.cpp" />
     <ClCompile Include="Source\Node_GUI.cpp" />
     <ClCompile Include="Source\Workspaces\Shelf.cpp" />
@@ -145,10 +105,10 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(ProjectDir)\Include;$(SolutionDir)\Shared\Source;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)\Include;$(SolutionDir)\Shared\Include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(ProjectDir)\Include;$(SolutionDir)\Shared\Source;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)\Include;$(SolutionDir)\Shared\Include;$(IncludePath)</IncludePath>
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Label="Vcpkg" />
@@ -205,7 +165,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(OutDir);C:\Programs\Coding\Lib\python 3.11\libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>Shared.lib;opengl32.lib;python311.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Shared.lib;python311.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreLinkEvent />
     <PreLinkEvent>
@@ -233,7 +193,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(OutDir);C:\Programs\Coding\Lib\python 3.11\libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>Shared.lib;opengl32.lib;python311.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Shared.lib;python311.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreLinkEvent />
     <PreLinkEvent>

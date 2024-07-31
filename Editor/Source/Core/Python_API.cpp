@@ -4,6 +4,8 @@
 #include "Main_Window.hpp"
 #include "Core/File.hpp"
 
+#include "Shared.hpp"
+
 using namespace CLASS;
 
 PYBIND11_EMBEDDED_MODULE(KL, Module) {
@@ -11,11 +13,11 @@ PYBIND11_EMBEDDED_MODULE(KL, Module) {
 		.def(Py::init<>())
 		.def("str", &Lace::str);
 
-	Py::class_<Scene>(Module, "Scene")
+	Py::class_<CLASS::Scene>(Module, "Scene")
 		.def(Py::init<>())
-		.def_readwrite("active_camera", & Scene::active_camera)
-		.def_readwrite("current_frame", & Scene::current_frame)
-		.def_readwrite("objects", & Scene::objects);
+		.def_readwrite("active_camera", & CLASS::Scene::active_camera)
+		.def_readwrite("current_frame", & CLASS::Scene::current_frame)
+		.def_readwrite("objects", & CLASS::Scene::objects);
 
 	Py::class_<File>(Module, "File")
 		.def(Py::init<>())
