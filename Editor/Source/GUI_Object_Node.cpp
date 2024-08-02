@@ -1,4 +1,4 @@
-#include "Node_GUI.hpp"
+#include "GUI_Object_Node.hpp"
 
 GUI::NODE::Node_Tree::Node_Tree() {
 	nodes = {};

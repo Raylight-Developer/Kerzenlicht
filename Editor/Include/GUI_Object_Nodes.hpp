@@ -4,14 +4,14 @@
 
 #include "QT.hpp"
 
-#include "Node_GUI.hpp"
+#include "GUI_Object_Node.hpp"
 
 #include "Core/Session.hpp"
 #include "Core/File.hpp"
 
-#include "Node/Nodes.hpp"
-#include "Node/Node_Def.hpp"
-#include "Node/Compiler.hpp"
+#include "Object/Nodes/Object_Node.hpp"
+#include "Object/Nodes/Object_Nodes.hpp"
+#include "Object/Nodes/Compiler.hpp"
 
 // FWD DECL OTHER
 

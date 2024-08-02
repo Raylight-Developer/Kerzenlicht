@@ -1,6 +1,6 @@
-#include "Node/Node_Def.hpp"
+#include "Object/Nodes/Object_Nodes.hpp"
 
-#include "Node/Compiler.hpp"
+#include "Object/Nodes/Compiler.hpp"
 
 using namespace CLASS::NODE;
 

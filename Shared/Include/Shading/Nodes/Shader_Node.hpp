@@ -1,0 +1,152 @@
+#pragma once
+
+#include "Include.hpp"
+
+#include "Data_Property.hpp"
+
+// FWD DECL OTHER
+namespace CLASS {
+	struct Scene;
+	struct Object;
+}
+namespace CLASS  {
+	struct Data;
+	namespace DATA {
+		enum struct Type;
+		enum struct Modifier;
+	}
+}
+namespace SHADER {
+	namespace NODE {
+		namespace EXEC {
+			struct Tick;
+		}
+	}
+}
+
+// FWD DECL THIS
+namespace SHADER {
+	struct Node;
+	struct Node_Tree;
+	namespace NODE {
+		enum struct Type;
+		struct Port;
+		namespace PORT {
+			enum struct Type;
+			struct Data_I_Port;
+			struct Data_O_Port;
+			struct Exec_I_Port;
+			struct Exec_O_Port;
+		}
+	}
+}
+
+using Data = CLASS::Data;
+namespace DATA = CLASS::DATA;
+
+// DECL
+namespace SHADER {
+	struct Node_Tree {
+		vector<Node*> nodes;      // src
+
+		vector<Node*> references; // ref
+		vector<Node*> variables;  // ref
+		NODE::EXEC::Tick* tick;   // ref
+
+		Node_Tree();
+		~Node_Tree();
+
+		void exec(const dvec1* delta) const;
+
+	};
+	struct Node {
+		NODE::Type type;
+		uint16 sub_type;
+
+		vector<NODE::Port*> inputs;  // src
+		vector<NODE::Port*> outputs; // src
+
+		Node();
+		~Node();
+
+		virtual void exec(const uint16& slot_id) {}
+		virtual Data getData(const uint16& slot_id) const;
+	};
+	namespace NODE {
+		enum struct Type {
+			NONE,
+			CONSTRAINT,
+			GENERATE,
+			PHYSICS,
+			MODIFY,
+			EXEC,
+			MATH,
+			LINK,
+			UTIL
+		};
+
+		struct Port {
+			Node* node; // ref
+			uint16 slot_id;
+			PORT::Type type;
+
+			Port(Node* node);
+			virtual ~Port() = default;
+
+			virtual Data getData() const;
+			virtual void exec() const {}
+		};
+		namespace PORT {
+			enum struct Type {
+				NONE,
+				DATA_I,
+				DATA_O,
+				EXEC_I,
+				EXEC_O
+			};
+			// TODO (maybe) for faster use typename T and make variants of for example Math nodes for each type e.g. float, vec3, etc. and discard std::any use
+			struct Data_I_Port : Port {
+				Data_O_Port* connection; // ref
+				Data default_value;
+
+				DATA::Type data_type;
+				DATA::Modifier modifier;
+
+				Data_I_Port(Node* parent, const uint16& slot_id, const DATA::Type& type, const DATA::Modifier& modifier = DATA::Modifier::SINGLE);
+				~Data_I_Port();
+
+				Data getData() const override;
+			};
+
+			struct Data_O_Port : Port {
+				vector<Data_I_Port*> outgoing_connections; // ref
+
+				DATA::Type data_type;
+				DATA::Modifier modifier;
+
+				Data_O_Port(Node* parent, const uint16& slot_id, const DATA::Type& type, const DATA::Modifier& modifier = DATA::Modifier::SINGLE);
+				~Data_O_Port();
+
+				Data getData() const override;
+			};
+
+			struct Exec_I_Port : Port {
+				vector<Exec_O_Port*> incoming_connections; // ref
+
+				Exec_I_Port(Node* parent, const uint16& slot_id);
+				~Exec_I_Port();
+
+				void exec() const override;
+			};
+
+			struct Exec_O_Port : Port {
+				Exec_I_Port* connection; // ref
+
+				Exec_O_Port(Node* parent, const uint16& slot_id);
+				~Exec_O_Port();
+
+				void exec() const override;
+			};
+		}
+	}
+}

@@ -8,10 +8,10 @@
 #include "Core/File.hpp"
 #include "Core/Session.hpp"
 
-#include "Node/Node_Def.hpp"
+#include "Object/Nodes/Object_Nodes.hpp"
 
-#include "Node_GUI.hpp"
-#include "Node_GUI_Def.hpp"
+#include "GUI_Object_Node.hpp"
+#include "GUI_Object_Nodes.hpp"
 
 #include "Object/Object.hpp"
 

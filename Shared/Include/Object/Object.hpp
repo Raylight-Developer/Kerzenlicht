@@ -4,31 +4,31 @@
 #include "Ops.hpp"
 #include "Data_Property.hpp"
 
-#include "Node/Node_Def.hpp"
+#include "Nodes/Object_Nodes.hpp"
 
 #include "Data.hpp"
-#include "Material.hpp"
+#include "Shading/Material.hpp"
 
 // FWD DECL OTHER
 namespace CLASS {
 	struct Scene;
 	struct Data;
 }
+namespace SHADER{
+	struct Material;
+}
 
 // FWD DECL THIS
 
 // DECL
 namespace CLASS {
-	struct Material;
-	struct Object;
-
 	struct Object {
 		string name;
 		OBJECT::Data* data;
 		Object* parent;
 		Transform transform;
 		Transform node_transform;
-		vector<Material*> materials;
+		vector<SHADER::Material*> materials;
 		unordered_map<string, CLASS::Data> properties;
 
 		bool viewport_visibility;

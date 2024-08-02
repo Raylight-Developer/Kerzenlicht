@@ -1,4 +1,4 @@
-#include "Node_GUI_Def.hpp"
+#include "GUI_Object_Nodes.hpp"
 
 #include "Object/Object.hpp"
 

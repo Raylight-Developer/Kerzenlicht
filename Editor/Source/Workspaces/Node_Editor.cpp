@@ -2,7 +2,7 @@
 
 #include "Workspaces/Manager.hpp"
 
-#include "Node/Compiler.hpp"
+#include "Object/Nodes/Compiler.hpp"
 
 GUI::WORKSPACE::Workspace_Node_Editor::Workspace_Node_Editor(Workspace_Manager* parent) :
 	GUI::Linear_Contents(parent, QBoxLayout::Direction::TopToBottom),

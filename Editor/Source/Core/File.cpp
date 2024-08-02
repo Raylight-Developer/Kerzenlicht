@@ -6,7 +6,7 @@
 CLASS::File::File() {
 	node_trees = vector<CLASS::Node_Tree*>();
 	object_data = vector<CLASS::OBJECT::Data*>();
-	materials = vector<CLASS::Material*>();
+	materials = vector<SHADER::Material*>();
 	objects = vector<CLASS::Object*>();
 	scenes = vector<CLASS::Scene*>();
 
@@ -106,6 +106,11 @@ void CLASS::File::f_loadFile(const string& file_path) {
 }
 
 void CLASS::File::f_loadHeader(const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map) {
+	for (const vector<string>& tokens : token_data) {
+		if (tokens[0] == "Version") {
+			version = tokens[1];
+		}
+	}
 }
 
 CLASS::Node_Tree* CLASS::File::f_loadNodeTree(const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map) {
@@ -218,19 +223,19 @@ CLASS::Node_Tree* CLASS::File::f_loadNodeTree(const vector<vector<string>>& toke
 			for (const vector<string>& sub_tokens : read_data) {
 				auto port_l = static_cast<NODE::PORT::Exec_O_Port*>(
 					static_cast<CLASS::Node*>(pointer_map[str_to_ul(sub_tokens[1])])->outputs[str_to_ul(sub_tokens[2])]
-					);
+				);
 				auto port_r = static_cast<NODE::PORT::Exec_I_Port*>(
 					static_cast<CLASS::Node*>(pointer_map[str_to_ul(sub_tokens[5])])->inputs[str_to_ul(sub_tokens[3])]
-					);
+				);
 				port_l->connection = port_r;
 				port_r->incoming_connections.push_back(port_l);
 
 				auto gui_port_l = static_cast<GUI::NODE::PORT::Exec_O_Port*>(
 					node_map[static_cast<CLASS::Node*>(pointer_map[str_to_ul(sub_tokens[1])])]->outputs[str_to_ul(sub_tokens[2])]
-					);
+				);
 				auto gui_port_r = static_cast<GUI::NODE::PORT::Exec_I_Port*>(
 					node_map[static_cast<CLASS::Node*>(pointer_map[str_to_ul(sub_tokens[5])])]->inputs[str_to_ul(sub_tokens[3])]
-					);
+				);
 				gui_port_l->connection = new GUI::NODE::Connection(gui_port_l, gui_port_r);
 				gui_port_r->incoming_connections.push_back(gui_port_l->connection);
 			}
@@ -267,8 +272,8 @@ CLASS::Node_Tree* CLASS::File::f_loadNodeTree(const vector<vector<string>>& toke
 	return node_tree;
 }
 
-CLASS::Material* CLASS::File::f_loadMaterial(const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map) {
-	CLASS::Material* material = new CLASS::Material();
+SHADER::Material* CLASS::File::f_loadMaterial(const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map) {
+	SHADER::Material* material = new SHADER::Material();
 	material->name = f_join(token_data[0], " ", 4);
 	return material;
 }
@@ -607,7 +612,7 @@ string CLASS::File::f_printFile() {
 	count = 0;
 	lace NL "┌Materials( " << materials.size() << " )";
 	lace A
-	for (const CLASS::Material* material : materials)
+	for (const SHADER::Material* material : materials)
 		f_saveMaterial(lace, material, count++);
 	lace R
 	lace NL "└Materials";
@@ -837,7 +842,7 @@ void CLASS::File::f_saveNodeTree(Lace& lace, CLASS::Node_Tree* data, const uint6
 		lace NL "└Node-Tree";
 }
 
-void CLASS::File::f_saveMaterial(Lace& lace, const CLASS::Material* data, const uint64& i) {
+void CLASS::File::f_saveMaterial(Lace& lace, const SHADER::Material* data, const uint64& i) {
 	lace NL "┌Material [ " << i << " ] " << data->name;
 	lace A
 	lace NL ptr_to_str(data);

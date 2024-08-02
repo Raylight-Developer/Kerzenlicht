@@ -6,8 +6,8 @@
 
 //#include "Core/Session.hpp"
 
-#include "Node/Nodes.hpp"
-#include "Node/Node_Def.hpp"
+#include "Object/Nodes/Object_Node.hpp"
+#include "Object/Nodes/Object_Nodes.hpp"
 
 // FWD DECL OTHER
 

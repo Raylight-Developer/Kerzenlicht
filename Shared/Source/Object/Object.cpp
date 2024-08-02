@@ -1,9 +1,11 @@
 #include "Object/Object.hpp"
 
-CLASS::Object::Object() {
-	data = nullptr;
-	node_tree = nullptr;
-	parent = nullptr;
+CLASS::Object::Object() :
+	name("New Object"),
+	node_tree(nullptr),
+	parent(nullptr),
+	data(nullptr)
+{
 	transform = Transform();
 	node_transform = Transform();
 	transform_matrix = dmat4(1.0);

@@ -41,11 +41,11 @@
     <ClCompile Include="Source\Workspaces\Node_Editor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Node_GUI.cpp">
+    <ClCompile Include="Source\GUI_Object_Node.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\Workspaces\Shelf.cpp" />
-    <ClCompile Include="Source\Node_GUI_Def.cpp" />
+    <ClCompile Include="Source\GUI_Object_Nodes.cpp" />
     <ClCompile Include="Source\Core\Session.cpp" />
     <ClCompile Include="Source\Core\File.cpp" />
   </ItemGroup>
@@ -84,11 +84,11 @@
     <ClInclude Include="Include\QT.hpp">
       <Filter>Header Files\CORE</Filter>
     </ClInclude>
-    <ClInclude Include="Include\Node_GUI.hpp">
+    <ClInclude Include="Include\GUI_Object_Node.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Include\Workspaces\Shelf.hpp" />
-    <ClInclude Include="Include\Node_GUI_Def.hpp" />
+    <ClInclude Include="Include\GUI_Object_Nodes.hpp" />
     <ClInclude Include="Include\Core\Session.hpp" />
     <ClInclude Include="Include\Workspaces\Viewport.hpp">
       <Filter>Header Files\GUI</Filter>

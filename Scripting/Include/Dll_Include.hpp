@@ -6,11 +6,11 @@
 
 #include "Shared.hpp"
 
-#include "Node/Nodes.hpp"
-#include "Node/Node_Def.hpp"
+#include "Object/Nodes/Object_Node.hpp"
+#include "Object/Nodes/Object_Nodes.hpp"
 
-#include "Node_GUI.hpp"
-#include "Node_GUI_Def.hpp"
+#include "GUI_Object_Node.hpp"
+#include "GUI_Object_Nodes.hpp"
 
 #include "Core/File.hpp"
 #include "Object/Object.hpp"

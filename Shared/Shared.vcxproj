@@ -111,10 +111,10 @@
     <ClInclude Include="Include\Data_Property.hpp" />
     <ClInclude Include="Include\Include.hpp" />
     <ClInclude Include="Include\Lace.hpp" />
-    <ClInclude Include="Include\Node\Compiler.hpp" />
-    <ClInclude Include="Include\Node\Nodes.hpp" />
-    <ClInclude Include="Include\Node\Node_Def.hpp" />
-    <ClInclude Include="Include\Object\Material.hpp" />
+    <ClInclude Include="Include\Object\Nodes\Compiler.hpp" />
+    <ClInclude Include="Include\Object\Nodes\Object_Node.hpp" />
+    <ClInclude Include="Include\Object\Nodes\Object_Nodes.hpp" />
+    <ClInclude Include="Include\Shading\Material.hpp" />
     <ClInclude Include="Include\Object\Data.hpp" />
     <ClInclude Include="Include\Object\Data\Atmosphere.hpp" />
     <ClInclude Include="Include\Object\Data\Camera.hpp" />
@@ -133,15 +133,19 @@
     <ClInclude Include="Include\Ops.hpp" />
     <ClInclude Include="Include\Shared.hpp" />
     <ClInclude Include="Include\Scene.hpp" />
+    <ClInclude Include="Include\Shading\Nodes\Shader_Node.hpp" />
+    <ClInclude Include="Include\Shading\Nodes\Shader_Nodes.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\Shading\Nodes\Shader_Nodes.cpp" />
+    <ClCompile Include="Source\Shading\Nodes\Shader_Node.cpp" />
     <ClCompile Include="Source\Scene.cpp" />
     <ClCompile Include="Source\Data_Property.cpp" />
     <ClCompile Include="Source\Lace.cpp" />
-    <ClCompile Include="Source\Node\Compiler.cpp" />
-    <ClCompile Include="Source\Node\Nodes.cpp" />
-    <ClCompile Include="Source\Node\Node_Def.cpp" />
-    <ClCompile Include="Source\Object\Material.cpp" />
+    <ClCompile Include="Source\Object\Nodes\Compiler.cpp" />
+    <ClCompile Include="Source\Object\Nodes\Object_Node.cpp" />
+    <ClCompile Include="Source\Object\Nodes\Object_Nodes.cpp" />
+    <ClCompile Include="Source\Shading\Material.cpp" />
     <ClCompile Include="Source\Object\Data.cpp" />
     <ClCompile Include="Source\Object\Data\Atmosphere.cpp" />
     <ClCompile Include="Source\Object\Data\Camera.cpp" />

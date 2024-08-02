@@ -72,22 +72,28 @@
     <ClInclude Include="Include\Object\Object.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\Object\Material.hpp">
+    <ClInclude Include="Include\Shading\Material.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Include\Shared.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\Node\Nodes.hpp">
+    <ClInclude Include="Include\Object\Nodes\Object_Node.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\Node\Node_Def.hpp">
+    <ClInclude Include="Include\Object\Nodes\Object_Nodes.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\Node\Compiler.hpp">
+    <ClInclude Include="Include\Object\Nodes\Compiler.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Include\Scene.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Shading\Nodes\Shader_Node.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Shading\Nodes\Shader_Nodes.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -146,19 +152,25 @@
     <ClCompile Include="Source\Object\Object.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Object\Material.cpp">
+    <ClCompile Include="Source\Shading\Material.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Node\Nodes.cpp">
+    <ClCompile Include="Source\Object\Nodes\Object_Node.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Node\Node_Def.cpp">
+    <ClCompile Include="Source\Object\Nodes\Object_Nodes.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Node\Compiler.cpp">
+    <ClCompile Include="Source\Object\Nodes\Compiler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\Scene.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Shading\Nodes\Shader_Node.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Shading\Nodes\Shader_Nodes.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

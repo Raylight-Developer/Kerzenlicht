@@ -1,4 +1,4 @@
-#include "Node/Compiler.hpp"
+#include "Object/Nodes/Compiler.hpp"
 
 #define DLL_PATH "D:/Kerzenlicht/x64/Debug/Scripting.dll"
 
