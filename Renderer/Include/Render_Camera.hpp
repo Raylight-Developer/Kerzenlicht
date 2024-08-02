@@ -3,7 +3,7 @@
 #include "Include.hpp"
 #include "Ops.hpp"
 
-struct Camera {
+struct Render_Camera {
 	uint16 width;
 	uint16 height;
 
@@ -21,7 +21,7 @@ struct Camera {
 	dvec3 projection_u;
 	dvec3 projection_v;
 
-	Camera();
+	Render_Camera();
 
 	void move(const double& x, const double& y, const double& z, const double& speed);
 	void rotate(const double& yaw, const double& pitch);

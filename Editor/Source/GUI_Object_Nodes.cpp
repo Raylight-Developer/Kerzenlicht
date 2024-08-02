@@ -36,6 +36,8 @@ GUI::NODE::EXEC::Script::Script(const ivec2& pos, const string& script_id) {
 	load_pos = QPointF(pos.x, pos.y);
 
 	script_identifier_proxyWidget = new QGraphicsProxyWidget(this);
+	script_identifier_proxyWidget->setFlag(QGraphicsItem::ItemIsFocusable);
+	script_identifier_proxyWidget->setFocusPolicy(Qt::StrongFocus);
 	script_identifier = new GUI::Value_Input();
 	script_identifier->setFixedSize(90, 20);
 	script_identifier->setPlaceholderText("Script_ID");
@@ -44,6 +46,8 @@ GUI::NODE::EXEC::Script::Script(const ivec2& pos, const string& script_id) {
 	script_identifier_proxyWidget->setPos(boundingRect().topLeft() + QPointF(40, 30));
 
 	reload_proxyWidget = new QGraphicsProxyWidget(this);
+	reload_proxyWidget->setFlag(QGraphicsItem::ItemIsFocusable);
+	reload_proxyWidget->setFocusPolicy(Qt::StrongFocus);
 	reload = new GUI::Button();
 	reload->setFixedSize(20, 20);
 	reload_proxyWidget->setWidget(reload);
@@ -255,6 +259,8 @@ GUI::NODE::LINK::GET::Field::Field(const ivec2& pos) :
 	mini_type = CLASS::NODE::LINK::GET::Type::FIELD;
 
 	QGraphicsProxyWidget* proxyWidget_id = new QGraphicsProxyWidget(this);
+	proxyWidget_id->setFlag(QGraphicsItem::ItemIsFocusable);
+	proxyWidget_id->setFocusPolicy(Qt::StrongFocus);
 	field = new GUI::Value_Input();
 	field->setFixedSize(180, 20);
 	field->setPlaceholderText("Field");

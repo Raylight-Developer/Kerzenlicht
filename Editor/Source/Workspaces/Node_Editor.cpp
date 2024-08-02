@@ -318,6 +318,7 @@ void GUI::WORKSPACE::Node_Viewport::mousePressEvent(QMouseEvent* event) {
 			selection_rect->show();
 		}
 	}
+	QGraphicsView::mousePressEvent(event);
 }
 
 void GUI::WORKSPACE::Node_Viewport::mouseMoveEvent(QMouseEvent* event) {

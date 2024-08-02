@@ -1,6 +1,6 @@
-#include "Camera.hpp"
+#include "Render_Camera.hpp"
 
-Camera::Camera() {
+Render_Camera::Render_Camera() {
 	width  = 1920;
 	height = 1080;
 
@@ -17,13 +17,13 @@ Camera::Camera() {
 	compileVectors();
 }
 
-void Camera::move(const double& x, const double& y, const double& z, const double& speed) {
+void Render_Camera::move(const double& x, const double& y, const double& z, const double& speed) {
 	transform.position += x * speed * x_vector;
 	transform.position += y * speed * y_vector;
 	transform.position += z * speed * z_vector;
 }
 
-void Camera::rotate(const double& yaw, const double& pitch) {
+void Render_Camera::rotate(const double& yaw, const double& pitch) {
 	transform.euler_rotation += dvec3(pitch, yaw, 0);
 
 	if (transform.euler_rotation.x > 89.0) transform.euler_rotation.x = 89.0;
@@ -32,14 +32,14 @@ void Camera::rotate(const double& yaw, const double& pitch) {
 	compileVectors();
 }
 
-void Camera::compileVectors() {
+void Render_Camera::compileVectors() {
 	const dmat4 matrix = glm::yawPitchRoll(transform.euler_rotation.y * DEG_RAD, transform.euler_rotation.x * DEG_RAD, transform.euler_rotation.z * DEG_RAD);
 	x_vector = matrix[0];
 	y_vector = matrix[1];
 	z_vector = matrix[2];
 }
 
-void Camera::compile() {
+void Render_Camera::compile() {
 	projection_center = transform.position + focal_length * z_vector;
 	projection_u = normalize(cross(z_vector, y_vector)) * sensor_size ;
 	projection_v = normalize(cross(projection_u, z_vector)) * sensor_size;

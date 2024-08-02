@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Shared.hpp"
-
 #include "QT.hpp"
 
 namespace GUI {

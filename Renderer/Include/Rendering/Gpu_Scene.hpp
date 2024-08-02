@@ -6,7 +6,7 @@
 #include "Ops.hpp"
 #include "Session.hpp"
 
-#include "Camera.hpp"
+#include "Render_Camera.hpp"
 #include "OpenGl.hpp"
 
 struct GPU_Scene;

@@ -10,7 +10,7 @@
 #include "OpenGL.hpp"
 
 #include "Gpu_Scene.hpp"
-#include "Camera.hpp"
+#include "Render_Camera.hpp"
 
 struct Renderer {
 	GLFWwindow* window;
@@ -28,7 +28,7 @@ struct Renderer {
 	bool reset;
 	bool debug;
 
-	Camera camera;
+	Render_Camera camera;
 
 	dvec1 camera_move_sensitivity;
 	dvec1 camera_view_sensitivity;

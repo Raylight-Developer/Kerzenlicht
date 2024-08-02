@@ -7,11 +7,95 @@
     <Filter Include="Header Files">
       <UniqueIdentifier>{4d567220-9fe9-4e46-9066-3ab50f3fd179}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shared">
+      <UniqueIdentifier>{ac7c337a-af85-4279-8d2f-fcd346aa81ef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shared\Source">
+      <UniqueIdentifier>{3c7527f2-de76-443f-a234-53287588177c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shared\Include">
+      <UniqueIdentifier>{4abb7e26-7010-44ac-a3b9-882b7ebf6ffa}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp" />
     <ClCompile Include="Include\pch.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="..\Shared\Source\Data_Property.cpp">
+      <Filter>Shared\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Shared\Source\Lace.cpp">
+      <Filter>Shared\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Shared\Source\Object\Data.cpp">
+      <Filter>Shared\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Shared\Source\Object\Data\Atmosphere.cpp">
+      <Filter>Shared\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Shared\Source\Object\Data\Camera.cpp">
+      <Filter>Shared\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Shared\Source\Object\Data\Curve.cpp">
+      <Filter>Shared\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Shared\Source\Object\Data\Empty.cpp">
+      <Filter>Shared\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Shared\Source\Object\Data\Force.cpp">
+      <Filter>Shared\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Shared\Source\Object\Data\Group.cpp">
+      <Filter>Shared\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Shared\Source\Object\Data\Light.cpp">
+      <Filter>Shared\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Shared\Source\Object\Data\Mesh.cpp">
+      <Filter>Shared\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Shared\Source\Object\Data\Primitive.cpp">
+      <Filter>Shared\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Shared\Source\Object\Data\Sfx.cpp">
+      <Filter>Shared\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Shared\Source\Object\Data\Skeleton.cpp">
+      <Filter>Shared\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Shared\Source\Object\Data\Vfx.cpp">
+      <Filter>Shared\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Shared\Source\Object\Data\Volume.cpp">
+      <Filter>Shared\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Shared\Source\Object\Nodes\Compiler.cpp">
+      <Filter>Shared\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Shared\Source\Object\Nodes\Object_Node.cpp">
+      <Filter>Shared\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Shared\Source\Object\Nodes\Object_Nodes.cpp">
+      <Filter>Shared\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Shared\Source\Object\Object.cpp">
+      <Filter>Shared\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Shared\Source\Ops.cpp">
+      <Filter>Shared\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Shared\Source\Scene.cpp">
+      <Filter>Shared\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Shared\Source\Shading\Material.cpp">
+      <Filter>Shared\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Shared\Source\Shading\Nodes\Shader_Node.cpp">
+      <Filter>Shared\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Shared\Source\Shading\Nodes\Shader_Nodes.cpp">
+      <Filter>Shared\Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -23,6 +107,87 @@
     </ClInclude>
     <ClInclude Include="Include\Dll_Include.hpp">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Shared\Include\Data_Property.hpp">
+      <Filter>Shared\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Shared\Include\Include.hpp">
+      <Filter>Shared\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Shared\Include\Lace.hpp">
+      <Filter>Shared\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Shared\Include\Object\Data.hpp">
+      <Filter>Shared\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Shared\Include\Object\Data\Atmosphere.hpp">
+      <Filter>Shared\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Shared\Include\Object\Data\Camera.hpp">
+      <Filter>Shared\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Shared\Include\Object\Data\Curve.hpp">
+      <Filter>Shared\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Shared\Include\Object\Data\Empty.hpp">
+      <Filter>Shared\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Shared\Include\Object\Data\Force.hpp">
+      <Filter>Shared\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Shared\Include\Object\Data\Group.hpp">
+      <Filter>Shared\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Shared\Include\Object\Data\Light.hpp">
+      <Filter>Shared\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Shared\Include\Object\Data\Mesh.hpp">
+      <Filter>Shared\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Shared\Include\Object\Data\Primitive.hpp">
+      <Filter>Shared\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Shared\Include\Object\Data\Sfx.hpp">
+      <Filter>Shared\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Shared\Include\Object\Data\Skeleton.hpp">
+      <Filter>Shared\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Shared\Include\Object\Data\Vfx.hpp">
+      <Filter>Shared\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Shared\Include\Object\Data\Volume.hpp">
+      <Filter>Shared\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Shared\Include\Object\Nodes\Compiler.hpp">
+      <Filter>Shared\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Shared\Include\Object\Nodes\Object_Node.hpp">
+      <Filter>Shared\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Shared\Include\Object\Nodes\Object_Nodes.hpp">
+      <Filter>Shared\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Shared\Include\Object\Object.hpp">
+      <Filter>Shared\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Shared\Include\Ops.hpp">
+      <Filter>Shared\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Shared\Include\Scene.hpp">
+      <Filter>Shared\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Shared\Include\Shading\Material.hpp">
+      <Filter>Shared\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Shared\Include\Shading\Nodes\Shader_Node.hpp">
+      <Filter>Shared\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Shared\Include\Shading\Nodes\Shader_Nodes.hpp">
+      <Filter>Shared\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Shared\Include\Shared.hpp">
+      <Filter>Shared\Include</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

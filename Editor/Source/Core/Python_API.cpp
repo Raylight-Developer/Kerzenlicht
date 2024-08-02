@@ -9,9 +9,9 @@
 using namespace CLASS;
 
 PYBIND11_EMBEDDED_MODULE(KL, Module) {
-	Py::class_<Lace>(Module, "Lace")
-		.def(Py::init<>())
-		.def("str", &Lace::str);
+	//Py::class_<Lace>(Module, "Lace")
+	//	.def(Py::init<>())
+	//	.def("str", &Lace::str);
 
 	Py::class_<CLASS::Scene>(Module, "Scene")
 		.def(Py::init<>())

@@ -64,8 +64,8 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(OutDir);C:\Programs\Coding\VulkanSDK\1.3.261.1\Lib;C:\Programs\Coding\Lib\glfw-3.3.8\lib-vc2022;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>Shared.lib;glfw3.lib;vulkan-1.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(OutDIr);C:\Programs\Coding\VulkanSDK\1.3.261.1\Lib;C:\Programs\Coding\Lib\glfw-3.3.8\lib-vc2022;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glfw3.lib;vulkan-1.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -86,11 +86,36 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(OutDir);C:\Programs\Coding\VulkanSDK\1.3.261.1\Lib;C:\Programs\Coding\Lib\glfw-3.3.8\lib-vc2022;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>Shared.lib;glfw3.lib;vulkan-1.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(OutDIr);C:\Programs\Coding\VulkanSDK\1.3.261.1\Lib;C:\Programs\Coding\Lib\glfw-3.3.8\lib-vc2022;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glfw3.lib;vulkan-1.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\Shared\Source\Data_Property.cpp" />
+    <ClCompile Include="..\Shared\Source\Lace.cpp" />
+    <ClCompile Include="..\Shared\Source\Object\Data.cpp" />
+    <ClCompile Include="..\Shared\Source\Object\Data\Atmosphere.cpp" />
+    <ClCompile Include="..\Shared\Source\Object\Data\Camera.cpp" />
+    <ClCompile Include="..\Shared\Source\Object\Data\Curve.cpp" />
+    <ClCompile Include="..\Shared\Source\Object\Data\Empty.cpp" />
+    <ClCompile Include="..\Shared\Source\Object\Data\Force.cpp" />
+    <ClCompile Include="..\Shared\Source\Object\Data\Group.cpp" />
+    <ClCompile Include="..\Shared\Source\Object\Data\Light.cpp" />
+    <ClCompile Include="..\Shared\Source\Object\Data\Mesh.cpp" />
+    <ClCompile Include="..\Shared\Source\Object\Data\Primitive.cpp" />
+    <ClCompile Include="..\Shared\Source\Object\Data\Sfx.cpp" />
+    <ClCompile Include="..\Shared\Source\Object\Data\Skeleton.cpp" />
+    <ClCompile Include="..\Shared\Source\Object\Data\Vfx.cpp" />
+    <ClCompile Include="..\Shared\Source\Object\Data\Volume.cpp" />
+    <ClCompile Include="..\Shared\Source\Object\Nodes\Compiler.cpp" />
+    <ClCompile Include="..\Shared\Source\Object\Nodes\Object_Node.cpp" />
+    <ClCompile Include="..\Shared\Source\Object\Nodes\Object_Nodes.cpp" />
+    <ClCompile Include="..\Shared\Source\Object\Object.cpp" />
+    <ClCompile Include="..\Shared\Source\Ops.cpp" />
+    <ClCompile Include="..\Shared\Source\Scene.cpp" />
+    <ClCompile Include="..\Shared\Source\Shading\Material.cpp" />
+    <ClCompile Include="..\Shared\Source\Shading\Nodes\Shader_Node.cpp" />
+    <ClCompile Include="..\Shared\Source\Shading\Nodes\Shader_Nodes.cpp" />
     <ClCompile Include="Source\Session.cpp" />
     <ClCompile Include="Source\Rendering\Gpu_Scene.cpp" />
     <ClCompile Include="Include\External\imgui-1.90\backends\imgui_impl_glfw.cpp" />
@@ -102,15 +127,42 @@
     <ClCompile Include="Include\External\imgui-1.90\imgui_widgets.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Source\Rendering\OpenGl.cpp" />
-    <ClCompile Include="Source\Camera.cpp" />
+    <ClCompile Include="Source\Render_Camera.cpp" />
     <ClCompile Include="Source\Operators.cpp" />
     <ClCompile Include="Resources\glad.c" />
     <ClCompile Include="Source\Rendering\Renderer.cpp" />
     <ClCompile Include="Source\Rendering\Vulkan.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\Shared\Include\Data_Property.hpp" />
+    <ClInclude Include="..\Shared\Include\Include.hpp" />
+    <ClInclude Include="..\Shared\Include\Lace.hpp" />
+    <ClInclude Include="..\Shared\Include\Object\Data.hpp" />
+    <ClInclude Include="..\Shared\Include\Object\Data\Atmosphere.hpp" />
+    <ClInclude Include="..\Shared\Include\Object\Data\Camera.hpp" />
+    <ClInclude Include="..\Shared\Include\Object\Data\Curve.hpp" />
+    <ClInclude Include="..\Shared\Include\Object\Data\Empty.hpp" />
+    <ClInclude Include="..\Shared\Include\Object\Data\Force.hpp" />
+    <ClInclude Include="..\Shared\Include\Object\Data\Group.hpp" />
+    <ClInclude Include="..\Shared\Include\Object\Data\Light.hpp" />
+    <ClInclude Include="..\Shared\Include\Object\Data\Mesh.hpp" />
+    <ClInclude Include="..\Shared\Include\Object\Data\Primitive.hpp" />
+    <ClInclude Include="..\Shared\Include\Object\Data\Sfx.hpp" />
+    <ClInclude Include="..\Shared\Include\Object\Data\Skeleton.hpp" />
+    <ClInclude Include="..\Shared\Include\Object\Data\Vfx.hpp" />
+    <ClInclude Include="..\Shared\Include\Object\Data\Volume.hpp" />
+    <ClInclude Include="..\Shared\Include\Object\Nodes\Compiler.hpp" />
+    <ClInclude Include="..\Shared\Include\Object\Nodes\Object_Node.hpp" />
+    <ClInclude Include="..\Shared\Include\Object\Nodes\Object_Nodes.hpp" />
+    <ClInclude Include="..\Shared\Include\Object\Object.hpp" />
+    <ClInclude Include="..\Shared\Include\Ops.hpp" />
+    <ClInclude Include="..\Shared\Include\Scene.hpp" />
+    <ClInclude Include="..\Shared\Include\Shading\Material.hpp" />
+    <ClInclude Include="..\Shared\Include\Shading\Nodes\Shader_Node.hpp" />
+    <ClInclude Include="..\Shared\Include\Shading\Nodes\Shader_Nodes.hpp" />
+    <ClInclude Include="..\Shared\Include\Shared.hpp" />
     <ClInclude Include="Include\Rendering\Gpu_Scene.hpp" />
-    <ClInclude Include="Include\Camera.hpp" />
+    <ClInclude Include="Include\Render_Camera.hpp" />
     <ClInclude Include="Include\External\imgui-1.90\backends\imgui_impl_glfw.h" />
     <ClInclude Include="Include\External\imgui-1.90\backends\imgui_impl_opengl3.h" />
     <ClInclude Include="Include\External\imgui-1.90\imconfig.h" />

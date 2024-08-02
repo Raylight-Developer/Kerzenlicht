@@ -17,7 +17,7 @@ Renderer::Renderer() {
 	reset = false;
 	debug = false;
 
-	camera = Camera();
+	camera = Render_Camera();
 
 	camera_move_sensitivity = 0.75;
 	camera_view_sensitivity = 2.5;
@@ -440,7 +440,7 @@ void Renderer::key(GLFWwindow* window, int key, int scancode, int action, int mo
 			instance->view_layer = 3;
 	}
 	if (key == GLFW_KEY_C && action == GLFW_PRESS) {
-		instance->camera = Camera();
+		instance->camera = Render_Camera();
 		instance->reset = true;
 		instance->runframe = 0;
 	}
