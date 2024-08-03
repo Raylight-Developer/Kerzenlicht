@@ -8,7 +8,6 @@ Resources/Dev/
 Kerzenlicht Renderer.vcxproj.user
 Resources/Assets/Test.krz
 Resources/Testing.blend
-/Test Tiny/DLL/Debug
 Engine/Editor.vcxproj.user
 Runtime/Runtime.vcxproj.user
 Editor/Editor.vcxproj.user
@@ -16,7 +15,3 @@ Scripting/Scripting.vcxproj.user
 Shared/Shared.vcxproj.user
 Runtime/Resources/Ganyu.krz
 Runtime/Resources/Shaders/Render_Compiled.comp
-/Vulkan-Playground-main
-krz Syntax/vsc-extension-quickstart.md
-krz Syntax/README.md
-krz Syntax/CHANGELOG.md

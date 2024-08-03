@@ -30,12 +30,90 @@
 				"path": "./syntaxes/krz.tmLanguage.json"
 			}
 		],
-		"themes": [
-			{
-				"label": "Kerz",
-				"uiTheme": "vs-dark",
-				"path": "./themes/theme.json"
+		"configurationDefaults": {
+			"editor.insertSpaces": false,
+			"editor.tokenColorCustomizations": {
+				"textMateRules": [
+					{
+						"scope": "source.krz",
+						"settings": {
+							"foreground": "#ffffff"
+						}
+					},
+					{
+						"scope": "kerz.section.section",
+						"settings": {
+							"foreground": "#5e9cce"
+						}
+					},
+					{
+						"scope": "kerz.section.type",
+						"settings": {
+							"foreground": "#dea6ff"
+						}
+					},
+					{
+						"scope": "kerz.section.subtype",
+						"settings": {
+							"foreground": "#beb7ff"
+						}
+					},
+					{
+						"scope": "kerz.section.separator",
+						"settings": {
+							"foreground": "#909090"
+						}
+					},
+					{
+						"scope": "kerz.section.size",
+						"settings": {
+							"foreground": "#ffd700"
+						}
+					},
+					{
+						"scope": "kerz.float",
+						"settings": {
+							"foreground": "#75cb81"
+						}
+					},
+					{
+						"scope": "kerz.float.vector",
+						"settings": {
+							"foreground": "#b0f5b9"
+						}
+					},
+					{
+						"scope": "kerz.integer",
+						"settings": {
+							"foreground": "#57b555"
+						}
+					},
+					{
+						"scope": "kerz.integer.index",
+						"settings": {
+							"foreground": "#6fe2ff"
+						}
+					},
+					{
+						"scope": "kerz.integer.pointer",
+						"settings": {
+							"foreground": "#b98c7a"
+						}
+					},
+					{
+						"scope": "kerz.name",
+						"settings": {
+							"foreground": "#ff60ba"
+						}
+					},
+					{
+						"scope": "kerz.comment",
+						"settings": {
+							"foreground": "#818d89"
+						}
+					}
+				]
 			}
-		]
+		}
 	}
 }

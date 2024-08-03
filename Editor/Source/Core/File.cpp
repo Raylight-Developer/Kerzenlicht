@@ -99,9 +99,9 @@ void CLASS::File::f_loadFile(const string& file_path) {
 	}
 	*LOG << ENDL << HTML_GREEN << "[File]" << HTML_RESET << " Loaded"; FLUSH;
 	#ifdef LOG2
-		cout << endl << "Objects     [" << objects.size() << "]";
-		cout << endl << "Object Data [" << object_data.size() << "]";
-		cout << endl << "Pointer_Map [" << pointer_map.size() << "]";
+		*LOG << ENDL << "  Objects     [" << objects.size() << "]";
+		*LOG << ENDL << "  Object Data [" << object_data.size() << "]";
+		*LOG << ENDL << "  Pointer_Map [" << pointer_map.size() << "]";
 	#endif
 }
 
@@ -218,7 +218,7 @@ CLASS::Node_Tree* CLASS::File::f_loadNodeTree(const vector<vector<string>>& toke
 			node_map[node] = gui_node;
 		}
 		else if (tokens[0] == "└Build-E") {
-			*LOG << ENDL << "    Loading Build-E..."; FLUSH;
+			*LOG << ENDL << "  Loading Build-E..."; FLUSH;
 			is_processing = false;
 			for (const vector<string>& sub_tokens : read_data) {
 				auto port_l = static_cast<NODE::PORT::Exec_O_Port*>(
@@ -241,7 +241,7 @@ CLASS::Node_Tree* CLASS::File::f_loadNodeTree(const vector<vector<string>>& toke
 			}
 		}
 		else if (tokens[0] == "└Build-D") {
-			*LOG << ENDL << "    Loading Build-D..."; FLUSH;
+			*LOG << ENDL << "  Loading Build-D..."; FLUSH;
 			is_processing = false;
 			for (const vector<string>& sub_tokens : read_data) {
 				auto port_l = static_cast<NODE::PORT::Data_O_Port*>(

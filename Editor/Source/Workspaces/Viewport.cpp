@@ -68,13 +68,13 @@ void GUI::WORKSPACE::Workspace_Viewport::f_systemInfo() {
 	GlobalMemoryStatusEx(&status);
 
 	*LOG
-	<< ENDL << "┌"
-	<< ENDL << "│  System"
-	<< ENDL << "│    Total physical RAM: " << uint(ceil((double)(status.ullTotalPhys / (1024.0 * 1024.0 * 1024.0)))) << "GB - " << status.ullTotalPhys / (1024 * 1024) << "MB"
-	<< ENDL << "│  CPU"
-	<< ENDL << "│    Threads: " << thread::hardware_concurrency()
-	<< ENDL << "│  GPU"
-	<< ENDL << "└";
+		<< ENDL << "[System]"
+		<< ENDL << "  [CPU]"
+		<< ENDL << "    " << thread::hardware_concurrency() << " Threads"
+		<< ENDL << "  [GPU]"
+		<< ENDL << "  [RAM]"
+		<< ENDL << "    " << d_to_u(ceil((double)(status.ullTotalPhys / (1024.0 * 1024.0 * 1024.0)))) << "GB - " << status.ullTotalPhys / (1024 * 1024) << "MB";
+	FLUSH;
 }
 
 
@@ -170,8 +170,7 @@ void GUI::WORKSPACE::Viewport::f_pipeline() {
 	glDeleteShader(display_vert_shader);
 	glDeleteShader(display_frag_shader);
 
-	const string compute_code = loadFromFile("./Resources/Shaders/Realtime_Shader.comp");
-	//cerr << compute_code;
+	const string compute_code = preprocessShader("./Resources/Shaders/Realtime_Shader.comp");
 	const char* compute_code_cstr = compute_code.c_str();
 	GLuint comp_shader = glCreateShader(GL_COMPUTE_SHADER);
 	glShaderSource(comp_shader, 1, &compute_code_cstr, NULL);

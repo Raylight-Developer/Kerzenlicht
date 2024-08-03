@@ -6,63 +6,63 @@
 	"scopeName": "source.krz",
 	"patterns": [
 		{
-			"name": "keyword.section.type",
+			"name": "kerz.section.section",
 			"match": "^[ ]*[└┌][^() ]+"
 		},
 		{
-			"name": "keyword.section.subtype",
+			"name": "kerz.section.type",
+			"match": "(?<=\\bType\\b)[ ]*([^\\s]+)"
+		},
+		{
+			"name": "kerz.section.subtype",
 			"match": "(?<= :: )[^ ::]+"
 		},
 		{
-			"name": "keyword.section.subtype",
-			"match": "(?<=\\bType\\b)[ ]*(.*)"
-		},
-		{
-			"name": "keyword.section.separator",
+			"name": "kerz.section.separator",
 			"match": "( :: )"
 		},
 		{
-			"name": "keyword.section.size",
+			"name": "kerz.section.size",
 			"match": "(?<=^[ ]*┌[^()]*?)\\([ ]*[0-9]+[ ]*\\)"
 		},
 		{
-			"name": "keyword.integer.pointer",
+			"name": "kerz.integer.pointer",
 			"match": "\\*[ ][0-9]+([ ]|)"
 		},
 		{
-			"name": "keyword.integer.index",
+			"name": "kerz.integer.index",
 			"match": "\\[[ ]*([0-9]+)[ ]*\\]"
 		},
 		{
-			"name": "keyword.integer.index",
-			"match": "(?<=[ ]*\\*[ ][0-9]{13}[ ]*)([0-9]+(?:[ ]+[0-9]+)*?)[ ]*?(?=\\*[ ][0-9]{13}[ ]*)"
+			"name": "kerz.integer.index",
+			"match": "(?<=[ ]*\\*[ ][0-9]*[ ]*)([0-9]+(?:[ ]+[0-9]+)*?)[ ]*?(?=\\*[ ][0-9]*[ ]*)"
 		},
 		{
-			"name": "keyword.integer.index",
+			"name": "kerz.integer.index",
 			"match": "^[ ]*[+-]?[0-9]+(?!\\.[0-9])(?=.*\\b[+-]?[0-9]*(\\.[0-9]+)?\\b)"
 		},
 		{
-			"name": "keyword.float",
+			"name": "kerz.float",
 			"match": "[+-]?[0-9]*\\.[0-9]+"
 		},
 		{
-			"name": "keyword.float.vector",
+			"name": "kerz.float.vector",
 			"match": "[ ]*\\([ ]*([^\\)]*)[ ]*\\)[ ]*"
 		},
 		{
-			"name": "keyword.integer",
+			"name": "kerz.integer",
 			"match": "[+-]?[0-9]+(?!\\.[0-9])"
 		},
 		{
-			"name": "keyword.name",
+			"name": "kerz.name",
 			"match": "(?<=^[ ]*[└┌].*\\][ ]*)[ ].*"
 		},
 		{
-			"name": "keyword.comment",
+			"name": "kerz.comment",
 			"match": "\\/\\*[\\s\\S]*?\\*\\/"
 		},
 		{
-			"name": "keyword.comment",
+			"name": "kerz.comment",
 			"match": "\\/\\/.*"
 		}
 	]
