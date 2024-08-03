@@ -5,44 +5,44 @@
 ┌Materials( 0 )
 └Materials
 ┌Node-Trees( 1 )
- ┌Node-Tree [ 0 ]
+ ┌Node-Tree [ 0 ] #
   * 2096459486704
   ┌Nodes( 8 )
-   ┌Node :: EXEC :: TICK [ 0 ]
+   ┌Node :: EXEC :: TICK [ 0 ] #
     * 2096459483360
-    Pos -120 0
+    Pos ( -120 0 )
    └Node
-   ┌Node :: LINK :: SET :: TRANSFORM :: EULER_ROTATION :: X [ 1 ]
+   ┌Node :: LINK :: SET :: TRANSFORM :: EULER_ROTATION :: X [ 1 ] #
     * 2096393544544
-    Pos 600 -110
+    Pos ( 600 -110 )
    └Node
-   ┌Node :: LINK :: POINTER [ 2 ]
+   ┌Node :: LINK :: POINTER [ 2 ] #
     * 2096459483712
-    Pos -120 -90
+    Pos ( -120 -90 )
     Type 27
    └Node
-   ┌Node :: EXEC :: SCRIPT [ 3 ]
+   ┌Node :: EXEC :: SCRIPT [ 3 ] #
     * 2096462527056
-    Pos 120 -20
+    Pos ( 120 -20 )
     Script_ID
    └Node
-   ┌Node :: LINK :: POINTER [ 4 ]
+   ┌Node :: LINK :: POINTER [ 4 ] #
     * 2096459485296
-    Pos 120 200
+    Pos ( 120 200 )
     Type 28
    └Node
-   ┌Node :: LINK :: GET :: FIELD [ 5 ]
+   ┌Node :: LINK :: GET :: FIELD [ 5 ] #
     * 2096650211680
-    Pos 120 100
+    Pos ( 120 100 )
     node_transform.euler.x
    └Node
-   ┌Node :: MATH :: ADD [ 6 ]
+   ┌Node :: MATH :: ADD [ 6 ] #
     * 2096459486528
-    Pos 360 80
+    Pos ( 360 80 )
    └Node
-   ┌Node :: LINK :: GET :: FIELD [ 7 ]
+   ┌Node :: LINK :: GET :: FIELD [ 7 ] #
     * 2096650208560
-    Pos 360 200
+    Pos ( 360 200 )
     current_frame
    └Node
   └Nodes
@@ -65,41 +65,41 @@
  ┌Data :: Mesh [ 0 ] Cube
   * 2096435185648
   ┌Vertices( 8 )
-   0 0.2 -0.2 -0.2
-   1 0.2 0.2 -0.2
-   2 0.2 -0.2 0.2
-   3 0.2 0.2 0.2
-   4 -0.2 -0.2 -0.2
-   5 -0.2 0.2 -0.2
-   6 -0.2 -0.2 0.2
-   7 -0.2 0.2 0.2
+   0 ( 0.2 -0.2 -0.2 )
+   1 ( 0.2 0.2 -0.2 )
+   2 ( 0.2 -0.2 0.2 )
+   3 ( 0.2 0.2 0.2 )
+   4 ( -0.2 -0.2 -0.2 )
+   5 ( -0.2 0.2 -0.2 )
+   6 ( -0.2 -0.2 0.2 )
+   7 ( -0.2 0.2 0.2 )
   └Vertices
   ┌Faces( 12 )
-   0 3 1 2 0
-   1 3 3 6 2
-   2 3 7 4 6
-   3 3 5 0 4
-   4 3 6 0 2
-   5 3 3 5 7
-   6 3 1 3 2
-   7 3 3 7 6
-   8 3 7 5 4
-   9 3 5 1 0
-   10 3 6 4 0
-   11 3 3 1 5
+   0  3 [ 1 2 0 ]
+   1  3 [ 3 6 2 ]
+   2  3 [ 7 4 6 ]
+   3  3 [ 5 0 4 ]
+   4  3 [ 6 0 2 ]
+   5  3 [ 3 5 7 ]
+   6  3 [ 1 3 2 ]
+   7  3 [ 3 7 6 ]
+   8  3 [ 7 5 4 ]
+   9  3 [ 5 1 0 ]
+   10 3 [ 6 4 0 ]
+   11 3 [ 3 1 5 ]
   └Faces
  └Data :: Mesh
  ┌Data :: Mesh [ 1 ] Plane
   * 2096435183088
   ┌Vertices( 4 )
-   0 2.0 0.0 -2.0
-   1 -2.0 0.0 -2.0
-   2 2.0 0.0 2.0
-   3 -2.0 0.0 2.0
+   0 ( 2.0 0.0 -2.0 )
+   1 ( -2.0 0.0 -2.0 )
+   2 ( 2.0 0.0 2.0 )
+   3 ( -2.0 0.0 2.0 )
   └Vertices
   ┌Faces( 2 )
-   0 3 1 2 0
-   1 3 1 3 2
+   0 3 [ 1 2 0 ]
+   1 3 [ 1 3 2 ]
   └Faces
  └Data :: Mesh
  ┌Data :: Group [ 2 ] Container
@@ -109,23 +109,23 @@
 ┌Objects( 3 )
  ┌Object [ 0 ] Cube
   * 2096369195408
-  Position 0.0 0.6 0.0
-  Rotation 0.0 0.0 0.0
-  Scale    1.0 1.0 1.0
+  Position ( 0.0 0.6 0.0 )
+  Rotation ( 0.0 0.0 0.0 )
+  Scale    ( 1.0 1.0 1.0 )
   Type Mesh
  └Object
  ┌Object [ 1 ] Plane
   * 2096369197712
-  Position 0.0 0.0 0.0
-  Rotation 0.0 0.0 0.0
-  Scale    1.0 1.0 1.0
+  Position ( 0.0 0.0 0.0 )
+  Rotation ( 0.0 0.0 0.0 )
+  Scale    ( 1.0 1.0 1.0 )
   Type Mesh
  └Object
  ┌Object [ 2 ] Container
   * 2096369199440
-  Position 0.0 0.0 0.0
-  Rotation 0.0 0.0 0.0
-  Scale    1.0 1.0 1.0
+  Position ( 0.0 0.0 0.0 )
+  Rotation ( 0.0 0.0 0.0 )
+  Scale    ( 1.0 1.0 1.0 )
   Type Group
  └Object
 └Objects

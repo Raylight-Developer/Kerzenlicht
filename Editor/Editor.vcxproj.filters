@@ -101,9 +101,6 @@
     <ClCompile Include="Source\Workspaces\Header.cpp">
       <Filter>Source Files\Workspaces</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Log_Console.cpp">
-      <Filter>Source Files\Workspaces</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Main_Window.cpp">
       <Filter>Source Files\Workspaces</Filter>
     </ClCompile>
@@ -140,9 +137,6 @@
       <Filter>Header Files\Workspaces</Filter>
     </ClInclude>
     <ClInclude Include="Include\Workspaces\Header.hpp">
-      <Filter>Header Files\Workspaces</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Log_Console.hpp">
       <Filter>Header Files\Workspaces</Filter>
     </ClInclude>
     <ClInclude Include="Include\Workspaces\Manager.hpp">

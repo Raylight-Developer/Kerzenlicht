@@ -70,7 +70,7 @@ GUI::NODE::EXEC::Script::Script(const ivec2& pos, const string& script_id) {
 			buildGuiFunc(wrapper);
 		}
 		else {
-			*LOG << ENDL << HTML_RED << "[DLL Binding]" << HTML_RESET << " Unable to resolve Script ID"; FLUSH;
+			LOG << ENDL << ANSI_R << "[DLL Binding]" << ANSI_RESET << " Unable to resolve Script ID"; FLUSH;
 		}
 	}
 }
@@ -139,7 +139,7 @@ void GUI::NODE::EXEC::Script::reloadFunctions() {
 		buildGuiFunc(wrapper);
 	}
 	else {
-		*LOG << ENDL << HTML_RED << "[DLL Binding]" << HTML_RESET << " Unable to resolve Script ID"; FLUSH;
+		LOG << ENDL << ANSI_R << "[DLL Binding]" << ANSI_RESET << " Unable to resolve Script ID"; FLUSH;
 	}
 }
 

@@ -34,7 +34,7 @@ GUI::WORKSPACE::Workspace_Node_Editor::Workspace_Node_Editor(Workspace_Manager* 
 	});
 	connect(compile, &GUI::Button::pressed, [this]() { // CAN CRASH. [xmemory 1335 and exec()] STOP Executing nodes before
 		if (viewport->active_node_tree and FILE->active_object->ptr) {
-			*LOG << ENDL << HTML_MAGENTA << "[DLL Compilation]" << HTML_RESET << " Compiling Solution..."; FLUSH;
+			LOG << ENDL << ANSI_B << "[DLL Compilation]" << ANSI_RESET << " Compiling Solution..."; FLUSH;
 
 			auto node_tree = FILE->active_object->ptr->node_tree;
 			auto gui_node_tree = FILE->nodetree_map[node_tree];
@@ -53,7 +53,7 @@ GUI::WORKSPACE::Workspace_Node_Editor::Workspace_Node_Editor(Workspace_Manager* 
 				}
 			}
 
-			*LOG << ENDL << HTML_GREEN << "[DLL Compilation]" << HTML_RESET << " Compiled Solution"; FLUSH;
+			LOG << ENDL << ANSI_G << "[DLL Compilation]" << ANSI_RESET << " Compiled Solution"; FLUSH;
 		}
 	});
 }
@@ -112,7 +112,7 @@ void GUI::WORKSPACE::Node_Viewport::f_objectChanged(CLASS::Object* object) {
 
 void GUI::WORKSPACE::Node_Viewport::loadNodes() {
 	if (active_node_tree and FILE->active_object->ptr) {
-		*LOG << ENDL << HTML_MAGENTA << "[Translation]" << HTML_RESET << " Compiling Nodes..."; FLUSH;
+		LOG << ENDL << ANSI_B << "[Translation]" << ANSI_RESET << " Compiling Nodes..."; FLUSH;
 
 		auto ptr = FILE->active_object->ptr->node_tree;
 		for (auto node : ptr->nodes) {
@@ -140,7 +140,7 @@ void GUI::WORKSPACE::Node_Viewport::loadNodes() {
 			cout << endl << "NT Vec Size: " << FILE->node_trees.size();
 		#endif
 
-		*LOG << ENDL << HTML_GREEN << "[Translation]" << HTML_RESET << " Compiled Nodes"; FLUSH;
+		LOG << ENDL << ANSI_G << "[Translation]" << ANSI_RESET << " Compiled Nodes"; FLUSH;
 	}
 }
 

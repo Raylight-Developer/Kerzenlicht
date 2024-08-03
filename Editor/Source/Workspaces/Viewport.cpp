@@ -67,13 +67,12 @@ void GUI::WORKSPACE::Workspace_Viewport::f_systemInfo() {
 	status.dwLength = sizeof(status);
 	GlobalMemoryStatusEx(&status);
 
-	*LOG
-		<< ENDL << "[System]"
-		<< ENDL << "  [CPU]"
-		<< ENDL << "    " << thread::hardware_concurrency() << " Threads"
-		<< ENDL << "  [GPU]"
-		<< ENDL << "  [RAM]"
-		<< ENDL << "    " << d_to_u(ceil((double)(status.ullTotalPhys / (1024.0 * 1024.0 * 1024.0)))) << "GB - " << status.ullTotalPhys / (1024 * 1024) << "MB";
+	LOG << ENDL << ANSI_B << "[System]" << ANSI_RESET;
+	LOG << ENDL << ANSI_B << "  [CPU]" << ANSI_RESET;
+	LOG << ENDL << "    " << thread::hardware_concurrency() << " Threads";
+	LOG << ENDL << ANSI_B << "  [GPU]" << ANSI_RESET;
+	LOG << ENDL << ANSI_B << "  [RAM]" << ANSI_RESET;
+	LOG << ENDL << "    " << d_to_u(ceil((double)(status.ullTotalPhys / (1024.0 * 1024.0 * 1024.0)))) << " GB - " << status.ullTotalPhys / (1024 * 1024) << " MB";
 	FLUSH;
 }
 
@@ -240,7 +239,7 @@ void GUI::WORKSPACE::Viewport::f_uploadData() {
 
 void GUI::WORKSPACE::Viewport::f_updateTick() {
 	if (++fps_counter >= 60) {
-		parent->timeline->info->setText("Fps: " + QString::number(60.0 / (chrono::duration_cast<std::chrono::milliseconds>(chrono::steady_clock::now() - fps_measure).count() / 1000.0)));
+		parent->timeline->info->setText(QString::number(60.0 / (chrono::duration_cast<std::chrono::milliseconds>(chrono::steady_clock::now() - fps_measure).count() / 1000.0)) + " fps");
 		fps_measure = chrono::steady_clock::now();
 		fps_counter = 0;
 	}

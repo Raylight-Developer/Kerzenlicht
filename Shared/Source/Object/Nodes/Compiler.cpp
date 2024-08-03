@@ -6,14 +6,14 @@ void loadDLL(HINSTANCE& dynlib) {
 	const string libfile = DLL_PATH;
 	wstring stemp = wstring(libfile.begin(), libfile.end());
 	LPCWSTR file_path = stemp.c_str();
-	//*LOG << ENDL << HTML_MAGENTA << "[DLL Loading]" << HTML_RESET << " Loading: " << libfile << "..."; FLUSH;
+	//LOG << ENDL << HTML_MAGENTA << "[DLL Loading]" << HTML_RESET << " Loading: " << libfile << "..."; FLUSH;
 	dynlib = LoadLibrary(file_path);
 	if (!dynlib) {
 		const uint32 errorCode = static_cast<uint32>(GetLastError());
-		//*LOG << ENDL << HTML_RED << "[DLL Loading]" << HTML_RESET << "LoadLibrary failed with error code:  " << errorCode; FLUSH;
+		//LOG << ENDL << HTML_RED << "[DLL Loading]" << HTML_RESET << "LoadLibrary failed with error code:  " << errorCode; FLUSH;
 		exit(EXIT_FAILURE);
 	}
-	//*LOG << ENDL << HTML_GREEN << "[DLL Loading]" << HTML_RESET << " Loaded"; FLUSH;
+	//LOG << ENDL << HTML_GREEN << "[DLL Loading]" << HTML_RESET << " Loaded"; FLUSH;
 }
 
 void recompileDLL(HINSTANCE& dynlib) {
@@ -23,7 +23,7 @@ void recompileDLL(HINSTANCE& dynlib) {
 	string rebuildCommand = "C:/Programs/Coding/Microsoft/VisualStudio/Community/MSBuild/Current/Bin/MSBuild.exe /p:Project=Scripting /t:Build \"D:/Kerzenlicht/Kerzenlicht.sln\"";
 	const int result = std::system(rebuildCommand.c_str());
 	if (result == 0) {
-		//*LOG << ENDL << HTML_GREEN << "[DLL Compilation]" << HTML_RESET << " Succesfully Compiled"; FLUSH;
+		//LOG << ENDL << HTML_GREEN << "[DLL Compilation]" << HTML_RESET << " Succesfully Compiled"; FLUSH;
 	}
 	loadDLL(dynlib);
 }

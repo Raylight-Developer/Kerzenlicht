@@ -42,6 +42,8 @@ namespace CLASS {
 // DECL
 namespace CLASS {
 	struct Node_Tree {
+		string name;
+
 		vector<Node*> nodes;      // src
 
 		vector<Node*> references; // ref
@@ -55,6 +57,8 @@ namespace CLASS {
 
 	};
 	struct Node {
+		string name;
+
 		NODE::Type type;
 		uint16 sub_type;
 

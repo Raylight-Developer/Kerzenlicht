@@ -73,19 +73,25 @@
 					{
 						"scope": "kerz.float",
 						"settings": {
-							"foreground": "#75cb81"
+							"foreground": "#f0aa8f"
 						}
 					},
 					{
 						"scope": "kerz.float.vector",
 						"settings": {
-							"foreground": "#b0f5b9"
+							"foreground": "#a3f281"
 						}
 					},
 					{
 						"scope": "kerz.integer",
 						"settings": {
-							"foreground": "#57b555"
+							"foreground": "#b98c7a"
+						}
+					},
+					{
+						"scope": "kerz.integer.vector",
+						"settings": {
+							"foreground": "#90cb58"
 						}
 					},
 					{
@@ -97,7 +103,7 @@
 					{
 						"scope": "kerz.integer.pointer",
 						"settings": {
-							"foreground": "#b98c7a"
+							"foreground": "#989575"
 						}
 					},
 					{

@@ -7,7 +7,6 @@
 #include "Core/File.hpp"
 #include "Core/Session.hpp"
 
-#include "Log_Console.hpp"
 #include "Workspaces/Manager.hpp"
 #include "Workspaces/Header.hpp"
 
@@ -29,7 +28,7 @@ namespace GUI {
 
 		struct Main_Window : GUI::Window {
 			GUI::Application* app;
-			Log_Console* log;
+			Lace* log;
 			CLASS::File* file;
 
 			map<string, Workspace_Manager*> workspaces;

@@ -34,14 +34,14 @@ GUI::WORKSPACE::Workspace_Dock_Header::Workspace_Dock_Header(Workspace_Manager* 
 	close_workspace = new GUI::Button(this);
 	close_workspace->setObjectName("Icon_Button");
 
-	floating_workspace_toggle->setIcon(QPixmap("resources/Icons/Collapse.png"));
-	change_workspace_type->setIcon(QPixmap("resources/Icons/workspaces/Dock_Manager.png"));
-	expand_settings->setIcon(QPixmap("resources/Icons/Settings.png"));
-	add_dock->setIcon(QPixmap("resources/Icons/Add.png"));
-	add_tab->setIcon(QPixmap("resources/Icons/Add_Tab.png"));
-	make_floating->setIcon(QPixmap("resources/Icons/Float_Dock.png"));
-	make_collapsible->setIcon(QPixmap("resources/Icons/Collapse.png"));
-	close_workspace->setIcon(QPixmap("resources/Icons/Close.png"));
+	floating_workspace_toggle->setIcon(QPixmap("./Resources/Icons/Collapse.png"));
+	change_workspace_type->setIcon(QPixmap("./Resources/Icons/Workspaces/Dock_Manager.png"));
+	expand_settings->setIcon(QPixmap("./Resources/Icons/Settings.png"));
+	add_dock->setIcon(QPixmap("./Resources/Icons/Add.png"));
+	add_tab->setIcon(QPixmap("./Resources/Icons/Add_Tab.png"));
+	make_floating->setIcon(QPixmap("./Resources/Icons/Float_Dock.png"));
+	make_collapsible->setIcon(QPixmap("./Resources/Icons/Collapse.png"));
+	close_workspace->setIcon(QPixmap("./Resources/Icons/Close.png"));
 
 	connect(floating_workspace_toggle, &GUI::Toggle::clicked, [this](bool checked) {f_expandCollapseToggle(checked); });
 	connect(change_workspace_type, &GUI::Button::clicked, [this]() {f_selectWorkspaceTypeClick(); });
@@ -90,27 +90,27 @@ void GUI::WORKSPACE::Workspace_Dock_Header::f_initWorkspacesMenu() {
 	GUI::Button* viewport = new GUI::Button(select_workspace_type);
 	viewport->setObjectName("Option_Button");
 
-	api->setIcon(QIcon("./Resources/Workspaces/Api.png"));
+	api->setIcon(QIcon("./Resources/Icons/Workspaces/Api.png"));
 	api->setText(" API");
 	connect(api, &GUI::Button::clicked, [this]() {f_setWorkspace(Workspace_Type::API); });
 
-	file_view->setIcon(QIcon("./Resources/Workspaces/Outliner.png"));
+	file_view->setIcon(QIcon("./Resources/Icons/Workspaces/Outliner.png"));
 	file_view->setText(" Object Nodes");
 	connect(file_view, &GUI::Button::clicked, [this]() {f_setWorkspace(Workspace_Type::NODE_EDITOR); });
 
-	shelf->setIcon(QIcon("./Resources/Workspaces/Outliner.png"));
+	shelf->setIcon(QIcon("./Resources/Icons/Workspaces/Outliner.png"));
 	shelf->setText(" Outliner");
 	connect(shelf, &GUI::Button::clicked, [this]() {f_setWorkspace(Workspace_Type::SHELF); });
 
-	scene_outliner->setIcon(QIcon("./Resources/Workspaces/Outliner.png"));
+	scene_outliner->setIcon(QIcon("./Resources/Icons/Workspaces/Outliner.png"));
 	scene_outliner->setText(" Outliner");
 	connect(scene_outliner, &GUI::Button::clicked, [this]() {f_setWorkspace(Workspace_Type::SCENE_OUTLINER); });
 
-	properties->setIcon(QIcon("./Resources/Workspaces/Properties.png"));
+	properties->setIcon(QIcon("./Resources/Icons/Workspaces/Properties.png"));
 	properties->setText(" Properties");
 	connect(properties, &GUI::Button::clicked, [this]() {f_setWorkspace(Workspace_Type::PROPERTIES); });
 
-	viewport->setIcon(QIcon("./Resources/Workspaces/Viewport.png"));
+	viewport->setIcon(QIcon("./Resources/Icons/Workspaces/Viewport.png"));
 	viewport->setText(" Viewport");
 	connect(viewport, &GUI::Button::clicked, [this]() {f_setWorkspace(Workspace_Type::VIEWPORT); });
 
@@ -130,7 +130,7 @@ void GUI::WORKSPACE::Workspace_Dock_Header::f_setWorkspace(const Workspace_Type&
 	switch (type) {
 		case (Workspace_Type::API): {
 			parent->setWindowTitle("API");
-			change_workspace_type->setIcon(QIcon("./Resources/Workspaces/Api.png"));
+			change_workspace_type->setIcon(QIcon("./Resources/Icons/Workspaces/Api.png"));
 			parent->workspace = new Workspace_API(parent);
 			parent->setWidget(parent->workspace);
 			floating_workspace_toggle->setText("API");
@@ -138,7 +138,7 @@ void GUI::WORKSPACE::Workspace_Dock_Header::f_setWorkspace(const Workspace_Type&
 		}
 		case (Workspace_Type::NODE_EDITOR): {
 			parent->setWindowTitle("Object Nodes");
-			change_workspace_type->setIcon(QIcon("./Resources/Workspaces/Outliner.png"));
+			change_workspace_type->setIcon(QIcon("./Resources/Icons/Workspaces/Outliner.png"));
 			parent->workspace = new Workspace_Node_Editor(parent);
 			parent->setWidget(parent->workspace);
 			floating_workspace_toggle->setText("Object Nodes");
@@ -146,7 +146,7 @@ void GUI::WORKSPACE::Workspace_Dock_Header::f_setWorkspace(const Workspace_Type&
 		}
 		case (Workspace_Type::SHELF): {
 			parent->setWindowTitle("Outliner");
-			change_workspace_type->setIcon(QIcon("./Resources/Workspaces/Outliner.png"));
+			change_workspace_type->setIcon(QIcon("./Resources/Icons/Workspaces/Outliner.png"));
 			parent->workspace = new Workspace_Shelf(parent);
 			parent->setWidget(parent->workspace);
 			floating_workspace_toggle->setText("Shelf");
@@ -154,7 +154,7 @@ void GUI::WORKSPACE::Workspace_Dock_Header::f_setWorkspace(const Workspace_Type&
 		}
 		case (Workspace_Type::SCENE_OUTLINER): {
 			parent->setWindowTitle("Outliner");
-			change_workspace_type->setIcon(QIcon("./Resources/Workspaces/Outliner.png"));
+			change_workspace_type->setIcon(QIcon("./Resources/Icons/Workspaces/Outliner.png"));
 			parent->workspace = new Workspace_Scene_Outliner(parent);
 			parent->setWidget(parent->workspace);
 			floating_workspace_toggle->setText("Outliner");
@@ -162,7 +162,7 @@ void GUI::WORKSPACE::Workspace_Dock_Header::f_setWorkspace(const Workspace_Type&
 		}
 		case (Workspace_Type::PROPERTIES): {
 			parent->setWindowTitle("Properties");
-			change_workspace_type->setIcon(QIcon("./Resources/Workspaces/Properties.png"));
+			change_workspace_type->setIcon(QIcon("./Resources/Icons/Workspaces/Properties.png"));
 			parent->workspace = new Workspace_Properties(parent);
 			parent->setWidget(parent->workspace);
 			floating_workspace_toggle->setText("Properties");
@@ -170,7 +170,7 @@ void GUI::WORKSPACE::Workspace_Dock_Header::f_setWorkspace(const Workspace_Type&
 		}
 		case (Workspace_Type::VIEWPORT): {
 			parent->setWindowTitle("Viewport");
-			change_workspace_type->setIcon(QIcon("./Resources/Workspaces/Viewport.png"));
+			change_workspace_type->setIcon(QIcon("./Resources/Icons/Workspaces/Viewport.png"));
 			parent->workspace = new Workspace_Viewport(parent);
 			parent->setWidget(parent->workspace);
 			floating_workspace_toggle->setText("Viewport");
@@ -178,7 +178,7 @@ void GUI::WORKSPACE::Workspace_Dock_Header::f_setWorkspace(const Workspace_Type&
 		}
 		default: {
 			parent->setWindowTitle("Manager");
-			change_workspace_type->setIcon(QIcon("./Resources/Workspaces/Dock_Manager.png"));
+			change_workspace_type->setIcon(QIcon("./Resources/Icons/Workspaces/Dock_Manager.png"));
 			parent->workspace = new GUI::Linear_Contents(this, QBoxLayout::Direction::LeftToRight);
 			parent->setWidget(parent->workspace);
 			floating_workspace_toggle->setText("Manager");

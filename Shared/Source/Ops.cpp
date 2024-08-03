@@ -22,7 +22,7 @@ vector<string> f_split(const string& input, const string& delimiter) {
 	return tokens;
 }
 
-string f_join(const vector<string>& tokens, const string& join, const size_t& start, const size_t& end) {
+string f_join(const vector<string>& tokens, const string& join, const uint64& start, const uint64& end) {
 	return accumulate(
 		tokens.begin() + start, tokens.end() - end, string(),
 		[join](const string& accumulator, const string& current) {
@@ -31,6 +31,14 @@ string f_join(const vector<string>& tokens, const string& join, const size_t& st
 	);
 }
 
+string f_join(const vector<string>& tokens, const uint64& start, const uint64& end) {
+	return accumulate(
+		tokens.begin() + start, tokens.end() - end, string(),
+		[](const string& accumulator, const string& current) {
+			return accumulator.empty() ? current : accumulator + " " + current;
+		}
+	);
+}
 string f_str(const vector<string>& tokens) {
 	return accumulate(
 		tokens.begin(), tokens.end(), string(),

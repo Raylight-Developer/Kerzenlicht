@@ -5,7 +5,8 @@
 // string
 vector<string> f_split(const string& input);
 vector<string> f_split(const string& input, const string& delimiter);
-string f_join(const vector<string>& tokens, const string& join = " ", const size_t& start = 0, const size_t& end = 0);
+string f_join(const vector<string>& tokens, const string& join, const uint64& start = 0ULL, const uint64& end = 0ULL);
+string f_join(const vector<string>& tokens, const uint64& start = 0ULL, const uint64& end = 0ULL);
 string f_str(const vector<string>& tokens);
 
 string f_remove(const string& input, const string& remove);
@@ -83,6 +84,11 @@ template<typename T>
 uint e_to_u(const T& enumerator) {
 	return static_cast<uint>(enumerator);
 };
+
+template <typename T>
+string ptr_to_str(const T pointer) {
+	return "* " + to_string(reinterpret_cast<uint64>(pointer));
+}
 
 template<typename T>
 uint len32(const vector<T>& vector) {

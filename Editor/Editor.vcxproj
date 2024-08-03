@@ -50,7 +50,6 @@
     <ClInclude Include="Include\Workspaces\API.hpp" />
     <ClInclude Include="Include\Workspaces\File_View.hpp" />
     <ClInclude Include="Include\Workspaces\Header.hpp" />
-    <ClInclude Include="Include\Log_Console.hpp" />
     <ClInclude Include="Include\Workspaces\Manager.hpp" />
     <ClInclude Include="Include\Workspaces\Scene_Outliner.hpp" />
     <ClInclude Include="Include\Workspaces\Properties.hpp" />
@@ -90,7 +89,6 @@
     <ClCompile Include="Source\Workspaces\API.cpp" />
     <ClCompile Include="Source\Workspaces\File_View.cpp" />
     <ClCompile Include="Source\Workspaces\Header.cpp" />
-    <ClCompile Include="Source\Log_Console.cpp" />
     <ClCompile Include="Source\Workspaces\Manager.cpp" />
     <ClCompile Include="Source\Workspaces\Scene_Outliner.cpp" />
     <ClCompile Include="Source\Workspaces\Properties.cpp" />

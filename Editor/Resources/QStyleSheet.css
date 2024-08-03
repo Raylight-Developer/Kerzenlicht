@@ -150,6 +150,9 @@ QScrollBar:vertical {
 	width: 18px;
 	margin: 18px 0 18px 0;
 }
+QScrollBar:handle:vertical {
+	min-height: 24px;
+}
 QScrollBar:add-line:vertical {
 	background: rgb(100,100,100);
 	height: 18px;
@@ -185,6 +188,9 @@ QScrollBar:horizontal {
 	background: rgb(75, 75, 75);
 	height: 18px;
 	margin: 0 18px 0 18px;
+}
+QScrollBar:handle:horizonal {
+	min-width: 24px;
 }
 QScrollBar:add-line:horizontal {
 	background: rgb(100,100,100);

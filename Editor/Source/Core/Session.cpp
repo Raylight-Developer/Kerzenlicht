@@ -7,9 +7,14 @@ Session& Session::getInstance() {
 	return instance;
 }
 
-void Session::setLog(Log_Console* ptr) { log = ptr; }
+void Session::flushLog() {
+	cout << log->str();
+	log->clear();
+}
 
-Log_Console* Session::getLog() { return log; }
+void Session::setLog(Lace* ptr) { log = ptr; }
+
+Lace* Session::getLog() { return log; }
 
 void Session::setFile(CLASS::File* ptr) { file = ptr; }
 

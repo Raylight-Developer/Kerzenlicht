@@ -10,7 +10,6 @@
 #include "Main_Window.hpp"
 
 #include "Workspaces/API.hpp"
-#include "Log_Console.hpp"
 #include "Workspaces/Shelf.hpp"
 #include "Workspaces/Viewport.hpp"
 #include "Workspaces/Properties.hpp"

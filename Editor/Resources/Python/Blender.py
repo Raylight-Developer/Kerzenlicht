@@ -104,7 +104,7 @@ class Kerzenlicht_Bridge(bpy.types.Operator):
 		for j, vert in enumerate(data.vertices):
 			vert: bpy.types.MeshVertex
 			vert_pos: mu.Vector = matrix @ vert.co
-			self.KL.append(f"   {j} {vert_pos.x} {vert_pos.y} {vert_pos.z}")
+			self.KL.append(f"   {j} ( {vert_pos.x} {vert_pos.y} {vert_pos.z} )")
 
 		self.KL.append("  └Vertices")
 		self.KL.append(f"  ┌Vertex-Groups( {len(object.vertex_groups)} )")
@@ -119,7 +119,7 @@ class Kerzenlicht_Bridge(bpy.types.Operator):
 					group: bpy.types.VertexGroupElement = group
 					if group.group == vertex_group.index:
 						vertices.append(str(k))
-			self.KL.append(f"    {' '.join(vertices)}")
+			self.KL.append(f"    [ {' '.join(vertices)} ]")
 			self.KL.append("   └Vertex-Group")
 
 		self.KL.append("  └Vertex-Groups")
@@ -128,14 +128,14 @@ class Kerzenlicht_Bridge(bpy.types.Operator):
 		for j, data_b in enumerate(data.polygons):
 			poly: bpy.types.MeshPolygon = data_b
 			vertices = " ".join([str(index) for index in poly.vertices])
-			self.KL.append(f"   {j} {len(poly.vertices)} {vertices}")
+			self.KL.append(f"   {j} {len(poly.vertices)} [ {vertices} ]")
 
 		self.KL.append("  └Faces")
 		self.KL.append(f"  ┌Normals( {len(data.polygons)} )")
 
 		for j, poly in enumerate(data.polygons):
 			poly: bpy.types.MeshPolygon = poly
-			normals = " ".join([f"{nor.x} {nor.y} {nor.z}" for nor in [matrix @ normal for normal in [data.vertices[index].normal for index in poly.vertices]]])
+			normals = " ".join([f"( {nor.x} {nor.y} {nor.z} )" for nor in [matrix @ normal for normal in [data.vertices[index].normal for index in poly.vertices]]])
 			self.KL.append(f"   {j} {len(poly.vertices)} {normals}")
 
 		self.KL.append("  └Normals")
@@ -144,7 +144,7 @@ class Kerzenlicht_Bridge(bpy.types.Operator):
 		uv_layer = data.uv_layers.active.data
 		for j, data_b in enumerate(data.polygons):
 			poly: bpy.types.MeshPolygon = data_b
-			uvs = " ".join([f"{uv_layer[loop_index].uv.x} {uv_layer[loop_index].uv.y}" for loop_index in range(poly.loop_start, poly.loop_start + poly.loop_total)])
+			uvs = " ".join([f"( {uv_layer[loop_index].uv.x} {uv_layer[loop_index].uv.y} )" for loop_index in range(poly.loop_start, poly.loop_start + poly.loop_total)])
 			self.KL.append(f"   {j} {len(poly.vertices)} {uvs}")
 
 		self.KL.append("  └UVs")
@@ -162,9 +162,9 @@ class Kerzenlicht_Bridge(bpy.types.Operator):
 	def parseObject(self, object: bpy.types.Object, i: int, ptr: str):
 		self.KL.append(f" ┌Object [ {i} ] {object.name_full}")
 		self.KL.append(f"  * {ptr}")
-		self.KL.append(f"  Position {-object.location.x} {object.location.z} {object.location.y}")
-		self.KL.append(f"  Rotation {90 - object.rotation_euler.x * RAD_DEG} {object.rotation_euler.z * RAD_DEG} {object.rotation_euler.y * RAD_DEG}")
-		self.KL.append(f"  Scale {object.scale.x} {object.scale.z} {object.scale.y}")
+		self.KL.append(f"  Position ( {-object.location.x} {object.location.z} {object.location.y} )")
+		self.KL.append(f"  Rotation ( {90 - object.rotation_euler.x * RAD_DEG} {object.rotation_euler.z * RAD_DEG} {object.rotation_euler.y * RAD_DEG} )")
+		self.KL.append(f"  Scale    ( {object.scale.x} {object.scale.z} {object.scale.y} )")
 		self.KL.append(f"  Type Mesh")
 		self.KL.append(f" └Object")
 

@@ -10,7 +10,7 @@ GUI::WORKSPACE::App::App(int argc, char* argv[]) :
 GUI::WORKSPACE::Main_Window::Main_Window(GUI::Application* app) :
 	GUI::Window(),
 	app(app),
-	log(new Log_Console(this)),
+	log(new Lace()),
 	file(new CLASS::File()),
 	mouse_pressed(false),
 	key_pressed(false)
@@ -21,7 +21,7 @@ GUI::WORKSPACE::Main_Window::Main_Window(GUI::Application* app) :
 	setWindowTitle("Kerzenlicht");
 	setWindowIcon(QPixmap("./Resources/Icon.png"));
 
-	*LOG << "Kerzenlicht 1.0.0 Initialized"; FLUSH;
+	LOG << "Kerzenlicht 1.0.0 Initialized"; FLUSH;
 
 	file->f_loadFile("./Resources/Assets/Save.krz");
 
@@ -41,11 +41,9 @@ GUI::WORKSPACE::Main_Window::Main_Window(GUI::Application* app) :
 	addDockWidget(Qt::DockWidgetArea::LeftDockWidgetArea, ws_1);
 	addDockWidget(Qt::DockWidgetArea::RightDockWidgetArea, ws_3);
 
-	log->show();
-	log->resize(600, 400);
 	showMaximized();
 
-	*LOG << ENDL << HTML_GREEN << "Fully Initialized" << HTML_RESET; FLUSH;
+	LOG << ENDL << ANSI_G << "Fully Initialized" << ANSI_RESET; FLUSH;
 }
 
 bool GUI::WORKSPACE::Main_Window::eventFilter(QObject* object, QEvent* event) {

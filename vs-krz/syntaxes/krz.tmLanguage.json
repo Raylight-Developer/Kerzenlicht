@@ -43,7 +43,7 @@
 		},
 		{
 			"name": "kerz.float",
-			"match": "[+-]?[0-9]*\\.[0-9]+"
+			"match": "[+-]?[0-9]*\\.[0-9]+[[e]?[+-]?[0-9]+]?"
 		},
 		{
 			"name": "kerz.float.vector",
@@ -52,6 +52,10 @@
 		{
 			"name": "kerz.integer",
 			"match": "[+-]?[0-9]+(?!\\.[0-9])"
+		},
+		{
+			"name": "kerz.integer.vector",
+			"match": "\\[\\s*(-?\\d+\\s+){1,}(-?\\d+)\\s*\\]"
 		},
 		{
 			"name": "kerz.name",

@@ -7,6 +7,7 @@
 CLASS::Node_Tree::Node_Tree() :
 	tick(nullptr)
 {
+	name = "#";
 	nodes = {};
 
 	references = {};
@@ -25,6 +26,7 @@ void CLASS::Node_Tree::exec(const dvec1* delta) const {
 }
 
 CLASS::Node::Node() {
+	name = "#";
 	type = NODE::Type::NONE;
 	sub_type = 0;
 }

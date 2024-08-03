@@ -35,8 +35,10 @@ namespace CLASS {
 	};
 
 	struct File {
-		vector<OBJECT::Data*> object_data;
+		map<uint64, void*> pointer_map;
+
 		vector<SHADER::Material*> materials;
+		vector<OBJECT::Data*> object_data;
 		vector<Node_Tree*> node_trees;
 		vector<Object*> objects;
 		vector<Scene*> scenes;
@@ -55,52 +57,48 @@ namespace CLASS {
 		void   f_loadFile(const string& file_path);
 		void   f_saveFile(const string& file_path);
 		string f_printFile();
+		void   f_fileStats() const;
 
-		void              f_loadHeader     (const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map);
-		CLASS::Node_Tree* f_loadNodeTree   (const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map);
-		SHADER::Material* f_loadMaterial   (const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map);
-		OBJECT::Data*     f_loadData       (const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map);
-		OBJECT::Data*     f_loadAtmosphere (const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map);
-		OBJECT::Data*     f_loadPrimitive  (const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map);
-		OBJECT::Data*     f_loadSkeleton   (const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map);
-		OBJECT::Data*     f_loadCamera     (const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map);
-		OBJECT::Data*     f_loadVolume     (const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map);
-		OBJECT::Data*     f_loadCurve      (const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map);
-		OBJECT::Data*     f_loadEmpty      (const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map);
-		OBJECT::Data*     f_loadForce      (const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map);
-		OBJECT::Data*     f_loadGroup      (const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map);
-		OBJECT::Data*     f_loadLight      (const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map);
-		OBJECT::Data*     f_loadMesh       (const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map);
-		OBJECT::Data*     f_loadSfx        (const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map);
-		OBJECT::Data*     f_loadVfx        (const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map);
-		Object*           f_loadObject     (const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map);
-		Scene*            f_loadScene      (const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map);
-		void              f_loadBuild      (const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map);
+		void              f_loadHeader     (const vector<vector<string>>& token_data);
+		CLASS::Node_Tree* f_loadNodeTree   (const vector<vector<string>>& token_data);
+		SHADER::Material* f_loadMaterial   (const vector<vector<string>>& token_data);
+		OBJECT::Data*     f_loadData       (const vector<vector<string>>& token_data);
+		OBJECT::Data*     f_loadAtmosphere (const vector<vector<string>>& token_data);
+		OBJECT::Data*     f_loadPrimitive  (const vector<vector<string>>& token_data);
+		OBJECT::Data*     f_loadSkeleton   (const vector<vector<string>>& token_data);
+		OBJECT::Data*     f_loadCamera     (const vector<vector<string>>& token_data);
+		OBJECT::Data*     f_loadVolume     (const vector<vector<string>>& token_data);
+		OBJECT::Data*     f_loadCurve      (const vector<vector<string>>& token_data);
+		OBJECT::Data*     f_loadEmpty      (const vector<vector<string>>& token_data);
+		OBJECT::Data*     f_loadForce      (const vector<vector<string>>& token_data);
+		OBJECT::Data*     f_loadGroup      (const vector<vector<string>>& token_data);
+		OBJECT::Data*     f_loadLight      (const vector<vector<string>>& token_data);
+		OBJECT::Data*     f_loadMesh       (const vector<vector<string>>& token_data);
+		OBJECT::Data*     f_loadSfx        (const vector<vector<string>>& token_data);
+		OBJECT::Data*     f_loadVfx        (const vector<vector<string>>& token_data);
+		Object*           f_loadObject     (const vector<vector<string>>& token_data);
+		Scene*            f_loadScene      (const vector<vector<string>>& token_data);
+		void              f_loadBuild      (const vector<vector<string>>& token_data);
 
 		void f_saveHeader     (Lace& lace);
-		void f_saveNodeTree   (Lace& lace, Node_Tree*              data     , const uint64& i);
-		void f_saveMaterial   (Lace& lace, const SHADER::Material* data     , const uint64& i);
+		void f_saveNodeTree   (Lace& lace, Node_Tree*              data, const uint64& i);
+		void f_saveMaterial   (Lace& lace, const SHADER::Material* data, const uint64& i);
 		void f_saveData       (Lace& lace);
-		void f_saveAtmosphere (Lace& lace, const OBJECT::Data*     data     , const uint64& i);
-		void f_savePrimitive  (Lace& lace, const OBJECT::Data*     data     , const uint64& i);
-		void f_saveSkeleton   (Lace& lace, const OBJECT::Data*     data     , const uint64& i);
-		void f_saveCamera     (Lace& lace, const OBJECT::Data*     data     , const uint64& i);
-		void f_saveVolume     (Lace& lace, const OBJECT::Data*     data     , const uint64& i);
-		void f_saveCurve      (Lace& lace, const OBJECT::Data*     data     , const uint64& i);
-		void f_saveEmpty      (Lace& lace, const OBJECT::Data*     data     , const uint64& i);
-		void f_saveForce      (Lace& lace, const OBJECT::Data*     data     , const uint64& i);
-		void f_saveGroup      (Lace& lace, const OBJECT::Data*     data     , const uint64& i);
-		void f_saveLight      (Lace& lace, const OBJECT::Data*     data     , const uint64& i);
-		void f_saveMesh       (Lace& lace, const OBJECT::Data*     data     , const uint64& i);
-		void f_saveSfx        (Lace& lace, const OBJECT::Data*     data     , const uint64& i);
-		void f_saveVfx        (Lace& lace, const OBJECT::Data*     data     , const uint64& i);
-		void f_saveObject     (Lace& lace, const Object*           data     , const uint64& i);
-		void f_saveScene      (Lace& lace, const Scene*            data     , const uint64& i);
+		void f_saveAtmosphere (Lace& lace, const OBJECT::Data*     data, const uint64& i);
+		void f_savePrimitive  (Lace& lace, const OBJECT::Data*     data, const uint64& i);
+		void f_saveSkeleton   (Lace& lace, const OBJECT::Data*     data, const uint64& i);
+		void f_saveCamera     (Lace& lace, const OBJECT::Data*     data, const uint64& i);
+		void f_saveVolume     (Lace& lace, const OBJECT::Data*     data, const uint64& i);
+		void f_saveCurve      (Lace& lace, const OBJECT::Data*     data, const uint64& i);
+		void f_saveEmpty      (Lace& lace, const OBJECT::Data*     data, const uint64& i);
+		void f_saveForce      (Lace& lace, const OBJECT::Data*     data, const uint64& i);
+		void f_saveGroup      (Lace& lace, const OBJECT::Data*     data, const uint64& i);
+		void f_saveLight      (Lace& lace, const OBJECT::Data*     data, const uint64& i);
+		void f_saveMesh       (Lace& lace, const OBJECT::Data*     data, const uint64& i);
+		void f_saveSfx        (Lace& lace, const OBJECT::Data*     data, const uint64& i);
+		void f_saveVfx        (Lace& lace, const OBJECT::Data*     data, const uint64& i);
+		void f_saveObject     (Lace& lace, const Object*           data, const uint64& i);
+		void f_saveScene      (Lace& lace, const Scene*            data, const uint64& i);
 		void f_saveBuild      (Lace& lace);
 	};
-}
-
-template <typename T>
-string ptr_to_str(const T pointer) {
-	return "* " + to_string(reinterpret_cast<uint64>(pointer));
 }
