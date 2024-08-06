@@ -310,8 +310,8 @@ CLASS::Node_Tree* CLASS::File::f_loadNodeTree(const vector<vector<string>>& toke
 	return node_tree;
 }
 
-SHADER::Material* CLASS::File::f_loadMaterial(const vector<vector<string>>& token_data) {
-	SHADER::Material* material = new SHADER::Material();
+SHADER::Shader* CLASS::File::f_loadMaterial(const vector<vector<string>>& token_data) {
+	SHADER::Shader* material = new SHADER::Shader();
 	material->name = f_join(token_data[0], 4);
 	return material;
 }
@@ -667,7 +667,7 @@ string CLASS::File::f_printFile() {
 	count = 0;
 	lace NL "┌Materials( " << materials.size() << " )";
 	lace A;
-	for (const SHADER::Material* material : materials)
+	for (const SHADER::Shader* material : materials)
 		f_saveMaterial(lace, material, count++);
 	lace R;
 	lace NL "└Materials";
@@ -905,7 +905,7 @@ void CLASS::File::f_saveNodeTree(Lace& lace, CLASS::Node_Tree* data, const uint6
 		lace NL "└Node-Tree";
 }
 
-void CLASS::File::f_saveMaterial(Lace& lace, const SHADER::Material* data, const uint64& i) {
+void CLASS::File::f_saveMaterial(Lace& lace, const SHADER::Shader* data, const uint64& i) {
 	lace NL "┌Material [ " << i << " ] " << data->name;
 	lace A;
 	lace NL ptr_to_str(data);

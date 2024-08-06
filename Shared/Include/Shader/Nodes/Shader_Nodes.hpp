@@ -3,7 +3,7 @@
 #include "Include.hpp"
 #include "Data_Property.hpp"
 
-#include "Shader_Node.hpp"
+#include "Nodes.hpp"
 
 
 // FWD DECL OTHER
@@ -47,9 +47,9 @@ namespace SHADER {
 	namespace NODE {
 		namespace EXEC {
 			enum struct Type { TICK };
-			struct Tick : Node {
-				PORT::Exec_O_Port* port_tick;
-				PORT::Data_O_Port* port_delta;
+			struct Tick : CLASS::Node {
+				CLASS::NODE::PORT::Exec_O_Port* port_tick;
+				CLASS::NODE::PORT::Data_O_Port* port_delta;
 
 				const dvec1* delta;
 

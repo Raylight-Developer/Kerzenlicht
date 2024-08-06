@@ -7,15 +7,15 @@
 #include "Nodes/Object_Nodes.hpp"
 
 #include "Data.hpp"
-#include "Shading/Material.hpp"
+#include "Shader/Shader.hpp"
 
 // FWD DECL OTHER
 namespace CLASS {
 	struct Scene;
 	struct Data;
 }
-namespace SHADER{
-	struct Material;
+namespace SHADER {
+	struct Shader;
 }
 
 // FWD DECL THIS
@@ -28,7 +28,7 @@ namespace CLASS {
 		Object* parent;
 		Transform transform;
 		Transform node_transform;
-		vector<SHADER::Material*> materials;
+		vector<SHADER::Shader*> materials;
 		unordered_map<string, CLASS::Data> properties;
 
 		bool viewport_visibility;

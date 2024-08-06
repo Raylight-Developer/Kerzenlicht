@@ -96,7 +96,7 @@ void GUI::WORKSPACE::Workspace_Dock_Header::f_initWorkspacesMenu() {
 
 	file_view->setIcon(QIcon("./Resources/Icons/Workspaces/Outliner.png"));
 	file_view->setText(" Object Nodes");
-	connect(file_view, &GUI::Button::clicked, [this]() {f_setWorkspace(Workspace_Type::NODE_EDITOR); });
+	connect(file_view, &GUI::Button::clicked, [this]() {f_setWorkspace(Workspace_Type::OBJECT_NODE_EDITOR); });
 
 	shelf->setIcon(QIcon("./Resources/Icons/Workspaces/Outliner.png"));
 	shelf->setText(" Outliner");
@@ -136,7 +136,7 @@ void GUI::WORKSPACE::Workspace_Dock_Header::f_setWorkspace(const Workspace_Type&
 			floating_workspace_toggle->setText("API");
 			break;
 		}
-		case (Workspace_Type::NODE_EDITOR): {
+		case (Workspace_Type::OBJECT_NODE_EDITOR): {
 			parent->setWindowTitle("Object Nodes");
 			change_workspace_type->setIcon(QIcon("./Resources/Icons/Workspaces/Outliner.png"));
 			parent->workspace = new Workspace_Object_Node_Editor(parent);

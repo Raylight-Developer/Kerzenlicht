@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|x64">
@@ -104,9 +104,10 @@
     <ClInclude Include="Include\Include.hpp" />
     <ClInclude Include="Include\Lace.hpp" />
     <ClInclude Include="Include\Object\Nodes\Compiler.hpp" />
-    <ClInclude Include="Include\Object\Nodes\Object_Node.hpp" />
     <ClInclude Include="Include\Object\Nodes\Object_Nodes.hpp" />
-    <ClInclude Include="Include\Shading\Material.hpp" />
+    <ClInclude Include="Include\Nodes.hpp" />
+    <ClInclude Include="Include\Shader\Nodes\Shader_Nodes.hpp" />
+    <ClInclude Include="Include\Shader\Shader.hpp" />
     <ClInclude Include="Include\Object\Data.hpp" />
     <ClInclude Include="Include\Object\Data\Atmosphere.hpp" />
     <ClInclude Include="Include\Object\Data\Camera.hpp" />
@@ -125,19 +126,14 @@
     <ClInclude Include="Include\Ops.hpp" />
     <ClInclude Include="Include\Shared.hpp" />
     <ClInclude Include="Include\Scene.hpp" />
-    <ClInclude Include="Include\Shading\Nodes\Shader_Node.hpp" />
-    <ClInclude Include="Include\Shading\Nodes\Shader_Nodes.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\Shading\Nodes\Shader_Nodes.cpp" />
-    <ClCompile Include="Source\Shading\Nodes\Shader_Node.cpp" />
     <ClCompile Include="Source\Scene.cpp" />
     <ClCompile Include="Source\Data_Property.cpp" />
     <ClCompile Include="Source\Lace.cpp" />
     <ClCompile Include="Source\Object\Nodes\Compiler.cpp" />
-    <ClCompile Include="Source\Object\Nodes\Object_Node.cpp" />
+    <ClCompile Include="Source\Nodes.cpp" />
     <ClCompile Include="Source\Object\Nodes\Object_Nodes.cpp" />
-    <ClCompile Include="Source\Shading\Material.cpp" />
     <ClCompile Include="Source\Object\Data.cpp" />
     <ClCompile Include="Source\Object\Data\Atmosphere.cpp" />
     <ClCompile Include="Source\Object\Data\Camera.cpp" />
@@ -154,6 +150,8 @@
     <ClCompile Include="Source\Object\Data\Volume.cpp" />
     <ClCompile Include="Source\Object\Object.cpp" />
     <ClCompile Include="Source\Ops.cpp" />
+    <ClCompile Include="Source\Shader\Nodes\Shader_Nodes.cpp" />
+    <ClCompile Include="Source\Shader\Shader.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">

@@ -14,6 +14,7 @@
     <ClInclude Include="..\Shared\Include\Data_Property.hpp" />
     <ClInclude Include="..\Shared\Include\Include.hpp" />
     <ClInclude Include="..\Shared\Include\Lace.hpp" />
+    <ClInclude Include="..\Shared\Include\Nodes.hpp" />
     <ClInclude Include="..\Shared\Include\Object\Data.hpp" />
     <ClInclude Include="..\Shared\Include\Object\Data\Atmosphere.hpp" />
     <ClInclude Include="..\Shared\Include\Object\Data\Camera.hpp" />
@@ -29,20 +30,17 @@
     <ClInclude Include="..\Shared\Include\Object\Data\Vfx.hpp" />
     <ClInclude Include="..\Shared\Include\Object\Data\Volume.hpp" />
     <ClInclude Include="..\Shared\Include\Object\Nodes\Compiler.hpp" />
-    <ClInclude Include="..\Shared\Include\Object\Nodes\Object_Node.hpp" />
     <ClInclude Include="..\Shared\Include\Object\Nodes\Object_Nodes.hpp" />
     <ClInclude Include="..\Shared\Include\Object\Object.hpp" />
     <ClInclude Include="..\Shared\Include\Ops.hpp" />
     <ClInclude Include="..\Shared\Include\Scene.hpp" />
-    <ClInclude Include="..\Shared\Include\Shading\Material.hpp" />
-    <ClInclude Include="..\Shared\Include\Shading\Nodes\Shader_Node.hpp" />
-    <ClInclude Include="..\Shared\Include\Shading\Nodes\Shader_Nodes.hpp" />
+    <ClInclude Include="..\Shared\Include\Shader\Nodes\Shader_Nodes.hpp" />
+    <ClInclude Include="..\Shared\Include\Shader\Shader.hpp" />
     <ClInclude Include="..\Shared\Include\Shared.hpp" />
     <ClInclude Include="Include\Core\File.hpp" />
     <ClInclude Include="Include\Workspaces\Object_Node_Editor.hpp" />
     <ClInclude Include="Include\GUI_Nodes.hpp" />
     <ClInclude Include="Include\GUI_Object_Nodes.hpp" />
-    <ClInclude Include="Include\Workspaces\Shader_Node_Editor.hpp" />
     <ClInclude Include="Include\Workspaces\Shelf.hpp" />
     <ClInclude Include="Include\Core\Session.hpp" />
     <QtMoc Include="Include\GUI.hpp" />
@@ -60,6 +58,7 @@
   <ItemGroup>
     <ClCompile Include="..\Shared\Source\Data_Property.cpp" />
     <ClCompile Include="..\Shared\Source\Lace.cpp" />
+    <ClCompile Include="..\Shared\Source\Nodes.cpp" />
     <ClCompile Include="..\Shared\Source\Object\Data.cpp" />
     <ClCompile Include="..\Shared\Source\Object\Data\Atmosphere.cpp" />
     <ClCompile Include="..\Shared\Source\Object\Data\Camera.cpp" />
@@ -75,14 +74,12 @@
     <ClCompile Include="..\Shared\Source\Object\Data\Vfx.cpp" />
     <ClCompile Include="..\Shared\Source\Object\Data\Volume.cpp" />
     <ClCompile Include="..\Shared\Source\Object\Nodes\Compiler.cpp" />
-    <ClCompile Include="..\Shared\Source\Object\Nodes\Object_Node.cpp" />
     <ClCompile Include="..\Shared\Source\Object\Nodes\Object_Nodes.cpp" />
     <ClCompile Include="..\Shared\Source\Object\Object.cpp" />
     <ClCompile Include="..\Shared\Source\Ops.cpp" />
     <ClCompile Include="..\Shared\Source\Scene.cpp" />
-    <ClCompile Include="..\Shared\Source\Shading\Material.cpp" />
-    <ClCompile Include="..\Shared\Source\Shading\Nodes\Shader_Node.cpp" />
-    <ClCompile Include="..\Shared\Source\Shading\Nodes\Shader_Nodes.cpp" />
+    <ClCompile Include="..\Shared\Source\Shader\Nodes\Shader_Nodes.cpp" />
+    <ClCompile Include="..\Shared\Source\Shader\Shader.cpp" />
     <ClCompile Include="Source\Core\File.cpp" />
     <ClCompile Include="Source\GUI.cpp" />
     <ClCompile Include="Source\Main_Window.cpp" />

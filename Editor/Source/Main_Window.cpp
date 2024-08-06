@@ -25,7 +25,7 @@ GUI::WORKSPACE::Main_Window::Main_Window(GUI::Application* app) :
 
 	file->f_loadFile("./Resources/Assets/Save.krz");
 
-	Workspace_Manager* ws_1 = new Workspace_Manager(this, Workspace_Type::NODE_EDITOR);
+	Workspace_Manager* ws_1 = new Workspace_Manager(this, Workspace_Type::OBJECT_NODE_EDITOR);
 	Workspace_Manager* ws_2 = new Workspace_Manager(this, Workspace_Type::SHELF);
 	Workspace_Manager* ws_3 = new Workspace_Manager(this, Workspace_Type::VIEWPORT);
 

@@ -9,7 +9,7 @@
 #include "Core/Session.hpp"
 #include "Core/File.hpp"
 
-#include "Object/Nodes/Object_Node.hpp"
+#include "Nodes.hpp"
 #include "Object/Nodes/Object_Nodes.hpp"
 #include "Object/Nodes/Compiler.hpp"
 

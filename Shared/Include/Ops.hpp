@@ -148,11 +148,67 @@ T f_ramp(const map<U, T>& curve, const U& t) {
 }
 
 template<typename K, typename V>
-K f_getKeyByValue(const unordered_map<K, V>& map, const V& value) {
+K f_getMapKey(const map<K, V>& map, const V& value) {
 	for (const auto& pair : map) {
 		if (pair.second == value) {
 			return pair.first;
 		}
 	}
-	throw runtime_error("Value not found in unordered_map");
+	throw runtime_error("Value not found in map");
+}
+
+template<typename K, typename V>
+K f_getMapKey(const unordered_map<K, V>& map, const V& value) {
+	for (const auto& pair : map) {
+		if (pair.second == value) {
+			return pair.first;
+		}
+	}
+	throw runtime_error("Value not found in map");
+}
+
+template<typename T>
+uint64 f_getVectorIndex(const vector<T>& vec, const T& value) {
+	auto it = std::find(vec.begin(), vec.end(), value);
+	if (it != vec.end()) {
+		return std::distance(vec.begin(), it);
+	}
+	throw runtime_error("Value not found in vector");
+}
+
+template<typename K, typename V>
+void f_removeMapItem(map<K, V>& map, const V& value) {
+	for (auto it = map.begin(); it != map.end(); ) {
+		if (it->second == value) {
+			it = map.erase(it);
+		} else {
+			++it;
+		}
+	}
+}
+
+template<typename K, typename V>
+void f_removeMapItem(unordered_map<K, V>& map, const V& value) {
+	for (auto it = map.begin(); it != map.end(); ) {
+		if (it->second == value) {
+			it = map.erase(it);
+		} else {
+			++it;
+		}
+	}
+}
+
+template<typename K, typename V>
+void f_removeMapItem(map<K, V>& map, const K& key) {
+	map.erase(key);
+}
+
+template<typename K, typename V>
+void f_removeMapItem(unordered_map<K, V>& map, const K& key) {
+	map.erase(key);
+}
+
+template<typename T>
+void f_removeVectorItem(vector<T>& vec, const T& value) {
+	vec.erase(std::find(vec.begin(), vec.end(), value));
 }

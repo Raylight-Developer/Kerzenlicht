@@ -1,177 +1,167 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
+    <Filter Include="Source">
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
-    <Filter Include="Header Files">
+    <Filter Include="Include">
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
-    </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\Include.hpp">
-      <Filter>Header Files</Filter>
+      <Filter>Include</Filter>
     </ClInclude>
     <ClInclude Include="Include\Lace.hpp">
-      <Filter>Header Files</Filter>
+      <Filter>Include</Filter>
     </ClInclude>
     <ClInclude Include="Include\Ops.hpp">
-      <Filter>Header Files</Filter>
+      <Filter>Include</Filter>
     </ClInclude>
     <ClInclude Include="Include\Data_Property.hpp">
-      <Filter>Header Files</Filter>
+      <Filter>Include</Filter>
     </ClInclude>
     <ClInclude Include="Include\Object\Data\Atmosphere.hpp">
-      <Filter>Header Files</Filter>
+      <Filter>Include</Filter>
     </ClInclude>
     <ClInclude Include="Include\Object\Data\Camera.hpp">
-      <Filter>Header Files</Filter>
+      <Filter>Include</Filter>
     </ClInclude>
     <ClInclude Include="Include\Object\Data\Curve.hpp">
-      <Filter>Header Files</Filter>
+      <Filter>Include</Filter>
     </ClInclude>
     <ClInclude Include="Include\Object\Data\Empty.hpp">
-      <Filter>Header Files</Filter>
+      <Filter>Include</Filter>
     </ClInclude>
     <ClInclude Include="Include\Object\Data\Force.hpp">
-      <Filter>Header Files</Filter>
+      <Filter>Include</Filter>
     </ClInclude>
     <ClInclude Include="Include\Object\Data\Group.hpp">
-      <Filter>Header Files</Filter>
+      <Filter>Include</Filter>
     </ClInclude>
     <ClInclude Include="Include\Object\Data\Light.hpp">
-      <Filter>Header Files</Filter>
+      <Filter>Include</Filter>
     </ClInclude>
     <ClInclude Include="Include\Object\Data\Mesh.hpp">
-      <Filter>Header Files</Filter>
+      <Filter>Include</Filter>
     </ClInclude>
     <ClInclude Include="Include\Object\Data\Primitive.hpp">
-      <Filter>Header Files</Filter>
+      <Filter>Include</Filter>
     </ClInclude>
     <ClInclude Include="Include\Object\Data\Sfx.hpp">
-      <Filter>Header Files</Filter>
+      <Filter>Include</Filter>
     </ClInclude>
     <ClInclude Include="Include\Object\Data\Skeleton.hpp">
-      <Filter>Header Files</Filter>
+      <Filter>Include</Filter>
     </ClInclude>
     <ClInclude Include="Include\Object\Data\Vfx.hpp">
-      <Filter>Header Files</Filter>
+      <Filter>Include</Filter>
     </ClInclude>
     <ClInclude Include="Include\Object\Data\Volume.hpp">
-      <Filter>Header Files</Filter>
+      <Filter>Include</Filter>
     </ClInclude>
     <ClInclude Include="Include\Object\Data.hpp">
-      <Filter>Header Files</Filter>
+      <Filter>Include</Filter>
     </ClInclude>
     <ClInclude Include="Include\Object\Object.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Shading\Material.hpp">
-      <Filter>Header Files</Filter>
+      <Filter>Include</Filter>
     </ClInclude>
     <ClInclude Include="Include\Shared.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Object\Nodes\Object_Node.hpp">
-      <Filter>Header Files</Filter>
+      <Filter>Include</Filter>
     </ClInclude>
     <ClInclude Include="Include\Object\Nodes\Object_Nodes.hpp">
-      <Filter>Header Files</Filter>
+      <Filter>Include</Filter>
     </ClInclude>
     <ClInclude Include="Include\Object\Nodes\Compiler.hpp">
-      <Filter>Header Files</Filter>
+      <Filter>Include</Filter>
     </ClInclude>
     <ClInclude Include="Include\Scene.hpp">
-      <Filter>Header Files</Filter>
+      <Filter>Include</Filter>
     </ClInclude>
-    <ClInclude Include="Include\Shading\Nodes\Shader_Node.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="Include\Nodes.hpp">
+      <Filter>Include</Filter>
     </ClInclude>
-    <ClInclude Include="Include\Shading\Nodes\Shader_Nodes.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="Include\Shader\Shader.hpp">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Shader\Nodes\Shader_Nodes.hpp">
+      <Filter>Include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Lace.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\Ops.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\Data_Property.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\Object\Data\Atmosphere.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\Object\Data\Camera.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\Object\Data\Curve.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\Object\Data\Empty.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\Object\Data\Force.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\Object\Data\Group.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\Object\Data\Light.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\Object\Data\Mesh.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\Object\Data\Primitive.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\Object\Data\Sfx.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\Object\Data\Skeleton.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\Object\Data\Vfx.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\Object\Data\Volume.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\Object\Data.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\Object\Object.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Shading\Material.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Object\Nodes\Object_Node.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Source\Nodes.cpp">
+      <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\Object\Nodes\Object_Nodes.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\Object\Nodes\Compiler.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\Scene.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Shading\Nodes\Shader_Node.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Source\Shader\Shader.cpp">
+      <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Shading\Nodes\Shader_Nodes.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Source\Shader\Nodes\Shader_Nodes.cpp">
+      <Filter>Source</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

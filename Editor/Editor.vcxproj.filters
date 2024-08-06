@@ -2,81 +2,6 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="..\Shared\Source\Object\Data\Volume.cpp">
-      <Filter>Shared\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Shared\Source\Object\Data\Atmosphere.cpp">
-      <Filter>Shared\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Shared\Source\Object\Data\Camera.cpp">
-      <Filter>Shared\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Shared\Source\Object\Nodes\Compiler.cpp">
-      <Filter>Shared\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Shared\Source\Object\Data\Curve.cpp">
-      <Filter>Shared\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Shared\Source\Object\Data.cpp">
-      <Filter>Shared\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Shared\Source\Data_Property.cpp">
-      <Filter>Shared\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Shared\Source\Object\Data\Empty.cpp">
-      <Filter>Shared\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Shared\Source\Object\Data\Force.cpp">
-      <Filter>Shared\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Shared\Source\Object\Data\Group.cpp">
-      <Filter>Shared\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Shared\Source\Lace.cpp">
-      <Filter>Shared\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Shared\Source\Object\Data\Light.cpp">
-      <Filter>Shared\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Shared\Source\Shading\Material.cpp">
-      <Filter>Shared\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Shared\Source\Object\Data\Mesh.cpp">
-      <Filter>Shared\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Shared\Source\Object\Object.cpp">
-      <Filter>Shared\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Shared\Source\Object\Nodes\Object_Node.cpp">
-      <Filter>Shared\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Shared\Source\Object\Nodes\Object_Nodes.cpp">
-      <Filter>Shared\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Shared\Source\Ops.cpp">
-      <Filter>Shared\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Shared\Source\Object\Data\Primitive.cpp">
-      <Filter>Shared\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Shared\Source\Scene.cpp">
-      <Filter>Shared\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Shared\Source\Object\Data\Sfx.cpp">
-      <Filter>Shared\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Shared\Source\Shading\Nodes\Shader_Node.cpp">
-      <Filter>Shared\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Shared\Source\Shading\Nodes\Shader_Nodes.cpp">
-      <Filter>Shared\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Shared\Source\Object\Data\Skeleton.cpp">
-      <Filter>Shared\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Shared\Source\Object\Data\Vfx.cpp">
-      <Filter>Shared\Source</Filter>
-    </ClCompile>
     <ClCompile Include="Source\GUI.cpp">
       <Filter>Source Files\Core</Filter>
     </ClCompile>
@@ -128,6 +53,78 @@
     <ClCompile Include="Source\Core\Python_API.cpp">
       <Filter>Source Files\Core</Filter>
     </ClCompile>
+    <ClCompile Include="..\Shared\Source\Scene.cpp">
+      <Filter>Shared\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Shared\Source\Data_Property.cpp">
+      <Filter>Shared\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Shared\Source\Lace.cpp">
+      <Filter>Shared\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Shared\Source\Object\Nodes\Compiler.cpp">
+      <Filter>Shared\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Shared\Source\Nodes.cpp">
+      <Filter>Shared\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Shared\Source\Object\Nodes\Object_Nodes.cpp">
+      <Filter>Shared\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Shared\Source\Object\Data.cpp">
+      <Filter>Shared\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Shared\Source\Object\Data\Atmosphere.cpp">
+      <Filter>Shared\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Shared\Source\Object\Data\Camera.cpp">
+      <Filter>Shared\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Shared\Source\Object\Data\Curve.cpp">
+      <Filter>Shared\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Shared\Source\Object\Data\Empty.cpp">
+      <Filter>Shared\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Shared\Source\Object\Data\Force.cpp">
+      <Filter>Shared\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Shared\Source\Object\Data\Group.cpp">
+      <Filter>Shared\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Shared\Source\Object\Data\Light.cpp">
+      <Filter>Shared\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Shared\Source\Object\Data\Mesh.cpp">
+      <Filter>Shared\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Shared\Source\Object\Data\Primitive.cpp">
+      <Filter>Shared\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Shared\Source\Object\Data\Sfx.cpp">
+      <Filter>Shared\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Shared\Source\Object\Data\Skeleton.cpp">
+      <Filter>Shared\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Shared\Source\Object\Data\Vfx.cpp">
+      <Filter>Shared\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Shared\Source\Object\Data\Volume.cpp">
+      <Filter>Shared\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Shared\Source\Object\Object.cpp">
+      <Filter>Shared\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Shared\Source\Ops.cpp">
+      <Filter>Shared\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Shared\Source\Shader\Shader.cpp">
+      <Filter>Shared\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Shared\Source\Shader\Nodes\Shader_Nodes.cpp">
+      <Filter>Shared\Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\Workspaces\API.hpp">
@@ -163,6 +160,21 @@
     <ClInclude Include="Include\Workspaces\Viewport.hpp">
       <Filter>Header Files\Workspaces</Filter>
     </ClInclude>
+    <ClInclude Include="Include\Core\File.hpp">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Core\Session.hpp">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Workspaces\Shelf.hpp">
+      <Filter>Header Files\Workspaces</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\GUI_Object_Nodes.hpp">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\GUI_Nodes.hpp">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
     <ClInclude Include="..\Shared\Include\Data_Property.hpp">
       <Filter>Shared\Include</Filter>
     </ClInclude>
@@ -172,19 +184,16 @@
     <ClInclude Include="..\Shared\Include\Lace.hpp">
       <Filter>Shared\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\Shared\Include\Ops.hpp">
+    <ClInclude Include="..\Shared\Include\Object\Nodes\Compiler.hpp">
       <Filter>Shared\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\Shared\Include\Scene.hpp">
+    <ClInclude Include="..\Shared\Include\Object\Nodes\Object_Nodes.hpp">
       <Filter>Shared\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\Shared\Include\Shared.hpp">
+    <ClInclude Include="..\Shared\Include\Nodes.hpp">
       <Filter>Shared\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\Shared\Include\Object\Data.hpp">
-      <Filter>Shared\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Shared\Include\Object\Object.hpp">
       <Filter>Shared\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\Shared\Include\Object\Data\Atmosphere.hpp">
@@ -226,40 +235,24 @@
     <ClInclude Include="..\Shared\Include\Object\Data\Volume.hpp">
       <Filter>Shared\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\Shared\Include\Object\Nodes\Compiler.hpp">
+    <ClInclude Include="..\Shared\Include\Object\Object.hpp">
       <Filter>Shared\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\Shared\Include\Object\Nodes\Object_Node.hpp">
+    <ClInclude Include="..\Shared\Include\Ops.hpp">
       <Filter>Shared\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\Shared\Include\Object\Nodes\Object_Nodes.hpp">
+    <ClInclude Include="..\Shared\Include\Shared.hpp">
       <Filter>Shared\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\Shared\Include\Shading\Material.hpp">
+    <ClInclude Include="..\Shared\Include\Scene.hpp">
       <Filter>Shared\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\Shared\Include\Shading\Nodes\Shader_Node.hpp">
+    <ClInclude Include="..\Shared\Include\Shader\Shader.hpp">
       <Filter>Shared\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\Shared\Include\Shading\Nodes\Shader_Nodes.hpp">
+    <ClInclude Include="..\Shared\Include\Shader\Nodes\Shader_Nodes.hpp">
       <Filter>Shared\Include</Filter>
     </ClInclude>
-    <ClInclude Include="Include\Core\File.hpp">
-      <Filter>Header Files\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Core\Session.hpp">
-      <Filter>Header Files\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Workspaces\Shelf.hpp">
-      <Filter>Header Files\Workspaces</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\GUI_Object_Nodes.hpp">
-      <Filter>Header Files\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\GUI_Nodes.hpp">
-      <Filter>Header Files\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Workspaces\Shader_Node_Editor.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Source Files">
@@ -274,12 +267,6 @@
     <Filter Include="Shared">
       <UniqueIdentifier>{d9fd2588-6a7a-48a9-9719-dd9ed47d9173}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Shared\Source">
-      <UniqueIdentifier>{ad3f074e-3102-4f82-aefc-b404f645921b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Shared\Include">
-      <UniqueIdentifier>{bb8539f7-8dd4-4bf4-8ccf-0c117fd95fec}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Core">
       <UniqueIdentifier>{6acbfd24-569a-4a91-a913-ab89214396d5}</UniqueIdentifier>
     </Filter>
@@ -291,6 +278,12 @@
     </Filter>
     <Filter Include="Header Files\Core">
       <UniqueIdentifier>{86f2e4c0-34c0-460a-b4b4-2334b89f122e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shared\Include">
+      <UniqueIdentifier>{339c3c9c-5b4b-4dee-89b7-a9951ee83975}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shared\Source">
+      <UniqueIdentifier>{bb4a9004-446b-4ab6-81ab-e6e893106fc4}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

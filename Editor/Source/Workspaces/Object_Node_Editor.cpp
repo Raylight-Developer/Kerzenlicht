@@ -116,16 +116,10 @@ void GUI::WORKSPACE::Object_Node_Viewport::loadNodes() {
 
 		auto ptr = FILE->active_object->ptr->node_tree;
 		for (auto node : ptr->nodes) {
-			auto it = FILE->node_map.find(node);
-			if (it != FILE->node_map.end()) {
-				FILE->node_map.erase(it);
-			}
+			f_removeMapItem(FILE->node_map, node);
 		}
-		auto it = FILE->nodetree_map.find(ptr);
-		if (it != FILE->nodetree_map.end()) {
-			FILE->nodetree_map.erase(it);
-		}
-		FILE->node_trees.erase(std::find(FILE->node_trees.begin(), FILE->node_trees.end(), ptr));
+		f_removeMapItem(FILE->nodetree_map, ptr);
+		f_removeVectorItem(FILE->node_trees, ptr);
 
 		auto node_tree = active_node_tree->toExecTree();
 		FILE->active_object->ptr->node_tree = node_tree;

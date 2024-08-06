@@ -7,10 +7,10 @@
 #include "Nodes/Shader_Nodes.hpp"
 
 namespace SHADER {
-	struct Material {
+	struct Shader {
 		string name;
-		Node_Tree* node_tree;
+		CLASS::Node_Tree* node_tree;
 
-		Material();
+		Shader();
 	};
 }

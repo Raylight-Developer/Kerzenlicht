@@ -2,7 +2,7 @@
 
 #include "Shared.hpp"
 
-#include "Object/Nodes/Object_Node.hpp"
+#include "Nodes.hpp"
 #include "Object/Nodes/Object_Nodes.hpp"
 
 #include "GUI_Nodes.hpp"
@@ -37,7 +37,7 @@ namespace CLASS {
 	struct File {
 		map<uint64, void*> pointer_map;
 
-		vector<SHADER::Material*> materials;
+		vector<SHADER::Shader*> materials;
 		vector<OBJECT::Data*> object_data;
 		vector<Node_Tree*> node_trees;
 		vector<Object*> objects;
@@ -61,7 +61,7 @@ namespace CLASS {
 
 		void              f_loadHeader     (const vector<vector<string>>& token_data);
 		CLASS::Node_Tree* f_loadNodeTree   (const vector<vector<string>>& token_data);
-		SHADER::Material* f_loadMaterial   (const vector<vector<string>>& token_data);
+		SHADER::Shader* f_loadMaterial   (const vector<vector<string>>& token_data);
 		OBJECT::Data*     f_loadData       (const vector<vector<string>>& token_data);
 		OBJECT::Data*     f_loadAtmosphere (const vector<vector<string>>& token_data);
 		OBJECT::Data*     f_loadPrimitive  (const vector<vector<string>>& token_data);
@@ -82,7 +82,7 @@ namespace CLASS {
 
 		void f_saveHeader     (Lace& lace);
 		void f_saveNodeTree   (Lace& lace, Node_Tree*              data, const uint64& i);
-		void f_saveMaterial   (Lace& lace, const SHADER::Material* data, const uint64& i);
+		void f_saveMaterial   (Lace& lace, const SHADER::Shader* data, const uint64& i);
 		void f_saveData       (Lace& lace);
 		void f_saveAtmosphere (Lace& lace, const OBJECT::Data*     data, const uint64& i);
 		void f_savePrimitive  (Lace& lace, const OBJECT::Data*     data, const uint64& i);
