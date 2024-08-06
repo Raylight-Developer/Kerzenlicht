@@ -13,8 +13,9 @@
 #include "Workspaces/Shelf.hpp"
 #include "Workspaces/Viewport.hpp"
 #include "Workspaces/Properties.hpp"
-#include "Workspaces/Node_Editor.hpp"
 #include "Workspaces/Scene_Outliner.hpp"
+#include "Workspaces/Object_Node_Editor.hpp"
+//#include "Workspaces/Shader_Node_Editor.hpp"
 
 namespace GUI {
 	namespace WORKSPACE {

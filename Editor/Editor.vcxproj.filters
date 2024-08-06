@@ -89,7 +89,7 @@
     <ClCompile Include="Source\GUI_Object_Nodes.cpp">
       <Filter>Source Files\Core</Filter>
     </ClCompile>
-    <ClCompile Include="Source\GUI_Object_Node.cpp">
+    <ClCompile Include="Source\GUI_Nodes.cpp">
       <Filter>Source Files\Core</Filter>
     </ClCompile>
     <ClCompile Include="Source\Workspaces\API.cpp">
@@ -107,7 +107,7 @@
     <ClCompile Include="Source\Workspaces\Manager.cpp">
       <Filter>Source Files\Workspaces</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Workspaces\Node_Editor.cpp">
+    <ClCompile Include="Source\Workspaces\Object_Node_Editor.cpp">
       <Filter>Source Files\Workspaces</Filter>
     </ClCompile>
     <ClCompile Include="Source\Workspaces\Properties.cpp">
@@ -151,7 +151,7 @@
     <ClInclude Include="Include\Main_Window.hpp">
       <Filter>Header Files\Workspaces</Filter>
     </ClInclude>
-    <ClInclude Include="Include\Workspaces\Node_Editor.hpp">
+    <ClInclude Include="Include\Workspaces\Object_Node_Editor.hpp">
       <Filter>Header Files\Workspaces</Filter>
     </ClInclude>
     <ClInclude Include="Include\Core\Python_API.hpp">
@@ -256,9 +256,10 @@
     <ClInclude Include="Include\GUI_Object_Nodes.hpp">
       <Filter>Header Files\Core</Filter>
     </ClInclude>
-    <ClInclude Include="Include\GUI_Object_Node.hpp">
+    <ClInclude Include="Include\GUI_Nodes.hpp">
       <Filter>Header Files\Core</Filter>
     </ClInclude>
+    <ClInclude Include="Include\Workspaces\Shader_Node_Editor.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Source Files">

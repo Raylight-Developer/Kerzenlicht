@@ -148,7 +148,7 @@ T f_ramp(const map<U, T>& curve, const U& t) {
 }
 
 template<typename K, typename V>
-K getKeyByValue(const unordered_map<K, V>& map, const V& value) {
+K f_getKeyByValue(const unordered_map<K, V>& map, const V& value) {
 	for (const auto& pair : map) {
 		if (pair.second == value) {
 			return pair.first;

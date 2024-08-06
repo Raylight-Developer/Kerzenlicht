@@ -41,6 +41,12 @@
 						}
 					},
 					{
+						"scope": "kerz.section.squiggly",
+						"settings": {
+							"foreground": "#ff6b6b"
+						}
+					},
+					{
 						"scope": "kerz.section.section",
 						"settings": {
 							"foreground": "#5e9cce"
@@ -50,12 +56,6 @@
 						"scope": "kerz.section.type",
 						"settings": {
 							"foreground": "#dea6ff"
-						}
-					},
-					{
-						"scope": "kerz.section.subtype",
-						"settings": {
-							"foreground": "#beb7ff"
 						}
 					},
 					{
@@ -104,6 +104,12 @@
 						"scope": "kerz.integer.pointer",
 						"settings": {
 							"foreground": "#989575"
+						}
+					},
+					{
+						"scope": "kerz.boolean",
+						"settings": {
+							"foreground": "#b46f54"
 						}
 					},
 					{

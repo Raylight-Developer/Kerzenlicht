@@ -6,15 +6,19 @@
 	"scopeName": "source.krz",
 	"patterns": [
 		{
+			"name": "kerz.section.squiggly",
+			"match": "[ ]*[└┌]"
+		},
+		{
 			"name": "kerz.section.section",
-			"match": "^[ ]*[└┌][^() ]+"
+			"match": "(?<=[└┌])\\S+[^() ]+"
 		},
 		{
 			"name": "kerz.section.type",
 			"match": "(?<=\\bType\\b)[ ]*([^\\s]+)"
 		},
 		{
-			"name": "kerz.section.subtype",
+			"name": "kerz.section.type",
 			"match": "(?<= :: )[^ ::]+"
 		},
 		{
@@ -56,6 +60,14 @@
 		{
 			"name": "kerz.integer.vector",
 			"match": "\\[\\s*(-?\\d+\\s+){1,}(-?\\d+)\\s*\\]"
+		},
+		{
+			"name": "kerz.boolean",
+			"match": "[ ]*(False)[ ]*"
+		},
+		{
+			"name": "kerz.boolean",
+			"match": "[ ]*(True)[ ]*"
 		},
 		{
 			"name": "kerz.name",

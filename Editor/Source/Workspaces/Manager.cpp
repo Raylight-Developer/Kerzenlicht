@@ -139,7 +139,7 @@ void GUI::WORKSPACE::Workspace_Dock_Header::f_setWorkspace(const Workspace_Type&
 		case (Workspace_Type::NODE_EDITOR): {
 			parent->setWindowTitle("Object Nodes");
 			change_workspace_type->setIcon(QIcon("./Resources/Icons/Workspaces/Outliner.png"));
-			parent->workspace = new Workspace_Node_Editor(parent);
+			parent->workspace = new Workspace_Object_Node_Editor(parent);
 			parent->setWidget(parent->workspace);
 			floating_workspace_toggle->setText("Object Nodes");
 			break;

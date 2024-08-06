@@ -1,6 +1,7 @@
 
 ┌Header
  Version 1.0.0
+ Type File
 └Header
 ┌Materials( 0 )
 └Materials
@@ -129,7 +130,7 @@
   Type Group
  └Object
 └Objects
-┌Scenes( 3 )
+┌Scenes( 1 )
  ┌Scene [ 0 ]
   * 2096435098336
   ┌Objects

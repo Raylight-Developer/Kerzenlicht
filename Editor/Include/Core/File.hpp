@@ -5,7 +5,7 @@
 #include "Object/Nodes/Object_Node.hpp"
 #include "Object/Nodes/Object_Nodes.hpp"
 
-#include "GUI_Object_Node.hpp"
+#include "GUI_Nodes.hpp"
 #include "GUI_Object_Nodes.hpp"
 
 #include "Object/Object.hpp"

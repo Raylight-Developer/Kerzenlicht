@@ -108,6 +108,9 @@ void CLASS::File::f_loadHeader(const vector<vector<string>>& token_data) {
 		if (tokens[0] == "Version") {
 			version = tokens[1];
 		}
+		else if (tokens[0] == "Type") {
+			string file_type = tokens[1];
+		}
 	}
 }
 
@@ -530,7 +533,7 @@ CLASS::Object* CLASS::File::f_loadObject(const vector<vector<string>>& token_dat
 	object->name = f_join(token_data[0], 4);
 
 	LOG << ENDL << ANSI_B << "    [Object] " << ANSI_RESET; FLUSH;
-	LOG << ENDL << "    " << ANSI_Purple << object->name << ANSI_RESET; FLUSH;
+	LOG << ENDL << "      " << ANSI_Purple << object->name << ANSI_RESET; FLUSH;
 
 	CLASS::Transform transform;
 
@@ -692,7 +695,7 @@ string CLASS::File::f_printFile() {
 	lace NL "└Objects";
 
 	count = 0;
-	lace NL "┌Scenes( " << objects.size() << " )";
+	lace NL "┌Scenes( " << scenes.size() << " )";
 	lace A;
 	for (const CLASS::Scene* scene : scenes)
 		f_saveScene(lace, scene, count++);

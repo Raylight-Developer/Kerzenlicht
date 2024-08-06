@@ -8,12 +8,10 @@
 #include "Core/File.hpp"
 #include "Core/Session.hpp"
 
-#include "Object/Nodes/Object_Nodes.hpp"
+#include "Shading/Nodes/Shader_Nodes.hpp"
 
-#include "GUI_Object_Node.hpp"
-#include "GUI_Object_Nodes.hpp"
-
-#include "Object/Object.hpp"
+#include "GUI_Nodes.hpp"
+#include "GUI_Shader_Nodes.hpp"
 
 // FWD DECL OTHER
 namespace GUI {
@@ -25,24 +23,22 @@ namespace GUI {
 // FWD DECL THIS
 namespace GUI {
 	namespace WORKSPACE {
-		struct Workspace_Node_Editor;
-		struct Node_Viewport;
-		struct Node_Shelf;
-
-		struct Node;
+		struct Workspace_Shader_Node_Editor;
+		struct Shader_Node_Viewport;
+		struct Shader_Node_Shelf;
 	}
 }
 
 // DECL
 namespace GUI {
 	namespace WORKSPACE {
-		struct Workspace_Node_Editor : GUI::Linear_Contents {
+		struct Workspace_Shader_Node_Editor : GUI::Linear_Contents {
 			Workspace_Manager* parent;
 
-			Node_Viewport* viewport;
-			Node_Shelf* shelf;
+			Shader_Node_Viewport* viewport;
+			Shader_Node_Shelf* shelf;
 
-			Workspace_Node_Editor(Workspace_Manager* parent);
+			Workspace_Shader_Node_Editor(Workspace_Manager* parent);
 		};
 		/* TODO:
 			Allow Visualization of GUI::Node_Tree during execution
@@ -51,8 +47,8 @@ namespace GUI {
 			Alt-Drag deselects
 			Alt-Click deselects
 		*/
-		struct Node_Viewport : GUI::Graphics_View {
-			Workspace_Node_Editor* parent;
+		struct Shader_Node_Viewport : GUI::Graphics_View {
+			Workspace_Shader_Node_Editor* parent;
 			QGraphicsScene* scene;
 
 			bool pan;
@@ -70,8 +66,8 @@ namespace GUI {
 			GUI::NODE::Connection* connection;
 			GUI::NODE::Node_Tree* active_node_tree;
 
-			Node_Viewport(Workspace_Node_Editor* parent);
-			~Node_Viewport();
+			Shader_Node_Viewport(Workspace_Shader_Node_Editor* parent);
+			~Shader_Node_Viewport();
 
 			void f_objectChanged(CLASS::Object* object);
 			void loadNodes();
@@ -90,8 +86,8 @@ namespace GUI {
 			void dropEvent(QDropEvent* event) override;
 		};
 
-		struct Node_Shelf : GUI::Tree {
-			Node_Shelf(Workspace_Node_Editor* parent);
+		struct Shader_Node_Shelf : GUI::Tree {
+			Shader_Node_Shelf(Workspace_Shader_Node_Editor* parent);
 
 			void startDrag(Qt::DropActions actions) override; // TODO fix QPixmap is Null
 		};

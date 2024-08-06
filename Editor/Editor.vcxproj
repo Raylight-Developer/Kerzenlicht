@@ -39,9 +39,10 @@
     <ClInclude Include="..\Shared\Include\Shading\Nodes\Shader_Nodes.hpp" />
     <ClInclude Include="..\Shared\Include\Shared.hpp" />
     <ClInclude Include="Include\Core\File.hpp" />
-    <ClInclude Include="Include\Workspaces\Node_Editor.hpp" />
-    <ClInclude Include="Include\GUI_Object_Node.hpp" />
+    <ClInclude Include="Include\Workspaces\Object_Node_Editor.hpp" />
+    <ClInclude Include="Include\GUI_Nodes.hpp" />
     <ClInclude Include="Include\GUI_Object_Nodes.hpp" />
+    <ClInclude Include="Include\Workspaces\Shader_Node_Editor.hpp" />
     <ClInclude Include="Include\Workspaces\Shelf.hpp" />
     <ClInclude Include="Include\Core\Session.hpp" />
     <QtMoc Include="Include\GUI.hpp" />
@@ -95,8 +96,8 @@
     <ClCompile Include="Source\Workspaces\Viewport.cpp" />
     <ClCompile Include="Source\Core\Python_API.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Source\Workspaces\Node_Editor.cpp" />
-    <ClCompile Include="Source\GUI_Object_Node.cpp" />
+    <ClCompile Include="Source\Workspaces\Object_Node_Editor.cpp" />
+    <ClCompile Include="Source\GUI_Nodes.cpp" />
     <ClCompile Include="Source\Workspaces\Shelf.cpp" />
     <ClCompile Include="Source\GUI_Object_Nodes.cpp" />
     <ClCompile Include="Source\Core\Session.cpp" />

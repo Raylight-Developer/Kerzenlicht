@@ -1,16 +1,16 @@
-#include "Workspaces/Node_Editor.hpp"
+#include "Workspaces/Shader_Node_Editor.hpp"
 
 #include "Workspaces/Manager.hpp"
 
 #include "Object/Nodes/Compiler.hpp"
 
-GUI::WORKSPACE::Workspace_Node_Editor::Workspace_Node_Editor(Workspace_Manager* parent) :
+GUI::WORKSPACE::Workspace_Shader_Node_Editor::Workspace_Shader_Node_Editor(Workspace_Manager* parent) :
 	GUI::Linear_Contents(parent, QBoxLayout::Direction::TopToBottom),
 	parent(parent)
 {
 	parent->setMaximumWidth(800);
-	viewport = new Node_Viewport(this);
-	shelf = new Node_Shelf(this);
+	viewport = new Shader_Node_Viewport(this);
+	shelf = new Shader_Node_Shelf(this);
 
 	auto splitter = new GUI::Splitter(this);
 	splitter->addWidget(shelf);
@@ -58,7 +58,7 @@ GUI::WORKSPACE::Workspace_Node_Editor::Workspace_Node_Editor(Workspace_Manager* 
 	});
 }
 
-GUI::WORKSPACE::Node_Viewport::Node_Viewport(Workspace_Node_Editor* parent) :
+GUI::WORKSPACE::Shader_Node_Viewport::Shader_Node_Viewport(Workspace_Shader_Node_Editor* parent) :
 	GUI::Graphics_View(parent),
 	parent(parent)
 {
@@ -82,7 +82,7 @@ GUI::WORKSPACE::Node_Viewport::Node_Viewport(Workspace_Node_Editor* parent) :
 	setSceneRect(-10000, -10000, 20000, 20000);
 }
 
-GUI::WORKSPACE::Node_Viewport::~Node_Viewport() {
+GUI::WORKSPACE::Shader_Node_Viewport::~Shader_Node_Viewport() {
 	for (auto item : scene->items()) {
 		if (dynamic_cast<GUI::NODE::Node*>(item)) {
 			scene->removeItem(item);
@@ -94,7 +94,7 @@ GUI::WORKSPACE::Node_Viewport::~Node_Viewport() {
 	delete selection_rect;
 }
 
-void GUI::WORKSPACE::Node_Viewport::f_objectChanged(CLASS::Object* object) {
+void GUI::WORKSPACE::Shader_Node_Viewport::f_objectChanged(CLASS::Object* object) {
 	for (auto item: scene->items()) {
 		if (dynamic_cast<GUI::NODE::Node*>(item)) {
 			scene->removeItem(item);
@@ -110,7 +110,7 @@ void GUI::WORKSPACE::Node_Viewport::f_objectChanged(CLASS::Object* object) {
 	else active_node_tree = nullptr;
 }
 
-void GUI::WORKSPACE::Node_Viewport::loadNodes() {
+void GUI::WORKSPACE::Shader_Node_Viewport::loadNodes() {
 	if (active_node_tree and FILE->active_object->ptr) {
 		LOG << ENDL << ANSI_B << "[Translation]" << ANSI_RESET << " Compiling Nodes..."; FLUSH;
 
@@ -144,7 +144,7 @@ void GUI::WORKSPACE::Node_Viewport::loadNodes() {
 	}
 }
 
-void GUI::WORKSPACE::Node_Viewport::drawBackground(QPainter* painter, const QRectF& rect) {
+void GUI::WORKSPACE::Shader_Node_Viewport::drawBackground(QPainter* painter, const QRectF& rect) {
 	QGraphicsView::drawBackground(painter, rect);
 	if (view_scale > 0.7) {
 		painter->setPen(QPen(QColor(60, 60, 60), 1));
@@ -187,7 +187,7 @@ void GUI::WORKSPACE::Node_Viewport::drawBackground(QPainter* painter, const QRec
 	}
 }
 
-void GUI::WORKSPACE::Node_Viewport::mouseReleaseEvent(QMouseEvent* event) {
+void GUI::WORKSPACE::Shader_Node_Viewport::mouseReleaseEvent(QMouseEvent* event) {
 	if (event->button() == Qt::MouseButton::MiddleButton) {
 		pan = false;
 	}
@@ -260,7 +260,7 @@ void GUI::WORKSPACE::Node_Viewport::mouseReleaseEvent(QMouseEvent* event) {
 	QGraphicsView::mouseReleaseEvent(event);
 }
 
-void GUI::WORKSPACE::Node_Viewport::mousePressEvent(QMouseEvent* event) {
+void GUI::WORKSPACE::Shader_Node_Viewport::mousePressEvent(QMouseEvent* event) {
 	if (event->button() == Qt::MouseButton::MiddleButton) {
 		pan = true;
 		pan_pos = event->pos();
@@ -321,7 +321,7 @@ void GUI::WORKSPACE::Node_Viewport::mousePressEvent(QMouseEvent* event) {
 	QGraphicsView::mousePressEvent(event);
 }
 
-void GUI::WORKSPACE::Node_Viewport::mouseMoveEvent(QMouseEvent* event) {
+void GUI::WORKSPACE::Shader_Node_Viewport::mouseMoveEvent(QMouseEvent* event) {
 	if (event->modifiers() & Qt::KeyboardModifier::AltModifier) {
 		if (auto item = scene->itemAt(mapToScene(event->pos()), transform())) {
 			if (auto port_r = dynamic_cast<GUI::NODE::PORT::Data_I_Port*>(item)) {
@@ -387,7 +387,7 @@ void GUI::WORKSPACE::Node_Viewport::mouseMoveEvent(QMouseEvent* event) {
 	QGraphicsView::mouseMoveEvent(event);
 }
 
-void GUI::WORKSPACE::Node_Viewport::keyPressEvent(QKeyEvent* event) {
+void GUI::WORKSPACE::Shader_Node_Viewport::keyPressEvent(QKeyEvent* event) {
 	Graphics_View::keyPressEvent(event);
 	if (event->key() == Qt::Key::Key_Delete) {
 		for (NODE::Node* node : selection) {
@@ -400,12 +400,12 @@ void GUI::WORKSPACE::Node_Viewport::keyPressEvent(QKeyEvent* event) {
 	}
 }
 
-void GUI::WORKSPACE::Node_Viewport::resizeEvent(QResizeEvent* event) {
+void GUI::WORKSPACE::Shader_Node_Viewport::resizeEvent(QResizeEvent* event) {
 	GUI::Graphics_View::resizeEvent(event);
 	setSceneRect(-width(), -height(), width() * 2, height() * 2);
 }
 
-void GUI::WORKSPACE::Node_Viewport::wheelEvent(QWheelEvent* event) {
+void GUI::WORKSPACE::Shader_Node_Viewport::wheelEvent(QWheelEvent* event) {
 	const qreal zoomFactor = 1.25;
 
 	QPointF oldPos = mapToScene(event->position().toPoint());
@@ -427,7 +427,7 @@ void GUI::WORKSPACE::Node_Viewport::wheelEvent(QWheelEvent* event) {
 	translate(delta.x(), delta.y());
 }
 
-void GUI::WORKSPACE::Node_Viewport::dropEvent(QDropEvent* event) {
+void GUI::WORKSPACE::Shader_Node_Viewport::dropEvent(QDropEvent* event) {
 	const ivec2 drop_pos = d_to_i(f_roundToNearest(p_to_d(mapToScene(event->position().toPoint())), 10.0));
 	if (event->mimeData()->hasText() and active_node_tree) {
 		GUI::NODE::Node* node = nullptr;
@@ -511,7 +511,7 @@ void GUI::WORKSPACE::Node_Viewport::dropEvent(QDropEvent* event) {
 	}
 }
 
-GUI::WORKSPACE::Node_Shelf::Node_Shelf(Workspace_Node_Editor* parent) :
+GUI::WORKSPACE::Shader_Node_Shelf::Shader_Node_Shelf(Workspace_Shader_Node_Editor* parent) :
 	Tree(parent)
 {
 	setDragEnabled(true);
@@ -578,11 +578,11 @@ GUI::WORKSPACE::Node_Shelf::Node_Shelf(Workspace_Node_Editor* parent) :
 	auto tree_util_0     = new Tree_Item(tree_util     ,"Print"         , 1, { { 1000, "UTIL" }, { 1001, "Print"                     } });
 }
 
-void GUI::WORKSPACE::Node_Viewport::dragMoveEvent(QDragMoveEvent* event) {
+void GUI::WORKSPACE::Shader_Node_Viewport::dragMoveEvent(QDragMoveEvent* event) {
 	event->acceptProposedAction();
 }
 
-void GUI::WORKSPACE::Node_Shelf::startDrag(Qt::DropActions actions) {
+void GUI::WORKSPACE::Shader_Node_Shelf::startDrag(Qt::DropActions actions) {
 	if (QTreeWidgetItem* temp = currentItem()) {
 
 		QMimeData* mimeData = new QMimeData;
