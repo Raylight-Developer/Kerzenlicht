@@ -27,7 +27,7 @@ namespace CLASS {
 		namespace EXEC {
 			enum struct Type;
 		}
-		namespace MATH {
+		namespace Math {
 			enum struct Type;
 		}
 		namespace LINK {

@@ -31,7 +31,19 @@ CLASS::Data::Data(const int64& data) : data(data) {
 CLASS::Data CLASS::Data::operator+(const CLASS::Data & other) {
 	if (type == other.type) {
 		switch (type) {
-		case DATA::Type::DOUBLE: return CLASS::Data(any_cast<dvec1>(data) + any_cast<dvec1>(other.data), type);
+			case DATA::Type::DOUBLE: return CLASS::Data(getDouble() + other.getDouble(), type);
+		}
+	}
+	switch (type) {
+		case DATA::Type::DOUBLE: {
+			switch (other.type) {
+				case DATA::Type::INT: {
+					return CLASS::Data(getDouble() + other.getInt(), type);
+				}
+				case DATA::Type::UINT: {
+					return CLASS::Data(getDouble() + other.getUint(), type);
+				}
+			}
 		}
 	}
 	return CLASS::Data();
@@ -39,7 +51,7 @@ CLASS::Data CLASS::Data::operator+(const CLASS::Data & other) {
 CLASS::Data CLASS::Data::operator-(const CLASS::Data& other) {
 	if (type == other.type) {
 		switch (type) {
-		case DATA::Type::DOUBLE: return CLASS::Data(any_cast<dvec1>(data) - any_cast<dvec1>(other.data), type);
+		case DATA::Type::DOUBLE: return CLASS::Data(getDouble() - other.getDouble(), type);
 		}
 	}
 	return CLASS::Data();
@@ -48,7 +60,7 @@ CLASS::Data CLASS::Data::operator-(const CLASS::Data& other) {
 CLASS::Data CLASS::Data::operator*(const CLASS::Data& other) {
 	if (type == other.type) {
 		switch (type) {
-		case DATA::Type::DOUBLE: return CLASS::Data(any_cast<dvec1>(data) * any_cast<dvec1>(other.data), type);
+		case DATA::Type::DOUBLE: return CLASS::Data(getDouble() * other.getDouble(), type);
 		}
 	}
 	return CLASS::Data();
@@ -57,10 +69,14 @@ CLASS::Data CLASS::Data::operator*(const CLASS::Data& other) {
 CLASS::Data CLASS::Data::operator/(const CLASS::Data& other) {
 	if (type == other.type) {
 		switch (type) {
-		case DATA::Type::DOUBLE: return CLASS::Data(any_cast<dvec1>(data) / any_cast<dvec1>(other.data), type);
+		case DATA::Type::DOUBLE: return CLASS::Data(getDouble() / other.getDouble(), type);
 		}
 	}
 	return CLASS::Data();
+}
+
+int64 CLASS::Data::getInt() const {
+	return any_cast<int64>(data);
 }
 
 uint64 CLASS::Data::getUint() const {

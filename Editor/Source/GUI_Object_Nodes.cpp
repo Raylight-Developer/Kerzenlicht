@@ -316,7 +316,7 @@ GUI::NODE::LINK::SET::Euler_Rotation_X::Euler_Rotation_X(const ivec2& pos) :
 	rect.setHeight(40 + max(inputs.size(), outputs.size()) * 20);
 }
 
-GUI::NODE::MATH::MATH::MATH(const ivec2& pos) {
+GUI::NODE::MATH::Math::Math(const ivec2& pos) {
 	type = CLASS::NODE::Type::MATH;
 	sub_type = e_to_u(CLASS::NODE::MATH::Type::NONE);
 
@@ -336,31 +336,44 @@ GUI::NODE::MATH::MATH::MATH(const ivec2& pos) {
 }
 
 GUI::NODE::MATH::Add::Add(const ivec2& pos) :
-	MATH(pos)
+	Math(pos)
 {
 	label = "Add";
 	sub_type = e_to_u(CLASS::NODE::MATH::Type::ADD);
+	in_a->setDataType(CLASS::DATA::Type::DOUBLE);
+	in_b->setDataType(CLASS::DATA::Type::DOUBLE);
+	out_a->setDataType(CLASS::DATA::Type::DOUBLE);
 }
 
 GUI::NODE::MATH::Sub::Sub(const ivec2& pos) :
-	MATH(pos)
+	Math(pos)
 {
 	label = "Subtract";
 	sub_type = e_to_u(CLASS::NODE::MATH::Type::SUB);
+	in_a->setDataType(CLASS::DATA::Type::DOUBLE);
+	in_b->setDataType(CLASS::DATA::Type::DOUBLE);
+	out_a->setDataType(CLASS::DATA::Type::DOUBLE);
 }
 
 GUI::NODE::MATH::Mul::Mul(const ivec2& pos) :
-	MATH(pos)
+	Math(pos)
 {
 	label = "Multiply";
 	sub_type = e_to_u(CLASS::NODE::MATH::Type::MUL);
+	in_a->setDataType(CLASS::DATA::Type::DOUBLE);
+	in_b->setDataType(CLASS::DATA::Type::DOUBLE);
+	out_a->setDataType(CLASS::DATA::Type::DOUBLE);
 }
 
 GUI::NODE::MATH::Div::Div(const ivec2& pos) :
-	MATH(pos)
+	Math(pos)
 {
 	label = "Divide";
+	sub_type = e_to_u(CLASS::NODE::Type::MATH);
 	sub_type = e_to_u(CLASS::NODE::MATH::Type::DIV);
+	in_a->setDataType(CLASS::DATA::Type::DOUBLE);
+	in_b->setDataType(CLASS::DATA::Type::DOUBLE);
+	out_a->setDataType(CLASS::DATA::Type::DOUBLE);
 }
 
 GUI::NODE::UTIL::Print::Print(const ivec2& pos) {
@@ -382,6 +395,44 @@ GUI::NODE::UTIL::Print::Print(const ivec2& pos) {
 
 	rect.setHeight(40 + max(inputs.size(), outputs.size()) * 20);
 	load_pos = QPointF(pos.x, pos.y);
+}
+
+GUI::NODE::UTIL::Cast::Cast(const ivec2& pos) {
+	label = "Cast";
+	type = CLASS::NODE::Type::UTIL;
+	sub_type = e_to_u(CLASS::NODE::UTIL::Type::CAST);
+	mini_type = CLASS::NODE::UTIL::CAST::Type::NONE;
+
+	rect = QRectF(-100, -20, 200, 40);
+
+	i_value = new PORT::Data_I_Port(this, 0, "In", CLASS::DATA::Type::ANY);
+	o_value  = new PORT::Data_O_Port(this, 0, "Out", CLASS::DATA::Type::ANY);
+
+	inputs.push_back(i_value);
+	outputs.push_back(o_value);
+
+	rect.setHeight(40 + max(inputs.size(), outputs.size()) * 20);
+	load_pos = QPointF(pos.x, pos.y);
+}
+
+GUI::NODE::UTIL::CAST::Uint_To_Double::Uint_To_Double(const ivec2& pos) :
+	Cast(pos)
+{
+	label = "UInt to Double";
+	mini_type = CLASS::NODE::UTIL::CAST::Type::UINT_TO_DOUBLE;
+
+	i_value->setDataType(CLASS::DATA::Type::UINT);
+	o_value->setDataType(CLASS::DATA::Type::DOUBLE);
+}
+
+GUI::NODE::UTIL::CAST::Int_To_Double::Int_To_Double(const ivec2& pos) :
+	Cast(pos)
+{
+	label = "Int to Double";
+	mini_type = CLASS::NODE::UTIL::CAST::Type::INT_TO_DOUBLE;
+
+	i_value->setDataType(CLASS::DATA::Type::INT);
+	o_value->setDataType(CLASS::DATA::Type::DOUBLE);
 }
 
 CLASS::Node_Tree* GUI::NODE::Node_Tree::toExecTree() {
@@ -475,6 +526,21 @@ CLASS::Node_Tree* GUI::NODE::Node_Tree::toExecTree() {
 					case CLASS::NODE::UTIL::Type::PRINT: {
 						auto t_node = new CLASS::NODE::UTIL::Print();
 						node = t_node;
+						break;
+					}
+					case CLASS::NODE::UTIL::Type::CAST: {
+						switch (static_cast<GUI::NODE::UTIL::CAST::Uint_To_Double*>(gui_node)->mini_type) {
+							case CLASS::NODE::UTIL::CAST::Type::UINT_TO_DOUBLE: {
+								auto t_node = new CLASS::NODE::UTIL::CAST::Uint_To_Double();
+								node = t_node;
+								break;
+							}
+							case CLASS::NODE::UTIL::CAST::Type::INT_TO_DOUBLE: {
+								auto t_node = new CLASS::NODE::UTIL::CAST::Int_To_Double();
+								node = t_node;
+								break;
+							}
+						}
 						break;
 					}
 				}

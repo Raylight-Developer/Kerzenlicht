@@ -404,7 +404,7 @@ CLASS::Data LINK::Pointer::getData(const uint16& slot_id) const {
 	return CLASS::Data();
 }
 
-MATH::MATH::MATH() {
+MATH::Math::Math() {
 	type = NODE::Type::MATH;
 	sub_type = e_to_u(Type::NONE);
 
@@ -470,6 +470,7 @@ void CLASS::NODE::UTIL::Print::exec(const uint16& slot_id) {
 UTIL::Cast::Cast() {
 	type = NODE::Type::UTIL;
 	sub_type = e_to_u(Type::CAST);
+	mini_type = CAST::Type::NONE;
 
 	i_value = new PORT::Data_I_Port(this, 0, DATA::Type::ANY);
 
@@ -479,13 +480,32 @@ UTIL::Cast::Cast() {
 	outputs.push_back(o_value);
 }
 
-CLASS::NODE::UTIL::CAST::Uint_To_Double::Uint_To_Double() {
+CLASS::NODE::UTIL::CAST::Uint_To_Double::Uint_To_Double() :
+	Cast()
+{
+	mini_type = CAST::Type::UINT_TO_DOUBLE;
+
 	i_value->data_type = DATA::Type::UINT;
+	i_value->default_value = Data(0ULL);
 	o_value->data_type = DATA::Type::DOUBLE;
 }
 
 CLASS::Data CLASS::NODE::UTIL::CAST::Uint_To_Double::getData(const uint16& slot_id) const {
-	return CLASS::Data(static_cast<double>(any_cast<uint64>(i_value->getData().data)), DATA::Type::DOUBLE);
+	return CLASS::Data(static_cast<dvec1>(i_value->getData().getUint()));
+}
+
+CLASS::NODE::UTIL::CAST::Int_To_Double::Int_To_Double() :
+	Cast()
+{
+	mini_type = CAST::Type::INT_TO_DOUBLE;
+
+	i_value->data_type = DATA::Type::INT;
+	i_value->default_value = Data(0LL);
+	o_value->data_type = DATA::Type::DOUBLE;
+}
+
+CLASS::Data CLASS::NODE::UTIL::CAST::Int_To_Double::getData(const uint16& slot_id) const {
+	return CLASS::Data(static_cast<dvec1>(i_value->getData().getInt()));
 }
 
 UTIL::View::View() {

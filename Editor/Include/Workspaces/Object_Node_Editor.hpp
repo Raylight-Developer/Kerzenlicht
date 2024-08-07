@@ -53,14 +53,11 @@ namespace GUI {
 			Workspace_Object_Node_Editor* parent;
 			QGraphicsScene* scene;
 
-			bool pan;
 			bool moving;
 			bool selecting;
 			bool connecting;
 
-			QPointF pan_pos;
 			QPointF move_pos;
-			qreal  view_scale;
 			QPointF selection_start;
 			QGraphicsRectItem* selection_rect;
 			vector<GUI::NODE::Node*> selection;
@@ -83,8 +80,8 @@ namespace GUI {
 			void keyPressEvent(QKeyEvent* event) override;
 
 			void dragMoveEvent(QDragMoveEvent* event) override;
-			void resizeEvent(QResizeEvent* event) override;
-			void wheelEvent(QWheelEvent* event) override;
+			//void resizeEvent(QResizeEvent* event) override;
+			//void wheelEvent(QWheelEvent* event) override;
 			void dropEvent(QDropEvent* event) override;
 		};
 

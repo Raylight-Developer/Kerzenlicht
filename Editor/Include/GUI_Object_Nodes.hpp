@@ -135,23 +135,23 @@ namespace GUI {
 			}
 		}
 		namespace MATH {
-			struct MATH : Node {
+			struct Math : Node {
 				PORT::Data_I_Port* in_a;
 				PORT::Data_I_Port* in_b;
 				PORT::Data_O_Port* out_a;
 
-				MATH(const ivec2& pos);
+				Math(const ivec2& pos);
 			};
-			struct Add : MATH {
+			struct Add : Math {
 				Add(const ivec2& pos);
 			};
-			struct Sub : MATH {
+			struct Sub : Math {
 				Sub(const ivec2& pos);
 			};
-			struct Mul : MATH {
+			struct Mul : Math {
 				Mul(const ivec2& pos);
 			};
-			struct Div : MATH {
+			struct Div : Math {
 				Div(const ivec2& pos);
 			};
 		}
@@ -163,6 +163,21 @@ namespace GUI {
 
 				Print(const ivec2& pos);
 			};
+			struct Cast : Node {
+				CLASS::NODE::UTIL::CAST::Type mini_type;
+				PORT::Data_I_Port* i_value;
+				PORT::Data_O_Port* o_value;
+
+				Cast(const ivec2& pos);
+			};
+			namespace CAST {
+				struct Uint_To_Double : Cast {
+					Uint_To_Double(const ivec2& pos);
+				};
+				struct Int_To_Double : Cast {
+					Int_To_Double(const ivec2& pos);
+				};
+			}
 		}
 	}
 }

@@ -242,6 +242,22 @@ CLASS::Node_Tree* CLASS::File::f_loadNodeTree(const vector<vector<string>>& toke
 					node = new NODE::UTIL::Print();
 					gui_node = new GUI::NODE::UTIL::Print(str_to_i(read_data[2][2], read_data[2][3]));
 				}
+				if (read_data[0][4] == "CAST") {
+					if (read_data[0][6] == "UINT_TO_DOUBLE") {
+						name = f_join(read_data[0], 10);
+						LOG << ENDL << ANSI_B << "      [Node]" << ANSI_RESET; FLUSH;
+						LOG << ENDL << "        " << ANSI_Purple << name << ANSI_RESET; FLUSH;
+						node = new NODE::UTIL::CAST::Uint_To_Double();
+						gui_node = new GUI::NODE::UTIL::CAST::Uint_To_Double(str_to_i(read_data[2][2], read_data[2][3]));
+					}
+					else if (read_data[0][6] == "INT_TO_DOUBLE") {
+						name = f_join(read_data[0], 10);
+						LOG << ENDL << ANSI_B << "      [Node]" << ANSI_RESET; FLUSH;
+						LOG << ENDL << "        " << ANSI_Purple << name << ANSI_RESET; FLUSH;
+						node = new NODE::UTIL::CAST::Int_To_Double();
+						gui_node = new GUI::NODE::UTIL::CAST::Int_To_Double(str_to_i(read_data[2][2], read_data[2][3]));
+					}
+				}
 			}
 			else {
 				// TODO load "unkown" node from newer version
@@ -847,6 +863,26 @@ void CLASS::File::f_saveNodeTree(Lace& lace, CLASS::Node_Tree* data, const uint6
 					lace NL "└Node";
 					break;
 				}
+				case NODE::UTIL::Type::CAST: {
+					switch (static_cast<NODE::UTIL::Cast*>(node)->mini_type) {
+						case NODE::UTIL::CAST::Type::UINT_TO_DOUBLE: {
+							lace NL "┌Node :: UTIL :: CAST :: UINT_TO_DOUBLE [ " << j++ << " ] " << node->name;
+							lace NL S() << ptr_to_str(node);
+							lace NL S() << "Pos ( " << node_map[node]->scenePos()<< " )";
+							lace NL "└Node";
+							break;
+						}
+						case NODE::UTIL::CAST::Type::INT_TO_DOUBLE: {
+							lace NL "┌Node :: UTIL :: CAST  :: INT_TO_DOUBLE [ " << j++ << " ] " << node->name;
+							lace NL S() << ptr_to_str(node);
+							lace NL S() << "Pos ( " << node_map[node]->scenePos()<< " )";
+							lace NL "└Node";
+							break;
+						}
+						break;
+					}
+					break;
+				}
 				case NODE::UTIL::Type::VIEW: {
 					lace NL "┌Node :: UTIL :: VIEW [ " << j++ << " ] " << node->name;
 					lace NL S() << ptr_to_str(node);
@@ -1039,24 +1075,26 @@ void CLASS::File::f_saveMesh(Lace& lace, const CLASS::OBJECT::Data* data, const 
 	}
 	lace R;
 	lace NL "└Faces";
-	lace NL "┌Normals";
+	lace NL "┌Normals( 0 )";
 	lace A;
-	for (uint64 i = 0; i < mesh->faces.size(); i++) {
-		lace NL i SP mesh->normals.at(mesh->faces[i]).size();
-		for (uint64 j = 0; j < mesh->normals.at(mesh->faces[i]).size(); j++) {
-			lace SP "(" SP mesh->normals.at(mesh->faces[i])[j] SP ")";
-		}
-	}
+	// TODO Fix crash if no normal layers are present
+	//for (uint64 i = 0; i < mesh->faces.size(); i++) {
+	//	lace NL i SP mesh->normals.at(mesh->faces[i]).size();
+	//	for (uint64 j = 0; j < mesh->normals.at(mesh->faces[i]).size(); j++) {
+	//		lace SP "(" SP mesh->normals.at(mesh->faces[i])[j] SP ")";
+	//	}
+	//}
 	lace R;
 	lace NL "└Normals";
-	lace NL "┌UVs";
+	lace NL "┌UVs( 0 )";
 	lace A;
-	for (uint64 i = 0; i < mesh->faces.size(); i++) {
-		lace NL i SP mesh->uvs.at(mesh->faces[i]).size();
-		for (uint64 j = 0; j < mesh->uvs.at(mesh->faces[i]).size(); j++) {
-			lace SP "(" SP mesh->uvs.at(mesh->faces[i])[j] SP ")";
-		}
-	}
+	// TODO Fix crash if no uv layers are present
+	//for (uint64 i = 0; i < mesh->faces.size(); i++) {
+	//	lace NL i SP mesh->uvs.at(mesh->faces[i]).size();
+	//	for (uint64 j = 0; j < mesh->uvs.at(mesh->faces[i]).size(); j++) {
+	//		lace SP "(" SP mesh->uvs.at(mesh->faces[i])[j] SP ")";
+	//	}
+	//}
 	lace R;
 	lace NL "└UVs";
 	lace R;

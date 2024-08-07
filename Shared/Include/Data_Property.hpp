@@ -55,8 +55,9 @@ namespace CLASS {
 		Data operator*(const Data& other);
 		Data operator/(const Data& other);
 
-		uint64 getUint()     const;
-		dvec1  getDouble()   const;
+		int64  getInt()    const;
+		uint64 getUint()   const;
+		dvec1  getDouble() const;
 		CLASS::Scene* getScene()    const;
 		CLASS::Object* getObject()  const;
 

@@ -102,7 +102,7 @@ GUI::NODE::PORT::Data_I_Port::Data_I_Port(Node* parent, const uint16& slot_id, c
 	this->any_data_type = CLASS::DATA::Type::NONE;
 	this->connection = nullptr;
 
-	rect = QRectF(node->rect.topLeft().x() - 5, node->rect.topLeft().y() + 35 + slot_id * 20, 10, 10);
+	rect = QRectF(node->rect.topLeft().x() - 5, node->rect.topLeft().y() + 30 + slot_id * 20, 25 + QFontMetrics(QApplication::font()).horizontalAdvance(label), 20);
 	auto temp_color = typeColor(type);
 	color = QColor(temp_color.x, temp_color.y, temp_color.z);
 }
@@ -126,9 +126,9 @@ void GUI::NODE::PORT::Data_I_Port::setDataType(const CLASS::DATA::Type& type) {
 void GUI::NODE::PORT::Data_I_Port::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) {
 	painter->setBrush(color);
 	painter->setPen(Qt::white);
-	painter->drawEllipse(rect);
+	painter->drawEllipse(QRectF(rect.topLeft() + QPointF(0,5), QSizeF(10,10)));
 
-	painter->drawText(rect.bottomRight() + QPointF(10, 0), label);
+	painter->drawText(rect.bottomLeft() + QPointF(20, -4), label);
 }
 
 GUI::NODE::PORT::Data_O_Port::Data_O_Port(Node* parent, const uint16& slot_id, const QString& label, const CLASS::DATA::Type& type, const CLASS::DATA::Modifier& modifier) :
@@ -143,7 +143,8 @@ GUI::NODE::PORT::Data_O_Port::Data_O_Port(Node* parent, const uint16& slot_id, c
 	this->any_data_type = CLASS::DATA::Type::NONE;
 	this->outgoing_connections = {};
 
-	rect = QRectF(node->rect.topRight().x() - 5, node->rect.topLeft().y() + 35 + slot_id * 20, 10, 10);
+	const qreal width = QFontMetrics(QApplication::font()).horizontalAdvance(label) + 25;
+	rect = QRectF(node->rect.topRight().x() - width-5, node->rect.topLeft().y() + 30 + slot_id * 20, width + 10, 20);
 	auto temp_color = typeColor(type);
 	color = QColor(temp_color.x, temp_color.y, temp_color.z);
 }
@@ -166,9 +167,9 @@ void GUI::NODE::PORT::Data_O_Port::paint(QPainter* painter, const QStyleOptionGr
 	painter->setBrush(color);
 	painter->setPen(Qt::white);
 
-	painter->drawEllipse(rect);
+	painter->drawEllipse(QRectF(rect.topRight() + QPointF(-10,5), QSizeF(10,10)));
 	const QFontMetrics fontMetrics(painter->font());
-	painter->drawText(rect.bottomLeft() - QPointF(10 + fontMetrics.horizontalAdvance(label), 0), label);
+	painter->drawText(rect.bottomLeft() + QPointF(5, -4), label);
 }
 
 GUI::NODE::PORT::Exec_I_Port::Exec_I_Port(Node* parent, const uint16& slot_id, const QString& label) :
@@ -179,7 +180,7 @@ GUI::NODE::PORT::Exec_I_Port::Exec_I_Port(Node* parent, const uint16& slot_id, c
 	this->label = label;
 
 	this->incoming_connections = {};
-	rect = QRectF(node->rect.topLeft().x() - 5, node->rect.topLeft().y() + 35 + slot_id * 20, 10, 10);
+	rect = QRectF(node->rect.topLeft().x() - 5, node->rect.topLeft().y() + 30 + slot_id * 20, 25 + QFontMetrics(QApplication::font()).horizontalAdvance(label), 20);
 	color = QColor(250, 250, 250);
 }
 
@@ -194,9 +195,9 @@ GUI::NODE::PORT::Exec_I_Port::~Exec_I_Port() {
 void GUI::NODE::PORT::Exec_I_Port::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) {
 	painter->setBrush(color);
 	painter->setPen(Qt::white);
-	painter->drawRoundedRect(rect, 2, 2);
+	painter->drawRoundedRect(QRectF(rect.topLeft() + QPointF(0,5), QSizeF(10,10)), 2, 2);
 
-	painter->drawText(rect.bottomRight() + QPointF(10, 0), label);
+	painter->drawText(rect.bottomLeft() + QPointF(20, -4), label);
 }
 
 GUI::NODE::PORT::Exec_O_Port::Exec_O_Port(Node* parent, const uint16& slot_id, const QString& label) :
@@ -207,7 +208,9 @@ GUI::NODE::PORT::Exec_O_Port::Exec_O_Port(Node* parent, const uint16& slot_id, c
 	this->label = label;
 
 	this->connection = nullptr;
-	rect = QRectF(node->rect.topRight().x() - 5, node->rect.topLeft().y() + 35 + slot_id * 20, 10, 10);
+
+	const qreal width = QFontMetrics(QApplication::font()).horizontalAdvance(label) + 25;
+	rect = QRectF(node->rect.topRight().x() - width - 5, node->rect.topLeft().y() + 30 + slot_id * 20, width + 10, 20);
 	color = QColor(250, 250, 250);
 }
 
@@ -215,9 +218,9 @@ void GUI::NODE::PORT::Exec_O_Port::paint(QPainter* painter, const QStyleOptionGr
 	painter->setBrush(color);
 	painter->setPen(Qt::white);
 
-	painter->drawRoundedRect(rect, 2, 2);
+	painter->drawRoundedRect(QRectF(rect.topRight() + QPointF(-10,5), QSizeF(10,10)), 2, 2);
 	const QFontMetrics fontMetrics(painter->font());
-	painter->drawText(rect.bottomLeft() - QPointF(10 + fontMetrics.horizontalAdvance(label), 0), label);
+	painter->drawText(rect.bottomLeft() + QPointF(5, -4), label);
 }
 
 GUI::NODE::PORT::Exec_O_Port::~Exec_O_Port() {
@@ -235,10 +238,10 @@ GUI::NODE::Connection::Connection(Port* port_l, Port* port_r) :
 	port_l(port_l),
 	port_r(port_r)
 {
-	setZValue(3);
+	setZValue(5);
 
-	pos_l = mapFromItem(port_l, port_l->boundingRect().center());
-	pos_r = mapFromItem(port_l, port_l->boundingRect().center());
+	pos_l = mapFromItem(port_l, port_l->boundingRect().topRight());
+	pos_r = pos_l;
 
 	data_type = CLASS::DATA::Type::NONE;
 	color = QColor(255, 255, 255);
@@ -304,28 +307,34 @@ GUI::NODE::Connection::~Connection() {
 }
 
 QRectF GUI::NODE::Connection::boundingRect() const {
-	const QPointF top_left = QPointF(min(pos_l.x(), pos_r.x()), min(pos_l.y(), pos_r.y()));
-	const QPointF bottom_right = QPointF(max(pos_l.x(), pos_r.x()), max(pos_l.y(), pos_r.y()));
-	return QRectF(top_left, bottom_right);
+	const QPointF point_a = pos_l + QPointF(0, 15);
+	const QPointF point_b = pos_r + QPointF(0, 15);
+
+	qreal left   = qMin(point_a.x(), point_b.x());
+	qreal top    = qMin(point_a.y(), point_b.y());
+	qreal right  = qMax(point_a.x(), point_b.x());
+	qreal bottom = qMax(point_a.y(), point_b.y());
+
+	return QRectF(left, top, right - left, bottom - top);
 }
 
 void GUI::NODE::Connection::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) {
 	painter->setPen(QPen(color, 2.0));
 	if (port_l and port_r) {
-		pos_l = mapFromItem(port_l, port_l->boundingRect().center());
-		pos_r = mapFromItem(port_r, port_r->boundingRect().center());
+		pos_l = mapFromItem(port_l, port_l->boundingRect().topRight());
+		pos_r = mapFromItem(port_r, port_r->boundingRect().topLeft());
 
 		QPainterPath path;
-		path.moveTo(pos_l + QPointF(6, 0));
-		path.lineTo(pos_l + QPointF((pos_r.x() - pos_l.x())/2.0, 0));
-		path.lineTo(pos_r - QPointF(-(pos_l.x() - pos_r.x())/2.0, 0));
-		path.lineTo(pos_r - QPointF(6, 0));
+		path.moveTo(pos_l + QPointF(0, 15));
+		path.lineTo(pos_l + QPointF((pos_r.x() - pos_l.x())/2.0, 15));
+		path.lineTo(pos_r + QPointF((pos_l.x() - pos_r.x())/2.0, 15));
+		path.lineTo(pos_r + QPointF(0, 15));
 
 		painter->drawPath(path);
 	}
 	else {
 		QPainterPath path;
-		path.moveTo(pos_l);
+		path.moveTo(pos_l + QPointF(0, 15));
 		path.lineTo(pos_r);
 
 		painter->drawPath(path);

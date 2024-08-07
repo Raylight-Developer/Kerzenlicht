@@ -42,6 +42,9 @@ namespace CLASS {
 		}
 		namespace UTIL {
 			enum struct Type;
+			namespace CAST {
+				enum struct Type;
+			}
 		}
 	}
 }
@@ -164,27 +167,27 @@ namespace CLASS {
 		}
 		namespace MATH {
 			enum struct Type { NONE, RAMP, MAP, ADD, DIV, MUL, SUB };
-			struct MATH : Node {
+			struct Math : Node {
 				PORT::Data_I_Port* i_value_a;
 				PORT::Data_I_Port* i_value_b;
 				PORT::Data_O_Port* o_value_res;
 
-				MATH();
+				Math();
 			};
-			struct Add : MATH {
-				Add();;
+			struct Add : Math {
+				Add();
 				Data getData(const uint16& slot_id) const override;
 			};
-			struct Sub : MATH {
-				Sub();;
+			struct Sub : Math {
+				Sub();
 				Data getData(const uint16& slot_id) const override;
 			};
-			struct Mul : MATH {
-				Mul();;
+			struct Mul : Math {
+				Mul();
 				Data getData(const uint16& slot_id) const override;
 			};
-			struct Div : MATH {
-				Div();;
+			struct Div : Math {
+				Div();
 				Data getData(const uint16& slot_id) const override;
 			};
 		}
@@ -246,18 +249,22 @@ namespace CLASS {
 			}
 		}
 		namespace UTIL {
-			enum struct Type { COLLAPSE, EXPAND, SWITCH, PRINT, CAST, VIEW, LOGS };
+			enum struct Type { NONE, COLLAPSE, EXPAND, SWITCH, PRINT, CAST, VIEW, LOGS };
 			struct Cast : Node {
+				CAST::Type mini_type;
 				PORT::Data_I_Port* i_value;
 				PORT::Data_O_Port* o_value;
 
 				Cast();
 			};
 			namespace CAST {
-				enum struct Type { UINT_TO_DOUBLE };
+				enum struct Type { NONE, UINT_TO_DOUBLE, INT_TO_DOUBLE };
 				struct Uint_To_Double : Cast {
 					Uint_To_Double();
-
+					Data getData(const uint16& slot_id) const override;
+				};
+				struct Int_To_Double : Cast {
+					Int_To_Double();
 					Data getData(const uint16& slot_id) const override;
 				};
 			}
