@@ -117,6 +117,7 @@ void CLASS::File::f_loadHeader(const vector<vector<string>>& token_data) {
 CLASS::Node_Tree* CLASS::File::f_loadNodeTree(const vector<vector<string>>& token_data) {
 	auto node_tree = new CLASS::Node_Tree();
 	auto gui_node_tree = new GUI::NODE::Node_Tree();
+	node_tree->name = f_join(token_data[0], 4);
 
 	LOG << ENDL << ANSI_B << "    [Node-Tree]" << ANSI_RESET; FLUSH;
 	LOG << ENDL << "      " << ANSI_Purple  << node_tree->name << ANSI_RESET; FLUSH;
@@ -139,123 +140,114 @@ CLASS::Node_Tree* CLASS::File::f_loadNodeTree(const vector<vector<string>>& toke
 		}
 		else if (tokens[0] == "└Node") {
 			is_processing = false;
-			string name = "#";
+			const string name = f_join(read_data[0], 4);
+			const uint64 pointer = str_to_ul(read_data[1][1]);
+			const ivec2 pos = str_to_i(read_data[2][1], read_data[2][2]);
+
 			CLASS::Node* node = nullptr;
 			GUI::NODE::Node* gui_node = nullptr;
-			if      (read_data[0][2] == "CONSTRAINT") {
+			if      (read_data[3][1] == "CONSTRAINT") {
 			}
-			else if (read_data[0][2] == "GENERATE") {
+			else if (read_data[3][1] == "GENERATE") {
 			}
-			else if (read_data[0][2] == "PHYSICS") {
+			else if (read_data[3][1] == "PHYSICS") {
 			}
-			else if (read_data[0][2] == "MODIFY") {
+			else if (read_data[3][1] == "MODIFY") {
 			}
-			else if (read_data[0][2] == "EXEC") {
-				if (read_data[0][4] == "SCRIPT") {
-					name = f_join(read_data[0], 8);
+			else if (read_data[3][1] == "EXEC") {
+				if (read_data[3][3] == "SCRIPT") {
 					LOG << ENDL << ANSI_B << "      [Node]" << ANSI_RESET; FLUSH;
 					LOG << ENDL << "        " << ANSI_Purple << name << ANSI_RESET; FLUSH;
-					node = new NODE::EXEC::Script(f_join(read_data[3]));
-					gui_node = new GUI::NODE::EXEC::Script(str_to_i(read_data[2][2], read_data[2][3]), f_join(read_data[3]));
+					node = new NODE::EXEC::Script(f_join(read_data[5]));
+					gui_node = new GUI::NODE::EXEC::Script(pos, f_join(read_data[5]));
 				}
-				else if (read_data[0][4] == "TICK") {
-					name = f_join(read_data[0], 8);
+				else if (read_data[3][3] == "TICK") {
 					LOG << ENDL << ANSI_B << "      [Node]" << ANSI_RESET; FLUSH;
 					LOG << ENDL << "        " << ANSI_Purple << name << ANSI_RESET; FLUSH;
 					node = new NODE::EXEC::Tick();
-					gui_node = new GUI::NODE::EXEC::Tick(str_to_i(read_data[2][2], read_data[2][3]));
+					gui_node = new GUI::NODE::EXEC::Tick(pos);
 					node_tree->tick = static_cast<NODE::EXEC::Tick*>(node);
 				}
 			}
-			else if (read_data[0][2] == "LINK") {
-				if      (read_data[0][4] == "POINTER") {
-					name = f_join(read_data[0], 8);
+			else if (read_data[3][1] == "LINK") {
+				if      (read_data[3][3] == "POINTER") {
 					LOG << ENDL << ANSI_B << "      [Node]" << ANSI_RESET; FLUSH;
 					LOG << ENDL << "        " << ANSI_Purple << name << ANSI_RESET; FLUSH;
-					auto pointer = new NODE::LINK::Pointer();
-					pointer->pointer_type = static_cast<DATA::Type>(str_to_u(read_data[3][1]));
-					node = pointer;
-					gui_node = new GUI::NODE::LINK::Pointer(str_to_i(read_data[2][2], read_data[2][3]), static_cast<DATA::Type>(str_to_u(read_data[3][1])));
+					auto node_t = new NODE::LINK::Pointer();
+					node_t->pointer_type = static_cast<DATA::Type>(str_to_u(read_data[5][1]));
+					gui_node = new GUI::NODE::LINK::Pointer(pos, static_cast<DATA::Type>(str_to_u(read_data[5][1])));
+					node = node_t;
 				}
-				else if (read_data[0][4] == "GET") {
-					if      (read_data[0][6] == "FIELD") {
-						name = f_join(read_data[0], 10);
+				else if (read_data[3][3] == "GET") {
+					if      (read_data[3][5] == "FIELD") {
 						LOG << ENDL << ANSI_B << "      [Node]" << ANSI_RESET; FLUSH;
 						LOG << ENDL << "        " << ANSI_Purple << name << ANSI_RESET; FLUSH;
-						auto field = new NODE::LINK::GET::Field();
-						field->field = f_join(read_data[3]);
-						node = field;
-						auto gui_field = new GUI::NODE::LINK::GET::Field(str_to_i(read_data[2][2], read_data[2][3]));
-						gui_node = gui_field;
-						gui_field->field->setText(QString::fromStdString(f_join(read_data[3])));
+						auto node_t = new NODE::LINK::GET::Field();
+						node_t->field = f_join(read_data[5]);
+						auto gui_node_t = new GUI::NODE::LINK::GET::Field(pos);
+						gui_node_t->field->setText(QString::fromStdString(f_join(read_data[5])));
+						node = node_t;
+						gui_node = gui_node_t;
 					}
 				}
-				else if (read_data[0][4] == "SET") {
-					if      (read_data[0][6] == "TRANSFORM") {
-						if      (read_data[0][8] == "EULER_ROTATION") {
-							if      (read_data[0][10] == "X") {
-								name = f_join(read_data[0], 14);
+				else if (read_data[3][3] == "SET") {
+					if      (read_data[3][5] == "TRANSFORM") {
+						if      (read_data[3][7] == "EULER_ROTATION") {
+							if      (read_data[3][9] == "X") {
 								LOG << ENDL << ANSI_B << "      [Node]" << ANSI_RESET; FLUSH;
 								LOG << ENDL << "        " << ANSI_Purple << name << ANSI_RESET; FLUSH;
 								node = new NODE::LINK::SET::Euler_Rotation_X();
-								gui_node = new GUI::NODE::LINK::SET::Euler_Rotation_X(str_to_i(read_data[2][2], read_data[2][3]));
+								gui_node = new GUI::NODE::LINK::SET::Euler_Rotation_X(pos);
 							}
 						}
 					}
 				}
 			}
-			else if (read_data[0][2] == "MATH") {
-				if      (read_data[0][4] == "ADD") {
-					name = f_join(read_data[0], 8);
+			else if (read_data[3][1] == "MATH") {
+				if      (read_data[3][3] == "ADD") {
 					LOG << ENDL << ANSI_B << "      [Node]" << ANSI_RESET; FLUSH;
 					LOG << ENDL << "        " << ANSI_Purple << name << ANSI_RESET; FLUSH;
 					node = new NODE::MATH::Add();
-					gui_node = new GUI::NODE::MATH::Add(str_to_i(read_data[2][2], read_data[2][3]));
+					gui_node = new GUI::NODE::MATH::Add(pos);
 				}
-				else if (read_data[0][4] == "SUB") {
-					name = f_join(read_data[0], 8);
+				else if (read_data[3][3] == "SUB") {
 					LOG << ENDL << ANSI_B << "      [Node]" << ANSI_RESET; FLUSH;
 					LOG << ENDL << "        " << ANSI_Purple << name << ANSI_RESET; FLUSH;
 					node = new NODE::MATH::Sub();
-					gui_node = new GUI::NODE::MATH::Sub(str_to_i(read_data[2][2], read_data[2][3]));
+					gui_node = new GUI::NODE::MATH::Sub(pos);
 				}
-				else if (read_data[0][4] == "MUL") {
-					name = f_join(read_data[0], 8);
+				else if (read_data[3][3] == "MUL") {
 					LOG << ENDL << ANSI_B << "      [Node]" << ANSI_RESET; FLUSH;
 					LOG << ENDL << "        " << ANSI_Purple << name << ANSI_RESET; FLUSH;
 					node = new NODE::MATH::Mul();
-					gui_node = new GUI::NODE::MATH::Mul(str_to_i(read_data[2][2], read_data[2][3]));
+					gui_node = new GUI::NODE::MATH::Mul(pos);
 				}
-				else if (read_data[0][4] == "DIV") {
-					name = f_join(read_data[0], 8);
+				else if (read_data[3][3] == "DIV") {
 					LOG << ENDL << ANSI_B << "      [Node]" << ANSI_RESET; FLUSH;
 					LOG << ENDL << "        " << ANSI_Purple << name << ANSI_RESET; FLUSH;
 					node = new NODE::MATH::Div();
-					gui_node = new GUI::NODE::MATH::Div(str_to_i(read_data[2][2], read_data[2][3]));
+					gui_node = new GUI::NODE::MATH::Div(pos);
 				}
 			}
-			else if (read_data[0][2] == "UTIL") {
-				if (read_data[0][4] == "PRINT") {
-					name = f_join(read_data[0], 8);
+			else if (read_data[3][1] == "UTIL") {
+				if (read_data[3][3] == "PRINT") {
 					LOG << ENDL << ANSI_B << "      [Node]" << ANSI_RESET; FLUSH;
 					LOG << ENDL << "        " << ANSI_Purple << name << ANSI_RESET; FLUSH;
 					node = new NODE::UTIL::Print();
-					gui_node = new GUI::NODE::UTIL::Print(str_to_i(read_data[2][2], read_data[2][3]));
+					gui_node = new GUI::NODE::UTIL::Print(pos);
 				}
-				if (read_data[0][4] == "CAST") {
-					if (read_data[0][6] == "UINT_TO_DOUBLE") {
-						name = f_join(read_data[0], 10);
+				if (read_data[3][3] == "CAST") {
+					if (read_data[3][5] == "UINT_TO_DOUBLE") {
 						LOG << ENDL << ANSI_B << "      [Node]" << ANSI_RESET; FLUSH;
 						LOG << ENDL << "        " << ANSI_Purple << name << ANSI_RESET; FLUSH;
 						node = new NODE::UTIL::CAST::Uint_To_Double();
-						gui_node = new GUI::NODE::UTIL::CAST::Uint_To_Double(str_to_i(read_data[2][2], read_data[2][3]));
+						gui_node = new GUI::NODE::UTIL::CAST::Uint_To_Double(pos);
 					}
-					else if (read_data[0][6] == "INT_TO_DOUBLE") {
-						name = f_join(read_data[0], 10);
+					else if (read_data[3][5] == "INT_TO_DOUBLE") {
 						LOG << ENDL << ANSI_B << "      [Node]" << ANSI_RESET; FLUSH;
 						LOG << ENDL << "        " << ANSI_Purple << name << ANSI_RESET; FLUSH;
 						node = new NODE::UTIL::CAST::Int_To_Double();
-						gui_node = new GUI::NODE::UTIL::CAST::Int_To_Double(str_to_i(read_data[2][2], read_data[2][3]));
+						gui_node = new GUI::NODE::UTIL::CAST::Int_To_Double(pos);
 					}
 				}
 			}
@@ -265,7 +257,7 @@ CLASS::Node_Tree* CLASS::File::f_loadNodeTree(const vector<vector<string>>& toke
 			if (node) {
 				node->name = name;
 
-				pointer_map[str_to_ul(read_data[1][1])] = node;
+				pointer_map[pointer] = node;
 				gui_node_tree->nodes.push_back(gui_node);
 				node_tree->nodes.push_back(node);
 				node_map[node] = gui_node;
@@ -275,20 +267,22 @@ CLASS::Node_Tree* CLASS::File::f_loadNodeTree(const vector<vector<string>>& toke
 			LOG << ENDL << ANSI_B << "      [Build-E]" << ANSI_RESET; FLUSH;
 			is_processing = false;
 			for (const vector<string>& sub_tokens : read_data) {
+				auto node_l = static_cast<CLASS::Node*>(pointer_map[str_to_ul(sub_tokens[1])]);
 				auto port_l = static_cast<NODE::PORT::Exec_O_Port*>(
-					static_cast<CLASS::Node*>(pointer_map[str_to_ul(sub_tokens[1])])->outputs[str_to_ul(sub_tokens[2])]
+					node_l->outputs[str_to_ul(sub_tokens[2])]
 				);
+				auto node_r = static_cast<CLASS::Node*>(pointer_map[str_to_ul(sub_tokens[5])]);
 				auto port_r = static_cast<NODE::PORT::Exec_I_Port*>(
-					static_cast<CLASS::Node*>(pointer_map[str_to_ul(sub_tokens[5])])->inputs[str_to_ul(sub_tokens[3])]
+					node_r->inputs[str_to_ul(sub_tokens[3])]
 				);
 				port_l->connection = port_r;
 				port_r->incoming_connections.push_back(port_l);
 
 				auto gui_port_l = static_cast<GUI::NODE::PORT::Exec_O_Port*>(
-					node_map[static_cast<CLASS::Node*>(pointer_map[str_to_ul(sub_tokens[1])])]->outputs[str_to_ul(sub_tokens[2])]
+					node_map[node_l]->outputs[str_to_ul(sub_tokens[2])]
 				);
 				auto gui_port_r = static_cast<GUI::NODE::PORT::Exec_I_Port*>(
-					node_map[static_cast<CLASS::Node*>(pointer_map[str_to_ul(sub_tokens[5])])]->inputs[str_to_ul(sub_tokens[3])]
+					node_map[node_r]->inputs[str_to_ul(sub_tokens[3])]
 				);
 				gui_port_l->connection = new GUI::NODE::Connection(gui_port_l, gui_port_r);
 				gui_port_r->incoming_connections.push_back(gui_port_l->connection);
@@ -298,20 +292,22 @@ CLASS::Node_Tree* CLASS::File::f_loadNodeTree(const vector<vector<string>>& toke
 			LOG << ENDL << ANSI_B << "      [Build-D]" << ANSI_RESET; FLUSH;
 			is_processing = false;
 			for (const vector<string>& sub_tokens : read_data) {
+				auto node_l = static_cast<CLASS::Node*>(pointer_map[str_to_ul(sub_tokens[1])]);
 				auto port_l = static_cast<NODE::PORT::Data_O_Port*>(
-					static_cast<CLASS::Node*>(pointer_map[str_to_ul(sub_tokens[1])])->outputs[str_to_ul(sub_tokens[2])]
+					node_l->outputs[str_to_ul(sub_tokens[2])]
 				);
+				auto node_r = static_cast<CLASS::Node*>(pointer_map[str_to_ul(sub_tokens[5])]);
 				auto port_r = static_cast<NODE::PORT::Data_I_Port*>(
-					static_cast<CLASS::Node*>(pointer_map[str_to_ul(sub_tokens[5])])->inputs[str_to_ul(sub_tokens[3])]
+					node_r->inputs[str_to_ul(sub_tokens[3])]
 				);
 				port_r->connection = port_l;
 				port_l->outgoing_connections.push_back(port_r);
 
 				auto gui_port_l = static_cast<GUI::NODE::PORT::Data_O_Port*>(
-					node_map[static_cast<CLASS::Node*>(pointer_map[str_to_ul(sub_tokens[1])])]->outputs[str_to_ul(sub_tokens[2])]
+					node_map[node_l]->outputs[str_to_ul(sub_tokens[2])]
 				);
 				auto gui_port_r = static_cast<GUI::NODE::PORT::Data_I_Port*>(
-					node_map[static_cast<CLASS::Node*>(pointer_map[str_to_ul(sub_tokens[5])])]->inputs[str_to_ul(sub_tokens[3])]
+					node_map[node_r]->inputs[str_to_ul(sub_tokens[3])]
 				);
 				gui_port_r->connection = new GUI::NODE::Connection(gui_port_l, gui_port_r);
 				gui_port_l->outgoing_connections.push_back(gui_port_r->connection);
@@ -333,38 +329,38 @@ SHADER::Shader* CLASS::File::f_loadMaterial(const vector<vector<string>>& token_
 }
 
 CLASS::OBJECT::Data* CLASS::File::f_loadData(const vector<vector<string>>& token_data) {
-	if      (token_data[0][2] == "Atmosphere")
+	if      (token_data[2][1] == "ATMOSPHERE")
 		return f_loadAtmosphere(token_data);
-	else if (token_data[0][2] == "Primitive")
+	else if (token_data[2][1] == "PRIMITIVE")
 		return f_loadPrimitive (token_data);
-	else if (token_data[0][2] == "Skeleton")
+	else if (token_data[2][1] == "SKELETON")
 		return f_loadSkeleton  (token_data);
-	else if (token_data[0][2] == "Camera")
+	else if (token_data[2][1] == "CAMERA")
 		return f_loadCamera    (token_data);
-	else if (token_data[0][2] == "Volume")
+	else if (token_data[2][1] == "VOLUME")
 		return f_loadVolume    (token_data);
-	else if (token_data[0][2] == "Curve")
+	else if (token_data[2][1] == "CURVE")
 		return f_loadCurve     (token_data);
-	else if (token_data[0][2] == "Empty")
+	else if (token_data[2][1] == "EMPTY")
 		return f_loadEmpty     (token_data);
-	else if (token_data[0][2] == "Force")
+	else if (token_data[2][1] == "FORCE")
 		return f_loadForce     (token_data);
-	else if (token_data[0][2] == "Group")
+	else if (token_data[2][1] == "GROUP")
 		return f_loadGroup     (token_data);
-	else if (token_data[0][2] == "Light")
+	else if (token_data[2][1] == "LIGHT")
 		return f_loadLight     (token_data);
-	else if (token_data[0][2] == "Mesh")
+	else if (token_data[2][1] == "MESH")
 		return f_loadMesh      (token_data);
-	else if (token_data[0][2] == "Sfx")
+	else if (token_data[2][1] == "SFX")
 		return f_loadSfx       (token_data);
-	else if (token_data[0][2] == "Vfx")
+	else if (token_data[2][1] == "VFX")
 		return f_loadVfx       (token_data);
 	return new CLASS::OBJECT::Data();
 }
 
 CLASS::OBJECT::Data* CLASS::File::f_loadAtmosphere(const vector<vector<string>>& token_data) {
 	CLASS::OBJECT::Data* data = new CLASS::OBJECT::Data();
-	data->name = f_join(token_data[0], 6);
+	data->name = f_join(token_data[0], 4);
 	data->type = CLASS::OBJECT::DATA::Type::ATMOSPHERE;
 	pointer_map[str_to_ul(token_data[1][1])] = data;
 	return data;
@@ -372,7 +368,7 @@ CLASS::OBJECT::Data* CLASS::File::f_loadAtmosphere(const vector<vector<string>>&
 
 CLASS::OBJECT::Data* CLASS::File::f_loadPrimitive(const vector<vector<string>>& token_data) {
 	CLASS::OBJECT::Data* data = new CLASS::OBJECT::Data();
-	data->name = f_join(token_data[0], 6);
+	data->name = f_join(token_data[0], 4);
 	data->type = CLASS::OBJECT::DATA::Type::PRIMITIVE;
 	pointer_map[str_to_ul(token_data[1][1])] = data;
 	return data;
@@ -380,7 +376,7 @@ CLASS::OBJECT::Data* CLASS::File::f_loadPrimitive(const vector<vector<string>>& 
 
 CLASS::OBJECT::Data* CLASS::File::f_loadSkeleton(const vector<vector<string>>& token_data) {
 	CLASS::OBJECT::Data* data = new CLASS::OBJECT::Data();
-	data->name = f_join(token_data[0], 6);
+	data->name = f_join(token_data[0], 4);
 	data->type = CLASS::OBJECT::DATA::Type::SKELETON;
 	pointer_map[str_to_ul(token_data[1][1])] = data;
 	return data;
@@ -389,7 +385,7 @@ CLASS::OBJECT::Data* CLASS::File::f_loadSkeleton(const vector<vector<string>>& t
 CLASS::OBJECT::Data* CLASS::File::f_loadCamera(const vector<vector<string>>& token_data) {
 	CLASS::OBJECT::Data* data = new CLASS::OBJECT::Data();
 	CLASS::OBJECT::DATA::Camera* camera = new CLASS::OBJECT::DATA::Camera();
-	data->name = f_join(token_data[0], 6);
+	data->name = f_join(token_data[0], 4);
 	data->type = CLASS::OBJECT::DATA::Type::CAMERA;
 	data->data = camera;
 	pointer_map[str_to_ul(token_data[1][1])] = data;
@@ -398,7 +394,7 @@ CLASS::OBJECT::Data* CLASS::File::f_loadCamera(const vector<vector<string>>& tok
 
 CLASS::OBJECT::Data* CLASS::File::f_loadVolume(const vector<vector<string>>& token_data) {
 	CLASS::OBJECT::Data* data = new CLASS::OBJECT::Data();
-	data->name = f_join(token_data[0], 6);
+	data->name = f_join(token_data[0], 4);
 	data->type = CLASS::OBJECT::DATA::Type::VOLUME;
 	pointer_map[str_to_ul(token_data[1][1])] = data;
 	return data;
@@ -406,7 +402,7 @@ CLASS::OBJECT::Data* CLASS::File::f_loadVolume(const vector<vector<string>>& tok
 
 CLASS::OBJECT::Data* CLASS::File::f_loadCurve(const vector<vector<string>>& token_data) {
 	CLASS::OBJECT::Data* data = new CLASS::OBJECT::Data();
-	data->name = f_join(token_data[0], 6);
+	data->name = f_join(token_data[0], 4);
 	data->type = CLASS::OBJECT::DATA::Type::CURVE;
 	pointer_map[str_to_ul(token_data[1][1])] = data;
 	return data;
@@ -414,7 +410,7 @@ CLASS::OBJECT::Data* CLASS::File::f_loadCurve(const vector<vector<string>>& toke
 
 CLASS::OBJECT::Data* CLASS::File::f_loadEmpty(const vector<vector<string>>& token_data) {
 	CLASS::OBJECT::Data* data = new CLASS::OBJECT::Data();
-	data->name = f_join(token_data[0], 6);
+	data->name = f_join(token_data[0], 4);
 	data->type = CLASS::OBJECT::DATA::Type::EMPTY;
 	pointer_map[str_to_ul(token_data[1][1])] = data;
 	return data;
@@ -422,7 +418,7 @@ CLASS::OBJECT::Data* CLASS::File::f_loadEmpty(const vector<vector<string>>& toke
 
 CLASS::OBJECT::Data* CLASS::File::f_loadForce(const vector<vector<string>>& token_data) {
 	CLASS::OBJECT::Data* data = new CLASS::OBJECT::Data();
-	data->name = f_join(token_data[0], 6);
+	data->name = f_join(token_data[0], 4);
 	data->type = CLASS::OBJECT::DATA::Type::FORCE;
 	pointer_map[str_to_ul(token_data[1][1])] = data;
 	return data;
@@ -431,7 +427,7 @@ CLASS::OBJECT::Data* CLASS::File::f_loadForce(const vector<vector<string>>& toke
 CLASS::OBJECT::Data* CLASS::File::f_loadGroup(const vector<vector<string>>& token_data) {
 	CLASS::OBJECT::Data* data = new CLASS::OBJECT::Data();
 	CLASS::OBJECT::DATA::Group* group = new CLASS::OBJECT::DATA::Group();
-	data->name = f_join(token_data[0], 6);
+	data->name = f_join(token_data[0], 4);
 	data->type = CLASS::OBJECT::DATA::Type::GROUP;
 	data->data = group;
 
@@ -441,7 +437,7 @@ CLASS::OBJECT::Data* CLASS::File::f_loadGroup(const vector<vector<string>>& toke
 
 CLASS::OBJECT::Data* CLASS::File::f_loadLight(const vector<vector<string>>& token_data) {
 	CLASS::OBJECT::Data* data = new CLASS::OBJECT::Data();
-	data->name = f_join(token_data[0], 6);
+	data->name = f_join(token_data[0], 4);
 	data->type = CLASS::OBJECT::DATA::Type::LIGHT;
 	pointer_map[str_to_ul(token_data[1][1])] = data;
 	return data;
@@ -450,7 +446,7 @@ CLASS::OBJECT::Data* CLASS::File::f_loadLight(const vector<vector<string>>& toke
 CLASS::OBJECT::Data* CLASS::File::f_loadMesh(const vector<vector<string>>& token_data) {
 	CLASS::OBJECT::Data* data = new CLASS::OBJECT::Data();
 	CLASS::OBJECT::DATA::Mesh * mesh = new CLASS::OBJECT::DATA::Mesh();
-	data->name = f_join(token_data[0], 6);
+	data->name = f_join(token_data[0], 4);
 	data->type = CLASS::OBJECT::DATA::Type::MESH;
 	data->data = mesh;
 
@@ -530,7 +526,7 @@ CLASS::OBJECT::Data* CLASS::File::f_loadMesh(const vector<vector<string>>& token
 
 CLASS::OBJECT::Data* CLASS::File::f_loadSfx(const vector<vector<string>>& token_data) {
 	CLASS::OBJECT::Data* data = new CLASS::OBJECT::Data();
-	data->name = f_join(token_data[0], 6);
+	data->name = f_join(token_data[0], 4);
 	data->type = CLASS::OBJECT::DATA::Type::SFX;
 	pointer_map[str_to_ul(token_data[1][1])] = data;
 	return data;
@@ -538,7 +534,7 @@ CLASS::OBJECT::Data* CLASS::File::f_loadSfx(const vector<vector<string>>& token_
 
 CLASS::OBJECT::Data* CLASS::File::f_loadVfx(const vector<vector<string>>& token_data) {
 	CLASS::OBJECT::Data* data = new CLASS::OBJECT::Data();
-	data->name = f_join(token_data[0], 6);
+	data->name = f_join(token_data[0], 4);
 	data->type = CLASS::OBJECT::DATA::Type::VFX;
 	pointer_map[str_to_ul(token_data[1][1])] = data;
 	return data;
@@ -743,178 +739,146 @@ void CLASS::File::f_saveNodeTree(Lace& lace, CLASS::Node_Tree* data, const uint6
 	uint64 j = 0;
 	lace NL "┌Node-Tree [ " << i << " ] " << data->name;
 	lace A;
-		lace NL ptr_to_str(data);
+	lace NL ptr_to_str(data);
 	lace NL "┌Nodes( " << data->nodes.size() << " )";
 	lace A;
-		for (CLASS::Node* node : data->nodes) {
-			switch (node->type) {
+	for (CLASS::Node* node : data->nodes) {
+		lace NL "┌Node [ " << j++ << " ] " << node->name;
+		lace NL S() << ptr_to_str(node);
+		lace NL S() << "( " << node_map[node]->scenePos()<< " )";
+		switch (node->type) {
 			case NODE::Type::CONSTRAINT: {
 				switch (static_cast<NODE::CONSTRAINT::Type>(node->sub_type)) {
-				case NODE::CONSTRAINT::Type::PARENT: {
-					break;
-				}
+					case NODE::CONSTRAINT::Type::PARENT: {
+						lace NL S() << "Type CONSTRAINT :: PARENT";
+						break;
+					}
 				}
 				break;
 			}
 			case NODE::Type::EXEC: {
 				switch (static_cast<NODE::EXEC::Type>(node->sub_type)) {
-				case NODE::EXEC::Type::COUNTER: {
-					lace NL "┌Node :: EXEC :: COUNTER [ " << j++ << " ] " << node->name;
-					lace NL S() << ptr_to_str(node);
-					lace NL S() << "Pos ( " << node_map[node]->scenePos()<< " )";
-					lace NL "└Node";
-					break;
-				}
-				case NODE::EXEC::Type::SCRIPT: {
-					lace NL "┌Node :: EXEC :: SCRIPT [ " << j++ << " ] " << node->name;
-					lace NL S() << ptr_to_str(node);
-					lace NL S() << "Pos ( " << node_map[node]->scenePos()<< " )";
-					lace NL S() << static_cast<CLASS::NODE::EXEC::Script*>(node)->script_id;
-					lace NL "└Node";
-					break;
-				}
-				case NODE::EXEC::Type::TICK: {
-					lace NL "┌Node :: EXEC :: TICK [ " << j++ << " ] " << node->name;
-					lace NL S() << ptr_to_str(node);
-					lace NL S() << "Pos ( " << node_map[node]->scenePos()<< " )";
-					lace NL "└Node";
-					break;
-				}
+					case NODE::EXEC::Type::COUNTER: {
+						lace NL S() << "Type EXEC :: COUNTER";
+						break;
+					}
+					case NODE::EXEC::Type::SCRIPT: {
+						lace NL S() << "Type EXEC :: SCRIPT";
+						lace NL S() << "┌Script";
+						lace NL S() SP static_cast<CLASS::NODE::EXEC::Script*>(node)->script_id;
+						lace NL S() << "└Script";
+						break;
+					}
+					case NODE::EXEC::Type::TICK: {
+						lace NL S() << "Type EXEC :: TICK";
+						break;
+					}
 				}
 				break;
 			}
 			case NODE::Type::LINK: {
 				switch (static_cast<NODE::LINK::Type>(node->sub_type)) {
-				case NODE::LINK::Type::POINTER: {
-					lace NL "┌Node :: LINK :: POINTER [ " << j++ << " ] " << node->name;
-					lace NL S() << ptr_to_str(node);
-					lace NL S() << "Pos ( " << node_map[node]->scenePos()<< " )";
-					lace NL S() << "Type " << e_to_u(static_cast<NODE::LINK::Pointer*>(node)->pointer_type);
-					lace NL "└Node";
-					break;
-				}
-				case NODE::LINK::Type::GET: {
-					switch (static_cast<CLASS::NODE::LINK::Get*>(node)->mini_type) {
-					case NODE::LINK::GET::Type::FIELD: {
-						lace NL "┌Node :: LINK :: GET :: FIELD [ " << j++ << " ] " << node->name;
-						lace NL S() << ptr_to_str(node);
-						lace NL S() << "Pos ( " << node_map[node]->scenePos()<< " )";
-						lace NL S() << static_cast<NODE::LINK::GET::Field*>(node)->field;
-						lace NL "└Node";
+					case NODE::LINK::Type::POINTER: {
+						lace NL S() << "Type LINK :: POINTER";
+						lace NL S() << "┌Pointer";
+						lace NL S() SP "Type " << e_to_u(static_cast<NODE::LINK::Pointer*>(node)->pointer_type);
+						lace NL S() << "└Pointer";
 						break;
 					}
-					}
-					break;
-				}
-				case NODE::LINK::Type::SET: {
-					switch (static_cast<CLASS::NODE::LINK::Set*>(node)->mini_type) {
-					case NODE::LINK::SET::Type::EULER_ROTATION_X: {
-						lace NL "┌Node :: LINK :: SET :: TRANSFORM :: EULER_ROTATION :: X [ " << j++ << " ] " << node->name;
-						lace NL S() << ptr_to_str(node);
-						lace NL S() << "Pos ( " << node_map[node]->scenePos()<< " )";
-						lace NL "└Node";
+					case NODE::LINK::Type::GET: {
+						switch (static_cast<CLASS::NODE::LINK::Get*>(node)->mini_type) {
+						case NODE::LINK::GET::Type::FIELD: {
+							lace NL S() << "Type LINK :: GET :: FIELD";
+							lace NL S() << "┌Field";
+							lace NL S() SP static_cast<NODE::LINK::GET::Field*>(node)->field;
+							lace NL S() << "└Field";
+							break;
+						}
+						}
 						break;
 					}
+					case NODE::LINK::Type::SET: {
+						switch (static_cast<CLASS::NODE::LINK::Set*>(node)->mini_type) {
+							case NODE::LINK::SET::Type::EULER_ROTATION_X: {
+								lace NL S() << "Type LINK :: SET :: TRANSFORM :: EULER_ROTATION :: X";
+								break;
+							}
+						}
+						break;
 					}
-					break;
-				}
 				}
 				break;
 			}
 			case NODE::Type::MATH: {
 				switch (static_cast<NODE::MATH::Type>(node->sub_type)) {
-				case NODE::MATH::Type::ADD: {
-					lace NL "┌Node :: MATH :: ADD [ " << j++ << " ] " << node->name;
-					lace NL S() << ptr_to_str(node);
-					lace NL S() << "Pos ( " << node_map[node]->scenePos()<< " )";
-					lace NL "└Node";
-					break;
-				}
-				case NODE::MATH::Type::SUB: {
-					lace NL "┌Node :: MATH :: SUB [ " << j++ << " ] " << node->name;
-					lace NL S() << ptr_to_str(node);
-					lace NL S() << "Pos ( " << node_map[node]->scenePos()<< " )";
-					lace NL "└Node";
-					break;
-				}
-				case NODE::MATH::Type::MUL: {
-					lace NL "┌Node :: MATH :: MUL [ " << j++ << " ] " << node->name;
-					lace NL S() << ptr_to_str(node);
-					lace NL S() << "Pos ( " << node_map[node]->scenePos()<< " )";
-					lace NL "└Node";
-					break;
-				}
-				case NODE::MATH::Type::DIV: {
-					lace NL "┌Node :: MATH :: DIV [ " << j++ << " ] " << node->name;
-					lace NL S() << ptr_to_str(node);
-					lace NL S() << "Pos ( " << node_map[node]->scenePos()<< " )";
-					lace NL "└Node";
-					break;
-				}
+					case NODE::MATH::Type::ADD: {
+						lace NL S() << "Type MATH :: ADD";
+						break;
+					}
+					case NODE::MATH::Type::SUB: {
+						lace NL S() << "Type MATH :: SUB";
+						break;
+					}
+					case NODE::MATH::Type::MUL: {
+						lace NL S() << "Type MATH :: MUL";
+						break;
+					}
+					case NODE::MATH::Type::DIV: {
+						lace NL S() << "Type MATH :: DIV";
+						break;
+					}
 				}
 				break;
 			}
 			case NODE::Type::UTIL: {
 				switch (static_cast<NODE::UTIL::Type>(node->sub_type)) {
-				case NODE::UTIL::Type::PRINT: {
-					lace NL "┌Node :: UTIL :: PRINT [ " << j++ << " ] " << node->name;
-					lace NL S() << ptr_to_str(node);
-					lace NL S() << "Pos ( " << node_map[node]->scenePos()<< " )";
-					lace NL "└Node";
-					break;
-				}
-				case NODE::UTIL::Type::CAST: {
-					switch (static_cast<NODE::UTIL::Cast*>(node)->mini_type) {
-						case NODE::UTIL::CAST::Type::UINT_TO_DOUBLE: {
-							lace NL "┌Node :: UTIL :: CAST :: UINT_TO_DOUBLE [ " << j++ << " ] " << node->name;
-							lace NL S() << ptr_to_str(node);
-							lace NL S() << "Pos ( " << node_map[node]->scenePos()<< " )";
-							lace NL "└Node";
-							break;
-						}
-						case NODE::UTIL::CAST::Type::INT_TO_DOUBLE: {
-							lace NL "┌Node :: UTIL :: CAST  :: INT_TO_DOUBLE [ " << j++ << " ] " << node->name;
-							lace NL S() << ptr_to_str(node);
-							lace NL S() << "Pos ( " << node_map[node]->scenePos()<< " )";
-							lace NL "└Node";
+					case NODE::UTIL::Type::PRINT: {
+						break;
+					}
+					case NODE::UTIL::Type::CAST: {
+						switch (static_cast<NODE::UTIL::Cast*>(node)->mini_type) {
+							case NODE::UTIL::CAST::Type::UINT_TO_DOUBLE: {
+								lace NL S() << "Type UTIL :: CAST :: UINT_TO_DOUBLE";
+								break;
+							}
+							case NODE::UTIL::CAST::Type::INT_TO_DOUBLE: {
+								lace NL S() << "Type UTIL :: CAST :: INT_TO_DOUBLE";
+								break;
+							}
 							break;
 						}
 						break;
 					}
-					break;
-				}
-				case NODE::UTIL::Type::VIEW: {
-					lace NL "┌Node :: UTIL :: VIEW [ " << j++ << " ] " << node->name;
-					lace NL S() << ptr_to_str(node);
-					lace NL S() << "Pos ( " << node_map[node]->scenePos()<< " )";
-					lace NL "└Node";
-					break;
-				}
+					case NODE::UTIL::Type::VIEW: {
+						lace NL S() << "Type UTIL :: VIEW";
+						break;
+					}
 				}
 				break;
 			}
-			}
 		}
+		lace NL "└Node";
+	}
 	lace R;
 		lace NL "└Nodes";
 	lace NL "┌Build-E"; // [Node L Pointer] [Slot] [Slot] [Node R Pointer]
 	lace A;
-		for (const auto node_l : data->nodes) {
-			for (const auto& port : node_l->outputs) {
-				if (port->type == NODE::PORT::Type::EXEC_O) {
-					const auto port_l = static_cast<CLASS::NODE::PORT::Exec_O_Port*>(port);
-					if (port_l->connection) {
-						const auto port_r = port_l->connection;
-						const auto node_r = port_r->node;
-						const uint64 port_l_id = distance(node_l->outputs.begin(), find(node_l->outputs.begin(), node_l->outputs.end(), port_l));
-						const uint64 port_r_id = distance(node_r->inputs.begin(), find(node_r->inputs.begin(), node_r->inputs.end(), port_r));
-						//const uint64 node_r_id = distance(data->nodes.begin(), find(data->nodes.begin(), data->nodes.end(), node_r));
-						//lace NL node_l_id SP port_l_id SP node_r_id SP port_r_id;
-						lace NL ptr_to_str(node_l) SP port_l_id SP port_r_id SP ptr_to_str(node_r);
-					}
+	for (const auto node_l : data->nodes) {
+		for (const auto& port : node_l->outputs) {
+			if (port->type == NODE::PORT::Type::EXEC_O) {
+				const auto port_l = static_cast<CLASS::NODE::PORT::Exec_O_Port*>(port);
+				if (port_l->connection) {
+					const auto port_r = port_l->connection;
+					const auto node_r = port_r->node;
+					const uint64 port_l_id = distance(node_l->outputs.begin(), find(node_l->outputs.begin(), node_l->outputs.end(), port_l));
+					const uint64 port_r_id = distance(node_r->inputs.begin(), find(node_r->inputs.begin(), node_r->inputs.end(), port_r));
+					//const uint64 node_r_id = distance(data->nodes.begin(), find(data->nodes.begin(), data->nodes.end(), node_r));
+					//lace NL node_l_id SP port_l_id SP node_r_id SP port_r_id;
+					lace NL ptr_to_str(node_l) SP port_l_id SP port_r_id SP ptr_to_str(node_r);
 				}
 			}
 		}
+	}
 	lace R;
 		lace NL "└Build-E";
 	lace NL "┌Build-D"; // [Node L Pointer] [Slot] [Slot] [Node R Pointer]
@@ -970,90 +934,103 @@ void CLASS::File::f_saveData(Lace& lace) {
 }
 
 void CLASS::File::f_saveAtmosphere(Lace& lace, const CLASS::OBJECT::Data* data, const uint64& i) {
-	lace NL "┌Data :: Atmosphere [ " << i << " ] " << data->name;
+	lace NL "┌Data [ " << i << " ] " << data->name;
 	lace A;
 	lace NL ptr_to_str(data);
+	lace NL "Type ATMOSPHERE";
 	lace R;
-	lace NL "└Data :: Atmosphere";
+	lace NL "└Data";
 }
 
 void CLASS::File::f_savePrimitive(Lace& lace, const CLASS::OBJECT::Data* data, const uint64& i) {
-	lace NL "┌Data :: Primitve [ " << i << " ] " << data->name;
+	lace NL "┌Data [ " << i << " ] " << data->name;
 	lace A;
 	lace NL ptr_to_str(data);
+	lace NL "Type PRIMITIVE";
 	lace R;
-	lace NL "└Data :: Primitive";
+	lace NL "└Data";
 }
 
 void CLASS::File::f_saveSkeleton(Lace& lace, const CLASS::OBJECT::Data* data, const uint64& i) {
-	lace NL "┌Data :: Skeleton [ " << i << " ] " << data->name;
+	lace NL "┌Data [ " << i << " ] " << data->name;
 	lace A;
 	lace NL ptr_to_str(data);
+	lace NL "Type SKELETON";
 	lace R;
-	lace NL "└Data :: Skeleton";
+	lace NL "└Data";
 }
 
 void CLASS::File::f_saveCamera(Lace& lace, const CLASS::OBJECT::Data* data, const uint64& i) {
-	const CLASS::OBJECT::DATA::Camera* camera = static_cast<CLASS::OBJECT::DATA::Camera*>(data->data);
-	lace NL "┌Data :: Camera [ " << i << " ] " << data->name;
+	lace NL "┌Data [ " << i << " ] " << data->name;
 	lace A;
 	lace NL ptr_to_str(data);
-	lace NL "Fov " << camera->focal_angle;
+	lace NL "Type CAMERA";
 	lace R;
-	lace NL "└Data :: Camera";
+	lace NL "└Data";
 }
 
 void CLASS::File::f_saveVolume(Lace& lace, const CLASS::OBJECT::Data* data, const uint64& i) {
-	lace NL "┌Data :: Volume [ " << i << " ] " << data->name;
+	lace NL "┌Data [ " << i << " ] " << data->name;
 	lace A;
 	lace NL ptr_to_str(data);
+	lace NL "Type VOLUME";
 	lace R;
-	lace NL "└Data :: Volume";
+	lace NL "└Data";
 }
 
 void CLASS::File::f_saveCurve(Lace& lace, const CLASS::OBJECT::Data* data, const uint64& i) {
-	lace NL "┌Data :: Curve [ " << i << " ] " << data->name;
+	lace NL "┌Data [ " << i << " ] " << data->name;
 	lace A;
 	lace NL ptr_to_str(data);
+	lace NL "Type CURVE";
 	lace R;
-	lace NL "└Data :: Curve";
+	lace NL "└Data";
 }
 
 void CLASS::File::f_saveEmpty(Lace& lace, const CLASS::OBJECT::Data* data, const uint64& i) {
-	lace NL "┌Data :: Empty [ " << i << " ] " << data->name;
+	lace NL "┌Data [ " << i << " ] " << data->name;
 	lace A;
 	lace NL ptr_to_str(data);
+	lace NL "Type EMPTY";
 	lace R;
-	lace NL "└Data :: Empty";
+	lace NL "└Data";
 }
 
 void CLASS::File::f_saveForce(Lace& lace, const CLASS::OBJECT::Data* data, const uint64& i) {
-	lace NL "┌Data :: Force [ " << i << " ] " << data->name;
+	lace NL "┌Data [ " << i << " ] " << data->name;
 	lace A;
 	lace NL ptr_to_str(data);
+	lace NL "Type FORCE";
 	lace R;
-	lace NL "└Data :: Force";
+	lace NL "└Data";
 }
 
 void CLASS::File::f_saveGroup(Lace& lace, const CLASS::OBJECT::Data* data, const uint64& i) {
-	lace NL "┌Data :: Group [ " << i << " ] " << data->name;
+	lace NL "┌Data [ " << i << " ] " << data->name;
+	lace A;
 	lace NL ptr_to_str(data);
-	lace NL "└Data :: Group";
+	lace NL "Type GROUP";
+	lace R;
+	lace NL "└Data";
 }
 
 void CLASS::File::f_saveLight(Lace& lace, const CLASS::OBJECT::Data* data, const uint64& i) {
-	lace NL "┌Data :: Light [ " << i << " ] " << data->name;
+	lace NL "┌Data [ " << i << " ] " << data->name;
 	lace A;
 	lace NL ptr_to_str(data);
+	lace NL "Type LIGHT";
 	lace R;
-	lace NL "└Data :: Light";
+	lace NL "└Data";
 }
 
 void CLASS::File::f_saveMesh(Lace& lace, const CLASS::OBJECT::Data* data, const uint64& i) {
 	const CLASS::OBJECT::DATA::Mesh* mesh = static_cast<CLASS::OBJECT::DATA::Mesh*>(data->data);
-	lace NL "┌Data :: Mesh [ " << i << " ] " << data->name;
+	lace NL "┌Data [ " << i << " ] " << data->name;
 	lace A;
 	lace NL ptr_to_str(data);
+	lace NL "Type MESH";
+	lace NL "┌Mesh";
+	lace A;
 	lace NL "┌Vertices( " << mesh->vertices.size() << " )";
 	lace A;
 	for (uint64 i = 0; i < mesh->vertices.size(); i++) {
@@ -1098,23 +1075,27 @@ void CLASS::File::f_saveMesh(Lace& lace, const CLASS::OBJECT::Data* data, const 
 	lace R;
 	lace NL "└UVs";
 	lace R;
-	lace NL "└Data :: Mesh";
+	lace NL "└Mesh";
+	lace R;
+	lace NL "└Data";
 }
 
 void CLASS::File::f_saveSfx(Lace& lace, const CLASS::OBJECT::Data* data, const uint64& i) {
-	lace NL "┌Data :: Sfx [ " << i << " ] " << data->name;
+	lace NL "┌Data [ " << i << " ] " << data->name;
 	lace A;
 	lace NL ptr_to_str(data);
+	lace NL "Type SFX";
 	lace R;
-	lace NL "└Data :: Sfx";
+	lace NL "└Data";
 }
 
 void CLASS::File::f_saveVfx(Lace& lace, const CLASS::OBJECT::Data* data, const uint64& i) {
-	lace NL "┌Data :: Vfx [ " << i << " ] " << data->name;
+	lace NL "┌Data [ " << i << " ] " << data->name;
 	lace A;
 	lace NL ptr_to_str(data);
+	lace NL "Type VFX";
 	lace R;
-	lace NL "└Data :: Vfx";
+	lace NL "└Data";
 }
 
 void CLASS::File::f_saveObject(Lace& lace, const CLASS::Object* data, const uint64& i) {
@@ -1125,20 +1106,20 @@ void CLASS::File::f_saveObject(Lace& lace, const CLASS::Object* data, const uint
 	lace NL "Rotation ( " << data->transform.euler_rotation << " )";
 	lace NL "Scale    ( " << data->transform.scale << " )";
 	switch (data->data->type) {
-		case OBJECT::DATA::Type::ATMOSPHERE: lace NL "Type " << "Atmosphere"; break;
-		case OBJECT::DATA::Type::PRIMITIVE : lace NL "Type " << "Primitive";  break;
-		case OBJECT::DATA::Type::SKELETON  : lace NL "Type " << "Skeleton";   break;
-		case OBJECT::DATA::Type::CAMERA    : lace NL "Type " << "Camera";     break;
-		case OBJECT::DATA::Type::VOLUME    : lace NL "Type " << "Volume";     break;
-		case OBJECT::DATA::Type::CURVE     : lace NL "Type " << "Curve";      break;
-		case OBJECT::DATA::Type::EMPTY     : lace NL "Type " << "Empty";      break;
-		case OBJECT::DATA::Type::FORCE     : lace NL "Type " << "Froce";      break;
-		case OBJECT::DATA::Type::GROUP     : lace NL "Type " << "Group";      break;
-		case OBJECT::DATA::Type::LIGHT     : lace NL "Type " << "Light";      break;
-		case OBJECT::DATA::Type::MESH      : lace NL "Type " << "Mesh";       break;
-		case OBJECT::DATA::Type::SFX       : lace NL "Type " << "Sfx";        break;
-		case OBJECT::DATA::Type::VFX       : lace NL "Type " << "Vfx";        break;
 		case OBJECT::DATA::Type::NONE      : lace NL "Type " << "NONE";       break;
+		case OBJECT::DATA::Type::ATMOSPHERE: lace NL "Type " << "ATMOSPHERE"; break;
+		case OBJECT::DATA::Type::PRIMITIVE : lace NL "Type " << "PRIMITIVE";  break;
+		case OBJECT::DATA::Type::SKELETON  : lace NL "Type " << "SKELETON";   break;
+		case OBJECT::DATA::Type::CAMERA    : lace NL "Type " << "CAMERA";     break;
+		case OBJECT::DATA::Type::VOLUME    : lace NL "Type " << "VOLUME";     break;
+		case OBJECT::DATA::Type::CURVE     : lace NL "Type " << "CURVE";      break;
+		case OBJECT::DATA::Type::EMPTY     : lace NL "Type " << "EMPTY";      break;
+		case OBJECT::DATA::Type::FORCE     : lace NL "Type " << "FORCE";      break;
+		case OBJECT::DATA::Type::GROUP     : lace NL "Type " << "GROUP";      break;
+		case OBJECT::DATA::Type::LIGHT     : lace NL "Type " << "LIGHT";      break;
+		case OBJECT::DATA::Type::MESH      : lace NL "Type " << "MESH";       break;
+		case OBJECT::DATA::Type::SFX       : lace NL "Type " << "SFX";        break;
+		case OBJECT::DATA::Type::VFX       : lace NL "Type " << "VFX";        break;
 	}
 	lace R;
 	lace NL "└Object";

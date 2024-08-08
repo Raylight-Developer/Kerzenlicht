@@ -14,12 +14,12 @@
  ┌Node-Tree [ 0 ] Default Node Tree
   * 100
   ┌Nodes( 6 )
-   ┌Node  [ 0 ] Render Tick Node
+   ┌Node [ 0 ] Render Tick Node
     * 1000
     ( -120 0 )
-    Type EXEC :: Tick
+    Type EXEC :: TICK
    └Node
-   ┌Node [ 1 ] Set Rotation.x
+   ┌Node [ 1 ] Set Rotation.X
     * 1001
     ( 360 0 )
     Type LINK :: SET :: TRANSFORM :: EULER_ROTATION :: X
@@ -27,7 +27,7 @@
    ┌Node [ 2 ] Default Cube Pointer
     * 1002
     ( -120 100 )
-    Type LINK :: Pointer
+    Type LINK :: POINTER
     ┌Pointer
      Type 27
     └Pointer
@@ -35,7 +35,7 @@
    ┌Node [ 3 ] Default Plane Pointer
     * 1003
     ( -120 200 )
-    Type LINK :: Pointer
+    Type LINK :: POINTER
     ┌Pointer
      Type 27
     └Pointer
@@ -43,7 +43,7 @@
    ┌Node [ 4 ] Default Container Pointer
     * 1004
     ( -120 300 )
-    Type LINK :: Pointer
+    Type LINK :: POINTER
     ┌Pointer
      Type 27
     └Pointer
@@ -51,7 +51,7 @@
    ┌Node [ 5 ] Default Script
     * 1005
     ( 120 -20 )
-    Type EXEC :: Script
+    Type EXEC :: SCRIPT
     ┌Script
      Script_ID
     └Script

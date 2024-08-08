@@ -125,6 +125,8 @@
     <ClCompile Include="..\Shared\Source\Shader\Nodes\Shader_Nodes.cpp">
       <Filter>Shared\Source</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Workspaces\Speadsheet_Editor.cpp" />
+    <ClCompile Include="Source\Workspaces\Graph_Editor.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\Workspaces\API.hpp">
@@ -253,6 +255,8 @@
     <ClInclude Include="..\Shared\Include\Shader\Nodes\Shader_Nodes.hpp">
       <Filter>Shared\Include</Filter>
     </ClInclude>
+    <ClInclude Include="Include\Workspaces\Speadsheet_Editor.hpp" />
+    <ClInclude Include="Include\Workspaces\Graph_Editor.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Source Files">

@@ -37,12 +37,14 @@
     <ClInclude Include="..\Shared\Include\Shader\Nodes\Shader_Nodes.hpp" />
     <ClInclude Include="..\Shared\Include\Shader\Shader.hpp" />
     <ClInclude Include="..\Shared\Include\Shared.hpp" />
+    <ClInclude Include="Include\Workspaces\Graph_Editor.hpp" />
     <ClInclude Include="Include\Core\File.hpp" />
     <ClInclude Include="Include\Workspaces\Object_Node_Editor.hpp" />
     <ClInclude Include="Include\GUI_Nodes.hpp" />
     <ClInclude Include="Include\GUI_Object_Nodes.hpp" />
     <ClInclude Include="Include\Workspaces\Shelf.hpp" />
     <ClInclude Include="Include\Core\Session.hpp" />
+    <ClInclude Include="Include\Workspaces\Speadsheet_Editor.hpp" />
     <QtMoc Include="Include\GUI.hpp" />
     <ClInclude Include="Include\Main_Window.hpp" />
     <ClInclude Include="Include\QT.hpp" />
@@ -80,6 +82,7 @@
     <ClCompile Include="..\Shared\Source\Scene.cpp" />
     <ClCompile Include="..\Shared\Source\Shader\Nodes\Shader_Nodes.cpp" />
     <ClCompile Include="..\Shared\Source\Shader\Shader.cpp" />
+    <ClCompile Include="Source\Workspaces\Graph_Editor.cpp" />
     <ClCompile Include="Source\Core\File.cpp" />
     <ClCompile Include="Source\GUI.cpp" />
     <ClCompile Include="Source\Main_Window.cpp" />
@@ -98,6 +101,7 @@
     <ClCompile Include="Source\Workspaces\Shelf.cpp" />
     <ClCompile Include="Source\GUI_Object_Nodes.cpp" />
     <ClCompile Include="Source\Core\Session.cpp" />
+    <ClCompile Include="Source\Workspaces\Speadsheet_Editor.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Shaders\Realtime_Shader.comp" />

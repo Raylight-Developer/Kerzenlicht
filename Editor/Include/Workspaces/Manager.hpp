@@ -23,13 +23,15 @@ namespace GUI {
 		struct Workspace_Dock_Header;
 
 		enum struct Workspace_Type {
+			NONE,
 			OBJECT_NODE_EDITOR,
 			SHADER_NODE_EDITOR,
+			SPREADSHEET_EDITOR,
 			SCENE_OUTLINER,
+			GRAPH_EDITOR,
 			PROPERTIES,
 			VIEWPORT,
 			SHELF,
-			NONE,
 			API
 		};
 
