@@ -127,6 +127,7 @@
     </ClCompile>
     <ClCompile Include="Source\Workspaces\Speadsheet_Editor.cpp" />
     <ClCompile Include="Source\Workspaces\Graph_Editor.cpp" />
+    <ClCompile Include="Source\Workspaces\History.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\Workspaces\API.hpp">
@@ -257,6 +258,7 @@
     </ClInclude>
     <ClInclude Include="Include\Workspaces\Speadsheet_Editor.hpp" />
     <ClInclude Include="Include\Workspaces\Graph_Editor.hpp" />
+    <ClInclude Include="Include\Workspaces\History.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Source Files">

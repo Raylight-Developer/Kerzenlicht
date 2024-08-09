@@ -30,7 +30,7 @@ PYBIND11_EMBEDDED_MODULE(KL, Module) {
 		.def_readwrite("active_scene", &File::active_scene)
 		.def_readwrite("version", &File::version)
 		.def("f_printFile", &File::f_printFile)
-		.def("f_saveFile", &File::f_saveFile);
+		.def("f_saveAsciiFile", &File::f_saveAsciiFile);
 
 	Py::class_<GUI::WORKSPACE::Main_Window>(Module, "Main_Window")
 		.def_readwrite("file", &GUI::WORKSPACE::Main_Window::file)

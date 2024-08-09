@@ -90,6 +90,11 @@ string ptr_to_str(const T pointer) {
 	return "* " + to_string(reinterpret_cast<uint64>(pointer));
 }
 
+template <typename T>
+uint64 ptr(const T pointer) {
+	return reinterpret_cast<uint64>(pointer);
+}
+
 template<typename T>
 uint len32(const vector<T>& vector) {
 	return ul_to_u(vector.size());

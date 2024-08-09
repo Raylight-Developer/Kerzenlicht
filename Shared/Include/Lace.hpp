@@ -58,6 +58,8 @@ struct Lace { //------------Utility for string manipulation------------
 
 	Lace& operator+= (const uint16& value);
 	Lace& operator-= (const uint16& value);
+	Lace& operator++ (int);
+	Lace& operator-- (int);
 
 	Lace& clear();
 	string str() const;
@@ -127,3 +129,51 @@ struct Lace { //------------Utility for string manipulation------------
 
 string d_to_str(const dvec1& value);
 string f_to_str(const vec1& value);
+
+template<typename T>
+T f_readBinary(const vector<Byte>& data, const uint64& start) {
+	T value;
+	std::memcpy(&value, data.data() + start, sizeof(T));
+	return value;
+};
+
+template<typename T>
+T f_readBinary(const vector<Byte>& data, const uint64& start, const uint64& size) {
+	T value;
+	std::memcpy(&value, data.data() + start, size);
+	return value;
+}
+
+template<>
+string f_readBinary<string>(const vector<Byte>& data, const uint64& start, const uint64& size);
+
+template<typename T>
+vector<Byte> f_toBinary(const T& value) {
+	vector<Byte> data;
+	const uint64 size = sizeof(T); // - 1 Careful: removing null terminator
+	const Byte* byte_data = reinterpret_cast<const Byte*>(&value);
+
+	data.reserve(size);
+	data.insert(data.end(), byte_data, byte_data + size);
+	return data;
+};
+
+template<>
+vector<Byte> f_toBinary<string>(const string& value);
+
+struct Bin_Lace { //------------Utility for binary manipulation------------
+	vector<Byte> data;
+	Bin_Lace();
+
+	Bin_Lace& operator<< (const Bin_Lace& value);
+
+	template <typename T>
+	Bin_Lace& operator<< (const T& value) {
+		vector<Byte> bytes = f_toBinary(value);
+		const uint64 size = bytes.size();
+
+		data.reserve(data.size() + size);
+		data.insert(data.end(), bytes.begin(), bytes.end());
+		return *this;
+	};
+};

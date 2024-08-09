@@ -13,7 +13,7 @@
 #endif
 
 Lace::Lace() :
-	character("\t")
+	character(" ")
 {
 	data = stringstream();
 	current_tab = 0;
@@ -91,6 +91,16 @@ Lace& Lace::operator+=(const uint16& value) {
 
 Lace& Lace::operator-=(const uint16& value) {
 	current_tab -= value;
+	return *this;
+}
+
+Lace& Lace::operator++(int) {
+	current_tab++;
+	return *this;
+}
+
+Lace& Lace::operator--(int) {
+	current_tab--;
 	return *this;
 }
 
@@ -395,4 +405,29 @@ string f_to_str(const vec1& value) {
 	}
 
 	return result;
+}
+
+template<>
+string f_readBinary<string>(const vector<std::byte>& data, const uint64& start, const uint64& size) {
+	return string(reinterpret_cast<const char*>(&data[start]), size);
+}
+
+template<>
+vector<Byte> f_toBinary<string>(const string& value) {
+	vector<Byte> byteVector;
+	byteVector.reserve(value.size());
+	for (char ch : value) {
+		byteVector.push_back(static_cast<Byte>(ch));
+	}
+	return byteVector;
+}
+
+Bin_Lace::Bin_Lace() {
+	data = {};
+}
+
+Bin_Lace& Bin_Lace::operator<<(const Bin_Lace& value) {
+	data.reserve(value.data.size() + data.size());
+	data.insert(data.end(), value.data.begin(), value.data.end());
+	return *this;
 }

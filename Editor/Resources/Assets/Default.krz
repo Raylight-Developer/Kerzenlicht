@@ -1,6 +1,6 @@
 ﻿┌Header
  Version 1.0.0
- Type File
+ Type FILE
 └Header
 ┌Materials( 2 )
  ┌Material [ 0 ] Cube Material
@@ -71,7 +71,7 @@
 ┌Data( 3 )
  ┌Data [ 0 ] Cube
   * 10000
-  Type Mesh
+  Type MESH
   ┌Mesh
    ┌Vertices( 8 )
     0 (  0.2 -0.2 -0.2 )
@@ -101,7 +101,7 @@
  └Data
  ┌Data  [ 1 ] Plane
   * 10001
-  Type Mesh
+  Type MESH
   ┌Mesh
    ┌Vertices( 4 )
     0 (  2 0 -2 )
@@ -117,7 +117,7 @@
  └Data
  ┌Data [ 2 ] Container
   * 10002
-  Type Group
+  Type GROUP
   ┌Group
   └Group
  └Data
@@ -128,7 +128,7 @@
   Position ( 0.0 0.6 0.0 )
   Rotation ( 0.0 0.0 0.0 )
   Scale    ( 1.0 1.0 1.0 )
-  Type Mesh
+  Type MESH
   ┌Materials( 1 )
    * 10
   └Materials
@@ -138,7 +138,7 @@
   Position ( 0.0 0.0 0.0 )
   Rotation ( 0.0 0.0 0.0 )
   Scale    ( 1.0 1.0 1.0 )
-  Type Mesh
+  Type MESH
   ┌Materials( 1 )
    * 11
   └Materials
@@ -148,7 +148,7 @@
   Position ( 0.0 0.0 0.0 )
   Rotation ( 0.0 0.0 0.0 )
   Scale    ( 1.0 1.0 1.0 )
-  Type Group
+  Type GROUP
   ┌Materials( 0 )
   └Materials
  └Object

@@ -2,6 +2,9 @@
 
 #include "Core/Session.hpp"
 
+typedef vector<string> Tokens;
+typedef vector<Tokens> Token_Array;
+
 CLASS::File::File() {
 	pointer_map = {};
 	object_data = {};
@@ -21,79 +24,21 @@ CLASS::File::File() {
 	version = "ERROR";
 }
 
-void CLASS::File::f_loadFile(const string& file_path) {
-	LOG << ENDL << ANSI_B << "[File]" << ANSI_RESET  << "  Filepath " << file_path; FLUSH;
+void CLASS::File::f_loadAsciiFile(const string& file_path) {
+	LOG << ENDL << ANSI_B << "[ASCII File]" << ANSI_RESET  << " Filepath " << file_path; FLUSH;
 	ifstream file(file_path, ios::binary);
 	map<uint64, void*> pointer_map;
 
 	if (file.is_open()) {
-		vector<vector<string>> data = vector<vector<string>>();
+		Token_Array token_data = Token_Array();
 		string line;
-
-		Parse_Type is_processing = Parse_Type::NONE;
 		while (getline(file, line)) {
-			vector<string> tokens = f_split(line);
+			Tokens tokens = f_split(line);
 			if (!tokens.empty()) {
-				if (is_processing == Parse_Type::NONE) {
-					if      (tokens[0] == "┌Build-Steps")
-						is_processing = Parse_Type::BUILD_STEPS;
-					else if (tokens[0] == "┌Node-Tree")
-						is_processing = Parse_Type::NODE_TREE;
-					else if (tokens[0] == "┌Material")
-						is_processing = Parse_Type::MATERIAL;
-					else if (tokens[0] == "┌Header")
-						is_processing = Parse_Type::HEADER;
-					else if (tokens[0] == "┌Object")
-						is_processing = Parse_Type::OBJECT;
-					else if (tokens[0] == "┌Scene")
-						is_processing = Parse_Type::SCENE;
-					else if (tokens[0] == "┌Data")
-						is_processing = Parse_Type::DATA;
-					data.clear();
-					data.push_back(tokens);
-				}
-				else {
-					if      (is_processing == Parse_Type::BUILD_STEPS and tokens[0] == "└Build-Steps") {
-						LOG << ENDL << ANSI_B << "  [Data-Block]" << ANSI_RESET; FLUSH;
-						is_processing = Parse_Type::NONE;
-						f_loadBuild(data);
-					}
-					else if (is_processing == Parse_Type::NODE_TREE and tokens[0] == "└Node-Tree") {
-						LOG << ENDL << ANSI_B << "  [Data-Block]" << ANSI_RESET; FLUSH;
-						is_processing = Parse_Type::NONE;
-						node_trees.push_back(f_loadNodeTree(data));
-					}
-					else if (is_processing == Parse_Type::MATERIAL and tokens[0] == "└Material") {
-						LOG << ENDL << ANSI_B << "  [Data-Block]" << ANSI_RESET; FLUSH;
-						is_processing = Parse_Type::NONE;
-						materials.push_back(f_loadMaterial(data));
-					}
-					else if (is_processing == Parse_Type::HEADER and tokens[0] == "└Header") {
-						LOG << ENDL << ANSI_B << "  [Data-Block]" << ANSI_RESET; FLUSH;
-						is_processing = Parse_Type::NONE;
-						f_loadHeader(data);
-					}
-					else if (is_processing == Parse_Type::OBJECT and tokens[0] == "└Object") {
-						LOG << ENDL << ANSI_B << "  [Data-Block]" << ANSI_RESET; FLUSH;
-						is_processing = Parse_Type::NONE;
-						objects.push_back(f_loadObject(data));
-					}
-					else if (is_processing == Parse_Type::SCENE and tokens[0] == "└Scene") {
-						LOG << ENDL << ANSI_B << "  [Data-Block]" << ANSI_RESET; FLUSH;
-						is_processing = Parse_Type::NONE;
-						scenes.push_back(f_loadScene(data));
-					}
-					else if (is_processing == Parse_Type::DATA and tokens[0] == "└Data") {
-						LOG << ENDL << ANSI_B << "  [Data-Block]" << ANSI_RESET; FLUSH;
-						is_processing = Parse_Type::NONE;
-						object_data.push_back(f_loadData(data));
-					}
-					else {
-						data.push_back(tokens);
-					}
-				}
+				token_data.push_back(tokens);
 			}
 		}
+		f_loadAscii(token_data);
 	}
 	else {
 		LOG << ENDL << ANSI_R << "  [File]" << ANSI_RESET << " Error Opening File"; FLUSH;
@@ -102,9 +47,138 @@ void CLASS::File::f_loadFile(const string& file_path) {
 	f_fileStats();
 }
 
-void CLASS::File::f_loadHeader(const vector<vector<string>>& token_data) {
+void CLASS::File::f_saveAsciiFile(const string& file_path) {
+	ofstream file(file_path);
+	if (file.is_open()) {
+		file << f_printFile();
+		file.close();
+	}
+}
+
+void CLASS::File::f_loadBinaryFile(const string& file_path) {
+	LOG << ENDL << ANSI_B << "[Binary File]" << ANSI_RESET  << " Filepath " << file_path; FLUSH;
+	ifstream file(file_path, ios::binary | ios::ate);
+
+	std::ifstream::pos_type fileSize = file.tellg();
+	file.seekg(0, std::ios::beg);
+	vector<Byte> buffer = vector<Byte>(fileSize);
+
+	file.read(reinterpret_cast<char*>(buffer.data()), fileSize);
+	file.close();
+
+	f_loadBinary(buffer);
+}
+
+void CLASS::File::f_saveBinaryFile(const string& file_path) {
+	ofstream file(file_path, ios::binary);
+	if (file.is_open()) {
+		Bin_Lace bin = Bin_Lace();
+
+		f_saveBinary(bin);
+
+		file.write(reinterpret_cast<const char*>(bin.data.data()), bin.data.size());
+		file.close();
+	}
+}
+
+CLASS::File CLASS::File::f_getAsciiFile(const string& file_path) {
+	File file;
+	file.f_loadAsciiFile(file_path);
+	return file;
+}
+
+CLASS::File CLASS::File::f_getBinaryFile(const string& file_path) {
+	File file;
+	file.f_loadBinaryFile(file_path);
+	return file;
+}
+
+#define NL << NL() <<
+#define SP << S() <<
+
+string CLASS::File::f_printFile() {
+	Lace lace = Lace();
+	f_saveAscii(lace);
+	return lace.str();
+}
+
+void CLASS::File::f_fileStats() const {
+	LOG << ENDL << ANSI_B << "[Stats]" << ANSI_RESET;
+	LOG << ENDL << "  Objects     ( " << objects.size() << " )";
+	LOG << ENDL << "  Object Data ( " << object_data.size() << " )";
+	LOG << ENDL << "  Pointer_Map ( " << pointer_map.size() << " )";
+	FLUSH;
+}
+
+void CLASS::File::f_loadAscii(const Token_Array& token_data) {
+	Token_Array data = Token_Array();
+
+	Parse_Type is_processing = Parse_Type::NONE;
+	for (const auto& tokens : token_data) {
+		if (is_processing == Parse_Type::NONE) {
+			if      (tokens[0] == "┌Build-Steps")
+				is_processing = Parse_Type::BUILD_STEPS;
+			else if (tokens[0] == "┌Node-Tree")
+				is_processing = Parse_Type::NODE_TREE;
+			else if (tokens[0] == "┌Material")
+				is_processing = Parse_Type::MATERIAL;
+			else if (tokens[0] == "┌Header")
+				is_processing = Parse_Type::HEADER;
+			else if (tokens[0] == "┌Object")
+				is_processing = Parse_Type::OBJECT;
+			else if (tokens[0] == "┌Scene")
+				is_processing = Parse_Type::SCENE;
+			else if (tokens[0] == "┌Data")
+				is_processing = Parse_Type::DATA;
+			data.clear();
+			data.push_back(tokens);
+		}
+		else {
+			if      (is_processing == Parse_Type::BUILD_STEPS and tokens[0] == "└Build-Steps") {
+				LOG << ENDL << ANSI_B << "  [Data-Block]" << ANSI_RESET; FLUSH;
+				is_processing = Parse_Type::NONE;
+				f_loadAsciiBuild(data);
+			}
+			else if (is_processing == Parse_Type::NODE_TREE and tokens[0] == "└Node-Tree") {
+				LOG << ENDL << ANSI_B << "  [Data-Block]" << ANSI_RESET; FLUSH;
+				is_processing = Parse_Type::NONE;
+				node_trees.push_back(f_loadAsciiNodeTree(data));
+			}
+			else if (is_processing == Parse_Type::MATERIAL and tokens[0] == "└Material") {
+				LOG << ENDL << ANSI_B << "  [Data-Block]" << ANSI_RESET; FLUSH;
+				is_processing = Parse_Type::NONE;
+				materials.push_back(f_loadAsciiMaterial(data));
+			}
+			else if (is_processing == Parse_Type::HEADER and tokens[0] == "└Header") {
+				LOG << ENDL << ANSI_B << "  [Data-Block]" << ANSI_RESET; FLUSH;
+				is_processing = Parse_Type::NONE;
+				f_loadAsciiHeader(data);
+			}
+			else if (is_processing == Parse_Type::OBJECT and tokens[0] == "└Object") {
+				LOG << ENDL << ANSI_B << "  [Data-Block]" << ANSI_RESET; FLUSH;
+				is_processing = Parse_Type::NONE;
+				objects.push_back(f_loadAsciiObject(data));
+			}
+			else if (is_processing == Parse_Type::SCENE and tokens[0] == "└Scene") {
+				LOG << ENDL << ANSI_B << "  [Data-Block]" << ANSI_RESET; FLUSH;
+				is_processing = Parse_Type::NONE;
+				scenes.push_back(f_loadAsciiScene(data));
+			}
+			else if (is_processing == Parse_Type::DATA and tokens[0] == "└Data") {
+				LOG << ENDL << ANSI_B << "  [Data-Block]" << ANSI_RESET; FLUSH;
+				is_processing = Parse_Type::NONE;
+				object_data.push_back(f_loadAsciiData(data));
+			}
+			else {
+				data.push_back(tokens);
+			}
+		}
+	}
+}
+
+void CLASS::File::f_loadAsciiHeader(const Token_Array& token_data) {
 	LOG << ENDL << ANSI_B << "    [Header]" << ANSI_RESET; FLUSH;
-	for (const vector<string>& tokens : token_data) {
+	for (const Tokens& tokens : token_data) {
 		if (tokens[0] == "Version") {
 			version = tokens[1];
 		}
@@ -114,7 +188,7 @@ void CLASS::File::f_loadHeader(const vector<vector<string>>& token_data) {
 	}
 }
 
-CLASS::Node_Tree* CLASS::File::f_loadNodeTree(const vector<vector<string>>& token_data) {
+CLASS::Node_Tree* CLASS::File::f_loadAsciiNodeTree(const Token_Array& token_data) {
 	auto node_tree = new CLASS::Node_Tree();
 	auto gui_node_tree = new GUI::NODE::Node_Tree();
 	node_tree->name = f_join(token_data[0], 4);
@@ -123,8 +197,8 @@ CLASS::Node_Tree* CLASS::File::f_loadNodeTree(const vector<vector<string>>& toke
 	LOG << ENDL << "      " << ANSI_Purple  << node_tree->name << ANSI_RESET; FLUSH;
 
 	bool is_processing = false;
-	vector<vector<string>> read_data = vector<vector<string>>();
-	for (const vector<string>& tokens : token_data) {
+	Token_Array read_data = Token_Array();
+	for (const Tokens& tokens : token_data) {
 		if (tokens[0] == "┌Node") {
 			is_processing = true;
 			read_data.clear();
@@ -142,7 +216,7 @@ CLASS::Node_Tree* CLASS::File::f_loadNodeTree(const vector<vector<string>>& toke
 			is_processing = false;
 			const string name = f_join(read_data[0], 4);
 			const uint64 pointer = str_to_ul(read_data[1][1]);
-			const ivec2 pos = str_to_i(read_data[2][1], read_data[2][2]);
+			const ivec2  pos = str_to_i(read_data[2][1], read_data[2][2]);
 
 			CLASS::Node* node = nullptr;
 			GUI::NODE::Node* gui_node = nullptr;
@@ -266,7 +340,7 @@ CLASS::Node_Tree* CLASS::File::f_loadNodeTree(const vector<vector<string>>& toke
 		else if (tokens[0] == "└Build-E") {
 			LOG << ENDL << ANSI_B << "      [Build-E]" << ANSI_RESET; FLUSH;
 			is_processing = false;
-			for (const vector<string>& sub_tokens : read_data) {
+			for (const Tokens& sub_tokens : read_data) {
 				auto node_l = static_cast<CLASS::Node*>(pointer_map[str_to_ul(sub_tokens[1])]);
 				auto port_l = static_cast<NODE::PORT::Exec_O_Port*>(
 					node_l->outputs[str_to_ul(sub_tokens[2])]
@@ -291,7 +365,7 @@ CLASS::Node_Tree* CLASS::File::f_loadNodeTree(const vector<vector<string>>& toke
 		else if (tokens[0] == "└Build-D") {
 			LOG << ENDL << ANSI_B << "      [Build-D]" << ANSI_RESET; FLUSH;
 			is_processing = false;
-			for (const vector<string>& sub_tokens : read_data) {
+			for (const Tokens& sub_tokens : read_data) {
 				auto node_l = static_cast<CLASS::Node*>(pointer_map[str_to_ul(sub_tokens[1])]);
 				auto port_l = static_cast<NODE::PORT::Data_O_Port*>(
 					node_l->outputs[str_to_ul(sub_tokens[2])]
@@ -322,43 +396,43 @@ CLASS::Node_Tree* CLASS::File::f_loadNodeTree(const vector<vector<string>>& toke
 	return node_tree;
 }
 
-SHADER::Shader* CLASS::File::f_loadMaterial(const vector<vector<string>>& token_data) {
+SHADER::Shader* CLASS::File::f_loadAsciiMaterial(const Token_Array& token_data) {
 	SHADER::Shader* material = new SHADER::Shader();
 	material->name = f_join(token_data[0], 4);
 	return material;
 }
 
-CLASS::OBJECT::Data* CLASS::File::f_loadData(const vector<vector<string>>& token_data) {
+CLASS::OBJECT::Data* CLASS::File::f_loadAsciiData(const Token_Array& token_data) {
 	if      (token_data[2][1] == "ATMOSPHERE")
-		return f_loadAtmosphere(token_data);
+		return f_loadAsciiAtmosphere(token_data);
 	else if (token_data[2][1] == "PRIMITIVE")
-		return f_loadPrimitive (token_data);
+		return f_loadAsciiPrimitive (token_data);
 	else if (token_data[2][1] == "SKELETON")
-		return f_loadSkeleton  (token_data);
+		return f_loadAsciiSkeleton  (token_data);
 	else if (token_data[2][1] == "CAMERA")
-		return f_loadCamera    (token_data);
+		return f_loadAsciiCamera    (token_data);
 	else if (token_data[2][1] == "VOLUME")
-		return f_loadVolume    (token_data);
+		return f_loadAsciiVolume    (token_data);
 	else if (token_data[2][1] == "CURVE")
-		return f_loadCurve     (token_data);
+		return f_loadAsciiCurve     (token_data);
 	else if (token_data[2][1] == "EMPTY")
-		return f_loadEmpty     (token_data);
+		return f_loadAsciiEmpty     (token_data);
 	else if (token_data[2][1] == "FORCE")
-		return f_loadForce     (token_data);
+		return f_loadAsciiForce     (token_data);
 	else if (token_data[2][1] == "GROUP")
-		return f_loadGroup     (token_data);
+		return f_loadAsciiGroup     (token_data);
 	else if (token_data[2][1] == "LIGHT")
-		return f_loadLight     (token_data);
+		return f_loadAsciiLight     (token_data);
 	else if (token_data[2][1] == "MESH")
-		return f_loadMesh      (token_data);
+		return f_loadAsciiMesh      (token_data);
 	else if (token_data[2][1] == "SFX")
-		return f_loadSfx       (token_data);
+		return f_loadAsciiSfx       (token_data);
 	else if (token_data[2][1] == "VFX")
-		return f_loadVfx       (token_data);
+		return f_loadAsciiVfx       (token_data);
 	return new CLASS::OBJECT::Data();
 }
 
-CLASS::OBJECT::Data* CLASS::File::f_loadAtmosphere(const vector<vector<string>>& token_data) {
+CLASS::OBJECT::Data* CLASS::File::f_loadAsciiAtmosphere(const Token_Array& token_data) {
 	CLASS::OBJECT::Data* data = new CLASS::OBJECT::Data();
 	data->name = f_join(token_data[0], 4);
 	data->type = CLASS::OBJECT::DATA::Type::ATMOSPHERE;
@@ -366,7 +440,7 @@ CLASS::OBJECT::Data* CLASS::File::f_loadAtmosphere(const vector<vector<string>>&
 	return data;
 }
 
-CLASS::OBJECT::Data* CLASS::File::f_loadPrimitive(const vector<vector<string>>& token_data) {
+CLASS::OBJECT::Data* CLASS::File::f_loadAsciiPrimitive(const Token_Array& token_data) {
 	CLASS::OBJECT::Data* data = new CLASS::OBJECT::Data();
 	data->name = f_join(token_data[0], 4);
 	data->type = CLASS::OBJECT::DATA::Type::PRIMITIVE;
@@ -374,7 +448,7 @@ CLASS::OBJECT::Data* CLASS::File::f_loadPrimitive(const vector<vector<string>>& 
 	return data;
 }
 
-CLASS::OBJECT::Data* CLASS::File::f_loadSkeleton(const vector<vector<string>>& token_data) {
+CLASS::OBJECT::Data* CLASS::File::f_loadAsciiSkeleton(const Token_Array& token_data) {
 	CLASS::OBJECT::Data* data = new CLASS::OBJECT::Data();
 	data->name = f_join(token_data[0], 4);
 	data->type = CLASS::OBJECT::DATA::Type::SKELETON;
@@ -382,7 +456,7 @@ CLASS::OBJECT::Data* CLASS::File::f_loadSkeleton(const vector<vector<string>>& t
 	return data;
 }
 
-CLASS::OBJECT::Data* CLASS::File::f_loadCamera(const vector<vector<string>>& token_data) {
+CLASS::OBJECT::Data* CLASS::File::f_loadAsciiCamera(const Token_Array& token_data) {
 	CLASS::OBJECT::Data* data = new CLASS::OBJECT::Data();
 	CLASS::OBJECT::DATA::Camera* camera = new CLASS::OBJECT::DATA::Camera();
 	data->name = f_join(token_data[0], 4);
@@ -392,7 +466,7 @@ CLASS::OBJECT::Data* CLASS::File::f_loadCamera(const vector<vector<string>>& tok
 	return data;
 }
 
-CLASS::OBJECT::Data* CLASS::File::f_loadVolume(const vector<vector<string>>& token_data) {
+CLASS::OBJECT::Data* CLASS::File::f_loadAsciiVolume(const Token_Array& token_data) {
 	CLASS::OBJECT::Data* data = new CLASS::OBJECT::Data();
 	data->name = f_join(token_data[0], 4);
 	data->type = CLASS::OBJECT::DATA::Type::VOLUME;
@@ -400,7 +474,7 @@ CLASS::OBJECT::Data* CLASS::File::f_loadVolume(const vector<vector<string>>& tok
 	return data;
 }
 
-CLASS::OBJECT::Data* CLASS::File::f_loadCurve(const vector<vector<string>>& token_data) {
+CLASS::OBJECT::Data* CLASS::File::f_loadAsciiCurve(const Token_Array& token_data) {
 	CLASS::OBJECT::Data* data = new CLASS::OBJECT::Data();
 	data->name = f_join(token_data[0], 4);
 	data->type = CLASS::OBJECT::DATA::Type::CURVE;
@@ -408,7 +482,7 @@ CLASS::OBJECT::Data* CLASS::File::f_loadCurve(const vector<vector<string>>& toke
 	return data;
 }
 
-CLASS::OBJECT::Data* CLASS::File::f_loadEmpty(const vector<vector<string>>& token_data) {
+CLASS::OBJECT::Data* CLASS::File::f_loadAsciiEmpty(const Token_Array& token_data) {
 	CLASS::OBJECT::Data* data = new CLASS::OBJECT::Data();
 	data->name = f_join(token_data[0], 4);
 	data->type = CLASS::OBJECT::DATA::Type::EMPTY;
@@ -416,7 +490,7 @@ CLASS::OBJECT::Data* CLASS::File::f_loadEmpty(const vector<vector<string>>& toke
 	return data;
 }
 
-CLASS::OBJECT::Data* CLASS::File::f_loadForce(const vector<vector<string>>& token_data) {
+CLASS::OBJECT::Data* CLASS::File::f_loadAsciiForce(const Token_Array& token_data) {
 	CLASS::OBJECT::Data* data = new CLASS::OBJECT::Data();
 	data->name = f_join(token_data[0], 4);
 	data->type = CLASS::OBJECT::DATA::Type::FORCE;
@@ -424,7 +498,7 @@ CLASS::OBJECT::Data* CLASS::File::f_loadForce(const vector<vector<string>>& toke
 	return data;
 }
 
-CLASS::OBJECT::Data* CLASS::File::f_loadGroup(const vector<vector<string>>& token_data) {
+CLASS::OBJECT::Data* CLASS::File::f_loadAsciiGroup(const Token_Array& token_data) {
 	CLASS::OBJECT::Data* data = new CLASS::OBJECT::Data();
 	CLASS::OBJECT::DATA::Group* group = new CLASS::OBJECT::DATA::Group();
 	data->name = f_join(token_data[0], 4);
@@ -435,7 +509,7 @@ CLASS::OBJECT::Data* CLASS::File::f_loadGroup(const vector<vector<string>>& toke
 	return data;
 }
 
-CLASS::OBJECT::Data* CLASS::File::f_loadLight(const vector<vector<string>>& token_data) {
+CLASS::OBJECT::Data* CLASS::File::f_loadAsciiLight(const Token_Array& token_data) {
 	CLASS::OBJECT::Data* data = new CLASS::OBJECT::Data();
 	data->name = f_join(token_data[0], 4);
 	data->type = CLASS::OBJECT::DATA::Type::LIGHT;
@@ -443,7 +517,7 @@ CLASS::OBJECT::Data* CLASS::File::f_loadLight(const vector<vector<string>>& toke
 	return data;
 }
 
-CLASS::OBJECT::Data* CLASS::File::f_loadMesh(const vector<vector<string>>& token_data) {
+CLASS::OBJECT::Data* CLASS::File::f_loadAsciiMesh(const Token_Array& token_data) {
 	CLASS::OBJECT::Data* data = new CLASS::OBJECT::Data();
 	CLASS::OBJECT::DATA::Mesh * mesh = new CLASS::OBJECT::DATA::Mesh();
 	data->name = f_join(token_data[0], 4);
@@ -455,20 +529,20 @@ CLASS::OBJECT::Data* CLASS::File::f_loadMesh(const vector<vector<string>>& token
 	LOG << ENDL << ANSI_B << "      [Mesh]" << ANSI_RESET; FLUSH;
 
 	bool is_processing = false;
-	vector<vector<string>> read_data = vector<vector<string>>();
-	for (const vector<string>& tokens : token_data) {
+	Token_Array read_data = Token_Array();
+	for (const Tokens& tokens : token_data) {
 		if (
 			tokens[0] == "┌Vertices(" or
 			tokens[0] == "┌Normals(" or
 			tokens[0] == "┌Faces(" or
 			tokens[0] == "┌UVs("
-		) {
+			) {
 			is_processing = true;
 			read_data.clear();
 		}
 		else if (
 			tokens[0] == "┌Vertex-Group"
-		) {
+			) {
 			is_processing = true;
 			read_data.clear();
 			read_data.push_back(tokens);
@@ -476,7 +550,7 @@ CLASS::OBJECT::Data* CLASS::File::f_loadMesh(const vector<vector<string>>& token
 		else if (tokens[0] == "└Vertices") {
 			is_processing = false;
 			LOG << ENDL << "        Vertices"; FLUSH;
-			for (const vector<string>& token_data : read_data) {
+			for (const Tokens& token_data : read_data) {
 				mesh->vertices.push_back(new CLASS::OBJECT::DATA::MESH::Vertex(str_to_d(token_data[2], token_data[3], token_data[4])));
 			}
 		}
@@ -490,7 +564,7 @@ CLASS::OBJECT::Data* CLASS::File::f_loadMesh(const vector<vector<string>>& token
 		else if (tokens[0] == "└Faces") {
 			is_processing = false;
 			LOG << ENDL << "        Faces"; FLUSH;
-			for (const vector<string>& token_data : read_data) {
+			for (const Tokens& token_data : read_data) {
 				CLASS::OBJECT::DATA::MESH::Face* face = new CLASS::OBJECT::DATA::MESH::Face();
 				for (uint64 i = 0; i < str_to_u(token_data[1]); i++) {
 					face->vertices.push_back(mesh->vertices[str_to_ul(token_data[i + 3ULL])]);
@@ -501,7 +575,7 @@ CLASS::OBJECT::Data* CLASS::File::f_loadMesh(const vector<vector<string>>& token
 		else if (tokens[0] == "└Normals") {
 			is_processing = false;
 			LOG << ENDL << "       Normals"; FLUSH;
-			for (const vector<string>& token_data : read_data) {
+			for (const Tokens& token_data : read_data) {
 				for (uint64 i = 0; i < str_to_u(token_data[1]); i ++) {
 					mesh->normals[mesh->faces[str_to_ul(token_data[0])]].push_back(str_to_d(token_data[3ULL + i * 5ULL], token_data[4ULL + i * 5ULL], token_data[5ULL + i * 5ULL]));
 				}
@@ -510,7 +584,7 @@ CLASS::OBJECT::Data* CLASS::File::f_loadMesh(const vector<vector<string>>& token
 		else if (tokens[0] == "└UVs") {
 			is_processing = false;
 			LOG << ENDL << "        UVs"; FLUSH;
-			for (const vector<string>& token_data : read_data) {
+			for (const Tokens& token_data : read_data) {
 				for (uint64 i = 0; i < str_to_u(token_data[1]); i ++) {
 					mesh->uvs[mesh->faces[str_to_ul(token_data[0])]].push_back(str_to_d(token_data[3ULL + i * 4ULL], token_data[4ULL + i * 4ULL]));
 				}
@@ -524,7 +598,7 @@ CLASS::OBJECT::Data* CLASS::File::f_loadMesh(const vector<vector<string>>& token
 	return data;
 }
 
-CLASS::OBJECT::Data* CLASS::File::f_loadSfx(const vector<vector<string>>& token_data) {
+CLASS::OBJECT::Data* CLASS::File::f_loadAsciiSfx(const Token_Array& token_data) {
 	CLASS::OBJECT::Data* data = new CLASS::OBJECT::Data();
 	data->name = f_join(token_data[0], 4);
 	data->type = CLASS::OBJECT::DATA::Type::SFX;
@@ -532,7 +606,7 @@ CLASS::OBJECT::Data* CLASS::File::f_loadSfx(const vector<vector<string>>& token_
 	return data;
 }
 
-CLASS::OBJECT::Data* CLASS::File::f_loadVfx(const vector<vector<string>>& token_data) {
+CLASS::OBJECT::Data* CLASS::File::f_loadAsciiVfx(const Token_Array& token_data) {
 	CLASS::OBJECT::Data* data = new CLASS::OBJECT::Data();
 	data->name = f_join(token_data[0], 4);
 	data->type = CLASS::OBJECT::DATA::Type::VFX;
@@ -540,7 +614,7 @@ CLASS::OBJECT::Data* CLASS::File::f_loadVfx(const vector<vector<string>>& token_
 	return data;
 }
 
-CLASS::Object* CLASS::File::f_loadObject(const vector<vector<string>>& token_data) {
+CLASS::Object* CLASS::File::f_loadAsciiObject(const Token_Array& token_data) {
 	CLASS::Object* object = new CLASS::Object();
 	object->name = f_join(token_data[0], 4);
 
@@ -550,8 +624,8 @@ CLASS::Object* CLASS::File::f_loadObject(const vector<vector<string>>& token_dat
 	CLASS::Transform transform;
 
 	bool is_processing = false;
-	vector<vector<string>> read_data = vector<vector<string>>();
-	for (const vector<string>& tokens : token_data) {
+	Token_Array read_data = Token_Array();
+	for (const Tokens& tokens : token_data) {
 		if (tokens[0] == "Position") {
 			transform.position = str_to_d(tokens[2], tokens[3], tokens[4]);
 		}
@@ -570,14 +644,14 @@ CLASS::Object* CLASS::File::f_loadObject(const vector<vector<string>>& token_dat
 	return object;
 };
 
-CLASS::Scene* CLASS::File::f_loadScene(const vector<vector<string>>& token_data) {
+CLASS::Scene* CLASS::File::f_loadAsciiScene(const Token_Array& token_data) {
 	LOG << ENDL << ANSI_B << "    [Scene]" << ANSI_RESET; FLUSH;
 
 	CLASS::Scene* scene = new CLASS::Scene();
 
 	bool is_processing = false;
-	vector<vector<string>> read_data = vector<vector<string>>();
-	for (const vector<string>& tokens : token_data) {
+	Token_Array read_data = Token_Array();
+	for (const Tokens& tokens : token_data) {
 		if (tokens[0] == "Active-Camera") {
 			scene->active_camera = objects[str_to_ul(tokens[1])];
 		}
@@ -587,7 +661,7 @@ CLASS::Scene* CLASS::File::f_loadScene(const vector<vector<string>>& token_data)
 		}
 		else if (tokens[0] == "└Objects") {
 			is_processing = false;
-			for (const vector<string>& sub_tokens : read_data) {
+			for (const Tokens& sub_tokens : read_data) {
 				scene->objects.push_back(static_cast<CLASS::Object*>(pointer_map[str_to_ul(sub_tokens[1])]));
 			}
 		}
@@ -599,12 +673,12 @@ CLASS::Scene* CLASS::File::f_loadScene(const vector<vector<string>>& token_data)
 	return scene;
 }
 
-void CLASS::File::f_loadBuild(const vector<vector<string>>& token_data) {
+void CLASS::File::f_loadAsciiBuild(const Token_Array& token_data) {
 	LOG << ENDL << ANSI_B << "    [Build]" << ANSI_RESET; FLUSH;
 
 	bool is_processing = false;
-	vector<vector<string>> read_data = vector<vector<string>>();
-	for (const vector<string>& tokens : token_data) {
+	Token_Array read_data = Token_Array();
+	for (const Tokens& tokens : token_data) {
 		if (tokens[0] == "Active-Scene") {
 			active_scene->set(static_cast<CLASS::Scene*>(pointer_map[str_to_ul(tokens[2])]));
 		}
@@ -614,7 +688,7 @@ void CLASS::File::f_loadBuild(const vector<vector<string>>& token_data) {
 		}
 		else if (tokens[0] == "└Data-Group") {
 			is_processing = false;
-			for (const vector<string>& sub_tokens : read_data) {
+			for (const Tokens& sub_tokens : read_data) {
 				static_cast<CLASS::OBJECT::Data*>(pointer_map[str_to_ul(sub_tokens[1])])->getGroup()->objects.push_back(static_cast<CLASS::Object*>(pointer_map[str_to_ul(sub_tokens[3])]));
 			}
 		}
@@ -624,7 +698,7 @@ void CLASS::File::f_loadBuild(const vector<vector<string>>& token_data) {
 		}
 		else if (tokens[0] == "└Object-Data") {
 			is_processing = false;
-			for (const vector<string>& sub_tokens : read_data) {
+			for (const Tokens& sub_tokens : read_data) {
 				static_cast<CLASS::Object*>(pointer_map[str_to_ul(sub_tokens[1])])->data = static_cast<CLASS::OBJECT::Data*>(pointer_map[str_to_ul(sub_tokens[3])]);
 			}
 		}
@@ -634,7 +708,7 @@ void CLASS::File::f_loadBuild(const vector<vector<string>>& token_data) {
 		}
 		else if (tokens[0] == "└Object-Node") {
 			is_processing = false;
-			for (const vector<string>& sub_tokens : read_data) {
+			for (const Tokens& sub_tokens : read_data) {
 				static_cast<CLASS::Object*>(pointer_map[str_to_ul(sub_tokens[1])])->node_tree = static_cast<CLASS::Node_Tree*>(pointer_map[str_to_ul(sub_tokens[3])]);
 			}
 		}
@@ -644,7 +718,7 @@ void CLASS::File::f_loadBuild(const vector<vector<string>>& token_data) {
 		}
 		else if (tokens[0] == "└Node-Pointer") {
 			is_processing = false;
-			for (const vector<string>& sub_tokens : read_data) {
+			for (const Tokens& sub_tokens : read_data) {
 				auto ptr = static_cast<NODE::LINK::Pointer*>(pointer_map[str_to_ul(sub_tokens[1])]);
 				ptr->pointer = static_cast<CLASS::Object*>(pointer_map[str_to_ul(sub_tokens[3])]);
 
@@ -658,99 +732,96 @@ void CLASS::File::f_loadBuild(const vector<vector<string>>& token_data) {
 	}
 }
 
-void CLASS::File::f_saveFile(const string& file_path) {
-	ofstream file(file_path);
-	if (file.is_open()) {
-		file << f_printFile();
-		file.close();
-	}
+void CLASS::File::f_loadBinary(const vector<Byte>& byte_data) {
+	map<uint64, void*> pointer_map;
+
+	version = f_readBinary<string>(byte_data, 0, 5);
+	type    = f_readBinary<string>(byte_data, 5, 4);
+
+	//const uint64 start_materials   = f_readBinary<uint64>(byte_data, 11);
+	//const uint64 start_node_trees  = f_readBinary<uint64>(byte_data, 19);
+	//const uint64 start_object_data = f_readBinary<uint64>(byte_data, 27);
+	//const uint64 start_objects     = f_readBinary<uint64>(byte_data, 35);
+	//const uint64 start_scenes      = f_readBinary<uint64>(byte_data, 43);
+	//
+	//const uint64 end_materials   = f_readBinary<uint64>(byte_data, 51);
+	//const uint64 end_node_trees  = f_readBinary<uint64>(byte_data, 59);
+	//const uint64 end_object_data = f_readBinary<uint64>(byte_data, 67);
+	//const uint64 end_objects     = f_readBinary<uint64>(byte_data, 75);
+	//const uint64 end_scenes      = f_readBinary<uint64>(byte_data, 83);
 }
 
-#define NL << NL() <<
-#define SP << S() <<
-#define A += 1
-#define R -= 1
-
-string CLASS::File::f_printFile() {
-	Lace lace = Lace(" ");
+void CLASS::File::f_saveAscii(Lace & lace) {
+	f_saveAsciiHeader(lace);
 	uint64 count = 0;
-	f_saveHeader(lace);
-
-	count = 0;
-	lace NL "┌Materials( " << materials.size() << " )";
-	lace A;
-	for (const SHADER::Shader* material : materials)
-		f_saveMaterial(lace, material, count++);
-	lace R;
-	lace NL "└Materials";
 
 	count = 0;
 	lace NL "┌Node-Trees( " << node_trees.size() << " )";
-	lace A;
+	lace++;
 	for (CLASS::Node_Tree* node : node_trees)
-		f_saveNodeTree(lace, node, count++);
-	lace R;
+		f_saveAsciiNodeTree(lace, node, count++);
+	lace--;
 	lace NL "└Node-Trees";
 
+	count = 0;
+	lace NL "┌Materials( " << materials.size() << " )";
+	lace++;
+	for (const SHADER::Shader* material : materials)
+		f_saveAsciiMaterial(lace, material, count++);
+	lace--;
+	lace NL "└Materials";
+
 	lace NL "┌Data( " << object_data.size() << " )";
-	lace A;
-	f_saveData(lace);
-	lace R;
+	lace++;
+	f_saveAsciiData(lace);
+	lace--;
 	lace NL "└Data";
 
 	count = 0;
 	lace NL "┌Objects( " << objects.size() << " )";
-	lace A;
+	lace++;
 	for (const CLASS::Object* object : objects)
-		f_saveObject(lace, object, count++);
-	lace R;
+		f_saveAsciiObject(lace, object, count++);
+	lace--;
 	lace NL "└Objects";
 
 	count = 0;
 	lace NL "┌Scenes( " << scenes.size() << " )";
-	lace A;
+	lace++;
 	for (const CLASS::Scene* scene : scenes)
-		f_saveScene(lace, scene, count++);
-	lace R;
+		f_saveAsciiScene(lace, scene, count++);
+	lace--;
 	lace NL "└Scenes";
 
-	f_saveBuild(lace);
-
-	return lace.str();
+	f_saveAsciiBuild(lace);
 }
 
-void CLASS::File::f_fileStats() const {
-	LOG << ENDL << ANSI_B << "[Stats]" << ANSI_RESET;
-	LOG << ENDL << "  Objects     ( " << objects.size() << " )";
-	LOG << ENDL << "  Object Data ( " << object_data.size() << " )";
-	LOG << ENDL << "  Pointer_Map ( " << pointer_map.size() << " )";
-	FLUSH;
-}
-
-void CLASS::File::f_saveHeader(Lace& lace) {
+void CLASS::File::f_saveAsciiHeader(Lace& lace) {
 	lace NL "┌Header";
-	lace A;
-		lace NL "Version 1.0.0";
-	lace R;;
+	lace++;
+	lace NL "Version 1.0.0";
+	lace NL "Type FILE";
+	lace--;
 	lace NL "└Header";
 }
 
-void CLASS::File::f_saveNodeTree(Lace& lace, CLASS::Node_Tree* data, const uint64& i) {
+void CLASS::File::f_saveAsciiNodeTree(Lace& lace, CLASS::Node_Tree* data, const uint64& i) {
 	uint64 j = 0;
 	lace NL "┌Node-Tree [ " << i << " ] " << data->name;
-	lace A;
+	lace++;
 	lace NL ptr_to_str(data);
 	lace NL "┌Nodes( " << data->nodes.size() << " )";
-	lace A;
+	lace++;
 	for (CLASS::Node* node : data->nodes) {
 		lace NL "┌Node [ " << j++ << " ] " << node->name;
-		lace NL S() << ptr_to_str(node);
-		lace NL S() << "( " << node_map[node]->scenePos()<< " )";
+		lace++;
+		lace NL ptr_to_str(node);
+		lace NL "( " << node_map[node]->scenePos()<< " )";
 		switch (node->type) {
 			case NODE::Type::CONSTRAINT: {
 				switch (static_cast<NODE::CONSTRAINT::Type>(node->sub_type)) {
 					case NODE::CONSTRAINT::Type::PARENT: {
-						lace NL S() << "Type CONSTRAINT :: PARENT";
+						lace NL"Type CONSTRAINT :: PARENT";
 						break;
 					}
 				}
@@ -759,18 +830,18 @@ void CLASS::File::f_saveNodeTree(Lace& lace, CLASS::Node_Tree* data, const uint6
 			case NODE::Type::EXEC: {
 				switch (static_cast<NODE::EXEC::Type>(node->sub_type)) {
 					case NODE::EXEC::Type::COUNTER: {
-						lace NL S() << "Type EXEC :: COUNTER";
+						lace NL "Type EXEC :: COUNTER";
 						break;
 					}
 					case NODE::EXEC::Type::SCRIPT: {
-						lace NL S() << "Type EXEC :: SCRIPT";
-						lace NL S() << "┌Script";
+						lace NL "Type EXEC :: SCRIPT";
+						lace NL "┌Script";
 						lace NL S() SP static_cast<CLASS::NODE::EXEC::Script*>(node)->script_id;
-						lace NL S() << "└Script";
+						lace NL "└Script";
 						break;
 					}
 					case NODE::EXEC::Type::TICK: {
-						lace NL S() << "Type EXEC :: TICK";
+						lace NL "Type EXEC :: TICK";
 						break;
 					}
 				}
@@ -779,19 +850,19 @@ void CLASS::File::f_saveNodeTree(Lace& lace, CLASS::Node_Tree* data, const uint6
 			case NODE::Type::LINK: {
 				switch (static_cast<NODE::LINK::Type>(node->sub_type)) {
 					case NODE::LINK::Type::POINTER: {
-						lace NL S() << "Type LINK :: POINTER";
-						lace NL S() << "┌Pointer";
+						lace NL "Type LINK :: POINTER";
+						lace NL "┌Pointer";
 						lace NL S() SP "Type " << e_to_u(static_cast<NODE::LINK::Pointer*>(node)->pointer_type);
-						lace NL S() << "└Pointer";
+						lace NL "└Pointer";
 						break;
 					}
 					case NODE::LINK::Type::GET: {
 						switch (static_cast<CLASS::NODE::LINK::Get*>(node)->mini_type) {
 						case NODE::LINK::GET::Type::FIELD: {
-							lace NL S() << "Type LINK :: GET :: FIELD";
-							lace NL S() << "┌Field";
+							lace NL "Type LINK :: GET :: FIELD";
+							lace NL "┌Field";
 							lace NL S() SP static_cast<NODE::LINK::GET::Field*>(node)->field;
-							lace NL S() << "└Field";
+							lace NL "└Field";
 							break;
 						}
 						}
@@ -800,7 +871,7 @@ void CLASS::File::f_saveNodeTree(Lace& lace, CLASS::Node_Tree* data, const uint6
 					case NODE::LINK::Type::SET: {
 						switch (static_cast<CLASS::NODE::LINK::Set*>(node)->mini_type) {
 							case NODE::LINK::SET::Type::EULER_ROTATION_X: {
-								lace NL S() << "Type LINK :: SET :: TRANSFORM :: EULER_ROTATION :: X";
+								lace NL "Type LINK :: SET :: TRANSFORM :: EULER_ROTATION :: X";
 								break;
 							}
 						}
@@ -812,19 +883,19 @@ void CLASS::File::f_saveNodeTree(Lace& lace, CLASS::Node_Tree* data, const uint6
 			case NODE::Type::MATH: {
 				switch (static_cast<NODE::MATH::Type>(node->sub_type)) {
 					case NODE::MATH::Type::ADD: {
-						lace NL S() << "Type MATH :: ADD";
+						lace NL "Type MATH :: ADD";
 						break;
 					}
 					case NODE::MATH::Type::SUB: {
-						lace NL S() << "Type MATH :: SUB";
+						lace NL "Type MATH :: SUB";
 						break;
 					}
 					case NODE::MATH::Type::MUL: {
-						lace NL S() << "Type MATH :: MUL";
+						lace NL "Type MATH :: MUL";
 						break;
 					}
 					case NODE::MATH::Type::DIV: {
-						lace NL S() << "Type MATH :: DIV";
+						lace NL "Type MATH :: DIV";
 						break;
 					}
 				}
@@ -838,11 +909,11 @@ void CLASS::File::f_saveNodeTree(Lace& lace, CLASS::Node_Tree* data, const uint6
 					case NODE::UTIL::Type::CAST: {
 						switch (static_cast<NODE::UTIL::Cast*>(node)->mini_type) {
 							case NODE::UTIL::CAST::Type::UINT_TO_DOUBLE: {
-								lace NL S() << "Type UTIL :: CAST :: UINT_TO_DOUBLE";
+								lace NL "Type UTIL :: CAST :: UINT_TO_DOUBLE";
 								break;
 							}
 							case NODE::UTIL::CAST::Type::INT_TO_DOUBLE: {
-								lace NL S() << "Type UTIL :: CAST :: INT_TO_DOUBLE";
+								lace NL "Type UTIL :: CAST :: INT_TO_DOUBLE";
 								break;
 							}
 							break;
@@ -850,19 +921,20 @@ void CLASS::File::f_saveNodeTree(Lace& lace, CLASS::Node_Tree* data, const uint6
 						break;
 					}
 					case NODE::UTIL::Type::VIEW: {
-						lace NL S() << "Type UTIL :: VIEW";
+						lace NL "Type UTIL :: VIEW";
 						break;
 					}
 				}
 				break;
 			}
 		}
+		lace--;
 		lace NL "└Node";
 	}
-	lace R;
+	lace--;
 		lace NL "└Nodes";
 	lace NL "┌Build-E"; // [Node L Pointer] [Slot] [Slot] [Node R Pointer]
-	lace A;
+	lace++;
 	for (const auto node_l : data->nodes) {
 		for (const auto& port : node_l->outputs) {
 			if (port->type == NODE::PORT::Type::EXEC_O) {
@@ -879,10 +951,10 @@ void CLASS::File::f_saveNodeTree(Lace& lace, CLASS::Node_Tree* data, const uint6
 			}
 		}
 	}
-	lace R;
+	lace--;
 		lace NL "└Build-E";
 	lace NL "┌Build-D"; // [Node L Pointer] [Slot] [Slot] [Node R Pointer]
-	lace A;
+	lace++;
 		for (const auto node_r : data->nodes) {
 			for (const auto& port : node_r->inputs) {
 				if (port->type == NODE::PORT::Type::DATA_I) {
@@ -899,149 +971,149 @@ void CLASS::File::f_saveNodeTree(Lace& lace, CLASS::Node_Tree* data, const uint6
 				}
 			}
 		}
-	lace R;
+	lace--;
 		lace NL "└Build-D";
-	lace R;
+	lace--;
 		lace NL "└Node-Tree";
 }
 
-void CLASS::File::f_saveMaterial(Lace& lace, const SHADER::Shader* data, const uint64& i) {
+void CLASS::File::f_saveAsciiMaterial(Lace& lace, const SHADER::Shader* data, const uint64& i) {
 	lace NL "┌Material [ " << i << " ] " << data->name;
-	lace A;
+	lace++;
 	lace NL ptr_to_str(data);
-	lace R;
+	lace--;
 	lace NL "└Material";
 }
 
-void CLASS::File::f_saveData(Lace& lace) {
+void CLASS::File::f_saveAsciiData(Lace& lace) {
 	for (uint64 i = 0; i < object_data.size(); i++) {
 		switch (object_data[i]->type) {
-			case CLASS::OBJECT::DATA::Type::ATMOSPHERE: f_saveAtmosphere(lace, object_data[i], i); break;
-			case CLASS::OBJECT::DATA::Type::PRIMITIVE:  f_savePrimitive (lace, object_data[i], i); break;
-			case CLASS::OBJECT::DATA::Type::SKELETON:   f_saveSkeleton  (lace, object_data[i], i); break;
-			case CLASS::OBJECT::DATA::Type::CAMERA:     f_saveCamera    (lace, object_data[i], i); break;
-			case CLASS::OBJECT::DATA::Type::VOLUME:     f_saveVolume    (lace, object_data[i], i); break;
-			case CLASS::OBJECT::DATA::Type::CURVE:      f_saveCurve     (lace, object_data[i], i); break;
-			case CLASS::OBJECT::DATA::Type::EMPTY:      f_saveEmpty     (lace, object_data[i], i); break;
-			case CLASS::OBJECT::DATA::Type::FORCE:      f_saveForce     (lace, object_data[i], i); break;
-			case CLASS::OBJECT::DATA::Type::GROUP:      f_saveGroup     (lace, object_data[i], i); break;
-			case CLASS::OBJECT::DATA::Type::LIGHT:      f_saveLight     (lace, object_data[i], i); break;
-			case CLASS::OBJECT::DATA::Type::MESH:       f_saveMesh      (lace, object_data[i], i); break;
-			case CLASS::OBJECT::DATA::Type::SFX:        f_saveSfx       (lace, object_data[i], i); break;
-			case CLASS::OBJECT::DATA::Type::VFX:        f_saveVfx       (lace, object_data[i], i); break;
+			case CLASS::OBJECT::DATA::Type::ATMOSPHERE: f_saveAsciiAtmosphere(lace, object_data[i], i); break;
+			case CLASS::OBJECT::DATA::Type::PRIMITIVE:  f_saveAsciiPrimitive (lace, object_data[i], i); break;
+			case CLASS::OBJECT::DATA::Type::SKELETON:   f_saveAsciiSkeleton  (lace, object_data[i], i); break;
+			case CLASS::OBJECT::DATA::Type::CAMERA:     f_saveAsciiCamera    (lace, object_data[i], i); break;
+			case CLASS::OBJECT::DATA::Type::VOLUME:     f_saveAsciiVolume    (lace, object_data[i], i); break;
+			case CLASS::OBJECT::DATA::Type::CURVE:      f_saveAsciiCurve     (lace, object_data[i], i); break;
+			case CLASS::OBJECT::DATA::Type::EMPTY:      f_saveAsciiEmpty     (lace, object_data[i], i); break;
+			case CLASS::OBJECT::DATA::Type::FORCE:      f_saveAsciiForce     (lace, object_data[i], i); break;
+			case CLASS::OBJECT::DATA::Type::GROUP:      f_saveAsciiGroup     (lace, object_data[i], i); break;
+			case CLASS::OBJECT::DATA::Type::LIGHT:      f_saveAsciiLight     (lace, object_data[i], i); break;
+			case CLASS::OBJECT::DATA::Type::MESH:       f_saveAsciiMesh      (lace, object_data[i], i); break;
+			case CLASS::OBJECT::DATA::Type::SFX:        f_saveAsciiSfx       (lace, object_data[i], i); break;
+			case CLASS::OBJECT::DATA::Type::VFX:        f_saveAsciiVfx       (lace, object_data[i], i); break;
 		}
 	}
 }
 
-void CLASS::File::f_saveAtmosphere(Lace& lace, const CLASS::OBJECT::Data* data, const uint64& i) {
+void CLASS::File::f_saveAsciiAtmosphere(Lace& lace, const CLASS::OBJECT::Data* data, const uint64& i) {
 	lace NL "┌Data [ " << i << " ] " << data->name;
-	lace A;
+	lace++;
 	lace NL ptr_to_str(data);
 	lace NL "Type ATMOSPHERE";
-	lace R;
+	lace--;
 	lace NL "└Data";
 }
 
-void CLASS::File::f_savePrimitive(Lace& lace, const CLASS::OBJECT::Data* data, const uint64& i) {
+void CLASS::File::f_saveAsciiPrimitive(Lace& lace, const CLASS::OBJECT::Data* data, const uint64& i) {
 	lace NL "┌Data [ " << i << " ] " << data->name;
-	lace A;
+	lace++;
 	lace NL ptr_to_str(data);
 	lace NL "Type PRIMITIVE";
-	lace R;
+	lace--;
 	lace NL "└Data";
 }
 
-void CLASS::File::f_saveSkeleton(Lace& lace, const CLASS::OBJECT::Data* data, const uint64& i) {
+void CLASS::File::f_saveAsciiSkeleton(Lace& lace, const CLASS::OBJECT::Data* data, const uint64& i) {
 	lace NL "┌Data [ " << i << " ] " << data->name;
-	lace A;
+	lace++;
 	lace NL ptr_to_str(data);
 	lace NL "Type SKELETON";
-	lace R;
+	lace--;
 	lace NL "└Data";
 }
 
-void CLASS::File::f_saveCamera(Lace& lace, const CLASS::OBJECT::Data* data, const uint64& i) {
+void CLASS::File::f_saveAsciiCamera(Lace& lace, const CLASS::OBJECT::Data* data, const uint64& i) {
 	lace NL "┌Data [ " << i << " ] " << data->name;
-	lace A;
+	lace++;
 	lace NL ptr_to_str(data);
 	lace NL "Type CAMERA";
-	lace R;
+	lace--;
 	lace NL "└Data";
 }
 
-void CLASS::File::f_saveVolume(Lace& lace, const CLASS::OBJECT::Data* data, const uint64& i) {
+void CLASS::File::f_saveAsciiVolume(Lace& lace, const CLASS::OBJECT::Data* data, const uint64& i) {
 	lace NL "┌Data [ " << i << " ] " << data->name;
-	lace A;
+	lace++;
 	lace NL ptr_to_str(data);
 	lace NL "Type VOLUME";
-	lace R;
+	lace--;
 	lace NL "└Data";
 }
 
-void CLASS::File::f_saveCurve(Lace& lace, const CLASS::OBJECT::Data* data, const uint64& i) {
+void CLASS::File::f_saveAsciiCurve(Lace& lace, const CLASS::OBJECT::Data* data, const uint64& i) {
 	lace NL "┌Data [ " << i << " ] " << data->name;
-	lace A;
+	lace++;
 	lace NL ptr_to_str(data);
 	lace NL "Type CURVE";
-	lace R;
+	lace--;
 	lace NL "└Data";
 }
 
-void CLASS::File::f_saveEmpty(Lace& lace, const CLASS::OBJECT::Data* data, const uint64& i) {
+void CLASS::File::f_saveAsciiEmpty(Lace& lace, const CLASS::OBJECT::Data* data, const uint64& i) {
 	lace NL "┌Data [ " << i << " ] " << data->name;
-	lace A;
+	lace++;
 	lace NL ptr_to_str(data);
 	lace NL "Type EMPTY";
-	lace R;
+	lace--;
 	lace NL "└Data";
 }
 
-void CLASS::File::f_saveForce(Lace& lace, const CLASS::OBJECT::Data* data, const uint64& i) {
+void CLASS::File::f_saveAsciiForce(Lace& lace, const CLASS::OBJECT::Data* data, const uint64& i) {
 	lace NL "┌Data [ " << i << " ] " << data->name;
-	lace A;
+	lace++;
 	lace NL ptr_to_str(data);
 	lace NL "Type FORCE";
-	lace R;
+	lace--;
 	lace NL "└Data";
 }
 
-void CLASS::File::f_saveGroup(Lace& lace, const CLASS::OBJECT::Data* data, const uint64& i) {
+void CLASS::File::f_saveAsciiGroup(Lace& lace, const CLASS::OBJECT::Data* data, const uint64& i) {
 	lace NL "┌Data [ " << i << " ] " << data->name;
-	lace A;
+	lace++;
 	lace NL ptr_to_str(data);
 	lace NL "Type GROUP";
-	lace R;
+	lace--;
 	lace NL "└Data";
 }
 
-void CLASS::File::f_saveLight(Lace& lace, const CLASS::OBJECT::Data* data, const uint64& i) {
+void CLASS::File::f_saveAsciiLight(Lace& lace, const CLASS::OBJECT::Data* data, const uint64& i) {
 	lace NL "┌Data [ " << i << " ] " << data->name;
-	lace A;
+	lace++;
 	lace NL ptr_to_str(data);
 	lace NL "Type LIGHT";
-	lace R;
+	lace--;
 	lace NL "└Data";
 }
 
-void CLASS::File::f_saveMesh(Lace& lace, const CLASS::OBJECT::Data* data, const uint64& i) {
+void CLASS::File::f_saveAsciiMesh(Lace& lace, const CLASS::OBJECT::Data* data, const uint64& i) {
 	const CLASS::OBJECT::DATA::Mesh* mesh = static_cast<CLASS::OBJECT::DATA::Mesh*>(data->data);
 	lace NL "┌Data [ " << i << " ] " << data->name;
-	lace A;
+	lace++;
 	lace NL ptr_to_str(data);
 	lace NL "Type MESH";
 	lace NL "┌Mesh";
-	lace A;
+	lace++;
 	lace NL "┌Vertices( " << mesh->vertices.size() << " )";
-	lace A;
+	lace++;
 	for (uint64 i = 0; i < mesh->vertices.size(); i++) {
 		lace NL i << " ( " << mesh->vertices[i]->position << " )";
 	}
-	lace R;
+	lace--;
 	lace NL "└Vertices";
-	lace NL "┌Vertex-Groups";
+	lace NL "┌Vertex-Groups( " << mesh->vertex_groups.size() << " )";
 	lace NL "└Vertex-Groups";
 	lace NL "┌Faces( " << mesh->faces.size() << " )";
-	lace A;
+	lace++;
 	for (uint64 i = 0; i < mesh->faces.size(); i++) {
 		lace NL i SP mesh->faces[i]->vertices.size() SP "[";
 		for (uint64 j = 0; j < mesh->faces[i]->vertices.size(); j++)
@@ -1050,10 +1122,10 @@ void CLASS::File::f_saveMesh(Lace& lace, const CLASS::OBJECT::Data* data, const 
 					lace SP k;
 		lace SP "]";
 	}
-	lace R;
+	lace--;
 	lace NL "└Faces";
 	lace NL "┌Normals( 0 )";
-	lace A;
+	lace++;
 	// TODO Fix crash if no normal layers are present
 	//for (uint64 i = 0; i < mesh->faces.size(); i++) {
 	//	lace NL i SP mesh->normals.at(mesh->faces[i]).size();
@@ -1061,10 +1133,10 @@ void CLASS::File::f_saveMesh(Lace& lace, const CLASS::OBJECT::Data* data, const 
 	//		lace SP "(" SP mesh->normals.at(mesh->faces[i])[j] SP ")";
 	//	}
 	//}
-	lace R;
+	lace--;
 	lace NL "└Normals";
 	lace NL "┌UVs( 0 )";
-	lace A;
+	lace++;
 	// TODO Fix crash if no uv layers are present
 	//for (uint64 i = 0; i < mesh->faces.size(); i++) {
 	//	lace NL i SP mesh->uvs.at(mesh->faces[i]).size();
@@ -1072,35 +1144,35 @@ void CLASS::File::f_saveMesh(Lace& lace, const CLASS::OBJECT::Data* data, const 
 	//		lace SP "(" SP mesh->uvs.at(mesh->faces[i])[j] SP ")";
 	//	}
 	//}
-	lace R;
+	lace--;
 	lace NL "└UVs";
-	lace R;
+	lace--;
 	lace NL "└Mesh";
-	lace R;
+	lace--;
 	lace NL "└Data";
 }
 
-void CLASS::File::f_saveSfx(Lace& lace, const CLASS::OBJECT::Data* data, const uint64& i) {
+void CLASS::File::f_saveAsciiSfx(Lace& lace, const CLASS::OBJECT::Data* data, const uint64& i) {
 	lace NL "┌Data [ " << i << " ] " << data->name;
-	lace A;
+	lace++;
 	lace NL ptr_to_str(data);
 	lace NL "Type SFX";
-	lace R;
+	lace--;
 	lace NL "└Data";
 }
 
-void CLASS::File::f_saveVfx(Lace& lace, const CLASS::OBJECT::Data* data, const uint64& i) {
+void CLASS::File::f_saveAsciiVfx(Lace& lace, const CLASS::OBJECT::Data* data, const uint64& i) {
 	lace NL "┌Data [ " << i << " ] " << data->name;
-	lace A;
+	lace++;
 	lace NL ptr_to_str(data);
 	lace NL "Type VFX";
-	lace R;
+	lace--;
 	lace NL "└Data";
 }
 
-void CLASS::File::f_saveObject(Lace& lace, const CLASS::Object* data, const uint64& i) {
+void CLASS::File::f_saveAsciiObject(Lace& lace, const CLASS::Object* data, const uint64& i) {
 	lace NL "┌Object [ " << i << " ] " << data->name;
-	lace A;
+	lace++;
 	lace NL ptr_to_str(data);
 	lace NL "Position ( " << data->transform.position << " )";
 	lace NL "Rotation ( " << data->transform.euler_rotation << " )";
@@ -1121,30 +1193,30 @@ void CLASS::File::f_saveObject(Lace& lace, const CLASS::Object* data, const uint
 		case OBJECT::DATA::Type::SFX       : lace NL "Type " << "SFX";        break;
 		case OBJECT::DATA::Type::VFX       : lace NL "Type " << "VFX";        break;
 	}
-	lace R;
+	lace--;
 	lace NL "└Object";
 }
 
-void CLASS::File::f_saveScene(Lace& lace, const CLASS::Scene* data, const uint64& i) {
+void CLASS::File::f_saveAsciiScene(Lace& lace, const CLASS::Scene* data, const uint64& i) {
 	lace NL "┌Scene [ " << i << " ]";
-	lace A;
+	lace++;
 	lace NL ptr_to_str(data);
 	lace NL "┌Objects";
-	lace A;
+	lace++;
 	for (auto object : data->objects)
 		lace NL ptr_to_str(object);
-	lace R;
+	lace--;
 	lace NL "└Objects";
-	lace R;
+	lace--;
 	lace NL "└Scene";
 }
 
-void CLASS::File::f_saveBuild(Lace& lace) {
+void CLASS::File::f_saveAsciiBuild(Lace& lace) {
 	lace NL "┌Build-Steps";
-	lace A;
+	lace++;
 	lace NL "Active-Scene " << ptr_to_str(active_scene->ptr);
 	lace NL "┌Data-Group";
-	lace A;
+	lace++;
 	for (auto object : objects) {
 		if (object->data->type == OBJECT::DATA::Type::GROUP) {
 			for (auto child : object->data->getGroup()->objects) {
@@ -1152,28 +1224,28 @@ void CLASS::File::f_saveBuild(Lace& lace) {
 			}
 		}
 	}
-	lace R;
+	lace--;
 	lace NL "└Data-Group";
 	lace NL "┌Object-Data";
-	lace A;
+	lace++;
 	for (auto object : objects) {
 		if (object->data and object->data->type != OBJECT::DATA::Type::NONE) {
 			lace NL ptr_to_str(object) SP ptr_to_str(object->data);
 		}
 	}
-	lace R;
+	lace--;
 	lace NL "└Object-Data";
 	lace NL "┌Object-Node";
-	lace A;
+	lace++;
 	for (auto object: objects) {
 		if (object->data->type != OBJECT::DATA::Type::NONE and object->node_tree) {
 			lace NL ptr_to_str(object) SP ptr_to_str(object->node_tree);
 		}
 	}
-	lace R;
+	lace--;
 	lace NL "└Object-Node";
 	lace NL "┌Node-Pointer";
-	lace A;
+	lace++;
 	for (auto object : objects) {
 		if (object->data->type != OBJECT::DATA::Type::NONE and object->node_tree) {
 			for (auto node : object->node_tree->nodes) {
@@ -1183,8 +1255,58 @@ void CLASS::File::f_saveBuild(Lace& lace) {
 			}
 		}
 	}
-	lace R;
+	lace--;
 	lace NL "└Node-Pointer";
-	lace R;
+	lace--;
 	lace NL "└Build-Steps";
+}
+
+void CLASS::File::f_saveBinary(Bin_Lace & bin) {
+	f_saveBinaryHeader(bin);
+
+	bin << node_trees.size();
+	for (CLASS::Node_Tree* node : node_trees) {
+		f_saveBinaryNodeTree(bin, node);
+	}
+
+	bin << materials.size();
+
+	bin << object_data.size();
+
+	bin << objects.size();
+
+	bin << scenes.size();
+}
+
+void CLASS::File::f_saveBinaryHeader(Bin_Lace & bin) {
+	bin << string("1.0.0");
+	bin << string("FILE");
+}
+
+void CLASS::File::f_saveBinaryNodeTree(Bin_Lace & bin, Node_Tree* data) {
+	uint64 size = 0ULL;
+	Bin_Lace bytes;
+
+	bytes << ul_to_uh(data->name.size());
+	bytes << data->name;
+	bytes << ptr(data);
+	bytes << ul_to_uh(data->nodes.size());
+
+	size += 2;
+	size += data->name.size();
+	size += 8;
+	size += 2;
+
+	for (CLASS::Node* node : data->nodes) {
+		bytes << ul_to_uh(node->name.size());
+		bytes << node->name;
+		bytes << d_to_u(node_map[node]->scenePos());
+
+		size += 2;
+		size += node->name.size();
+		size += 16;
+	}
+
+	bin << size;
+	bin << bytes;
 }
