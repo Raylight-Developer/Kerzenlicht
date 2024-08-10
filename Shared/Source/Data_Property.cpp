@@ -148,3 +148,81 @@ uvec3 typeColor(const CLASS::DATA::Type& type) {
 	}
 	return uvec3(0, 0, 0);
 }
+
+string CLASS::DATA::toString(const Type& type) {
+	switch (type) {
+		case Type::NONE:      return "NONE";
+		case Type::ANY:       return "ANY";
+
+		case Type::STRING:    return "STRING";
+		case Type::DOUBLE:    return "DOUBLE";
+		case Type::BOOL:      return "BOOL";
+		case Type::UINT:      return "UINT";
+		case Type::INT:       return "INT";
+
+		case Type::UMAT2:     return "UMAT2";
+		case Type::UMAT3:     return "UMAT3";
+		case Type::UMAT4:     return "UMAT4";
+		case Type::IMAT2:     return "IMAT2";
+		case Type::IMAT3:     return "IMAT3";
+		case Type::IMAT4:     return "IMAT4";
+		case Type::MAT2:      return "MAT2";
+		case Type::MAT3:      return "MAT3";
+		case Type::MAT4:      return "MAT4";
+
+		case Type::UVEC2:     return "UVEC2";
+		case Type::UVEC3:     return "UVEC3";
+		case Type::UVEC4:     return "UVEC4";
+		case Type::IVEC2:     return "IVEC2";
+		case Type::IVEC3:     return "IVEC3";
+		case Type::IVEC4:     return "IVEC4";
+		case Type::VEC2:      return "VEC2";
+		case Type::VEC3:      return "VEC3";
+		case Type::VEC4:      return "VEC4";
+
+		case Type::TRANSFORM: return "TRANSFORM";
+		case Type::TEXTURE:   return "TEXTURE";
+		case Type::OBJECT:    return "OBJECT";
+		case Type::SCENE:     return "SCENE";
+		case Type::DATA:      return "DATA";
+	}
+	return "";
+}
+
+CLASS::DATA::Type CLASS::DATA::fromString(const string& type) {
+	if      (type == "NONE")      return Type::NONE;
+	else if (type == "ANY")       return Type::ANY;
+
+	else if (type == "STRING")    return Type::STRING;
+	else if (type == "DOUBLE")    return Type::DOUBLE;
+	else if (type == "BOOL")      return Type::BOOL;
+	else if (type == "UINT")      return Type::UINT;
+	else if (type == "INT")       return Type::INT;
+
+	else if (type == "UMAT2")     return Type::UMAT2;
+	else if (type == "UMAT3")     return Type::UMAT3;
+	else if (type == "UMAT4")     return Type::UMAT4;
+	else if (type == "IMAT2")     return Type::IMAT2;
+	else if (type == "IMAT3")     return Type::IMAT3;
+	else if (type == "IMAT4")     return Type::IMAT4;
+	else if (type == "MAT2")      return Type::MAT2;
+	else if (type == "MAT3")      return Type::MAT3;
+	else if (type == "MAT4")      return Type::MAT4;
+
+	else if (type == "UVEC2")     return Type::UVEC2;
+	else if (type == "UVEC3")     return Type::UVEC3;
+	else if (type == "UVEC4")     return Type::UVEC4;
+	else if (type == "IVEC2")     return Type::IVEC2;
+	else if (type == "IVEC3")     return Type::IVEC3;
+	else if (type == "IVEC4")     return Type::IVEC4;
+	else if (type == "VEC2")      return Type::VEC2;
+	else if (type == "VEC3")      return Type::VEC3;
+	else if (type == "VEC4")      return Type::VEC4;
+
+	else if (type == "TRANSFORM") return Type::TRANSFORM;
+	else if (type == "TEXTURE")   return Type::TEXTURE;
+	else if (type == "OBJECT")    return Type::OBJECT;
+	else if (type == "SCENE")     return Type::SCENE;
+	else if (type == "DATA")      return Type::DATA;
+	return Type::NONE;
+}

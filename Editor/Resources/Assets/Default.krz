@@ -29,7 +29,7 @@
     ( -120 100 )
     Type LINK :: POINTER
     ┌Pointer
-     Type 27
+     Type OBJECT
     └Pointer
    └Node
    ┌Node [ 3 ] Default Plane Pointer
@@ -37,7 +37,7 @@
     ( -120 200 )
     Type LINK :: POINTER
     ┌Pointer
-     Type 27
+     Type OBJECT
     └Pointer
    └Node
    ┌Node [ 4 ] Default Container Pointer
@@ -45,7 +45,7 @@
     ( -120 300 )
     Type LINK :: POINTER
     ┌Pointer
-     Type 27
+     Type OBJECT
     └Pointer
    └Node
    ┌Node [ 5 ] Default Script

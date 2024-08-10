@@ -248,8 +248,8 @@ CLASS::Node_Tree* CLASS::File::f_loadAsciiNodeTree(const Token_Array& token_data
 					LOG << ENDL << ANSI_B << "      [Node]" << ANSI_RESET; FLUSH;
 					LOG << ENDL << "        " << ANSI_Purple << name << ANSI_RESET; FLUSH;
 					auto node_t = new NODE::LINK::Pointer();
-					node_t->pointer_type = static_cast<DATA::Type>(str_to_u(read_data[5][1]));
-					gui_node = new GUI::NODE::LINK::Pointer(pos, static_cast<DATA::Type>(str_to_u(read_data[5][1])));
+					node_t->pointer_type = DATA::fromString(read_data[5][1]);
+					gui_node = new GUI::NODE::LINK::Pointer(pos, DATA::fromString(read_data[5][1]));
 					node = node_t;
 				}
 				else if (read_data[3][3] == "GET") {
@@ -567,7 +567,7 @@ CLASS::OBJECT::Data* CLASS::File::f_loadAsciiMesh(const Token_Array& token_data)
 			for (const Tokens& token_data : read_data) {
 				CLASS::OBJECT::DATA::MESH::Face* face = new CLASS::OBJECT::DATA::MESH::Face();
 				for (uint64 i = 0; i < str_to_u(token_data[1]); i++) {
-					face->vertices.push_back(mesh->vertices[str_to_ul(token_data[i + 3ULL])]);
+					face->vertices.push_back(mesh->vertices[str_to_ul(token_data[i + 3])]);
 				}
 				mesh->faces.push_back(face);
 			}
@@ -577,7 +577,7 @@ CLASS::OBJECT::Data* CLASS::File::f_loadAsciiMesh(const Token_Array& token_data)
 			LOG << ENDL << "       Normals"; FLUSH;
 			for (const Tokens& token_data : read_data) {
 				for (uint64 i = 0; i < str_to_u(token_data[1]); i ++) {
-					mesh->normals[mesh->faces[str_to_ul(token_data[0])]].push_back(str_to_d(token_data[3ULL + i * 5ULL], token_data[4ULL + i * 5ULL], token_data[5ULL + i * 5ULL]));
+					mesh->normals[mesh->faces[str_to_ul(token_data[0])]].push_back(str_to_d(token_data[3 + i * 5], token_data[4 + i * 5], token_data[5 + i * 5]));
 				}
 			}
 		}
@@ -586,7 +586,7 @@ CLASS::OBJECT::Data* CLASS::File::f_loadAsciiMesh(const Token_Array& token_data)
 			LOG << ENDL << "        UVs"; FLUSH;
 			for (const Tokens& token_data : read_data) {
 				for (uint64 i = 0; i < str_to_u(token_data[1]); i ++) {
-					mesh->uvs[mesh->faces[str_to_ul(token_data[0])]].push_back(str_to_d(token_data[3ULL + i * 4ULL], token_data[4ULL + i * 4ULL]));
+					mesh->uvs[mesh->faces[str_to_ul(token_data[0])]].push_back(str_to_d(token_data[3 + i * 4], token_data[4 + i * 4]));
 				}
 			}
 		}
@@ -836,7 +836,7 @@ void CLASS::File::f_saveAsciiNodeTree(Lace& lace, CLASS::Node_Tree* data, const 
 					case NODE::EXEC::Type::SCRIPT: {
 						lace NL "Type EXEC :: SCRIPT";
 						lace NL "┌Script";
-						lace NL S() SP static_cast<CLASS::NODE::EXEC::Script*>(node)->script_id;
+						lace NL S() << static_cast<CLASS::NODE::EXEC::Script*>(node)->script_id;
 						lace NL "└Script";
 						break;
 					}
@@ -852,7 +852,7 @@ void CLASS::File::f_saveAsciiNodeTree(Lace& lace, CLASS::Node_Tree* data, const 
 					case NODE::LINK::Type::POINTER: {
 						lace NL "Type LINK :: POINTER";
 						lace NL "┌Pointer";
-						lace NL S() SP "Type " << e_to_u(static_cast<NODE::LINK::Pointer*>(node)->pointer_type);
+						lace NL S() << "Type " << toString(static_cast<NODE::LINK::Pointer*>(node)->pointer_type);
 						lace NL "└Pointer";
 						break;
 					}
@@ -861,7 +861,7 @@ void CLASS::File::f_saveAsciiNodeTree(Lace& lace, CLASS::Node_Tree* data, const 
 						case NODE::LINK::GET::Type::FIELD: {
 							lace NL "Type LINK :: GET :: FIELD";
 							lace NL "┌Field";
-							lace NL S() SP static_cast<NODE::LINK::GET::Field*>(node)->field;
+							lace NL S() << static_cast<NODE::LINK::GET::Field*>(node)->field;
 							lace NL "└Field";
 							break;
 						}
@@ -1284,15 +1284,15 @@ void CLASS::File::f_saveBinaryHeader(Bin_Lace & bin) {
 }
 
 void CLASS::File::f_saveBinaryNodeTree(Bin_Lace & bin, Node_Tree* data) {
-	uint64 size = 0ULL;
+	uint64 size = 0;
 	Bin_Lace bytes;
 
-	bytes << ul_to_uh(data->name.size());
+	bytes << ul_to_u(data->name.size());
 	bytes << data->name;
 	bytes << ptr(data);
 	bytes << ul_to_uh(data->nodes.size());
 
-	size += 2;
+	size += 4;
 	size += data->name.size();
 	size += 8;
 	size += 2;
@@ -1300,11 +1300,13 @@ void CLASS::File::f_saveBinaryNodeTree(Bin_Lace & bin, Node_Tree* data) {
 	for (CLASS::Node* node : data->nodes) {
 		bytes << ul_to_uh(node->name.size());
 		bytes << node->name;
+		bytes << ptr(node);
 		bytes << d_to_u(node_map[node]->scenePos());
 
 		size += 2;
 		size += node->name.size();
-		size += 16;
+		size += 8;
+		size += 8;
 	}
 
 	bin << size;

@@ -11,67 +11,67 @@
   ┌Nodes( 10 )
    ┌Node [ 0 ] #
     * 1963262322016
-    ( 0 0 )
+    ( -120 0 )
     Type EXEC :: TICK
    └Node
    ┌Node [ 1 ] #
     * 1963261416128
-    ( 0 0 )
+    ( 1100 -110 )
     Type LINK :: SET :: TRANSFORM :: EULER_ROTATION :: X
    └Node
    ┌Node [ 2 ] #
     * 1963262319312
-    ( 0 0 )
+    ( -120 -90 )
     Type LINK :: POINTER
     ┌Pointer
-      Type 27
+     Type OBJECT
     └Pointer
    └Node
    ┌Node [ 3 ] #
     * 1963306043520
-    ( 0 0 )
+    ( 120 -20 )
     Type EXEC :: SCRIPT
     ┌Script
-      Script_ID
+     Script_ID
     └Script
    └Node
    ┌Node [ 4 ] #
     * 1963375565120
-    ( 0 0 )
+    ( 120 200 )
     Type LINK :: POINTER
     ┌Pointer
-      Type 28
+     Type SCENE
     └Pointer
    └Node
    ┌Node [ 5 ] #
     * 1963261439168
-    ( 0 0 )
+    ( 120 100 )
     Type LINK :: GET :: FIELD
     ┌Field
-      node_transform.euler.x
+     node_transform.euler.x
     └Field
    └Node
    ┌Node [ 6 ] #
     * 1963375567200
-    ( 0 0 )
+    ( 360 80 )
     Type MATH :: ADD
    └Node
    ┌Node [ 7 ] #
     * 1963261440960
-    ( 0 0 )
+    ( 360 200 )
     Type LINK :: GET :: FIELD
     ┌Field
-      current_frame
+     current_frame
     └Field
    └Node
    ┌Node [ 8 ] #
     * 1963375565328
-    ( 0 0 )
+    ( 600 200 )
     Type UTIL :: CAST :: INT_TO_DOUBLE
    └Node
    ┌Node [ 9 ] #
     * 1963375562416
-    ( 0 0 )
+    ( 860 80 )
     Type MATH :: ADD
    └Node
   └Nodes

@@ -5,8 +5,8 @@
 // string
 vector<string> f_split(const string& input);
 vector<string> f_split(const string& input, const string& delimiter);
-string f_join(const vector<string>& tokens, const string& join, const uint64& start = 0ULL, const uint64& end = 0ULL);
-string f_join(const vector<string>& tokens, const uint64& start = 0ULL, const uint64& end = 0ULL);
+string f_join(const vector<string>& tokens, const string& join, const uint64& start = 0, const uint64& end = 0);
+string f_join(const vector<string>& tokens, const uint64& start = 0, const uint64& end = 0);
 string f_str(const vector<string>& tokens);
 
 string f_remove(const string& input, const string& remove);

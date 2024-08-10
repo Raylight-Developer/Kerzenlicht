@@ -26,6 +26,7 @@ struct Session {
 	static Session& getInstance();
 
 	void flushLog();
+
 	void setLog(Lace* ptr);
 	Lace* getLog();
 

@@ -26,8 +26,8 @@ namespace CLASS {
 			NONE,
 			ANY,
 			STRING, DOUBLE, BOOL, UINT, INT,
-			MAT2, MAT3, MAT4, UMAT2, UMAT3, UMAT4, IMAT2, IMAT3, IMAT4,
-			VEC2, VEC3, VEC4, UVEC2, UVEC3, UVEC4, IVEC2, IVEC3, IVEC4,
+			UMAT2, UMAT3, UMAT4, IMAT2, IMAT3, IMAT4, MAT2, MAT3, MAT4,
+			UVEC2, UVEC3, UVEC4, IVEC2, IVEC3, IVEC4, VEC2, VEC3, VEC4,
 			TRANSFORM, TEXTURE, OBJECT, SCENE, DATA
 		};
 		enum struct Modifier {
@@ -36,6 +36,8 @@ namespace CLASS {
 			MAP,
 			POINTER
 		};
+		string toString(const Type& type);
+		Type fromString(const string& type);
 	}
 	struct Data {
 		any data;
