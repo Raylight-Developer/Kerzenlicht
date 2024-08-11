@@ -4,8 +4,7 @@
 
 #include "QT.hpp"
 
-#include "Core/File.hpp"
-#include "Core/Session.hpp"
+#include "Core/Editor_File.hpp"
 
 #include "Workspaces/Manager.hpp"
 #include "Workspaces/Header.hpp"
@@ -29,7 +28,7 @@ namespace GUI {
 		struct Main_Window : GUI::Window {
 			GUI::Application* app;
 			Lace* log;
-			CLASS::File* file;
+			CLASS::Editor_File* file;
 
 			map<string, Workspace_Manager*> workspaces;
 

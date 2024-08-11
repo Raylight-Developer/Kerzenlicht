@@ -51,6 +51,8 @@
 using namespace std;
 
 typedef std::byte  Byte;  // 8-bits
+typedef vector<string> Tokens;
+typedef vector<Tokens> Token_Array;
 
 typedef double     dvec1; // 64-bits | min: 2.2250738585072014e-308 | max: 1.7976931348623158e+308
 typedef glm::dvec2 dvec2; // 128-bits

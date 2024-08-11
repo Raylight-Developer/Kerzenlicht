@@ -26,14 +26,14 @@ Lace::Lace(const string& character) :
 	current_tab = 0;
 }
 
-Lace& operator<<(Lace& lace, const S& val) {
+Lace& operator<<(Lace& lace, const Lace_S& val) {
 	uint16 count = val.count;
 	while (count--)
 		lace << " ";
 	return lace;
 }
 
-Lace& operator<<(Lace& lace, const NL& val) {
+Lace& operator<<(Lace& lace, const Lace_NL& val) {
 	uint16 count = val.count;
 	uint16 tabs = lace.current_tab;
 	while (count--)
@@ -44,21 +44,21 @@ Lace& operator<<(Lace& lace, const NL& val) {
 	return lace;
 }
 
-Lace& operator<<(Lace& lace, const TAB& val) {
+Lace& operator<<(Lace& lace, const Lace_TAB& val) {
 	uint16 count = lace.current_tab + val.count;
 	while (count--)
 		lace << "\t";
 	return lace;
 }
 
-Lace& operator<<(Lace& lace, const CHR& val) {
+Lace& operator<<(Lace& lace, const Lace_CHR& val) {
 	uint16 count = val.count;
 	while (count--)
 		lace << lace.character;
 	return lace;
 }
 
-Lace& operator<<(Lace& lace, const DEL& val) {
+Lace& operator<<(Lace& lace, const Lace_DEL& val) {
 	const string data = lace.data.str();
 	lace.data.clear();
 	if (val.count < data.size())
@@ -66,7 +66,7 @@ Lace& operator<<(Lace& lace, const DEL& val) {
 	return lace;
 }
 
-Lace& operator<<(Lace& lace, const POP& val) {
+Lace& operator<<(Lace& lace, const Lace_POP& val) {
 	const string data = lace.data.str();
 	lace.data.clear();
 	if (val.count < data.size())

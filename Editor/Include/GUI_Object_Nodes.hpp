@@ -6,8 +6,7 @@
 
 #include "GUI_Nodes.hpp"
 
-#include "Core/Session.hpp"
-#include "Core/File.hpp"
+#include "Core/Editor_File.hpp"
 
 #include "Nodes.hpp"
 #include "Object/Nodes/Object_Nodes.hpp"

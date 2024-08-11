@@ -101,11 +101,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Include\Data_Property.hpp" />
+    <ClInclude Include="Include\File.hpp" />
     <ClInclude Include="Include\Include.hpp" />
     <ClInclude Include="Include\Lace.hpp" />
     <ClInclude Include="Include\Object\Nodes\Compiler.hpp" />
     <ClInclude Include="Include\Object\Nodes\Object_Nodes.hpp" />
     <ClInclude Include="Include\Nodes.hpp" />
+    <ClInclude Include="Include\Session.hpp" />
     <ClInclude Include="Include\Shader\Nodes\Shader_Nodes.hpp" />
     <ClInclude Include="Include\Shader\Shader.hpp" />
     <ClInclude Include="Include\Object\Data.hpp" />
@@ -128,6 +130,8 @@
     <ClInclude Include="Include\Scene.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\Session.cpp" />
+    <ClCompile Include="Source\File.cpp" />
     <ClCompile Include="Source\Scene.cpp" />
     <ClCompile Include="Source\Data_Property.cpp" />
     <ClCompile Include="Source\Lace.cpp" />

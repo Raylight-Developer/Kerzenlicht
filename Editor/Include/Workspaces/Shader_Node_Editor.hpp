@@ -4,9 +4,7 @@
 
 #include "QT.hpp"
 
-#include "Ops.hpp"
-#include "Core/File.hpp"
-#include "Core/Session.hpp"
+#include "Core/Editor_File.hpp"
 
 #include "Shading/Nodes/Shader_Nodes.hpp"
 

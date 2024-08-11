@@ -1,9 +1,9 @@
-﻿#include "Core/File.hpp"
+﻿#include "File.hpp"
 
-#include "Core/Session.hpp"
+#include "Session.hpp"
 
-typedef vector<string> Tokens;
-typedef vector<Tokens> Token_Array;
+#define NL << Lace_NL() <<
+#define SP << Lace_S() <<
 
 CLASS::File::File() {
 	pointer_map = {};
@@ -92,9 +92,6 @@ CLASS::File CLASS::File::f_getBinaryFile(const string& file_path) {
 	file.f_loadBinaryFile(file_path);
 	return file;
 }
-
-#define NL << NL() <<
-#define SP << S() <<
 
 string CLASS::File::f_printFile() {
 	Lace lace = Lace();
@@ -190,7 +187,6 @@ void CLASS::File::f_loadAsciiHeader(const Token_Array& token_data) {
 
 CLASS::Node_Tree* CLASS::File::f_loadAsciiNodeTree(const Token_Array& token_data) {
 	auto node_tree = new CLASS::Node_Tree();
-	auto gui_node_tree = new GUI::NODE::Node_Tree();
 	node_tree->name = f_join(token_data[0], 4);
 
 	LOG << ENDL << ANSI_B << "    [Node-Tree]" << ANSI_RESET; FLUSH;
@@ -219,7 +215,6 @@ CLASS::Node_Tree* CLASS::File::f_loadAsciiNodeTree(const Token_Array& token_data
 			const ivec2  pos = str_to_i(read_data[2][1], read_data[2][2]);
 
 			CLASS::Node* node = nullptr;
-			GUI::NODE::Node* gui_node = nullptr;
 			if      (read_data[3][1] == "CONSTRAINT") {
 			}
 			else if (read_data[3][1] == "GENERATE") {
@@ -233,13 +228,11 @@ CLASS::Node_Tree* CLASS::File::f_loadAsciiNodeTree(const Token_Array& token_data
 					LOG << ENDL << ANSI_B << "      [Node]" << ANSI_RESET; FLUSH;
 					LOG << ENDL << "        " << ANSI_Purple << name << ANSI_RESET; FLUSH;
 					node = new NODE::EXEC::Script(f_join(read_data[5]));
-					gui_node = new GUI::NODE::EXEC::Script(pos, f_join(read_data[5]));
 				}
 				else if (read_data[3][3] == "TICK") {
 					LOG << ENDL << ANSI_B << "      [Node]" << ANSI_RESET; FLUSH;
 					LOG << ENDL << "        " << ANSI_Purple << name << ANSI_RESET; FLUSH;
 					node = new NODE::EXEC::Tick();
-					gui_node = new GUI::NODE::EXEC::Tick(pos);
 					node_tree->tick = static_cast<NODE::EXEC::Tick*>(node);
 				}
 			}
@@ -249,7 +242,6 @@ CLASS::Node_Tree* CLASS::File::f_loadAsciiNodeTree(const Token_Array& token_data
 					LOG << ENDL << "        " << ANSI_Purple << name << ANSI_RESET; FLUSH;
 					auto node_t = new NODE::LINK::Pointer();
 					node_t->pointer_type = DATA::fromString(read_data[5][1]);
-					gui_node = new GUI::NODE::LINK::Pointer(pos, DATA::fromString(read_data[5][1]));
 					node = node_t;
 				}
 				else if (read_data[3][3] == "GET") {
@@ -258,10 +250,7 @@ CLASS::Node_Tree* CLASS::File::f_loadAsciiNodeTree(const Token_Array& token_data
 						LOG << ENDL << "        " << ANSI_Purple << name << ANSI_RESET; FLUSH;
 						auto node_t = new NODE::LINK::GET::Field();
 						node_t->field = f_join(read_data[5]);
-						auto gui_node_t = new GUI::NODE::LINK::GET::Field(pos);
-						gui_node_t->field->setText(QString::fromStdString(f_join(read_data[5])));
 						node = node_t;
-						gui_node = gui_node_t;
 					}
 				}
 				else if (read_data[3][3] == "SET") {
@@ -271,7 +260,6 @@ CLASS::Node_Tree* CLASS::File::f_loadAsciiNodeTree(const Token_Array& token_data
 								LOG << ENDL << ANSI_B << "      [Node]" << ANSI_RESET; FLUSH;
 								LOG << ENDL << "        " << ANSI_Purple << name << ANSI_RESET; FLUSH;
 								node = new NODE::LINK::SET::Euler_Rotation_X();
-								gui_node = new GUI::NODE::LINK::SET::Euler_Rotation_X(pos);
 							}
 						}
 					}
@@ -282,25 +270,21 @@ CLASS::Node_Tree* CLASS::File::f_loadAsciiNodeTree(const Token_Array& token_data
 					LOG << ENDL << ANSI_B << "      [Node]" << ANSI_RESET; FLUSH;
 					LOG << ENDL << "        " << ANSI_Purple << name << ANSI_RESET; FLUSH;
 					node = new NODE::MATH::Add();
-					gui_node = new GUI::NODE::MATH::Add(pos);
 				}
 				else if (read_data[3][3] == "SUB") {
 					LOG << ENDL << ANSI_B << "      [Node]" << ANSI_RESET; FLUSH;
 					LOG << ENDL << "        " << ANSI_Purple << name << ANSI_RESET; FLUSH;
 					node = new NODE::MATH::Sub();
-					gui_node = new GUI::NODE::MATH::Sub(pos);
 				}
 				else if (read_data[3][3] == "MUL") {
 					LOG << ENDL << ANSI_B << "      [Node]" << ANSI_RESET; FLUSH;
 					LOG << ENDL << "        " << ANSI_Purple << name << ANSI_RESET; FLUSH;
 					node = new NODE::MATH::Mul();
-					gui_node = new GUI::NODE::MATH::Mul(pos);
 				}
 				else if (read_data[3][3] == "DIV") {
 					LOG << ENDL << ANSI_B << "      [Node]" << ANSI_RESET; FLUSH;
 					LOG << ENDL << "        " << ANSI_Purple << name << ANSI_RESET; FLUSH;
 					node = new NODE::MATH::Div();
-					gui_node = new GUI::NODE::MATH::Div(pos);
 				}
 			}
 			else if (read_data[3][1] == "UTIL") {
@@ -308,20 +292,17 @@ CLASS::Node_Tree* CLASS::File::f_loadAsciiNodeTree(const Token_Array& token_data
 					LOG << ENDL << ANSI_B << "      [Node]" << ANSI_RESET; FLUSH;
 					LOG << ENDL << "        " << ANSI_Purple << name << ANSI_RESET; FLUSH;
 					node = new NODE::UTIL::Print();
-					gui_node = new GUI::NODE::UTIL::Print(pos);
 				}
 				if (read_data[3][3] == "CAST") {
 					if (read_data[3][5] == "UINT_TO_DOUBLE") {
 						LOG << ENDL << ANSI_B << "      [Node]" << ANSI_RESET; FLUSH;
 						LOG << ENDL << "        " << ANSI_Purple << name << ANSI_RESET; FLUSH;
 						node = new NODE::UTIL::CAST::Uint_To_Double();
-						gui_node = new GUI::NODE::UTIL::CAST::Uint_To_Double(pos);
 					}
 					else if (read_data[3][5] == "INT_TO_DOUBLE") {
 						LOG << ENDL << ANSI_B << "      [Node]" << ANSI_RESET; FLUSH;
 						LOG << ENDL << "        " << ANSI_Purple << name << ANSI_RESET; FLUSH;
 						node = new NODE::UTIL::CAST::Int_To_Double();
-						gui_node = new GUI::NODE::UTIL::CAST::Int_To_Double(pos);
 					}
 				}
 			}
@@ -332,9 +313,7 @@ CLASS::Node_Tree* CLASS::File::f_loadAsciiNodeTree(const Token_Array& token_data
 				node->name = name;
 
 				pointer_map[pointer] = node;
-				gui_node_tree->nodes.push_back(gui_node);
 				node_tree->nodes.push_back(node);
-				node_map[node] = gui_node;
 			}
 		}
 		else if (tokens[0] == "└Build-E") {
@@ -351,15 +330,6 @@ CLASS::Node_Tree* CLASS::File::f_loadAsciiNodeTree(const Token_Array& token_data
 				);
 				port_l->connection = port_r;
 				port_r->incoming_connections.push_back(port_l);
-
-				auto gui_port_l = static_cast<GUI::NODE::PORT::Exec_O_Port*>(
-					node_map[node_l]->outputs[str_to_ul(sub_tokens[2])]
-				);
-				auto gui_port_r = static_cast<GUI::NODE::PORT::Exec_I_Port*>(
-					node_map[node_r]->inputs[str_to_ul(sub_tokens[3])]
-				);
-				gui_port_l->connection = new GUI::NODE::Connection(gui_port_l, gui_port_r);
-				gui_port_r->incoming_connections.push_back(gui_port_l->connection);
 			}
 		}
 		else if (tokens[0] == "└Build-D") {
@@ -376,22 +346,12 @@ CLASS::Node_Tree* CLASS::File::f_loadAsciiNodeTree(const Token_Array& token_data
 				);
 				port_r->connection = port_l;
 				port_l->outgoing_connections.push_back(port_r);
-
-				auto gui_port_l = static_cast<GUI::NODE::PORT::Data_O_Port*>(
-					node_map[node_l]->outputs[str_to_ul(sub_tokens[2])]
-				);
-				auto gui_port_r = static_cast<GUI::NODE::PORT::Data_I_Port*>(
-					node_map[node_r]->inputs[str_to_ul(sub_tokens[3])]
-				);
-				gui_port_r->connection = new GUI::NODE::Connection(gui_port_l, gui_port_r);
-				gui_port_l->outgoing_connections.push_back(gui_port_r->connection);
 			}
 		}
 		else if (is_processing) {
 			read_data.push_back(tokens);
 		}
 	}
-	this->nodetree_map[node_tree] = gui_node_tree;
 	pointer_map[str_to_ul(token_data[1][1])] = node_tree;
 	return node_tree;
 }
@@ -721,9 +681,6 @@ void CLASS::File::f_loadAsciiBuild(const Token_Array& token_data) {
 			for (const Tokens& sub_tokens : read_data) {
 				auto ptr = static_cast<NODE::LINK::Pointer*>(pointer_map[str_to_ul(sub_tokens[1])]);
 				ptr->pointer = static_cast<CLASS::Object*>(pointer_map[str_to_ul(sub_tokens[3])]);
-
-				auto gui_ptr = static_cast<GUI::NODE::LINK::Pointer*>(node_map.at(ptr));
-				gui_ptr->pointer = static_cast<CLASS::Object*>(pointer_map[str_to_ul(sub_tokens[3])]);
 			}
 		}
 		else if (is_processing) {
@@ -816,7 +773,6 @@ void CLASS::File::f_saveAsciiNodeTree(Lace& lace, CLASS::Node_Tree* data, const 
 		lace NL "┌Node [ " << j++ << " ] " << node->name;
 		lace++;
 		lace NL ptr_to_str(node);
-		lace NL "( " << node_map[node]->scenePos()<< " )";
 		switch (node->type) {
 			case NODE::Type::CONSTRAINT: {
 				switch (static_cast<NODE::CONSTRAINT::Type>(node->sub_type)) {
@@ -836,7 +792,7 @@ void CLASS::File::f_saveAsciiNodeTree(Lace& lace, CLASS::Node_Tree* data, const 
 					case NODE::EXEC::Type::SCRIPT: {
 						lace NL "Type EXEC :: SCRIPT";
 						lace NL "┌Script";
-						lace NL S() << static_cast<CLASS::NODE::EXEC::Script*>(node)->script_id;
+						lace NL Lace_S() << static_cast<CLASS::NODE::EXEC::Script*>(node)->script_id;
 						lace NL "└Script";
 						break;
 					}
@@ -852,7 +808,7 @@ void CLASS::File::f_saveAsciiNodeTree(Lace& lace, CLASS::Node_Tree* data, const 
 					case NODE::LINK::Type::POINTER: {
 						lace NL "Type LINK :: POINTER";
 						lace NL "┌Pointer";
-						lace NL S() << "Type " << toString(static_cast<NODE::LINK::Pointer*>(node)->pointer_type);
+						lace NL Lace_S() << "Type " << toString(static_cast<NODE::LINK::Pointer*>(node)->pointer_type);
 						lace NL "└Pointer";
 						break;
 					}
@@ -861,7 +817,7 @@ void CLASS::File::f_saveAsciiNodeTree(Lace& lace, CLASS::Node_Tree* data, const 
 						case NODE::LINK::GET::Type::FIELD: {
 							lace NL "Type LINK :: GET :: FIELD";
 							lace NL "┌Field";
-							lace NL S() << static_cast<NODE::LINK::GET::Field*>(node)->field;
+							lace NL Lace_S() << static_cast<NODE::LINK::GET::Field*>(node)->field;
 							lace NL "└Field";
 							break;
 						}
@@ -1301,11 +1257,9 @@ void CLASS::File::f_saveBinaryNodeTree(Bin_Lace & bin, Node_Tree* data) {
 		bytes << ul_to_uh(node->name.size());
 		bytes << node->name;
 		bytes << ptr(node);
-		bytes << d_to_u(node_map[node]->scenePos());
 
 		size += 2;
 		size += node->name.size();
-		size += 8;
 		size += 8;
 	}
 

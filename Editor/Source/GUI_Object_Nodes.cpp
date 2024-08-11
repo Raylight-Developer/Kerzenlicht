@@ -19,7 +19,7 @@ GUI::NODE::EXEC::Counter::Counter(const ivec2& pos) {
 	outputs.push_back(o_count);
 
 	rect.setHeight(40 + max(inputs.size(), outputs.size()) * 20);
-	load_pos = QPointF(pos.x, pos.y);
+	node_pos = QPointF(pos.x, pos.y);
 }
 
 GUI::NODE::EXEC::Script::Script(const ivec2& pos, const string& script_id) {
@@ -33,7 +33,7 @@ GUI::NODE::EXEC::Script::Script(const ivec2& pos, const string& script_id) {
 	dynlib = NULL;
 
 	rect = QRectF(-100, -20, 200, 60);
-	load_pos = QPointF(pos.x, pos.y);
+	node_pos = QPointF(pos.x, pos.y);
 
 	script_identifier_proxyWidget = new QGraphicsProxyWidget(this);
 	script_identifier_proxyWidget->setFlag(QGraphicsItem::ItemIsFocusable);
@@ -196,7 +196,7 @@ GUI::NODE::EXEC::Tick::Tick(const ivec2& pos) {
 	outputs.push_back(new PORT::Data_O_Port(this, 1, "Delta", CLASS::DATA::Type::DOUBLE));
 
 	rect.setHeight(40 + max(inputs.size(), outputs.size()) * 20);
-	load_pos = QPointF(pos.x, pos.y);
+	node_pos = QPointF(pos.x, pos.y);
 }
 
 GUI::NODE::LINK::Pointer::Pointer(const ivec2& pos, const CLASS::DATA::Type& pointer_type) {
@@ -214,7 +214,7 @@ GUI::NODE::LINK::Pointer::Pointer(const ivec2& pos, const CLASS::DATA::Type& poi
 	outputs.push_back(o_pointer);
 
 	rect.setHeight(40 + max(inputs.size(), outputs.size()) * 20);
-	load_pos = QPointF(pos.x, pos.y);
+	node_pos = QPointF(pos.x, pos.y);
 }
 
 void GUI::NODE::LINK::Pointer::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) {
@@ -247,7 +247,7 @@ GUI::NODE::LINK::Get::Get(const ivec2& pos) {
 	o_value   = nullptr;
 
 	rect = QRectF(-100, -20, 200, 40);
-	load_pos = QPointF(pos.x, pos.y);
+	node_pos = QPointF(pos.x, pos.y);
 }
 
 GUI::NODE::LINK::GET::Field::Field(const ivec2& pos) :
@@ -290,7 +290,7 @@ GUI::NODE::LINK::Set::Set(const ivec2& pos) {
 	o_value   = nullptr;
 
 	rect = QRectF(-100, -20, 200, 40);
-	load_pos = QPointF(pos.x, pos.y);
+	node_pos = QPointF(pos.x, pos.y);
 }
 
 GUI::NODE::LINK::SET::Euler_Rotation_X::Euler_Rotation_X(const ivec2& pos) :
@@ -332,7 +332,7 @@ GUI::NODE::MATH::Math::Math(const ivec2& pos) {
 	outputs.push_back(out_a);
 
 	rect.setHeight(40 + max(inputs.size(), outputs.size()) * 20);
-	load_pos = QPointF(pos.x, pos.y);
+	node_pos = QPointF(pos.x, pos.y);
 }
 
 GUI::NODE::MATH::Add::Add(const ivec2& pos) :
@@ -394,7 +394,7 @@ GUI::NODE::UTIL::Print::Print(const ivec2& pos) {
 	outputs.push_back(o_exec);
 
 	rect.setHeight(40 + max(inputs.size(), outputs.size()) * 20);
-	load_pos = QPointF(pos.x, pos.y);
+	node_pos = QPointF(pos.x, pos.y);
 }
 
 GUI::NODE::UTIL::Cast::Cast(const ivec2& pos) {
@@ -412,7 +412,7 @@ GUI::NODE::UTIL::Cast::Cast(const ivec2& pos) {
 	outputs.push_back(o_value);
 
 	rect.setHeight(40 + max(inputs.size(), outputs.size()) * 20);
-	load_pos = QPointF(pos.x, pos.y);
+	node_pos = QPointF(pos.x, pos.y);
 }
 
 GUI::NODE::UTIL::CAST::Uint_To_Double::Uint_To_Double(const ivec2& pos) :

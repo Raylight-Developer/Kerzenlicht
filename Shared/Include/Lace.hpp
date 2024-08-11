@@ -7,42 +7,43 @@
 #endif
 
 struct Lace;
+struct Bin_Lace;
 
-struct S { //------------Add Space(s) to Lace------------
+struct Lace_S { //------------Add Space(s) to Lace------------
 	uint16 count;
-	S(const uint16& count = 1) : count(count) {};
-	friend Lace& operator<<(Lace& lace, const S& val);
+	Lace_S(const uint16& count = 1) : count(count) {};
+	friend Lace& operator<<(Lace& lace, const Lace_S& val);
 };
 
-struct NL { //------------Add New Line(s) and/or Global Tab To Lace------------
+struct Lace_NL { //------------Add New Line(s) and/or Global Tab To Lace------------
 	uint16 count;
 	bool use_global_tabs;
-	NL(const uint16& count = 1, const bool& use_global_tabs = true) : count(count), use_global_tabs(use_global_tabs) {}
-	friend Lace& operator<<(Lace& lace, const NL& val);
+	Lace_NL(const uint16& count = 1, const bool& use_global_tabs = true) : count(count), use_global_tabs(use_global_tabs) {}
+	friend Lace& operator<<(Lace& lace, const Lace_NL& val);
 };
 
-struct TAB { //------------Add Tab(s) to Lace------------
+struct Lace_TAB { //------------Add Tab(s) to Lace------------
 	uint16 count;
-	TAB(const uint16& count = 1) : count(count) {}
-	friend Lace& operator<<(Lace& lace, const TAB& val);
+	Lace_TAB(const uint16& count = 1) : count(count) {}
+	friend Lace& operator<<(Lace& lace, const Lace_TAB& val);
 };
 
-struct CHR { //------------Add Char(s) to Lace------------
+struct Lace_CHR { //------------Add Char(s) to Lace------------
 	uint16 count;
-	CHR(const uint16& count = 1) : count(count) {}
-	friend Lace& operator<<(Lace& lace, const CHR& val);
+	Lace_CHR(const uint16& count = 1) : count(count) {}
+	friend Lace& operator<<(Lace& lace, const Lace_CHR& val);
 };
 
-struct DEL { //------------Remove first Char(s) from Lace------------
+struct Lace_DEL { //------------Remove first Char(s) from Lace------------
 	uint16 count;
-	DEL(const uint16& count = 1) : count(count) {}
-	friend Lace& operator<<(Lace& lace, const DEL& val);
+	Lace_DEL(const uint16& count = 1) : count(count) {}
+	friend Lace& operator<<(Lace& lace, const Lace_DEL& val);
 };
 
-struct POP { //------------Remove last Char(s) from Lace------------
+struct Lace_POP { //------------Remove last Char(s) from Lace------------
 	uint16 count;
-	POP(const uint16& count = 1) : count(count) {}
-	friend Lace& operator<<(Lace& lace, const POP& val);
+	Lace_POP(const uint16& count = 1) : count(count) {}
+	friend Lace& operator<<(Lace& lace, const Lace_POP& val);
 };
 
 struct Lace { //------------Utility for string manipulation------------

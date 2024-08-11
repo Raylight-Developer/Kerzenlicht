@@ -6,8 +6,7 @@
 
 #include "GUI_Nodes.hpp"
 
-#include "Core/Session.hpp"
-#include "Core/File.hpp"
+#include "Core/Editor_File.hpp"
 
 #include "Shading/Nodes/Shader_Node.hpp"
 #include "Shading/Nodes/Shader_Nodes.hpp"

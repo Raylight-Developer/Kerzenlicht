@@ -3,55 +3,49 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Source\GUI.cpp">
-      <Filter>Source Files\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Core\File.cpp">
-      <Filter>Source Files\Core</Filter>
+      <Filter>Source\Core</Filter>
     </ClCompile>
     <ClCompile Include="Source\QT.cpp">
-      <Filter>Source Files\Core</Filter>
+      <Filter>Source\Core</Filter>
     </ClCompile>
     <ClCompile Include="Source\GUI_Object_Nodes.cpp">
-      <Filter>Source Files\Core</Filter>
+      <Filter>Source\Core</Filter>
     </ClCompile>
     <ClCompile Include="Source\GUI_Nodes.cpp">
-      <Filter>Source Files\Core</Filter>
+      <Filter>Source\Core</Filter>
     </ClCompile>
     <ClCompile Include="Source\Workspaces\API.cpp">
-      <Filter>Source Files\Workspaces</Filter>
+      <Filter>Source\Workspaces</Filter>
     </ClCompile>
     <ClCompile Include="Source\Workspaces\File_View.cpp">
-      <Filter>Source Files\Workspaces</Filter>
+      <Filter>Source\Workspaces</Filter>
     </ClCompile>
     <ClCompile Include="Source\Workspaces\Header.cpp">
-      <Filter>Source Files\Workspaces</Filter>
+      <Filter>Source\Workspaces</Filter>
     </ClCompile>
     <ClCompile Include="Source\Main_Window.cpp">
-      <Filter>Source Files\Workspaces</Filter>
+      <Filter>Source\Workspaces</Filter>
     </ClCompile>
     <ClCompile Include="Source\Workspaces\Manager.cpp">
-      <Filter>Source Files\Workspaces</Filter>
+      <Filter>Source\Workspaces</Filter>
     </ClCompile>
     <ClCompile Include="Source\Workspaces\Object_Node_Editor.cpp">
-      <Filter>Source Files\Workspaces</Filter>
+      <Filter>Source\Workspaces</Filter>
     </ClCompile>
     <ClCompile Include="Source\Workspaces\Properties.cpp">
-      <Filter>Source Files\Workspaces</Filter>
+      <Filter>Source\Workspaces</Filter>
     </ClCompile>
     <ClCompile Include="Source\Workspaces\Scene_Outliner.cpp">
-      <Filter>Source Files\Workspaces</Filter>
+      <Filter>Source\Workspaces</Filter>
     </ClCompile>
     <ClCompile Include="Source\Workspaces\Shelf.cpp">
-      <Filter>Source Files\Workspaces</Filter>
+      <Filter>Source\Workspaces</Filter>
     </ClCompile>
     <ClCompile Include="Source\Workspaces\Viewport.cpp">
-      <Filter>Source Files\Workspaces</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Core\Session.cpp">
-      <Filter>Source Files\Core</Filter>
+      <Filter>Source\Workspaces</Filter>
     </ClCompile>
     <ClCompile Include="Source\Core\Python_API.cpp">
-      <Filter>Source Files\Core</Filter>
+      <Filter>Source\Core</Filter>
     </ClCompile>
     <ClCompile Include="..\Shared\Source\Scene.cpp">
       <Filter>Shared\Source</Filter>
@@ -125,58 +119,67 @@
     <ClCompile Include="..\Shared\Source\Shader\Nodes\Shader_Nodes.cpp">
       <Filter>Shared\Source</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Workspaces\Speadsheet_Editor.cpp" />
-    <ClCompile Include="Source\Workspaces\Graph_Editor.cpp" />
-    <ClCompile Include="Source\Workspaces\History.cpp" />
+    <ClCompile Include="Source\Workspaces\Graph_Editor.cpp">
+      <Filter>Source\Workspaces</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Workspaces\History.cpp">
+      <Filter>Source\Workspaces</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Workspaces\Speadsheet_Editor.cpp">
+      <Filter>Source\Workspaces</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Shared\Source\File.cpp">
+      <Filter>Shared\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Shared\Source\Session.cpp">
+      <Filter>Shared\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Editor_File.cpp">
+      <Filter>Source\Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\Workspaces\API.hpp">
-      <Filter>Header Files\Workspaces</Filter>
+      <Filter>Include\Workspaces</Filter>
     </ClInclude>
     <ClInclude Include="Include\Workspaces\File_View.hpp">
-      <Filter>Header Files\Workspaces</Filter>
+      <Filter>Include\Workspaces</Filter>
     </ClInclude>
     <ClInclude Include="Include\Workspaces\Header.hpp">
-      <Filter>Header Files\Workspaces</Filter>
+      <Filter>Include\Workspaces</Filter>
     </ClInclude>
     <ClInclude Include="Include\Workspaces\Manager.hpp">
-      <Filter>Header Files\Workspaces</Filter>
+      <Filter>Include\Workspaces</Filter>
     </ClInclude>
     <ClInclude Include="Include\Workspaces\Scene_Outliner.hpp">
-      <Filter>Header Files\Workspaces</Filter>
+      <Filter>Include\Workspaces</Filter>
     </ClInclude>
     <ClInclude Include="Include\Workspaces\Properties.hpp">
-      <Filter>Header Files\Workspaces</Filter>
+      <Filter>Include\Workspaces</Filter>
     </ClInclude>
     <ClInclude Include="Include\Main_Window.hpp">
-      <Filter>Header Files\Workspaces</Filter>
+      <Filter>Include\Workspaces</Filter>
     </ClInclude>
     <ClInclude Include="Include\Workspaces\Object_Node_Editor.hpp">
-      <Filter>Header Files\Workspaces</Filter>
+      <Filter>Include\Workspaces</Filter>
     </ClInclude>
     <ClInclude Include="Include\Core\Python_API.hpp">
-      <Filter>Header Files\Core</Filter>
+      <Filter>Include\Core</Filter>
     </ClInclude>
     <ClInclude Include="Include\QT.hpp">
-      <Filter>Header Files\Core</Filter>
+      <Filter>Include\Core</Filter>
     </ClInclude>
     <ClInclude Include="Include\Workspaces\Viewport.hpp">
-      <Filter>Header Files\Workspaces</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Core\File.hpp">
-      <Filter>Header Files\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Core\Session.hpp">
-      <Filter>Header Files\Core</Filter>
+      <Filter>Include\Workspaces</Filter>
     </ClInclude>
     <ClInclude Include="Include\Workspaces\Shelf.hpp">
-      <Filter>Header Files\Workspaces</Filter>
+      <Filter>Include\Workspaces</Filter>
     </ClInclude>
     <ClInclude Include="Include\GUI_Object_Nodes.hpp">
-      <Filter>Header Files\Core</Filter>
+      <Filter>Include\Core</Filter>
     </ClInclude>
     <ClInclude Include="Include\GUI_Nodes.hpp">
-      <Filter>Header Files\Core</Filter>
+      <Filter>Include\Core</Filter>
     </ClInclude>
     <ClInclude Include="..\Shared\Include\Data_Property.hpp">
       <Filter>Shared\Include</Filter>
@@ -256,34 +259,28 @@
     <ClInclude Include="..\Shared\Include\Shader\Nodes\Shader_Nodes.hpp">
       <Filter>Shared\Include</Filter>
     </ClInclude>
-    <ClInclude Include="Include\Workspaces\Speadsheet_Editor.hpp" />
-    <ClInclude Include="Include\Workspaces\Graph_Editor.hpp" />
-    <ClInclude Include="Include\Workspaces\History.hpp" />
+    <ClInclude Include="Include\Workspaces\Speadsheet_Editor.hpp">
+      <Filter>Include\Workspaces</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Workspaces\History.hpp">
+      <Filter>Include\Workspaces</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Workspaces\Graph_Editor.hpp">
+      <Filter>Include\Workspaces</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Shared\Include\Session.hpp">
+      <Filter>Shared\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Shared\Include\File.hpp">
+      <Filter>Shared\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Core\Editor_File.hpp">
+      <Filter>Include\Core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4d005fa3-9df4-4830-a129-8ab529dfc59c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{4d567220-9fe9-4e46-9066-3ab50f3fd179}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Shader Files">
-      <UniqueIdentifier>{abb45e05-37d0-41bc-a094-92510e282ca3}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Shared">
       <UniqueIdentifier>{d9fd2588-6a7a-48a9-9719-dd9ed47d9173}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Core">
-      <UniqueIdentifier>{6acbfd24-569a-4a91-a913-ab89214396d5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Workspaces">
-      <UniqueIdentifier>{1ffeab3f-93a5-45d3-87b0-708d6cb6bee3}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Workspaces">
-      <UniqueIdentifier>{9162f433-34ff-4a6e-9f04-489260f2d968}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Core">
-      <UniqueIdentifier>{86f2e4c0-34c0-460a-b4b4-2334b89f122e}</UniqueIdentifier>
     </Filter>
     <Filter Include="Shared\Include">
       <UniqueIdentifier>{339c3c9c-5b4b-4dee-89b7-a9951ee83975}</UniqueIdentifier>
@@ -291,21 +288,42 @@
     <Filter Include="Shared\Source">
       <UniqueIdentifier>{bb4a9004-446b-4ab6-81ab-e6e893106fc4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Include">
+      <UniqueIdentifier>{4d567220-9fe9-4e46-9066-3ab50f3fd179}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include\Workspaces">
+      <UniqueIdentifier>{9162f433-34ff-4a6e-9f04-489260f2d968}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include\Core">
+      <UniqueIdentifier>{86f2e4c0-34c0-460a-b4b4-2334b89f122e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{abb45e05-37d0-41bc-a094-92510e282ca3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source">
+      <UniqueIdentifier>{4d005fa3-9df4-4830-a129-8ab529dfc59c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Core">
+      <UniqueIdentifier>{6acbfd24-569a-4a91-a913-ab89214396d5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Workspaces">
+      <UniqueIdentifier>{1ffeab3f-93a5-45d3-87b0-708d6cb6bee3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Shaders\Realtime_Shader.comp">
-      <Filter>Shader Files</Filter>
+      <Filter>Shaders</Filter>
     </None>
     <None Include="Resources\Shaders\Realtime_Shader.frag">
-      <Filter>Shader Files</Filter>
+      <Filter>Shaders</Filter>
     </None>
     <None Include="Resources\Shaders\Realtime_Shader.vert">
-      <Filter>Shader Files</Filter>
+      <Filter>Shaders</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="Include\GUI.hpp">
-      <Filter>Header Files\Core</Filter>
+      <Filter>Include\Core</Filter>
     </QtMoc>
   </ItemGroup>
 </Project>

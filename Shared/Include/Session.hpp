@@ -1,11 +1,16 @@
 #pragma once
 
-#include "Shared.hpp"
+#include "Include.hpp"
 
 // FWD DECL OTHER
 namespace CLASS {
-	struct File;
+	#ifdef COMPILE_EDITOR
+		struct Editor_File;
+	#else
+		struct File;
+	#endif
 }
+struct Lace;
 
 // FWD DECL THIS
 #define ENDL "\n"
@@ -30,9 +35,13 @@ struct Session {
 	void setLog(Lace* ptr);
 	Lace* getLog();
 
-	void setFile(CLASS::File* ptr);
-	CLASS::File* getFile();
-
+	#ifdef COMPILE_EDITOR
+		void setFile(CLASS::Editor_File* ptr);
+		CLASS::Editor_File* getFile();
+	#else
+		void setFile(CLASS::File* ptr);
+		CLASS::File* getFile();
+	#endif
 private:
 	Session() : log(nullptr) , file(nullptr) {}
 	~Session() = default;
@@ -41,7 +50,11 @@ private:
 	Session& operator=(const Session&) = delete;
 
 	Lace* log;
-	CLASS::File* file;
+	#ifdef COMPILE_EDITOR
+		CLASS::Editor_File* file;
+	#else
+		CLASS::File* file;
+	#endif
 };
 
 #undef LOG

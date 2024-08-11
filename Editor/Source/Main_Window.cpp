@@ -11,7 +11,7 @@ GUI::WORKSPACE::Main_Window::Main_Window(GUI::Application* app) :
 	GUI::Window(),
 	app(app),
 	log(new Lace()),
-	file(new CLASS::File()),
+	file(new CLASS::Editor_File()),
 	mouse_pressed(false),
 	key_pressed(false)
 {

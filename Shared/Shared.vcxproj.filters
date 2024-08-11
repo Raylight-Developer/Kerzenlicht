@@ -89,6 +89,12 @@
     <ClInclude Include="Include\Shader\Nodes\Shader_Nodes.hpp">
       <Filter>Include</Filter>
     </ClInclude>
+    <ClInclude Include="Include\File.hpp">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Session.hpp">
+      <Filter>Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Lace.cpp">
@@ -161,6 +167,12 @@
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\Shader\Nodes\Shader_Nodes.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\File.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Session.cpp">
       <Filter>Source</Filter>
     </ClCompile>
   </ItemGroup>

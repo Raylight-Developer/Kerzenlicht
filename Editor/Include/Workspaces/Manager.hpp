@@ -4,8 +4,7 @@
 
 #include "QT.hpp"
 
-#include "Core/File.hpp"
-#include "Core/Session.hpp"
+#include "Core/Editor_File.hpp"
 
 #include "Main_Window.hpp"
 

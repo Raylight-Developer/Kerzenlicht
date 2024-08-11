@@ -5,8 +5,7 @@
 #include "QT.hpp"
 #include "GUI.hpp"
 
-#include "Core/File.hpp"
-#include "Core/Session.hpp"
+#include "Core/Editor_File.hpp"
 
 namespace GUI {
 	namespace WORKSPACE {

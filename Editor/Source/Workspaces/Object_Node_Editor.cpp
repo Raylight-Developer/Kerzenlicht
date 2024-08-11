@@ -101,7 +101,7 @@ void GUI::WORKSPACE::Object_Node_Viewport::f_objectChanged(CLASS::Object* object
 		active_node_tree = FILE->nodetree_map[object->node_tree];
 		for (auto node : FILE->nodetree_map[object->node_tree]->nodes) {
 			scene->addItem(node);
-			node->setPos(node->load_pos);
+			node->setPos(node->node_pos);
 		}
 	}
 	else active_node_tree = nullptr;
@@ -347,7 +347,7 @@ void GUI::WORKSPACE::Object_Node_Viewport::mouseMoveEvent(QMouseEvent* event) {
 				const QPointF delta = node->real_pos + mapToScene(event->pos()) - move_pos;
 				node->setPos(f_roundToNearest(delta.x(), 10.0), f_roundToNearest(delta.y(), 10.0));
 				node->real_pos = delta;
-				node->load_pos = node->scenePos();
+				node->node_pos = node->scenePos();
 			}
 			move_pos = mapToScene(event->pos());
 		}
@@ -493,7 +493,7 @@ void GUI::WORKSPACE::Object_Node_Viewport::dropEvent(QDropEvent* event) {
 		if (node) {
 			active_node_tree->nodes.push_back(node);
 			scene->addItem(node);
-			node->setPos(node->load_pos);
+			node->setPos(node->node_pos);
 			event->acceptProposedAction();
 		}
 	}

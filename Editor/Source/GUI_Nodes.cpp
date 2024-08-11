@@ -20,7 +20,7 @@ GUI::NODE::Node::Node(QGraphicsItem* parent) :
 	sub_type = 0;
 	outputs = {};
 	inputs = {};
-	load_pos = QPointF(0, 0);
+	node_pos = QPointF(0, 0);
 }
 
 void GUI::NODE::Node::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) {
