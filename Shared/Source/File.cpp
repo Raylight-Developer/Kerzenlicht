@@ -1083,23 +1083,23 @@ void CLASS::File::f_saveAsciiMesh(Lace& lace, const CLASS::OBJECT::Data* data, c
 	lace NL "┌Normals( 0 )";
 	lace++;
 	// TODO Fix crash if no normal layers are present
-	//for (uint64 i = 0; i < mesh->faces.size(); i++) {
-	//	lace NL i SP mesh->normals.at(mesh->faces[i]).size();
-	//	for (uint64 j = 0; j < mesh->normals.at(mesh->faces[i]).size(); j++) {
-	//		lace SP "(" SP mesh->normals.at(mesh->faces[i])[j] SP ")";
-	//	}
-	//}
+	for (uint64 i = 0; i < mesh->faces.size(); i++) {
+		lace NL i SP mesh->normals.at(mesh->faces[i]).size();
+		for (uint64 j = 0; j < mesh->normals.at(mesh->faces[i]).size(); j++) {
+			lace SP "(" SP mesh->normals.at(mesh->faces[i])[j] SP ")";
+		}
+	}
 	lace--;
 	lace NL "└Normals";
 	lace NL "┌UVs( 0 )";
 	lace++;
 	// TODO Fix crash if no uv layers are present
-	//for (uint64 i = 0; i < mesh->faces.size(); i++) {
-	//	lace NL i SP mesh->uvs.at(mesh->faces[i]).size();
-	//	for (uint64 j = 0; j < mesh->uvs.at(mesh->faces[i]).size(); j++) {
-	//		lace SP "(" SP mesh->uvs.at(mesh->faces[i])[j] SP ")";
-	//	}
-	//}
+	for (uint64 i = 0; i < mesh->faces.size(); i++) {
+		lace NL i SP mesh->uvs.at(mesh->faces[i]).size();
+		for (uint64 j = 0; j < mesh->uvs.at(mesh->faces[i]).size(); j++) {
+			lace SP "(" SP mesh->uvs.at(mesh->faces[i])[j] SP ")";
+		}
+	}
 	lace--;
 	lace NL "└UVs";
 	lace--;

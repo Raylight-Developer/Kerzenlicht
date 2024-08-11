@@ -2,6 +2,11 @@
 
 Renderer::Renderer() {
 	window = nullptr;
+	Lace* log = new Lace();
+	Session::getInstance().setLog(log);
+	file = CLASS::Render_File();
+	file.f_loadAsciiFile("./Resources/Ganyu.krz");
+	Session::getInstance().setFile(&file);
 
 	frame_counter = 0;
 	frame_count = 0;
@@ -152,12 +157,18 @@ void Renderer::pipeline() {
 	glViewport(0, 0, display_resolution.x , display_resolution.y);
 }
 
-void Renderer::dataTransfer() {
-	GPU_Scene* gpu_data = new GPU_Scene("./Resources/Ganyu.krz", "");
+void Renderer::tickUpdate() {
+	for (const CLASS::Object* object : FILE->active_scene->ptr->objects) {
+		if (object->node_tree) {
+			object->node_tree->exec(&frame_time);
+		}
+	}
+
+	GPU_Scene gpu_data = GPU_Scene(&file);
 	
 	GLint ssboMaxSize;
 	glGetIntegerv(GL_MAX_SHADER_STORAGE_BLOCK_SIZE, &ssboMaxSize);
-	gpu_data->printInfo(ssboMaxSize);
+	gpu_data.printInfo(ssboMaxSize);
 
 	GLuint triangle_buffer;
 	GLuint bvh_buffer;
@@ -167,22 +178,22 @@ void Renderer::dataTransfer() {
 	// SSBOs
 	glGenBuffers(1, &triangle_buffer);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, triangle_buffer);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPU_Triangle) * gpu_data->triangles.size(), gpu_data->triangles.data(), GL_STATIC_DRAW);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPU_Triangle) * gpu_data.triangles.size(), gpu_data.triangles.data(), GL_STATIC_DRAW);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 5, triangle_buffer);
 
 	glGenBuffers(1, &bvh_buffer);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, bvh_buffer);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPU_BVH) * gpu_data->bvh_nodes.size(), gpu_data->bvh_nodes.data(), GL_STATIC_DRAW);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPU_BVH) * gpu_data.bvh_nodes.size(), gpu_data.bvh_nodes.data(), GL_STATIC_DRAW);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 6, bvh_buffer);
 
 	glGenBuffers(1, &texture_buffer);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, texture_buffer);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPU_Texture) * gpu_data->textures.size(), gpu_data->textures.data(), GL_STATIC_DRAW);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPU_Texture) * gpu_data.textures.size(), gpu_data.textures.data(), GL_STATIC_DRAW);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 7, texture_buffer);
 
 	glGenBuffers(1, &texture_data_buffer);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, texture_data_buffer);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(uint) * gpu_data->texture_data.size(), gpu_data->texture_data.data(), GL_STATIC_DRAW);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(uint) * gpu_data.texture_data.size(), gpu_data.texture_data.data(), GL_STATIC_DRAW);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 8, texture_data_buffer);
 }
 
@@ -288,7 +299,7 @@ void Renderer::displayLoop() {
 		1U
 	);
 
-	dataTransfer();
+	tickUpdate();
 
 	// Compute Output
 	GLuint accumulation_render_layer = renderLayer(render_resolution);

@@ -96,60 +96,62 @@ class Kerzenlicht_Bridge(bpy.types.Operator):
 				i += 1
 
 	def parseMesh(self, object: bpy.types.Object, data: bpy.types.Mesh, i: int, ptr: str):
-		self.KL.append(f" ┌Data :: Mesh [ {i} ] {data.name_full}")
+		self.KL.append(f" ┌Data [ {i} ] {data.name_full}")
 
 		self.KL.append(f"  * {ptr}")
-		self.KL.append(f"  ┌Vertices( {len(data.vertices)} )")
+		self.KL.append("  Type MESH")
+		self.KL.append("  ┌Mesh")
+		self.KL.append(f"   ┌Vertices( {len(data.vertices)} )")
 		matrix = mu.Euler((radians(0), radians(180), radians(180))).to_matrix().to_4x4()
 		for j, vert in enumerate(data.vertices):
 			vert: bpy.types.MeshVertex
 			vert_pos: mu.Vector = matrix @ vert.co
-			self.KL.append(f"   {j} ( {vert_pos.x} {vert_pos.y} {vert_pos.z} )")
+			self.KL.append(f"    {j} ( {vert_pos.x} {vert_pos.y} {vert_pos.z} )")
 
-		self.KL.append("  └Vertices")
-		self.KL.append(f"  ┌Vertex-Groups( {len(object.vertex_groups)} )")
+		self.KL.append("   └Vertices")
+		self.KL.append(f"   ┌Vertex-Groups( {len(object.vertex_groups)} )")
 
 		for j, vertex_group in enumerate(object.vertex_groups):
 			vertices = []
 			vertex_group: bpy.types.VertexGroup = vertex_group
-			self.KL.append(f"   ┌Vertex-Group [ {j} ] {vertex_group.name}")
+			self.KL.append(f"    ┌Vertex-Group [ {j} ] {vertex_group.name}")
 			for k, vert in enumerate(data.vertices):
 				vert: bpy.types.MeshVertex
 				for group in vert.groups:
 					group: bpy.types.VertexGroupElement = group
 					if group.group == vertex_group.index:
 						vertices.append(str(k))
-			self.KL.append(f"    [ {' '.join(vertices)} ]")
-			self.KL.append("   └Vertex-Group")
+			self.KL.append(f"     [ {' '.join(vertices)} ]")
+			self.KL.append("    └Vertex-Group")
 
-		self.KL.append("  └Vertex-Groups")
-		self.KL.append(f"  ┌Faces( {len(data.polygons)} )")
+		self.KL.append("   └Vertex-Groups")
+		self.KL.append(f"   ┌Faces( {len(data.polygons)} )")
 
 		for j, data_b in enumerate(data.polygons):
 			poly: bpy.types.MeshPolygon = data_b
 			vertices = " ".join([str(index) for index in poly.vertices])
-			self.KL.append(f"   {j} {len(poly.vertices)} [ {vertices} ]")
+			self.KL.append(f"    {j} {len(poly.vertices)} [ {vertices} ]")
 
-		self.KL.append("  └Faces")
-		self.KL.append(f"  ┌Normals( {len(data.polygons)} )")
+		self.KL.append("   └Faces")
+		self.KL.append(f"   ┌Normals( {len(data.polygons)} )")
 
 		for j, poly in enumerate(data.polygons):
 			poly: bpy.types.MeshPolygon = poly
 			normals = " ".join([f"( {nor.x} {nor.y} {nor.z} )" for nor in [matrix @ normal for normal in [data.vertices[index].normal for index in poly.vertices]]])
-			self.KL.append(f"   {j} {len(poly.vertices)} {normals}")
+			self.KL.append(f"    {j} {len(poly.vertices)} {normals}")
 
-		self.KL.append("  └Normals")
-		self.KL.append(f"  ┌UVs( {len(data.polygons)} )")
+		self.KL.append("   └Normals")
+		self.KL.append(f"   ┌UVs( {len(data.polygons)} )")
 
 		uv_layer = data.uv_layers.active.data
 		for j, data_b in enumerate(data.polygons):
 			poly: bpy.types.MeshPolygon = data_b
 			uvs = " ".join([f"( {uv_layer[loop_index].uv.x} {uv_layer[loop_index].uv.y} )" for loop_index in range(poly.loop_start, poly.loop_start + poly.loop_total)])
-			self.KL.append(f"   {j} {len(poly.vertices)} {uvs}")
+			self.KL.append(f"    {j} {len(poly.vertices)} {uvs}")
 
-		self.KL.append("  └UVs")
-
-		self.KL.append(f" └Data :: Mesh")
+		self.KL.append("   └UVs")
+		self.KL.append("  └Mesh")
+		self.KL.append(f" └Data")
 
 	def parseObjects(self, objects: List[bpy.types.Object]):
 		object_map = {}
@@ -162,9 +164,13 @@ class Kerzenlicht_Bridge(bpy.types.Operator):
 	def parseObject(self, object: bpy.types.Object, i: int, ptr: str):
 		self.KL.append(f" ┌Object [ {i} ] {object.name_full}")
 		self.KL.append(f"  * {ptr}")
-		self.KL.append(f"  Position ( {-object.location.x} {object.location.z} {object.location.y} )")
-		self.KL.append(f"  Rotation ( {90 - object.rotation_euler.x * RAD_DEG} {object.rotation_euler.z * RAD_DEG} {object.rotation_euler.y * RAD_DEG} )")
-		self.KL.append(f"  Scale    ( {object.scale.x} {object.scale.z} {object.scale.y} )")
+		matrix = mu.Euler((radians(0), radians(180), radians(180))).to_matrix().to_4x4()
+		pos: mu.Vector = matrix @ object.location
+		rot: mu.Vector = matrix @ object.rotation_euler
+		scale: mu.Vector = matrix @ object.scale
+		self.KL.append(f"  Position ( {pos.x} {pos.y} {pos.z} )")
+		self.KL.append(f"  Rotation ( {rot.x * RAD_DEG} {rot.y * RAD_DEG} {rot.z * RAD_DEG} )")
+		self.KL.append(f"  Scale    ( {scale.x} {scale.y} {scale.z} )")
 		self.KL.append(f"  Type Mesh")
 		self.KL.append(f" └Object")
 

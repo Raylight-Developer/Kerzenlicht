@@ -21,6 +21,10 @@ Lace* Session::getLog() { return log; }
 void Session::setFile(CLASS::Editor_File* ptr) { file = ptr; }
 
 CLASS::Editor_File* Session::getFile() { return file; }
+#elif COMPILE_RENDERER
+void Session::setFile(CLASS::Render_File* ptr) { file = ptr; }
+
+CLASS::Render_File* Session::getFile() { return file; }
 #else
 void Session::setFile(CLASS::File* ptr) { file = ptr; }
 

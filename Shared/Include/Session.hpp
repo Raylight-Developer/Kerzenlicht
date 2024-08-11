@@ -6,6 +6,8 @@
 namespace CLASS {
 	#ifdef COMPILE_EDITOR
 		struct Editor_File;
+	#elif COMPILE_RENDERER
+		struct Render_File;
 	#else
 		struct File;
 	#endif
@@ -38,10 +40,14 @@ struct Session {
 	#ifdef COMPILE_EDITOR
 		void setFile(CLASS::Editor_File* ptr);
 		CLASS::Editor_File* getFile();
+	#elif COMPILE_RENDERER
+		void setFile(CLASS::Render_File* ptr);
+		CLASS::Render_File* getFile();
 	#else
 		void setFile(CLASS::File* ptr);
 		CLASS::File* getFile();
 	#endif
+
 private:
 	Session() : log(nullptr) , file(nullptr) {}
 	~Session() = default;
@@ -52,6 +58,8 @@ private:
 	Lace* log;
 	#ifdef COMPILE_EDITOR
 		CLASS::Editor_File* file;
+	#elif COMPILE_RENDERER
+		CLASS::Render_File* file;
 	#else
 		CLASS::File* file;
 	#endif

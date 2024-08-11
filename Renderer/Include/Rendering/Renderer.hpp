@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Include.hpp"
+#include "Shared.hpp"
 
 #include "GLFW/glfw3.h"
 #include "External/imgui-1.90/imgui.h"
@@ -9,11 +9,14 @@
 
 #include "OpenGL.hpp"
 
-#include "Gpu_Scene.hpp"
 #include "Render_Camera.hpp"
+
+#include "Core/Gpu_Scene.hpp"
+#include "Core/Render_File.hpp"
 
 struct Renderer {
 	GLFWwindow* window;
+	CLASS::Render_File file;
 
 	dvec1 display_aspect_ratio;
 	dvec1 render_aspect_ratio;
@@ -54,7 +57,7 @@ struct Renderer {
 	void systemInfo();
 
 	void pipeline();
-	void dataTransfer();
+	void tickUpdate();
 
 	void guiLoop();
 	void gameLoop();

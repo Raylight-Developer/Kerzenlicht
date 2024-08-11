@@ -1,18 +1,18 @@
 #pragma once
 
-#include "Include.hpp"
+#include "Shared.hpp"
 
-#include "Lace.hpp"
-#include "Ops.hpp"
-#include "Session.hpp"
+#include "Core/Render_File.hpp"
 
 #include "Render_Camera.hpp"
-#include "OpenGl.hpp"
+#include "Rendering/OpenGl.hpp"
 
 struct GPU_Scene;
 struct alignas(16) GPU_Triangle;
 struct alignas(16) GPU_Texture;
 struct alignas(16) GPU_BVH;
+
+GPU_Triangle faceToGpuTri(const mat4& matrix, CLASS::OBJECT::DATA::Mesh* mesh, CLASS::OBJECT::DATA::MESH::Face* face);
 
 enum struct Parse_Type {
 	NONE,
@@ -40,28 +40,7 @@ struct GPU_Scene {
 	//vector<GPU_Vertex>        vertices;
 	//vector<GPU_Mesh>          meshes;
 
-	GPU_Scene(const string& data_file_path, const string& shader_file_path = "");
-
-	void loadHeader     (const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map);
-	void loadNodeTree   (const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map);
-	void loadMaterial   (const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map);
-	void loadData       (const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map);
-	void loadAtmosphere (const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map);
-	void loadPrimitive  (const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map);
-	void loadSkeleton   (const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map);
-	void loadCamera     (const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map);
-	void loadVolume     (const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map);
-	void loadCurve      (const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map);
-	void loadEmpty      (const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map);
-	void loadForce      (const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map);
-	void loadGroup      (const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map);
-	void loadLight      (const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map);
-	void loadMesh       (const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map);
-	void loadSfx        (const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map);
-	void loadVfx        (const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map);
-	void loadObject     (const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map);
-	void loadScene      (const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map);
-	void loadBuild      (const vector<vector<string>>& token_data, map<uint64, void*>& pointer_map);
+	GPU_Scene(const CLASS::Render_File* file);
 
 	void loadTexture    (const string& file_path);
 
