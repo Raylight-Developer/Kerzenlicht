@@ -5,7 +5,7 @@ Renderer::Renderer() {
 	Lace* log = new Lace();
 	Session::getInstance().setLog(log);
 	file = CLASS::Render_File();
-	file.f_loadAsciiFile("./Resources/Ganyu.krz");
+	file.f_loadAsciiFile("../Editor/Resources/Assets/Ganyu.krz");
 	Session::getInstance().setFile(&file);
 
 	frame_counter = 0;
@@ -21,8 +21,6 @@ Renderer::Renderer() {
 	recompile = false;
 	reset = false;
 	debug = false;
-
-	camera = Render_Camera();
 
 	camera_move_sensitivity = 0.75;
 	camera_view_sensitivity = 2.5;
@@ -217,32 +215,32 @@ void Renderer::guiLoop() {
 
 void Renderer::gameLoop() {
 	if (keys[GLFW_KEY_D]) {
-		camera.move(-1.0, 0.0, 0.0, camera_move_sensitivity * frame_time);
+		FILE->default_camera->transform.moveLocal(dvec3(- 1.0, 0.0, 0.0)* camera_move_sensitivity * frame_time);
 		reset = true;
 		runframe = 0;
 	}
 	if (keys[GLFW_KEY_A]) {
-		camera.move(1.0, 0.0, 0.0, camera_move_sensitivity * frame_time);
+		FILE->default_camera->transform.moveLocal(dvec3(1.0, 0.0, 0.0)* camera_move_sensitivity * frame_time);
 		reset = true;
 		runframe = 0;
 	}
 	if (keys[GLFW_KEY_E] || keys[GLFW_KEY_SPACE]) {
-		camera.move(0.0, 1.0, 0.0, camera_move_sensitivity * frame_time);
+		FILE->default_camera->transform.moveLocal(dvec3(0.0, 1.0, 0.0)* camera_move_sensitivity * frame_time);
 		reset = true;
 		runframe = 0;
 	}
 	if (keys[GLFW_KEY_Q] || keys[GLFW_KEY_LEFT_CONTROL]) {
-		camera.move(0.0, -1.0, 0.0, camera_move_sensitivity * frame_time);
+		FILE->default_camera->transform.moveLocal(dvec3(0.0, -1.0, 0.0)* camera_move_sensitivity * frame_time);
 		reset = true;
 		runframe = 0;
 	}
 	if (keys[GLFW_KEY_W]) {
-		camera.move(0.0, 0.0, 1.0, camera_move_sensitivity * frame_time);
+		FILE->default_camera->transform.moveLocal(dvec3(0.0, 0.0, 1.0)* camera_move_sensitivity * frame_time);
 		reset = true;
 		runframe = 0;
 	}
 	if (keys[GLFW_KEY_S]) {
-		camera.move(0.0, 0.0, -1.0, camera_move_sensitivity * frame_time);
+		FILE->default_camera->transform.moveLocal(dvec3(0.0, 0.0, -1.0)* camera_move_sensitivity * frame_time);
 		reset = true;
 		runframe = 0;
 	}
@@ -250,7 +248,7 @@ void Renderer::gameLoop() {
 		const dvec1 xoffset =   (last_mouse.x - current_mouse.x) * frame_time;
 		const dvec1 yoffset = - (last_mouse.y - current_mouse.y) * frame_time;
 
-		camera.rotate(xoffset * camera_view_sensitivity, yoffset * camera_view_sensitivity);
+		FILE->default_camera->transform.rotate(dvec3(yoffset * camera_view_sensitivity, xoffset * camera_view_sensitivity, 0.0));
 		reset = true;
 		runframe = 0;
 
@@ -327,11 +325,12 @@ void Renderer::displayLoop() {
 		glUniform1ui(glGetUniformLocation(compute_program, "ray_bounces"), 1U);
 		glUniform1ui(glGetUniformLocation(compute_program, "samples_per_pixel"), 1U);
 
-		camera.compile();
-		glUniform3fv(glGetUniformLocation(compute_program, "camera_projection_center") , 1, value_ptr(d_to_f(camera.projection_center)));
-		glUniform3fv(glGetUniformLocation(compute_program, "camera_projection_u"), 1, value_ptr(d_to_f(camera.projection_u)));
-		glUniform3fv(glGetUniformLocation(compute_program, "camera_projection_v"), 1, value_ptr(d_to_f(camera.projection_v)));
-		glUniform3fv(glGetUniformLocation(compute_program, "camera_pos"), 1, value_ptr(d_to_f(camera.transform.position)));
+		CLASS::OBJECT::DATA::Camera* camera = FILE->default_camera->data->getCamera();
+		camera->compile(FILE->active_scene->ptr, FILE->default_camera);
+		glUniform3fv(glGetUniformLocation(compute_program, "camera_pos"),  1, value_ptr(d_to_f(FILE->default_camera->transform.position)));
+		glUniform3fv(glGetUniformLocation(compute_program, "camera_p_uv"), 1, value_ptr(d_to_f(camera->projection_center)));
+		glUniform3fv(glGetUniformLocation(compute_program, "camera_p_u"),  1, value_ptr(d_to_f(camera->projection_u)));
+		glUniform3fv(glGetUniformLocation(compute_program, "camera_p_v"),  1, value_ptr(d_to_f(camera->projection_v)));
 
 		glBindImageTexture(0, accumulation_render_layer, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
 		glBindImageTexture(1, raw_render_layer         , 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
@@ -451,7 +450,7 @@ void Renderer::key(GLFWwindow* window, int key, int scancode, int action, int mo
 			instance->view_layer = 3;
 	}
 	if (key == GLFW_KEY_C && action == GLFW_PRESS) {
-		instance->camera = Render_Camera();
+		//instance->camera = Render_Camera();
 		instance->reset = true;
 		instance->runframe = 0;
 	}

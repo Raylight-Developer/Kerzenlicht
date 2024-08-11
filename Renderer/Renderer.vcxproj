@@ -128,7 +128,6 @@
     <ClCompile Include="Include\External\imgui-1.90\imgui_widgets.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Source\Rendering\OpenGl.cpp" />
-    <ClCompile Include="Source\Render_Camera.cpp" />
     <ClCompile Include="Source\Operators.cpp" />
     <ClCompile Include="Resources\glad.c" />
     <ClCompile Include="Source\Rendering\Renderer.cpp" />
@@ -163,7 +162,6 @@
     <ClInclude Include="..\Shared\Include\Shader\Shader.hpp" />
     <ClInclude Include="..\Shared\Include\Shared.hpp" />
     <ClInclude Include="Include\Core\Gpu_Scene.hpp" />
-    <ClInclude Include="Include\Render_Camera.hpp" />
     <ClInclude Include="Include\External\imgui-1.90\backends\imgui_impl_glfw.h" />
     <ClInclude Include="Include\External\imgui-1.90\backends\imgui_impl_opengl3.h" />
     <ClInclude Include="Include\External\imgui-1.90\imconfig.h" />

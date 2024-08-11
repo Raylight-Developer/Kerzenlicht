@@ -9,8 +9,6 @@
 
 #include "OpenGL.hpp"
 
-#include "Render_Camera.hpp"
-
 #include "Core/Gpu_Scene.hpp"
 #include "Core/Render_File.hpp"
 
@@ -30,8 +28,6 @@ struct Renderer {
 	bool recompile;
 	bool reset;
 	bool debug;
-
-	Render_Camera camera;
 
 	dvec1 camera_move_sensitivity;
 	dvec1 camera_view_sensitivity;

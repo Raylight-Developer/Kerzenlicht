@@ -217,7 +217,24 @@ CLASS::Transform CLASS::Transform::operator*(const dvec1& other) const {
 	return result;
 }
 
-dmat4 CLASS::Transform::f_compile() const {
+void CLASS::Transform::moveLocal(const dvec3& value) {
+	const dmat4 matrix = glm::yawPitchRoll(euler_rotation.y * DEG_RAD, euler_rotation.x * DEG_RAD, euler_rotation.z * DEG_RAD);
+	const dvec3 x_vector = matrix[0];
+	const dvec3 y_vector = matrix[1];
+	const dvec3 z_vector = matrix[2];
+	position += value.x * x_vector;
+	position += value.y * y_vector;
+	position += value.z * z_vector;
+}
+
+void CLASS::Transform::rotate(const dvec3& value) {
+	euler_rotation += value;
+
+	if (euler_rotation.x > 89.0)  euler_rotation.x = 89.0;
+	if (euler_rotation.x < -89.0) euler_rotation.x = -89.0;
+}
+
+dmat4 CLASS::Transform::getMatrix() const {
 	const dmat4 translation_matrix = glm::translate(dmat4(1.0), position);
 	const dmat4 scale_matrix = glm::scale(dmat4(1.0), scale);
 	dmat4 rotation_matrix = dmat4(1.0);
@@ -231,7 +248,7 @@ dmat4 CLASS::Transform::f_compile() const {
 			const dmat4 rotationX = glm::rotate(dmat4(1.0), euler_rotation.x * DEG_RAD, dvec3(1.0, 0.0, 0.0));
 			const dmat4 rotationY = glm::rotate(dmat4(1.0), euler_rotation.y * DEG_RAD, dvec3(0.0, 1.0, 0.0));
 			const dmat4 rotationZ = glm::rotate(dmat4(1.0), euler_rotation.z * DEG_RAD, dvec3(0.0, 0.0, 1.0));
-			rotation_matrix = rotationX * rotationY * rotationZ;
+			rotation_matrix =  rotationZ * rotationY * rotationX;
 			break;
 		}
 	}

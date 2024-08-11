@@ -62,7 +62,7 @@ uniform uint  samples_per_pixel;
 //uniform float camera_focal_angle;
 //uniform float camera_focal_length;
 
-uniform vec3 camera_projection_center;
-uniform vec3 camera_projection_u;
-uniform vec3 camera_projection_v;
 uniform vec3 camera_pos;
+uniform vec3 camera_p_uv;
+uniform vec3 camera_p_u;
+uniform vec3 camera_p_v;

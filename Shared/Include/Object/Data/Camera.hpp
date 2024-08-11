@@ -19,6 +19,6 @@ namespace CLASS::OBJECT::DATA {
 
 		Camera();
 
-		void f_compile(CLASS::Scene* scene, CLASS::Object* object);
+		void compile(CLASS::Scene* scene, CLASS::Object* object);
 	};
 }

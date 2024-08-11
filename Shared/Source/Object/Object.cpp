@@ -19,9 +19,9 @@ CLASS::Object::Object() :
 void CLASS::Object::f_compileMatrix() {
 	if (parent) {
 		parent->f_compileMatrix();
-		transform_matrix = parent->transform_matrix * (transform.f_compile() * node_transform.f_compile());
+		transform_matrix = parent->transform_matrix * (transform.getMatrix() * node_transform.getMatrix());
 	}
 	else {
-		transform_matrix = transform.f_compile() * node_transform.f_compile();
+		transform_matrix = transform.getMatrix() * node_transform.getMatrix();
 	}
 }

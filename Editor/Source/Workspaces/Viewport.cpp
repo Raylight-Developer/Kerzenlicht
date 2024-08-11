@@ -255,7 +255,7 @@ void GUI::WORKSPACE::Viewport::f_updateTick() {
 
 void GUI::WORKSPACE::Viewport::f_selectObject(const dvec2& uv) { // TODO fix slight missalignment
 	CLASS::OBJECT::DATA::Camera* camera = FILE->default_camera->data->getCamera();
-	camera->f_compile(FILE->active_scene->ptr, FILE->default_camera);
+	camera->compile(FILE->active_scene->ptr, FILE->default_camera);
 	const VIEWPORT_REALTIME::Ray ray = VIEWPORT_REALTIME::Ray(
 		d_to_f(FILE->default_camera->transform.position),
 		d_to_f(normalize(
@@ -301,7 +301,7 @@ void GUI::WORKSPACE::Viewport::paintGL() {
 
 	f_updateTick();
 	CLASS::OBJECT::DATA::Camera* camera = FILE->default_camera->data->getCamera();
-	camera->f_compile(FILE->active_scene->ptr, FILE->default_camera);
+	camera->compile(FILE->active_scene->ptr, FILE->default_camera);
 
 	glUseProgram(compute_shader_program);
 	glUniform3fv(glGetUniformLocation(compute_shader_program, "camera_pos"),  1, value_ptr(d_to_f(FILE->default_camera->transform.position)));

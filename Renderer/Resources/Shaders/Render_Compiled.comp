@@ -76,10 +76,10 @@ uniform bool  reset;
 uniform bool  debug;
 uniform uint  ray_bounces;
 uniform uint  samples_per_pixel;
-uniform vec3 camera_projection_center;
-uniform vec3 camera_projection_u;
-uniform vec3 camera_projection_v;
 uniform vec3 camera_pos;
+uniform vec3 camera_p_uv;
+uniform vec3 camera_p_u;
+uniform vec3 camera_p_v;
 
 
 float f_lerp(in float a,in float b, in float t) {
@@ -283,7 +283,7 @@ vec4 f_shade(in Hit hit_data, inout Ray ray) {
 }
 
 Ray f_cameraRay(vec2 uv) {
-	return Ray(camera_pos, normalize(camera_projection_center + (camera_projection_u * uv.x) + (camera_projection_v * uv.y) - camera_pos));
+	return Ray(camera_pos, normalize(camera_p_uv + (camera_p_u * uv.x) + (camera_p_v * uv.y) - camera_pos));
 }
 
 

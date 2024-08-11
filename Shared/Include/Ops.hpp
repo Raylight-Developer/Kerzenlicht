@@ -52,7 +52,10 @@ namespace CLASS {
 
 		Transform operator*(const dvec1& other) const;
 
-		dmat4 f_compile() const;
+		void moveLocal(const dvec3& value);
+		void rotate(const dvec3& value);
+
+		dmat4 getMatrix() const;
 		string to_string() const;
 	};
 

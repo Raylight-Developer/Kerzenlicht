@@ -22,12 +22,12 @@
     <Filter Include="Shared\Source">
       <UniqueIdentifier>{0d7f41ec-191b-49c8-ad8e-2b0824657e02}</UniqueIdentifier>
     </Filter>
+    <Filter Include="External">
+      <UniqueIdentifier>{d9c973ae-b5b9-4894-87c6-d4385b82f04e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Rendering\Renderer.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Render_Camera.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
     <ClCompile Include="Source\Operators.cpp">
@@ -39,27 +39,6 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Resources\glad.c">
       <Filter>Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="Include\External\imgui-1.90\backends\imgui_impl_opengl3.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="Include\External\imgui-1.90\backends\imgui_impl_glfw.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="Include\External\imgui-1.90\imgui.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="Include\External\imgui-1.90\imgui_demo.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="Include\External\imgui-1.90\imgui_draw.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="Include\External\imgui-1.90\imgui_tables.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="Include\External\imgui-1.90\imgui_widgets.cpp">
-      <Filter>Sources</Filter>
     </ClCompile>
     <ClCompile Include="Source\Core\Gpu_Scene.cpp">
       <Filter>Sources</Filter>
@@ -145,45 +124,36 @@
     <ClCompile Include="Source\Core\Render_File.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
+    <ClCompile Include="Include\External\imgui-1.90\imgui_widgets.cpp">
+      <Filter>External</Filter>
+    </ClCompile>
+    <ClCompile Include="Include\External\imgui-1.90\imgui.cpp">
+      <Filter>External</Filter>
+    </ClCompile>
+    <ClCompile Include="Include\External\imgui-1.90\imgui_demo.cpp">
+      <Filter>External</Filter>
+    </ClCompile>
+    <ClCompile Include="Include\External\imgui-1.90\imgui_draw.cpp">
+      <Filter>External</Filter>
+    </ClCompile>
+    <ClCompile Include="Include\External\imgui-1.90\backends\imgui_impl_glfw.cpp">
+      <Filter>External</Filter>
+    </ClCompile>
+    <ClCompile Include="Include\External\imgui-1.90\backends\imgui_impl_opengl3.cpp">
+      <Filter>External</Filter>
+    </ClCompile>
+    <ClCompile Include="Include\External\imgui-1.90\imgui_tables.cpp">
+      <Filter>External</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Include\External\stb_image.h">
-      <Filter>Include</Filter>
-    </ClInclude>
     <ClInclude Include="Include\Rendering\Renderer.hpp">
-      <Filter>Include</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Render_Camera.hpp">
       <Filter>Include</Filter>
     </ClInclude>
     <ClInclude Include="Include\Operators.hpp">
       <Filter>Include</Filter>
     </ClInclude>
     <ClInclude Include="Include\Rendering\OpenGl.hpp">
-      <Filter>Include</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\External\imgui-1.90\backends\imgui_impl_opengl3.h">
-      <Filter>Include</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\External\imgui-1.90\backends\imgui_impl_glfw.h">
-      <Filter>Include</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\External\imgui-1.90\imgui.h">
-      <Filter>Include</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\External\imgui-1.90\imgui_internal.h">
-      <Filter>Include</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\External\imgui-1.90\imstb_rectpack.h">
-      <Filter>Include</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\External\imgui-1.90\imstb_textedit.h">
-      <Filter>Include</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\External\imgui-1.90\imstb_truetype.h">
-      <Filter>Include</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\External\imgui-1.90\imconfig.h">
       <Filter>Include</Filter>
     </ClInclude>
     <ClInclude Include="Include\Core\Gpu_Scene.hpp">
@@ -275,6 +245,33 @@
     </ClInclude>
     <ClInclude Include="Include\Core\Render_File.hpp">
       <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\External\imgui-1.90\imstb_truetype.h">
+      <Filter>External</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\External\imgui-1.90\imconfig.h">
+      <Filter>External</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\External\imgui-1.90\imgui.h">
+      <Filter>External</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\External\imgui-1.90\backends\imgui_impl_glfw.h">
+      <Filter>External</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\External\imgui-1.90\backends\imgui_impl_opengl3.h">
+      <Filter>External</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\External\imgui-1.90\imgui_internal.h">
+      <Filter>External</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\External\imgui-1.90\imstb_rectpack.h">
+      <Filter>External</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\External\imgui-1.90\imstb_textedit.h">
+      <Filter>External</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\External\stb_image.h">
+      <Filter>External</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

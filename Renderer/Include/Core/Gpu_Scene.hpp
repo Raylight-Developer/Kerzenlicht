@@ -4,7 +4,6 @@
 
 #include "Core/Render_File.hpp"
 
-#include "Render_Camera.hpp"
 #include "Rendering/OpenGl.hpp"
 
 struct GPU_Scene;

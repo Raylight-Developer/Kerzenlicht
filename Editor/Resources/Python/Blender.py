@@ -7,6 +7,7 @@ pip.main(["install", "pandas"])
 pip.main(["install", "tabulate"])
 
 RAD_DEG = 57.29577951308232
+MATRIX = mu.Euler((radians(-90), radians(0), radians(0))).to_matrix().to_4x4()
 
 def to_ptr(data: str) -> int:
 	hash_value = hash(data)
@@ -102,10 +103,9 @@ class Kerzenlicht_Bridge(bpy.types.Operator):
 		self.KL.append("  Type MESH")
 		self.KL.append("  ┌Mesh")
 		self.KL.append(f"   ┌Vertices( {len(data.vertices)} )")
-		matrix = mu.Euler((radians(0), radians(180), radians(180))).to_matrix().to_4x4()
 		for j, vert in enumerate(data.vertices):
 			vert: bpy.types.MeshVertex
-			vert_pos: mu.Vector = matrix @ vert.co
+			vert_pos: mu.Vector = MATRIX @ vert.co
 			self.KL.append(f"    {j} ( {vert_pos.x} {vert_pos.y} {vert_pos.z} )")
 
 		self.KL.append("   └Vertices")
@@ -137,7 +137,7 @@ class Kerzenlicht_Bridge(bpy.types.Operator):
 
 		for j, poly in enumerate(data.polygons):
 			poly: bpy.types.MeshPolygon = poly
-			normals = " ".join([f"( {nor.x} {nor.y} {nor.z} )" for nor in [matrix @ normal for normal in [data.vertices[index].normal for index in poly.vertices]]])
+			normals = " ".join([f"( {nor.x} {nor.y} {nor.z} )" for nor in [MATRIX @ normal for normal in [data.vertices[index].normal for index in poly.vertices]]])
 			self.KL.append(f"    {j} {len(poly.vertices)} {normals}")
 
 		self.KL.append("   └Normals")
@@ -164,12 +164,11 @@ class Kerzenlicht_Bridge(bpy.types.Operator):
 	def parseObject(self, object: bpy.types.Object, i: int, ptr: str):
 		self.KL.append(f" ┌Object [ {i} ] {object.name_full}")
 		self.KL.append(f"  * {ptr}")
-		matrix = mu.Euler((radians(0), radians(180), radians(180))).to_matrix().to_4x4()
-		pos: mu.Vector = matrix @ object.location
-		rot: mu.Vector = matrix @ object.rotation_euler
-		scale: mu.Vector = matrix @ object.scale
-		self.KL.append(f"  Position ( {pos.x} {pos.y} {pos.z} )")
-		self.KL.append(f"  Rotation ( {rot.x * RAD_DEG} {rot.y * RAD_DEG} {rot.z * RAD_DEG} )")
+		pos: mu.Vector = object.location
+		rot: mu.Euler = object.rotation_euler
+		scale: mu.Vector = object.scale
+		self.KL.append(f"  Position ( {pos.x} {pos.z} {pos.y} )")
+		self.KL.append(f"  Rotation ( {rot.x * RAD_DEG} {rot.z * RAD_DEG} {rot.y * RAD_DEG} )")
 		self.KL.append(f"  Scale    ( {scale.x} {scale.y} {scale.z} )")
 		self.KL.append(f"  Type Mesh")
 		self.KL.append(f" └Object")
