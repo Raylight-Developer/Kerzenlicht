@@ -24,7 +24,7 @@ struct Lace;
 #define ANSI_G      "\033[92m"
 #define ANSI_Yellow "\033[93m"
 #define ANSI_B      "\033[94m"
-#define ANSI_Purple "\033[95m"
+#define ANSI_PURPLE "\033[95m"
 #define ANSI_Cyan   "\033[96m"
 #define ANSI_White  "\033[97m"
 

@@ -11,15 +11,17 @@ vec4 f_shade(in Hit hit_data, inout Ray ray) {
 	//	}
 	//};
 
+	return vec4(vec3(cos(5.0 * hit_data.t_dist) * 0.5 + 0.5), 1.0);
+
 	vec2 uv =
 		hit_data.uvw.x * vec2(hit_data.hit_tri.uv_a_x, hit_data.hit_tri.uv_a_y) +
 		hit_data.uvw.y * vec2(hit_data.hit_tri.uv_b_x, hit_data.hit_tri.uv_b_y) +
 		hit_data.uvw.z * vec2(hit_data.hit_tri.uv_c_x, hit_data.hit_tri.uv_c_y);
-	//return vec4(uv.x, 0, uv.y, 1);
 	return sampleTextureRgba8u(textures[0], vec2(uv.x, 1 - uv.y));
+
 	//);
 
 	// ERROR:
-	//hit_data.error = true;
-	//return vec4(1, 0, 1, 1);
+	hit_data.error = true;
+	return vec4(1, 0, 1, 1);
 }

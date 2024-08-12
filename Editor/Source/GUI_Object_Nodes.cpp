@@ -58,7 +58,7 @@ GUI::NODE::EXEC::Script::Script(const ivec2& pos, const string& script_id) {
 	});
 
 	if (script_id != "") {
-		loadDLL(dynlib);
+		loadDLL(dynlib, true);
 
 		FARPROC paintAddress = GetProcAddress(dynlib, (script_identifier->text().toStdString() + "_renderGui").c_str());
 		if (paintAddress) {
@@ -145,7 +145,7 @@ void GUI::NODE::EXEC::Script::reloadFunctions() {
 
 void GUI::NODE::EXEC::Script::reloadDll() {
 	unloadDLL(dynlib);
-	loadDLL(dynlib);
+	loadDLL(dynlib, true);
 	reloadFunctions();
 }
 

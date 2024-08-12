@@ -39,9 +39,10 @@ struct GPU_Scene {
 	//vector<GPU_Vertex>        vertices;
 	//vector<GPU_Mesh>          meshes;
 
-	GPU_Scene(const CLASS::Render_File* file);
+	GPU_Scene();
 
-	void loadTexture    (const string& file_path);
+	void loadTexture(const string& file_path);
+	void updateTick();
 
 	void print() const;
 	void printInfo(const uint64& max_size) const;

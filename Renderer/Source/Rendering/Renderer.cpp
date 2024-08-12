@@ -4,9 +4,10 @@ Renderer::Renderer() {
 	window = nullptr;
 	Lace* log = new Lace();
 	Session::getInstance().setLog(log);
-	file = CLASS::Render_File();
-	file.f_loadAsciiFile("../Editor/Resources/Assets/Ganyu.krz");
-	Session::getInstance().setFile(&file);
+	file = new CLASS::Render_File();
+	file->f_loadAsciiFile("../Editor/Resources/Assets/Save.krz");
+	Session::getInstance().setFile(file);
+	gpu_data = new GPU_Scene();
 
 	frame_counter = 0;
 	frame_count = 0;
@@ -125,30 +126,30 @@ void Renderer::systemInfo() {
 	glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_SIZE, 0, &work_grp_size[0]);
 	glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_SIZE, 1, &work_grp_size[1]);
 	glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_SIZE, 2, &work_grp_size[2]);
-	cout << "Max work group sizes" <<
+	LOG << ENDL << "Max work group sizes" <<
 		" x:" << work_grp_size[0] <<
 		" y:" << work_grp_size[1] <<
-		" z:" << work_grp_size[2] << endl;
+		" z:" << work_grp_size[2];
 
 	GLint work_grp_inv;
 	glGetIntegerv(GL_MAX_COMPUTE_WORK_GROUP_INVOCATIONS, &work_grp_inv);
-	cout << "Max invocations count per work group: " << work_grp_inv << endl;
+	LOG << ENDL << "Max invocations count per work group: " << work_grp_inv;
 
 	GLint uboMaxSize;
 	glGetIntegerv(GL_MAX_UNIFORM_BLOCK_SIZE , &uboMaxSize);
-	cout << "Maximum UBO size: " << static_cast<dvec1>(uboMaxSize) / (1024.0 * 1024.0) << " Mb" << endl;
+	LOG << ENDL << "Maximum UBO size: " << static_cast<dvec1>(uboMaxSize) / (1024.0 * 1024.0) << " Mb";
 
 	GLint ssboMaxSize;
 	glGetIntegerv(GL_MAX_SHADER_STORAGE_BLOCK_SIZE, &ssboMaxSize);
-	cout << "Maximum SSBO size per binding: " << static_cast<dvec1>(ssboMaxSize) / (1024.0 * 1024.0) << " Mb" << endl;
+	LOG << ENDL << "Maximum SSBO size per binding: " << static_cast<dvec1>(ssboMaxSize) / (1024.0 * 1024.0) << " Mb";
 
 	GLint maxSSBOBindings;
 	glGetIntegerv(GL_MAX_SHADER_STORAGE_BUFFER_BINDINGS, &maxSSBOBindings);
-	cout << "Maximum SSBO bindings: " << maxSSBOBindings << endl;
+	LOG << ENDL << "Maximum SSBO bindings: " << maxSSBOBindings;
 
 	GLint uniformBufferOffsetAlignment;
 	glGetIntegerv(GL_SHADER_STORAGE_BUFFER_OFFSET_ALIGNMENT, &uniformBufferOffsetAlignment);
-	cout << "SSBO struct alignment multiplier: " << uniformBufferOffsetAlignment << endl;
+	LOG << ENDL << "SSBO struct alignment multiplier: " << uniformBufferOffsetAlignment;
 }
 
 void Renderer::pipeline() {
@@ -162,11 +163,11 @@ void Renderer::tickUpdate() {
 		}
 	}
 
-	GPU_Scene gpu_data = GPU_Scene(&file);
+	gpu_data->updateTick();
 	
 	GLint ssboMaxSize;
 	glGetIntegerv(GL_MAX_SHADER_STORAGE_BLOCK_SIZE, &ssboMaxSize);
-	gpu_data.printInfo(ssboMaxSize);
+	//gpu_data->printInfo(ssboMaxSize);
 
 	GLuint triangle_buffer;
 	GLuint bvh_buffer;
@@ -176,22 +177,22 @@ void Renderer::tickUpdate() {
 	// SSBOs
 	glGenBuffers(1, &triangle_buffer);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, triangle_buffer);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPU_Triangle) * gpu_data.triangles.size(), gpu_data.triangles.data(), GL_STATIC_DRAW);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPU_Triangle) * gpu_data->triangles.size(), gpu_data->triangles.data(), GL_STATIC_DRAW);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 5, triangle_buffer);
 
 	glGenBuffers(1, &bvh_buffer);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, bvh_buffer);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPU_BVH) * gpu_data.bvh_nodes.size(), gpu_data.bvh_nodes.data(), GL_STATIC_DRAW);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPU_BVH) * gpu_data->bvh_nodes.size(), gpu_data->bvh_nodes.data(), GL_STATIC_DRAW);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 6, bvh_buffer);
 
 	glGenBuffers(1, &texture_buffer);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, texture_buffer);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPU_Texture) * gpu_data.textures.size(), gpu_data.textures.data(), GL_STATIC_DRAW);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPU_Texture) * gpu_data->textures.size(), gpu_data->textures.data(), GL_STATIC_DRAW);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 7, texture_buffer);
 
 	glGenBuffers(1, &texture_data_buffer);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, texture_data_buffer);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(uint) * gpu_data.texture_data.size(), gpu_data.texture_data.data(), GL_STATIC_DRAW);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(uint) * gpu_data->texture_data.size(), gpu_data->texture_data.data(), GL_STATIC_DRAW);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 8, texture_data_buffer);
 }
 
@@ -215,12 +216,12 @@ void Renderer::guiLoop() {
 
 void Renderer::gameLoop() {
 	if (keys[GLFW_KEY_D]) {
-		FILE->default_camera->transform.moveLocal(dvec3(- 1.0, 0.0, 0.0)* camera_move_sensitivity * frame_time);
+		FILE->default_camera->transform.moveLocal(dvec3(1.0, 0.0, 0.0)* camera_move_sensitivity * frame_time);
 		reset = true;
 		runframe = 0;
 	}
 	if (keys[GLFW_KEY_A]) {
-		FILE->default_camera->transform.moveLocal(dvec3(1.0, 0.0, 0.0)* camera_move_sensitivity * frame_time);
+		FILE->default_camera->transform.moveLocal(dvec3(-1.0, 0.0, 0.0)* camera_move_sensitivity * frame_time);
 		reset = true;
 		runframe = 0;
 	}
@@ -235,20 +236,20 @@ void Renderer::gameLoop() {
 		runframe = 0;
 	}
 	if (keys[GLFW_KEY_W]) {
-		FILE->default_camera->transform.moveLocal(dvec3(0.0, 0.0, 1.0)* camera_move_sensitivity * frame_time);
-		reset = true;
-		runframe = 0;
-	}
-	if (keys[GLFW_KEY_S]) {
 		FILE->default_camera->transform.moveLocal(dvec3(0.0, 0.0, -1.0)* camera_move_sensitivity * frame_time);
 		reset = true;
 		runframe = 0;
 	}
+	if (keys[GLFW_KEY_S]) {
+		FILE->default_camera->transform.moveLocal(dvec3(0.0, 0.0, 1.0)* camera_move_sensitivity * frame_time);
+		reset = true;
+		runframe = 0;
+	}
 	if (keys[GLFW_MOUSE_BUTTON_RIGHT]) {
-		const dvec1 xoffset =   (last_mouse.x - current_mouse.x) * frame_time;
-		const dvec1 yoffset = - (last_mouse.y - current_mouse.y) * frame_time;
+		const dvec1 xoffset = (last_mouse.x - current_mouse.x) * frame_time * camera_view_sensitivity;
+		const dvec1 yoffset = (last_mouse.y - current_mouse.y) * frame_time * camera_view_sensitivity;
 
-		FILE->default_camera->transform.rotate(dvec3(yoffset * camera_view_sensitivity, xoffset * camera_view_sensitivity, 0.0));
+		FILE->default_camera->transform.rotate(dvec3(yoffset, xoffset, 0.0));
 		reset = true;
 		runframe = 0;
 
@@ -297,7 +298,6 @@ void Renderer::displayLoop() {
 		1U
 	);
 
-	tickUpdate();
 
 	// Compute Output
 	GLuint accumulation_render_layer = renderLayer(render_resolution);
@@ -313,6 +313,7 @@ void Renderer::displayLoop() {
 		window_time += frame_time;
 
 		gameLoop();
+		tickUpdate();
 
 		glUseProgram(compute_program);
 		glUniform1ui(glGetUniformLocation(compute_program, "frame_count"), ul_to_u(runframe));

@@ -14,7 +14,8 @@
 
 struct Renderer {
 	GLFWwindow* window;
-	CLASS::Render_File file;
+	CLASS::Render_File* file;
+	GPU_Scene* gpu_data;
 
 	dvec1 display_aspect_ratio;
 	dvec1 render_aspect_ratio;

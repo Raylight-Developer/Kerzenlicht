@@ -11,36 +11,6 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\Shared\Source\Data_Property.cpp" />
-    <ClCompile Include="..\Shared\Source\File.cpp" />
-    <ClCompile Include="..\Shared\Source\Lace.cpp" />
-    <ClCompile Include="..\Shared\Source\Nodes.cpp" />
-    <ClCompile Include="..\Shared\Source\Object\Data.cpp" />
-    <ClCompile Include="..\Shared\Source\Object\Data\Atmosphere.cpp" />
-    <ClCompile Include="..\Shared\Source\Object\Data\Camera.cpp" />
-    <ClCompile Include="..\Shared\Source\Object\Data\Curve.cpp" />
-    <ClCompile Include="..\Shared\Source\Object\Data\Empty.cpp" />
-    <ClCompile Include="..\Shared\Source\Object\Data\Force.cpp" />
-    <ClCompile Include="..\Shared\Source\Object\Data\Group.cpp" />
-    <ClCompile Include="..\Shared\Source\Object\Data\Light.cpp" />
-    <ClCompile Include="..\Shared\Source\Object\Data\Mesh.cpp" />
-    <ClCompile Include="..\Shared\Source\Object\Data\Primitive.cpp" />
-    <ClCompile Include="..\Shared\Source\Object\Data\Sfx.cpp" />
-    <ClCompile Include="..\Shared\Source\Object\Data\Skeleton.cpp" />
-    <ClCompile Include="..\Shared\Source\Object\Data\Vfx.cpp" />
-    <ClCompile Include="..\Shared\Source\Object\Data\Volume.cpp" />
-    <ClCompile Include="..\Shared\Source\Object\Nodes\Compiler.cpp" />
-    <ClCompile Include="..\Shared\Source\Object\Nodes\Object_Nodes.cpp" />
-    <ClCompile Include="..\Shared\Source\Object\Object.cpp" />
-    <ClCompile Include="..\Shared\Source\Ops.cpp" />
-    <ClCompile Include="..\Shared\Source\Scene.cpp" />
-    <ClCompile Include="..\Shared\Source\Session.cpp" />
-    <ClCompile Include="..\Shared\Source\Shader\Nodes\Shader_Nodes.cpp" />
-    <ClCompile Include="..\Shared\Source\Shader\Shader.cpp" />
-    <ClCompile Include="Include\pch.cpp" />
-    <ClCompile Include="main.cpp" />
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="..\Shared\Include\Data_Property.hpp" />
     <ClInclude Include="..\Shared\Include\File.hpp" />
     <ClInclude Include="..\Shared\Include\Include.hpp" />
@@ -73,13 +43,48 @@
     <ClInclude Include="Include\framework.h" />
     <ClInclude Include="Include\pch.h" />
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\Shared\Source\Data_Property.cpp" />
+    <ClCompile Include="..\Shared\Source\File.cpp" />
+    <ClCompile Include="..\Shared\Source\Lace.cpp" />
+    <ClCompile Include="..\Shared\Source\Nodes.cpp" />
+    <ClCompile Include="..\Shared\Source\Object\Data.cpp" />
+    <ClCompile Include="..\Shared\Source\Object\Data\Atmosphere.cpp" />
+    <ClCompile Include="..\Shared\Source\Object\Data\Camera.cpp" />
+    <ClCompile Include="..\Shared\Source\Object\Data\Curve.cpp" />
+    <ClCompile Include="..\Shared\Source\Object\Data\Empty.cpp" />
+    <ClCompile Include="..\Shared\Source\Object\Data\Force.cpp" />
+    <ClCompile Include="..\Shared\Source\Object\Data\Group.cpp" />
+    <ClCompile Include="..\Shared\Source\Object\Data\Light.cpp" />
+    <ClCompile Include="..\Shared\Source\Object\Data\Mesh.cpp" />
+    <ClCompile Include="..\Shared\Source\Object\Data\Primitive.cpp" />
+    <ClCompile Include="..\Shared\Source\Object\Data\Sfx.cpp" />
+    <ClCompile Include="..\Shared\Source\Object\Data\Skeleton.cpp" />
+    <ClCompile Include="..\Shared\Source\Object\Data\Vfx.cpp" />
+    <ClCompile Include="..\Shared\Source\Object\Data\Volume.cpp" />
+    <ClCompile Include="..\Shared\Source\Object\Nodes\Compiler.cpp" />
+    <ClCompile Include="..\Shared\Source\Object\Nodes\Object_Nodes.cpp" />
+    <ClCompile Include="..\Shared\Source\Object\Object.cpp" />
+    <ClCompile Include="..\Shared\Source\Ops.cpp" />
+    <ClCompile Include="..\Shared\Source\Scene.cpp" />
+    <ClCompile Include="..\Shared\Source\Session.cpp" />
+    <ClCompile Include="..\Shared\Source\Shader\Nodes\Shader_Nodes.cpp" />
+    <ClCompile Include="..\Shared\Source\Shader\Shader.cpp" />
+    <ClCompile Include="Include\pch.cpp" />
+    <ClCompile Include="main.cpp" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{73c40b0d-92a0-4d74-a91a-d5fcb10ce06b}</ProjectGuid>
+    <ProjectGuid>{27D7D85C-F516-46B4-A152-78C71750EB84}</ProjectGuid>
+    <Keyword>QtVS_v304</Keyword>
     <WindowsTargetPlatformVersion Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">10.0.22621.0</WindowsTargetPlatformVersion>
     <WindowsTargetPlatformVersion Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">10.0.22621.0</WindowsTargetPlatformVersion>
-    <ProjectName>Scripting</ProjectName>
+    <QtMsBuild Condition="'$(QtMsBuild)'=='' OR !Exists('$(QtMsBuild)\qt.targets')">$(MSBuildProjectDirectory)\QtMsBuild</QtMsBuild>
+    <ProjectName>GUI-Scripting</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <ImportGroup Condition="Exists('$(QtMsBuild)\qt_defaults.props')">
+    <Import Project="$(QtMsBuild)\qt_defaults.props" />
+  </ImportGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
@@ -93,6 +98,16 @@
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'" Label="QtSettings">
+    <QtInstall>6.5.1_msvc2019_64</QtInstall>
+    <QtModules>core;gui;widgets;opengl;openglwidgets</QtModules>
+    <QtBuildConfig>debug</QtBuildConfig>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'" Label="QtSettings">
+    <QtInstall>6.5.1_msvc2019_64</QtInstall>
+    <QtModules>core;gui;widgets;opengl;openglwidgets</QtModules>
+    <QtBuildConfig>release</QtBuildConfig>
+  </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
@@ -100,10 +115,10 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(ProjectDir)\Include;$(SolutionDir)\Shared\Include;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)\Include;$(SolutionDir)\Shared\Include;$(SolutionDir)\Editor\Include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(ProjectDir)\Include;$(SolutionDir)\Shared\Include;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)\Include;$(SolutionDir)\Shared\Include;$(SolutionDir)\Editor\Include;$(IncludePath)</IncludePath>
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Label="Vcpkg" />
@@ -147,7 +162,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;COMPILE_SCRIPTING;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;COMPILE_GUI_SCRIPTING;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(ProjectDir)\Include;$(SolutionDir)\Shared\Source;$(SolutionDir)\Editor\Include;C:\Programs\Coding\Lib\glm 0.9.9.8;$(SolutionDir)\External;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
@@ -159,6 +174,8 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>Editor.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(OutDir)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -167,7 +184,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;COMPILE_SCRIPTING;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;COMPILE_GUI_SCRIPTING;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(ProjectDir)\Include;$(SolutionDir)\Shared\Source;$(SolutionDir)\Editor\Include;C:\Programs\Coding\Lib\glm 0.9.9.8;$(SolutionDir)\External;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
@@ -181,9 +198,14 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>Editor.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(OutDir)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">
+    <Import Project="$(QtMsBuild)\qt.targets" />
+  </ImportGroup>
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
 </Project>

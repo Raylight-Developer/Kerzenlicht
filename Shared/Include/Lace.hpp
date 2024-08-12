@@ -2,7 +2,7 @@
 
 #include "Include.hpp"
 
-#if defined(COMPILE_EDITOR) || defined(COMPILE_SCRIPTING)
+#if defined(COMPILE_EDITOR) || defined(COMPILE_GUI_SCRIPTING)
 	#include "../../Editor/Include/Qt.hpp"
 #endif
 
@@ -67,7 +67,7 @@ struct Lace { //------------Utility for string manipulation------------
 
 	// Feed directly
 	
-#if defined(COMPILE_EDITOR) || defined(COMPILE_SCRIPTING)
+#if defined(COMPILE_EDITOR) || defined(COMPILE_GUI_SCRIPTING)
 	Lace& operator<< (const QPointF& value);
 	Lace& operator<< (const QString& value);
 #endif

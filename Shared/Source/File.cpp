@@ -190,7 +190,7 @@ CLASS::Node_Tree* CLASS::File::f_loadAsciiNodeTree(const Token_Array& token_data
 	node_tree->name = f_join(token_data[0], 4);
 
 	LOG << ENDL << ANSI_B << "    [Node-Tree]" << ANSI_RESET; FLUSH;
-	LOG << ENDL << "      " << ANSI_Purple  << node_tree->name << ANSI_RESET; FLUSH;
+	LOG << ENDL << "      " << ANSI_PURPLE  << node_tree->name << ANSI_RESET; FLUSH;
 
 	bool is_processing = false;
 	Token_Array read_data = Token_Array();
@@ -226,12 +226,12 @@ CLASS::Node_Tree* CLASS::File::f_loadAsciiNodeTree(const Token_Array& token_data
 			else if (read_data[3][1] == "EXEC") {
 				if (read_data[3][3] == "SCRIPT") {
 					LOG << ENDL << ANSI_B << "      [Node]" << ANSI_RESET; FLUSH;
-					LOG << ENDL << "        " << ANSI_Purple << name << ANSI_RESET; FLUSH;
+					LOG << ENDL << "        " << ANSI_PURPLE << name << ANSI_RESET; FLUSH;
 					node = new NODE::EXEC::Script(f_join(read_data[5]));
 				}
 				else if (read_data[3][3] == "TICK") {
 					LOG << ENDL << ANSI_B << "      [Node]" << ANSI_RESET; FLUSH;
-					LOG << ENDL << "        " << ANSI_Purple << name << ANSI_RESET; FLUSH;
+					LOG << ENDL << "        " << ANSI_PURPLE << name << ANSI_RESET; FLUSH;
 					node = new NODE::EXEC::Tick();
 					node_tree->tick = static_cast<NODE::EXEC::Tick*>(node);
 				}
@@ -239,7 +239,7 @@ CLASS::Node_Tree* CLASS::File::f_loadAsciiNodeTree(const Token_Array& token_data
 			else if (read_data[3][1] == "LINK") {
 				if      (read_data[3][3] == "POINTER") {
 					LOG << ENDL << ANSI_B << "      [Node]" << ANSI_RESET; FLUSH;
-					LOG << ENDL << "        " << ANSI_Purple << name << ANSI_RESET; FLUSH;
+					LOG << ENDL << "        " << ANSI_PURPLE << name << ANSI_RESET; FLUSH;
 					auto node_t = new NODE::LINK::Pointer();
 					node_t->pointer_type = DATA::fromString(read_data[5][1]);
 					node = node_t;
@@ -247,7 +247,7 @@ CLASS::Node_Tree* CLASS::File::f_loadAsciiNodeTree(const Token_Array& token_data
 				else if (read_data[3][3] == "GET") {
 					if      (read_data[3][5] == "FIELD") {
 						LOG << ENDL << ANSI_B << "      [Node]" << ANSI_RESET; FLUSH;
-						LOG << ENDL << "        " << ANSI_Purple << name << ANSI_RESET; FLUSH;
+						LOG << ENDL << "        " << ANSI_PURPLE << name << ANSI_RESET; FLUSH;
 						auto node_t = new NODE::LINK::GET::Field();
 						node_t->field = f_join(read_data[5]);
 						node = node_t;
@@ -258,7 +258,7 @@ CLASS::Node_Tree* CLASS::File::f_loadAsciiNodeTree(const Token_Array& token_data
 						if      (read_data[3][7] == "EULER_ROTATION") {
 							if      (read_data[3][9] == "X") {
 								LOG << ENDL << ANSI_B << "      [Node]" << ANSI_RESET; FLUSH;
-								LOG << ENDL << "        " << ANSI_Purple << name << ANSI_RESET; FLUSH;
+								LOG << ENDL << "        " << ANSI_PURPLE << name << ANSI_RESET; FLUSH;
 								node = new NODE::LINK::SET::Euler_Rotation_X();
 							}
 						}
@@ -268,40 +268,40 @@ CLASS::Node_Tree* CLASS::File::f_loadAsciiNodeTree(const Token_Array& token_data
 			else if (read_data[3][1] == "MATH") {
 				if      (read_data[3][3] == "ADD") {
 					LOG << ENDL << ANSI_B << "      [Node]" << ANSI_RESET; FLUSH;
-					LOG << ENDL << "        " << ANSI_Purple << name << ANSI_RESET; FLUSH;
+					LOG << ENDL << "        " << ANSI_PURPLE << name << ANSI_RESET; FLUSH;
 					node = new NODE::MATH::Add();
 				}
 				else if (read_data[3][3] == "SUB") {
 					LOG << ENDL << ANSI_B << "      [Node]" << ANSI_RESET; FLUSH;
-					LOG << ENDL << "        " << ANSI_Purple << name << ANSI_RESET; FLUSH;
+					LOG << ENDL << "        " << ANSI_PURPLE << name << ANSI_RESET; FLUSH;
 					node = new NODE::MATH::Sub();
 				}
 				else if (read_data[3][3] == "MUL") {
 					LOG << ENDL << ANSI_B << "      [Node]" << ANSI_RESET; FLUSH;
-					LOG << ENDL << "        " << ANSI_Purple << name << ANSI_RESET; FLUSH;
+					LOG << ENDL << "        " << ANSI_PURPLE << name << ANSI_RESET; FLUSH;
 					node = new NODE::MATH::Mul();
 				}
 				else if (read_data[3][3] == "DIV") {
 					LOG << ENDL << ANSI_B << "      [Node]" << ANSI_RESET; FLUSH;
-					LOG << ENDL << "        " << ANSI_Purple << name << ANSI_RESET; FLUSH;
+					LOG << ENDL << "        " << ANSI_PURPLE << name << ANSI_RESET; FLUSH;
 					node = new NODE::MATH::Div();
 				}
 			}
 			else if (read_data[3][1] == "UTIL") {
 				if (read_data[3][3] == "PRINT") {
 					LOG << ENDL << ANSI_B << "      [Node]" << ANSI_RESET; FLUSH;
-					LOG << ENDL << "        " << ANSI_Purple << name << ANSI_RESET; FLUSH;
+					LOG << ENDL << "        " << ANSI_PURPLE << name << ANSI_RESET; FLUSH;
 					node = new NODE::UTIL::Print();
 				}
 				if (read_data[3][3] == "CAST") {
 					if (read_data[3][5] == "UINT_TO_DOUBLE") {
 						LOG << ENDL << ANSI_B << "      [Node]" << ANSI_RESET; FLUSH;
-						LOG << ENDL << "        " << ANSI_Purple << name << ANSI_RESET; FLUSH;
+						LOG << ENDL << "        " << ANSI_PURPLE << name << ANSI_RESET; FLUSH;
 						node = new NODE::UTIL::CAST::Uint_To_Double();
 					}
 					else if (read_data[3][5] == "INT_TO_DOUBLE") {
 						LOG << ENDL << ANSI_B << "      [Node]" << ANSI_RESET; FLUSH;
-						LOG << ENDL << "        " << ANSI_Purple << name << ANSI_RESET; FLUSH;
+						LOG << ENDL << "        " << ANSI_PURPLE << name << ANSI_RESET; FLUSH;
 						node = new NODE::UTIL::CAST::Int_To_Double();
 					}
 				}
@@ -485,7 +485,7 @@ CLASS::OBJECT::Data* CLASS::File::f_loadAsciiMesh(const Token_Array& token_data)
 	data->data = mesh;
 
 	LOG << ENDL << ANSI_B << "    [Data] " << ANSI_RESET; FLUSH;
-	LOG << ENDL << "      " << ANSI_Purple  << data->name << ANSI_RESET; FLUSH;
+	LOG << ENDL << "      " << ANSI_PURPLE  << data->name << ANSI_RESET; FLUSH;
 	LOG << ENDL << ANSI_B << "      [Mesh]" << ANSI_RESET; FLUSH;
 
 	bool is_processing = false;
@@ -579,7 +579,7 @@ CLASS::Object* CLASS::File::f_loadAsciiObject(const Token_Array& token_data) {
 	object->name = f_join(token_data[0], 4);
 
 	LOG << ENDL << ANSI_B << "    [Object] " << ANSI_RESET; FLUSH;
-	LOG << ENDL << "      " << ANSI_Purple << object->name << ANSI_RESET; FLUSH;
+	LOG << ENDL << "      " << ANSI_PURPLE << object->name << ANSI_RESET; FLUSH;
 
 	CLASS::Transform transform;
 
