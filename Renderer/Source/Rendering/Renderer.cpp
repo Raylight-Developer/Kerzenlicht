@@ -5,7 +5,7 @@ Renderer::Renderer() {
 	Lace* log = new Lace();
 	Session::getInstance().setLog(log);
 	file = new CLASS::Render_File();
-	file->f_loadAsciiFile("../Editor/Resources/Assets/Save.krz");
+	file->f_loadAsciiFile("../Editor/Resources/Assets/Ganyu.krz");
 	Session::getInstance().setFile(file);
 	gpu_data = new GPU_Scene();
 
@@ -71,14 +71,14 @@ void Renderer::initGlfw() {
 
 	window = glfwCreateWindow(display_resolution.x, display_resolution.y, "Runtime", NULL, NULL);
 
-	Image icon = Image();
-	if (icon.init("./Resources/Icon.png")) {
-		GLFWimage image_icon;
-		image_icon.width = icon.width;
-		image_icon.height = icon.height;
-		image_icon.pixels = icon.data;
-		glfwSetWindowIcon(window, 1, &image_icon);
-	}
+	//SHADER::Texture icon = SHADER::Texture();
+	//if (icon.loadFromFile("./Resources/Icon.png")) {
+	//	GLFWimage image_icon;
+	//	image_icon.width = icon.resolution.x;
+	//	image_icon.height = icon.resolution.y;
+	//	image_icon.pixels = icon.data.data();
+	//	glfwSetWindowIcon(window, 1, &image_icon);
+	//}
 
 	if (window == NULL) {
 		cout << "Failed to create GLFW window" << endl;
@@ -117,10 +117,10 @@ void Renderer::systemInfo() {
 	glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_COUNT, 0, &work_grp_cnt[0]);
 	glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_COUNT, 1, &work_grp_cnt[1]);
 	glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_COUNT, 2, &work_grp_cnt[2]);
-	cout << "Max work groups per compute shader" <<
+	LOG << ENDL << "Max work groups per compute shader" <<
 		" x:" << work_grp_cnt[0] <<
 		" y:" << work_grp_cnt[1] <<
-		" z:" << work_grp_cnt[2] << endl;
+		" z:" << work_grp_cnt[2];
 
 	GLint work_grp_size[3];
 	glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_SIZE, 0, &work_grp_size[0]);
@@ -137,11 +137,11 @@ void Renderer::systemInfo() {
 
 	GLint uboMaxSize;
 	glGetIntegerv(GL_MAX_UNIFORM_BLOCK_SIZE , &uboMaxSize);
-	LOG << ENDL << "Maximum UBO size: " << static_cast<dvec1>(uboMaxSize) / (1024.0 * 1024.0) << " Mb";
+	LOG << ENDL << "Maximum UBO size: " << d_to_ul(round(i_to_d(uboMaxSize) / (1024.0 * 1024.0))) << " Mb";
 
 	GLint ssboMaxSize;
 	glGetIntegerv(GL_MAX_SHADER_STORAGE_BLOCK_SIZE, &ssboMaxSize);
-	LOG << ENDL << "Maximum SSBO size per binding: " << static_cast<dvec1>(ssboMaxSize) / (1024.0 * 1024.0) << " Mb";
+	LOG << ENDL << "Maximum SSBO size per binding: " << d_to_ul(round(i_to_d(ssboMaxSize) / (1024.0 * 1024.0))) << " Mb";
 
 	GLint maxSSBOBindings;
 	glGetIntegerv(GL_MAX_SHADER_STORAGE_BUFFER_BINDINGS, &maxSSBOBindings);
@@ -169,31 +169,11 @@ void Renderer::tickUpdate() {
 	glGetIntegerv(GL_MAX_SHADER_STORAGE_BLOCK_SIZE, &ssboMaxSize);
 	//gpu_data->printInfo(ssboMaxSize);
 
-	GLuint triangle_buffer;
-	GLuint bvh_buffer;
-	GLuint texture_buffer;
-	GLuint texture_data_buffer;
-
 	// SSBOs
-	glGenBuffers(1, &triangle_buffer);
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, triangle_buffer);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPU_Triangle) * gpu_data->triangles.size(), gpu_data->triangles.data(), GL_STATIC_DRAW);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 5, triangle_buffer);
-
-	glGenBuffers(1, &bvh_buffer);
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, bvh_buffer);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPU_BVH) * gpu_data->bvh_nodes.size(), gpu_data->bvh_nodes.data(), GL_STATIC_DRAW);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 6, bvh_buffer);
-
-	glGenBuffers(1, &texture_buffer);
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, texture_buffer);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPU_Texture) * gpu_data->textures.size(), gpu_data->textures.data(), GL_STATIC_DRAW);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 7, texture_buffer);
-
-	glGenBuffers(1, &texture_data_buffer);
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, texture_data_buffer);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(uint) * gpu_data->texture_data.size(), gpu_data->texture_data.data(), GL_STATIC_DRAW);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 8, texture_data_buffer);
+	ssboBinding(5, ul_to_u(gpu_data->trianglesSize()  ), gpu_data->triangles.data());
+	ssboBinding(6, ul_to_u(gpu_data->bvhNodesSize()   ), gpu_data->bvh_nodes.data());
+	ssboBinding(7, ul_to_u(gpu_data->texturesSize()   ), gpu_data->textures.data());
+	ssboBinding(8, ul_to_u(gpu_data->textureDataSize()), gpu_data->texture_data.data());
 }
 
 void Renderer::guiLoop() {
@@ -295,15 +275,16 @@ void Renderer::displayLoop() {
 	const uvec3 compute_layout = uvec3(
 		d_to_u(ceil(u_to_d(render_resolution.x) / 32.0)),
 		d_to_u(ceil(u_to_d(render_resolution.y) / 32.0)),
-		1U
+		1
 	);
-
 
 	// Compute Output
 	GLuint accumulation_render_layer = renderLayer(render_resolution);
 	GLuint raw_render_layer = renderLayer(render_resolution);
 	GLuint bvh_render_layer = renderLayer(render_resolution);
 	GLuint normal_render_layer = renderLayer(render_resolution);
+
+	gpu_data->updateTextures();
 
 	glBindVertexArray(VAO);
 	while (!glfwWindowShouldClose(window)) {
@@ -323,8 +304,8 @@ void Renderer::displayLoop() {
 		glUniform1ui(glGetUniformLocation(compute_program, "reset"), static_cast<GLuint>(reset));
 		glUniform1ui(glGetUniformLocation(compute_program, "debug"), static_cast<GLuint>(debug));
 
-		glUniform1ui(glGetUniformLocation(compute_program, "ray_bounces"), 1U);
-		glUniform1ui(glGetUniformLocation(compute_program, "samples_per_pixel"), 1U);
+		glUniform1ui(glGetUniformLocation(compute_program, "ray_bounces"), 1);
+		glUniform1ui(glGetUniformLocation(compute_program, "samples_per_pixel"), 1);
 
 		CLASS::OBJECT::DATA::Camera* camera = FILE->default_camera->data->getCamera();
 		camera->compile(FILE->active_scene->ptr, FILE->default_camera);

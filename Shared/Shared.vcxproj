@@ -48,10 +48,10 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(ProjectDir)\Include;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)\Include;$(ProjectDir)\External;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(ProjectDir)\Include;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)\Include;$(ProjectDir)\External;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -100,6 +100,7 @@
     <Lib />
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="External\stb_image.h" />
     <ClInclude Include="Include\Data_Property.hpp" />
     <ClInclude Include="Include\File.hpp" />
     <ClInclude Include="Include\Include.hpp" />

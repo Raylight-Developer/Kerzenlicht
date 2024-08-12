@@ -80,6 +80,10 @@
 		{
 			"name": "kerz.comment",
 			"match": "\\/\\/.*"
+		},
+		{
+			"name": "kerz.glsl",
+			"match": "┌Code([\\s\\S]*?)└Code"
 		}
 	]
 }

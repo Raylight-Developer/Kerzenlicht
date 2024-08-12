@@ -5,7 +5,10 @@
 #define TAB << Lace_TAB()
 
 GPU_Scene::GPU_Scene() {
-	loadTexture("./Resources/Ganyu.jpg");
+	triangles = {};
+	bvh_nodes = {};
+	textures = {};
+	texture_data = {};
 }
 
 void GPU_Scene::print() const {
@@ -63,12 +66,12 @@ void GPU_Scene::printInfo(const uint64& max_size) const {
 	printSize("	Texture Data ", texture_data);
 }
 
-void GPU_Scene::loadTexture(const string& file_path) {
-	uvec2 resolution;
-	vector<uint> data = loadRgba8Texture(file_path, resolution);
-
-	texture_data.insert(texture_data.end(), data.begin(), data.end());
-	textures.push_back(GPU_Texture(textures.size(), resolution.x, resolution.y, 0U));
+void GPU_Scene::updateTextures() {
+	for (SHADER::Texture* texture : FILE->textures) {
+		vector<uint> data = texture->toRgba8Texture();
+		texture_data.insert(texture_data.end(), data.begin(), data.end());
+		textures.push_back(GPU_Texture(ul_to_u(textures.size()), texture->resolution.x, texture->resolution.y, 0));
+	}
 }
 
 void GPU_Scene::updateTick() {
@@ -105,6 +108,22 @@ void GPU_Scene::updateTick() {
 		triangles.insert(triangles.end(), bvh_build.triangles.begin(), bvh_build.triangles.end());
 		//LOG << ENDL << "Triangle Count: " << mesh_triangles.size() << "  BVH Depth: " << bvh_depth << "  BVH Nodes: " << bvh_nodes.size();
 	}
+}
+
+uint64 GPU_Scene::bvhNodesSize() const {
+	return sizeof(GPU_BVH) * bvh_nodes.size();
+}
+
+uint64 GPU_Scene::texturesSize() const {
+	return sizeof(GPU_Texture) * textures.size();
+}
+
+uint64 GPU_Scene::trianglesSize() const {
+	return sizeof(GPU_Triangle) * triangles.size();
+}
+
+uint64 GPU_Scene::textureDataSize() const {
+	return sizeof(uint) * texture_data.size();
 }
 
 Lace GPU_Triangle::print() const {
@@ -285,28 +304,38 @@ GPU_Triangle faceToGpuTri(const mat4& matrix, CLASS::OBJECT::DATA::Mesh* mesh, C
 	const vec3 vert_a = vec3(vert4_a.x, vert4_a.y, vert4_a.z) / vert4_a.w;
 	const vec3 vert_b = vec3(vert4_b.x, vert4_b.y, vert4_b.z) / vert4_b.w;
 	const vec3 vert_c = vec3(vert4_c.x, vert4_c.y, vert4_c.z) / vert4_c.w;
-	if (mesh->normals.size() > 0 and mesh->uvs.size() > 0) {
-		const vec4 nor4_a =  matrix * vec4(d_to_f(mesh->normals[face][0]), 1.0);
-		const vec4 nor4_b =  matrix * vec4(d_to_f(mesh->normals[face][1]), 1.0);
-		const vec4 nor4_c =  matrix * vec4(d_to_f(mesh->normals[face][2]), 1.0);
-		const vec3 nor_a = vec3(nor4_a.x, nor4_a.y, nor4_a.z) / nor4_a.w;
-		const vec3 nor_b = vec3(nor4_b.x, nor4_b.y, nor4_b.z) / nor4_b.w;
-		const vec3 nor_c = vec3(nor4_c.x, nor4_c.y, nor4_c.z) / nor4_c.w;
-		return GPU_Triangle(
-			vert_a,
-			vert_b,
-			vert_c,
-			nor_a,
-			nor_b,
-			nor_c,
-			d_to_f(mesh->uvs[face][0]),
-			d_to_f(mesh->uvs[face][1]),
-			d_to_f(mesh->uvs[face][2])
-		);
+	vec3 nor_a = vec3(0.0f);
+	vec3 nor_b = vec3(0.0f);
+	vec3 nor_c = vec3(0.0f);
+	vec2 uv_a = vec2(0.0f);
+	vec2 uv_b = vec2(0.0f);
+	vec2 uv_c = vec2(0.0f);
+
+	uint material_index = 0;// ul_to_u(f_getVectorIndex(FILE->materials, mesh->materials[face]));
+
+	if (mesh->uvs.size() > 0) {
+		uv_a = d_to_f(mesh->uvs[face][0]);
+		uv_b = d_to_f(mesh->uvs[face][1]);
+		uv_c = d_to_f(mesh->uvs[face][2]);
+	}
+	if (mesh->normals.size() > 0) {
+		const vec4 nor4_a = matrix * vec4(d_to_f(mesh->normals[face][0]), 1.0);
+		const vec4 nor4_b = matrix * vec4(d_to_f(mesh->normals[face][1]), 1.0);
+		const vec4 nor4_c = matrix * vec4(d_to_f(mesh->normals[face][2]), 1.0);
+		nor_a = vec3(nor4_a.x, nor4_a.y, nor4_a.z) / nor4_a.w;
+		nor_b = vec3(nor4_b.x, nor4_b.y, nor4_b.z) / nor4_b.w;
+		nor_c = vec3(nor4_c.x, nor4_c.y, nor4_c.z) / nor4_c.w;
 	}
 	return GPU_Triangle(
 		vert_a,
 		vert_b,
-		vert_c
+		vert_c,
+		nor_a,
+		nor_b,
+		nor_c,
+		uv_a,
+		uv_b,
+		uv_c,
+		material_index
 	);
 }

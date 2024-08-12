@@ -25,6 +25,9 @@
     <Filter Include="External">
       <UniqueIdentifier>{d9c973ae-b5b9-4894-87c6-d4385b82f04e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shared\External">
+      <UniqueIdentifier>{6f28cc8d-ff25-4f73-923f-d19b764a2ea3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Rendering\Renderer.cpp">
@@ -270,8 +273,8 @@
     <ClInclude Include="Include\External\imgui-1.90\imstb_textedit.h">
       <Filter>External</Filter>
     </ClInclude>
-    <ClInclude Include="Include\External\stb_image.h">
-      <Filter>External</Filter>
+    <ClInclude Include="..\Shared\External\stb_image.h">
+      <Filter>Shared\External</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

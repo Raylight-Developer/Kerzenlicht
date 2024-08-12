@@ -95,6 +95,9 @@
     <ClInclude Include="Include\Session.hpp">
       <Filter>Include</Filter>
     </ClInclude>
+    <ClInclude Include="External\stb_image.h">
+      <Filter>Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Lace.cpp">

@@ -119,6 +119,8 @@ void CLASS::File::f_loadAscii(const Token_Array& token_data) {
 				is_processing = Parse_Type::NODE_TREE;
 			else if (tokens[0] == "┌Material")
 				is_processing = Parse_Type::MATERIAL;
+			else if (tokens[0] == "┌Texture")
+				is_processing = Parse_Type::TEXTURE;
 			else if (tokens[0] == "┌Header")
 				is_processing = Parse_Type::HEADER;
 			else if (tokens[0] == "┌Object")
@@ -145,6 +147,11 @@ void CLASS::File::f_loadAscii(const Token_Array& token_data) {
 				LOG << ENDL << ANSI_B << "  [Data-Block]" << ANSI_RESET; FLUSH;
 				is_processing = Parse_Type::NONE;
 				materials.push_back(f_loadAsciiMaterial(data));
+			}
+			else if (is_processing == Parse_Type::TEXTURE and tokens[0] == "└Texture") {
+				LOG << ENDL << ANSI_B << "  [Data-Block]" << ANSI_RESET; FLUSH;
+				is_processing = Parse_Type::NONE;
+				textures.push_back(f_loadAsciiTexture(data));
 			}
 			else if (is_processing == Parse_Type::HEADER and tokens[0] == "└Header") {
 				LOG << ENDL << ANSI_B << "  [Data-Block]" << ANSI_RESET; FLUSH;
@@ -183,6 +190,25 @@ void CLASS::File::f_loadAsciiHeader(const Token_Array& token_data) {
 			string file_type = tokens[1];
 		}
 	}
+}
+
+SHADER::Texture* CLASS::File::f_loadAsciiTexture(const Token_Array& token_data) {
+	SHADER::Texture* texture = new SHADER::Texture();
+	texture->name = f_join(token_data[0], 4);
+	texture->loadFromFile(f_join(token_data[1]));
+	return texture;
+}
+
+SHADER::Material* CLASS::File::f_loadAsciiMaterial(const Token_Array& token_data) {
+	SHADER::Material* material = new SHADER::Material();
+	material->name = f_join(token_data[0], 4);
+	material->type = SHADER::MATERIAL::Type::CODE;
+
+	material->shader_code = f_join(f_closingPair(token_data, "┌Code", "└Code"), "\n");
+
+	LOG << ENDL << material->shader_code;
+
+	return material;
 }
 
 CLASS::Node_Tree* CLASS::File::f_loadAsciiNodeTree(const Token_Array& token_data) {
@@ -323,11 +349,11 @@ CLASS::Node_Tree* CLASS::File::f_loadAsciiNodeTree(const Token_Array& token_data
 				auto node_l = static_cast<CLASS::Node*>(pointer_map[str_to_ul(sub_tokens[1])]);
 				auto port_l = static_cast<NODE::PORT::Exec_O_Port*>(
 					node_l->outputs[str_to_ul(sub_tokens[2])]
-				);
+					);
 				auto node_r = static_cast<CLASS::Node*>(pointer_map[str_to_ul(sub_tokens[5])]);
 				auto port_r = static_cast<NODE::PORT::Exec_I_Port*>(
 					node_r->inputs[str_to_ul(sub_tokens[3])]
-				);
+					);
 				port_l->connection = port_r;
 				port_r->incoming_connections.push_back(port_l);
 			}
@@ -339,11 +365,11 @@ CLASS::Node_Tree* CLASS::File::f_loadAsciiNodeTree(const Token_Array& token_data
 				auto node_l = static_cast<CLASS::Node*>(pointer_map[str_to_ul(sub_tokens[1])]);
 				auto port_l = static_cast<NODE::PORT::Data_O_Port*>(
 					node_l->outputs[str_to_ul(sub_tokens[2])]
-				);
+					);
 				auto node_r = static_cast<CLASS::Node*>(pointer_map[str_to_ul(sub_tokens[5])]);
 				auto port_r = static_cast<NODE::PORT::Data_I_Port*>(
 					node_r->inputs[str_to_ul(sub_tokens[3])]
-				);
+					);
 				port_r->connection = port_l;
 				port_l->outgoing_connections.push_back(port_r);
 			}
@@ -354,12 +380,6 @@ CLASS::Node_Tree* CLASS::File::f_loadAsciiNodeTree(const Token_Array& token_data
 	}
 	pointer_map[str_to_ul(token_data[1][1])] = node_tree;
 	return node_tree;
-}
-
-SHADER::Shader* CLASS::File::f_loadAsciiMaterial(const Token_Array& token_data) {
-	SHADER::Shader* material = new SHADER::Shader();
-	material->name = f_join(token_data[0], 4);
-	return material;
 }
 
 CLASS::OBJECT::Data* CLASS::File::f_loadAsciiData(const Token_Array& token_data) {
@@ -518,7 +538,7 @@ CLASS::OBJECT::Data* CLASS::File::f_loadAsciiMesh(const Token_Array& token_data)
 			is_processing = false;
 			LOG << ENDL << "        Vertex-Group"; FLUSH;
 			for (const string& index : read_data[1]) {
-				mesh->vertex_groups[f_join(read_data[0], 4)].push_back(mesh->vertices[str_to_d(index)]);
+				mesh->vertex_groups[f_join(read_data[0], 4)].push_back(mesh->vertices[str_to_ul(index)]);
 			}
 		}
 		else if (tokens[0] == "└Faces") {
@@ -723,7 +743,7 @@ void CLASS::File::f_saveAscii(Lace & lace) {
 	count = 0;
 	lace NL "┌Materials( " << materials.size() << " )";
 	lace++;
-	for (const SHADER::Shader* material : materials)
+	for (const SHADER::Material* material : materials)
 		f_saveAsciiMaterial(lace, material, count++);
 	lace--;
 	lace NL "└Materials";
@@ -933,7 +953,7 @@ void CLASS::File::f_saveAsciiNodeTree(Lace& lace, CLASS::Node_Tree* data, const 
 		lace NL "└Node-Tree";
 }
 
-void CLASS::File::f_saveAsciiMaterial(Lace& lace, const SHADER::Shader* data, const uint64& i) {
+void CLASS::File::f_saveAsciiMaterial(Lace& lace, const SHADER::Material* data, const uint64& i) {
 	lace NL "┌Material [ " << i << " ] " << data->name;
 	lace++;
 	lace NL ptr_to_str(data);

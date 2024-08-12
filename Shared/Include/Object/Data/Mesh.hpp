@@ -2,6 +2,8 @@
 
 #include "Include.hpp"
 
+#include "Shader/Shader.hpp"
+
 namespace CLASS::OBJECT::DATA {
 	namespace MESH {
 		struct Vertex {
@@ -20,6 +22,7 @@ namespace CLASS::OBJECT::DATA {
 		vector<MESH::Face*> faces;
 		map<MESH::Face*, vector<dvec2>> uvs;
 		map<MESH::Face*, vector<dvec3>> normals;
+		map<MESH::Face*, SHADER::Material*> materials;
 		map<string, vector<MESH::Vertex*>> vertex_groups;
 
 		Mesh();

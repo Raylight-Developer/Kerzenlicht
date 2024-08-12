@@ -1,13 +1,14 @@
-#pragma once
+﻿#pragma once
 
 #include "Include.hpp"
 
 // string
-vector<string> f_split(const string& input);
-vector<string> f_split(const string& input, const string& delimiter);
-string f_join(const vector<string>& tokens, const string& join, const uint64& start = 0, const uint64& end = 0);
-string f_join(const vector<string>& tokens, const uint64& start = 0, const uint64& end = 0);
-string f_str(const vector<string>& tokens);
+Tokens f_split(const string& input);
+Tokens f_split(const string& input, const string& delimiter);
+Tokens f_closingPair(const Token_Array& tokens, const string& open = "┌", const string& close = "└");
+string f_join(const Tokens& tokens, const string& join, const uint64& start = 0, const uint64& end = 0);
+string f_join(const Tokens& tokens, const uint64& start = 0, const uint64& end = 0);
+string f_str(const Tokens& tokens);
 
 string f_remove(const string& input, const string& remove);
 string f_replace(const string& input, const string& old_str, const string& new_str);
@@ -181,7 +182,7 @@ uint64 f_getVectorIndex(const vector<T>& vec, const T& value) {
 	if (it != vec.end()) {
 		return std::distance(vec.begin(), it);
 	}
-	throw runtime_error("Value not found in vector");
+	return MAX_UINT64;
 }
 
 template<typename K, typename V>

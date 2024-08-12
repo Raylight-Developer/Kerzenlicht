@@ -41,8 +41,13 @@ struct GPU_Scene {
 
 	GPU_Scene();
 
-	void loadTexture(const string& file_path);
+	void updateTextures();
 	void updateTick();
+
+	uint64 bvhNodesSize() const;
+	uint64 texturesSize() const;
+	uint64 trianglesSize() const;
+	uint64 textureDataSize() const;
 
 	void print() const;
 	void printInfo(const uint64& max_size) const;
@@ -64,6 +69,9 @@ struct alignas(16) GPU_Triangle {
 	vec3 normal_c;
 	vec1 uv_c_y;
 	// 96
+	vec3 padding = vec3(0.0f);
+	uint material;
+	// 112
 
 	GPU_Triangle(
 		const vec3& pos_a = vec3(0.0f),
@@ -74,7 +82,8 @@ struct alignas(16) GPU_Triangle {
 		const vec3& normal_c = vec3(0.0f),
 		const vec2& uv_a = vec2(0.0f),
 		const vec2& uv_b = vec2(0.0f),
-		const vec2& uv_c = vec2(0.0f)
+		const vec2& uv_c = vec2(0.0f),
+		const uint& material = 0
 	) :
 		pos_a(pos_a),
 		uv_a_x(uv_a.x),
@@ -84,10 +93,11 @@ struct alignas(16) GPU_Triangle {
 		uv_b_x(uv_b.x),
 		normal_b(normal_b),
 		uv_b_y(uv_b.y),
-		pos_c(pos_c),
+		pos_c(pos_c),	
 		uv_c_x(uv_c.x),
 		normal_c(normal_c),
-		uv_c_y(uv_c.y)
+		uv_c_y(uv_c.y),
+		material(material)
 	{}
 
 	Lace print() const;

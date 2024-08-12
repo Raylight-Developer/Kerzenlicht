@@ -1,8 +1,9 @@
 #include "Ops.hpp"
+
 #include "Lace.hpp"
 
-vector<string> f_split(const string& input) {
-	vector<string> result;
+Tokens f_split(const string& input) {
+	Tokens result;
 	istringstream iss(input);
 	string token;
 	while (iss >> token) {
@@ -11,9 +12,9 @@ vector<string> f_split(const string& input) {
 	return result;
 }
 
-vector<string> f_split(const string& input, const string& delimiter) {
-	vector<string> tokens;
-	size_t start = 0, end = 0;
+Tokens f_split(const string& input, const string& delimiter) {
+	Tokens tokens;
+	uint64 start = 0, end = 0;
 	while ((end = input.find(delimiter, start)) != string::npos) {
 		tokens.push_back(input.substr(start, end - start));
 		start = end + delimiter.length();
@@ -22,7 +23,37 @@ vector<string> f_split(const string& input, const string& delimiter) {
 	return tokens;
 }
 
-string f_join(const vector<string>& tokens, const string& join, const uint64& start, const uint64& end) {
+Tokens f_closingPair(const Token_Array& tokens, const string& open, const string& close) {
+	uint openCount = 0;
+	bool collecting = false;
+	Tokens result;
+
+	for (const auto& tokenList : tokens) {
+		Tokens line;
+		for (const auto& token : tokenList) {
+			if (token == open) {
+				openCount++;
+				if (openCount == 1) {
+					collecting = true;
+				}
+			} 
+			else if (token == close) {
+				openCount--;
+				if (openCount == 0) {
+					collecting = false;
+					return result;
+				}
+			}
+			else if (collecting) {
+				line.push_back(token);
+			}
+		}
+		result.push_back(f_join(line));
+	}
+	return {};
+}
+
+string f_join(const Tokens& tokens, const string& join, const uint64& start, const uint64& end) {
 	return accumulate(
 		tokens.begin() + start, tokens.end() - end, string(),
 		[join](const string& accumulator, const string& current) {
@@ -31,7 +62,7 @@ string f_join(const vector<string>& tokens, const string& join, const uint64& st
 	);
 }
 
-string f_join(const vector<string>& tokens, const uint64& start, const uint64& end) {
+string f_join(const Tokens& tokens, const uint64& start, const uint64& end) {
 	return accumulate(
 		tokens.begin() + start, tokens.end() - end, string(),
 		[](const string& accumulator, const string& current) {
@@ -39,7 +70,7 @@ string f_join(const vector<string>& tokens, const uint64& start, const uint64& e
 		}
 	);
 }
-string f_str(const vector<string>& tokens) {
+string f_str(const Tokens& tokens) {
 	return accumulate(
 		tokens.begin(), tokens.end(), string(),
 		[](const string& accumulator, const string& current) {
@@ -101,9 +132,7 @@ string processSubShader(const string& file_path) {
 			size_t versionPos = line.find("#version");
 			size_t extensionPos = line.find("#extension");
 			if (includePos == std::string::npos && versionPos == std::string::npos && extensionPos == std::string::npos) {
-				const string stripped = f_strip(line);
-				if (stripped.substr(0, 2) != "//" and line.size() > 0)
-					output << line << endl;
+				output << line << endl;
 			}
 		}
 		return output.str();
@@ -130,10 +159,7 @@ string preprocessShader(const string& file_path) {
 					}
 				}
 			}
-
-			const string stripped = f_strip(line);
-			if (stripped.substr(0, 2) != "//" and line.size() > 0)
-				output << line << endl;
+			output << line << endl;
 		}
 		return output.str();
 	}

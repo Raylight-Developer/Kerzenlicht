@@ -47,11 +47,11 @@ class Kerzenlicht_Bridge(bpy.types.Operator):
 		self.KL.append(" Version 1.0.0")
 		self.KL.append("└Header")
 
-		self.KL.append(f"┌Materials( 0 )")
-		self.KL.append(f"└Materials")
-		
 		self.KL.append(f"┌Node-Trees( 0 )")
 		self.KL.append(f"└Node-Trees")
+
+		self.KL.append(f"┌Materials( 0 )")
+		self.KL.append(f"└Materials")
 
 		self.KL.append(f"┌Data( {len(objects)} )")
 		self.parseData(objects)

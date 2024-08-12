@@ -41,6 +41,7 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\Shared\External\stb_image.h" />
     <ClInclude Include="..\Shared\Include\Data_Property.hpp" />
     <ClInclude Include="..\Shared\Include\File.hpp" />
     <ClInclude Include="..\Shared\Include\Include.hpp" />
@@ -100,10 +101,10 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(ProjectDir)\Include;$(SolutionDir)\Shared\Include;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)\Include;$(SolutionDir)\Shared\Include;$(SolutionDir)\Shared\External;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(ProjectDir)\Include;$(SolutionDir)\Shared\Include;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)\Include;$(SolutionDir)\Shared\Include;$(SolutionDir)\Shared\External;$(IncludePath)</IncludePath>
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Label="Vcpkg" />

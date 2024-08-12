@@ -1,12 +1,28 @@
 ┌Header
  Version 1.0.0
 └Header
-┌Materials( 0 )
-└Materials
 ┌Node-Trees( 0 )
 └Node-Trees
+┌Textures( 1 )
+  ┌Texture [ 0 ] Ganyu
+   ./Resources/Ganyu.jpg
+  └Texture
+└Textures
+┌Materials( 1 )
+ ┌Material [ 0 ] Ganyu
+  * 2133789651665
+  Type GLSL
+  ┌Code
+	vec2 uv =
+		hit_data.uvw.x * vec2(hit_data.hit_tri.uv_a_x, hit_data.hit_tri.uv_a_y) +
+		hit_data.uvw.y * vec2(hit_data.hit_tri.uv_b_x, hit_data.hit_tri.uv_b_y) +
+		hit_data.uvw.z * vec2(hit_data.hit_tri.uv_c_x, hit_data.hit_tri.uv_c_y);
+	return sampleTextureRgba8u(textures[0], vec2(uv.x, 1 - uv.y));
+  └Code
+ └Material
+└Materials
 ┌Data( 1 )
- ┌Data [ 0 ] H3_Standard_8_0
+ ┌Data [ 0 ] Ganyu
   * 8055026400793
   Type MESH
   ┌Mesh
@@ -24742,7 +24758,7 @@
 ┌Objects( 1 )
  ┌Object [ 0 ] Ganyu
   * 1926645792527
-  Position ( 0.0 0.0 0.0 )
+  Position ( 0.0 0.2 0.0 )
   Rotation ( -30.0 45.0 0.0 )
   Scale    ( 1.0 1.0 1.0 )
   Type Mesh

@@ -1,6 +1,13 @@
 #pragma once
 
-#include "Shared.hpp"
+#include "Include.hpp"
+
+#include "Data_Property.hpp"
+#include "Session.hpp"
+#include "Scene.hpp"
+#include "File.hpp"
+#include "Lace.hpp"
+#include "Ops.hpp"
 
 #include "Nodes.hpp"
 
@@ -13,9 +20,6 @@ namespace CLASS {
 }
 
 // FWD DECL THIS
-namespace CLASS {
-	struct Render_File;
-}
 
 // DECL
 namespace CLASS {

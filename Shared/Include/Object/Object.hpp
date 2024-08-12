@@ -15,7 +15,7 @@ namespace CLASS {
 	struct Data;
 }
 namespace SHADER {
-	struct Shader;
+	struct Material;
 }
 
 // FWD DECL THIS
@@ -28,7 +28,7 @@ namespace CLASS {
 		Object* parent;
 		Transform transform;
 		Transform node_transform;
-		vector<SHADER::Shader*> materials;
+		vector<SHADER::Material*> materials;
 		unordered_map<string, CLASS::Data> properties;
 
 		bool viewport_visibility;

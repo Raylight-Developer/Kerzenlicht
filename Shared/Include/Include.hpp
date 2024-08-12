@@ -144,14 +144,18 @@ inline ivec4  ul_to_i (const ulvec4& val) { return static_cast<ivec4> (val); }
 inline uint16 ul_to_uh(const ulvec1& val) { return static_cast<uint16>(val); } // unsigned half uint-16
 inline uint8  ul_to_us(const ulvec1& val) { return static_cast<uint8> (val); } // unsigned short uint-8
 
-inline uvec1 d_to_u(const dvec1& val) { return static_cast<uvec1>(val); }
-inline uvec2 d_to_u(const dvec2& val) { return static_cast<uvec2>(val); }
-inline uvec3 d_to_u(const dvec3& val) { return static_cast<uvec3>(val); }
-inline uvec4 d_to_u(const dvec4& val) { return static_cast<uvec4>(val); }
-inline ivec1 d_to_i(const dvec1& val) { return static_cast<ivec1>(val); }
-inline ivec2 d_to_i(const dvec2& val) { return static_cast<ivec2>(val); }
-inline ivec3 d_to_i(const dvec3& val) { return static_cast<ivec3>(val); }
-inline ivec4 d_to_i(const dvec4& val) { return static_cast<ivec4>(val); }
+inline uvec1  d_to_u (const dvec1& val) { return static_cast<uvec1> (val); }
+inline uvec2  d_to_u (const dvec2& val) { return static_cast<uvec2> (val); }
+inline uvec3  d_to_u (const dvec3& val) { return static_cast<uvec3> (val); }
+inline uvec4  d_to_u (const dvec4& val) { return static_cast<uvec4> (val); }
+inline ulvec1 d_to_ul(const dvec1& val) { return static_cast<ulvec1>(val); }
+inline ulvec2 d_to_ul(const dvec2& val) { return static_cast<ulvec2>(val); }
+inline ulvec3 d_to_ul(const dvec3& val) { return static_cast<ulvec3>(val); }
+inline ulvec4 d_to_ul(const dvec4& val) { return static_cast<ulvec4>(val); }
+inline ivec1  d_to_i (const dvec1& val) { return static_cast<ivec1> (val); }
+inline ivec2  d_to_i (const dvec2& val) { return static_cast<ivec2> (val); }
+inline ivec3  d_to_i (const dvec3& val) { return static_cast<ivec3> (val); }
+inline ivec4  d_to_i (const dvec4& val) { return static_cast<ivec4> (val); }
 #ifdef COMPILE_EDITOR
 inline uvec2 d_to_u(const QPointF& val) { return uvec2(d_to_u(val.x()), d_to_u(val.y())); }
 #endif

@@ -45,10 +45,10 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(ProjectDir)\Include;$(SolutionDir)\Shared\Include;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)\Include;$(SolutionDir)\Shared\Include;$(SolutionDir)\Shared\External;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(ProjectDir)\Include;$(SolutionDir)\Shared\Include;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)\Include;$(SolutionDir)\Shared\Include;$(SolutionDir)\Shared\External;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -133,6 +133,7 @@
     <ClCompile Include="Source\Rendering\Renderer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\Shared\External\stb_image.h" />
     <ClInclude Include="..\Shared\Include\Data_Property.hpp" />
     <ClInclude Include="..\Shared\Include\File.hpp" />
     <ClInclude Include="..\Shared\Include\Include.hpp" />
@@ -170,7 +171,6 @@
     <ClInclude Include="Include\External\imgui-1.90\imstb_rectpack.h" />
     <ClInclude Include="Include\External\imgui-1.90\imstb_textedit.h" />
     <ClInclude Include="Include\External\imgui-1.90\imstb_truetype.h" />
-    <ClInclude Include="Include\External\stb_image.h" />
     <ClInclude Include="Include\Operators.hpp" />
     <ClInclude Include="Include\Rendering\Renderer.hpp" />
     <ClInclude Include="Include\Rendering\OpenGl.hpp" />

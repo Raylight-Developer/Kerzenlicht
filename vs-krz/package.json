@@ -123,6 +123,12 @@
 						"settings": {
 							"foreground": "#818d89"
 						}
+					},
+					{
+						"scope": "kerz.glsl",
+						"settings": {
+							"foreground": "#cacaca"
+						}
 					}
 				]
 			}

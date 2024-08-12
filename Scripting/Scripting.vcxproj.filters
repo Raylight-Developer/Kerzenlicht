@@ -16,6 +16,9 @@
     <Filter Include="Shared\Source">
       <UniqueIdentifier>{1918f5e5-04c4-4d85-91ea-a3c5e954b454}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shared\External">
+      <UniqueIdentifier>{e6137c31-d6a9-46d3-825a-176aacfc77b7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Include\pch.cpp">
@@ -194,6 +197,9 @@
     </ClInclude>
     <ClInclude Include="..\Shared\Include\Shared.hpp">
       <Filter>Shared\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Shared\External\stb_image.h">
+      <Filter>Shared\External</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

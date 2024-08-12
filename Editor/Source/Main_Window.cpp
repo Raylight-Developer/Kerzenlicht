@@ -23,7 +23,7 @@ GUI::WORKSPACE::Main_Window::Main_Window(GUI::Application* app) :
 
 	LOG << "Kerzenlicht 1.0.0 Initialized"; FLUSH;
 
-	file->f_loadAsciiFile("./Resources/Assets/Save.krz");
+	file->f_loadAsciiFile("./Resources/Assets/Default.krz");
 
 	Workspace_Manager* ws_1 = new Workspace_Manager(this, Workspace_Type::OBJECT_NODE_EDITOR);
 	Workspace_Manager* ws_2 = new Workspace_Manager(this, Workspace_Type::SHELF);

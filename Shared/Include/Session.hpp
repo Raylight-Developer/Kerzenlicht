@@ -2,6 +2,8 @@
 
 #include "Include.hpp"
 
+#include "Lace.hpp"
+
 // FWD DECL OTHER
 namespace CLASS {
 	#ifdef COMPILE_EDITOR
@@ -12,10 +14,9 @@ namespace CLASS {
 		struct File;
 	#endif
 }
-struct Lace;
 
 // FWD DECL THIS
-#define ENDL "\n"
+#define ENDL Lace_NL()
 
 #define ANSI_RESET "\033[0m"
 

@@ -63,8 +63,9 @@ vec3 f_barycentricCoords(in vec3 hit_pos, in vec3 vertex_a, in vec3 vertex_b, in
 Hit f_SceneIntersection(in Ray ray) {
 	Hit hit_data;
 	hit_data.error = false;
-	hit_data.bvh_depth = 0;
 	hit_data.mesh_hit = false;
+	hit_data.bvh_depth = 0;
+	hit_data.material = 0;
 
 	hit_data.t_dist = MAX_DIST;
 	float t_dist = MAX_DIST;
@@ -104,6 +105,7 @@ Hit f_SceneIntersection(in Ray ray) {
 									tri.pos_b,
 									tri.pos_c
 								);
+								hit_data.material = tri.material;
 					
 								hit_data.hit_tri = tri;
 								hit_data.hit_normal = hit_data.uvw.x * tri.normal_a + hit_data.uvw.y * tri.normal_b + hit_data.uvw.z * tri.normal_c;

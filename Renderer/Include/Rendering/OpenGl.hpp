@@ -8,24 +8,12 @@ GLuint computeShaderProgram(const string& file_path);
 GLuint renderLayer(const uvec2& resolution);
 void   bindRenderLayer(const GLuint& program_id, const GLuint& unit, const GLuint& id, const string& name);
 
-struct Image {
-	uint16_t width;
-	uint16_t height;
-	unsigned char* data;
-	int channel_fromat;
-	int data_type;
-
-	Image();
-	bool init(const string& i_file_path);
-};
-
-vector<uint> loadRgba8Texture(const string& file_path, uvec2& resolution);
-vector<uint> loadRgba16fTexture(const string& file_path, uvec2& resolution);
-vector<uint> loadRgba32fTexture(const string& file_path, uvec2& resolution);
-
-//struct GPU_Texture {
-//	GLuint ID;
-//
-//	GPU_Texture() { ID = 0; };
-//	void init(const string& i_image_path);
-//};
+template <typename T>
+GLuint ssboBinding(const GLuint& binding, const GLuint& size, const T& data) {
+	GLuint buffer;
+	glGenBuffers(1, &buffer);
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, buffer);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, size, data, GL_STATIC_DRAW);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, binding, buffer);
+	return buffer;
+}
