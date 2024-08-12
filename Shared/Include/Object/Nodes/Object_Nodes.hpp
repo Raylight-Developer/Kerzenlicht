@@ -8,7 +8,7 @@
 // FWD DECL OTHER
 
 // FWD DECL THIS
-namespace CLASS {
+namespace KL {
 	namespace NODE {
 		enum struct Type;
 		namespace CONSTRAINT {
@@ -50,7 +50,7 @@ namespace CLASS {
 }
 
 // DECL
-namespace CLASS {
+namespace KL {
 	namespace NODE {
 		namespace CONSTRAINT {
 			enum struct Type { PARENT };

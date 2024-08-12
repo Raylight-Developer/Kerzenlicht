@@ -4,11 +4,13 @@
 #include "Core/Editor_File.hpp"
 #elif COMPILE_RENDERER
 #include "Core/Render_File.hpp"
+#else
+#include "File.hpp"
 #endif
 
 #include "Session.hpp"
 
-SHADER::Texture::Texture() :
+KL::SHADER::Texture::Texture() :
 	name("New Texture")
 {
 	format = TEXTURE::Format::RGBAUINT8;
@@ -18,7 +20,7 @@ SHADER::Texture::Texture() :
 #undef FILE
 #include "stb_image.h"
 
-bool SHADER::Texture::loadFromFile(const string & file_path) {
+bool KL::SHADER::Texture::loadFromFile(const string & file_path) {
 	int width, height, channels;
 	unsigned char* tex_data = stbi_load(file_path.c_str(), &width, &height, &channels, STBI_rgb_alpha);
 	if (tex_data == nullptr) {
@@ -36,13 +38,13 @@ bool SHADER::Texture::loadFromFile(const string & file_path) {
 	return true;
 }
 
-SHADER::Texture SHADER::Texture::fromFile(const string& file_path) {
+KL::SHADER::Texture KL::SHADER::Texture::fromFile(const string& file_path) {
 	Texture tex;
 	tex.loadFromFile(file_path);
 	return tex;
 }
 
-vector<uint> SHADER::Texture::toRgba8Texture() const {
+vector<uint> KL::SHADER::Texture::toRgba8Texture() const {
 	vector<uint> packedData;
 	for (uint i = 0; i < resolution.x * resolution.y; i++) {
 		uint r = data[i * 4 + 0];
@@ -59,16 +61,16 @@ vector<uint> SHADER::Texture::toRgba8Texture() const {
 #undef FILE
 #define FILE Session::getInstance().getFile()
 
-SHADER::Material::Material() :
+KL::Shader::Shader() :
 	name("New Material")
 {}
 
-string SHADER::Material::compileMaterials(const string & code) {
+string KL::Shader::compileMaterials(const string & code) {
 	string hooked_code = code;
 	vector<string> material_code;
 
 	uint64 id = 0;
-	for (SHADER::Material* material : FILE->materials) {
+	for (KL::Shader* material : FILE->materials) {
 		Lace shader_code;
 		shader_code << "else if (hit_data.material == " << id++ << ") {";
 		shader_code << ENDL << material->shader_code;
@@ -84,7 +86,7 @@ string SHADER::Material::compileMaterials(const string & code) {
 
 	while ((startPos = hooked_code.find(toFind, startPos)) != string::npos) {
 		hooked_code.replace(startPos, toFind.length(), comp_material_code);
-		startPos += comp_material_code.length(); // Move past the last replaced position
+		startPos += comp_material_code.length();
 	}
 
 	LOG << ENDL << comp_material_code; FLUSH;

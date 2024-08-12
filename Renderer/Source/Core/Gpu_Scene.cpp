@@ -4,14 +4,14 @@
 #define SP << Lace_S()
 #define TAB << Lace_TAB()
 
-GPU_Scene::GPU_Scene() {
+KL::GPU_Scene::GPU_Scene() {
 	triangles = {};
 	bvh_nodes = {};
 	textures = {};
 	texture_data = {};
 }
 
-void GPU_Scene::print() const {
+void KL::GPU_Scene::print() const {
 	Lace data;
 	data << "Triangles " << triangles.size() NL;
 	for (const GPU_Triangle& tri : triangles)
@@ -58,7 +58,7 @@ void GPU_Scene::print() const {
 	cout << data.str() << endl;
 }
 
-void GPU_Scene::printInfo(const uint64& max_size) const {
+void KL::GPU_Scene::printInfo(const uint64& max_size) const {
 	cout << "GPU Data:" << endl;
 	printSize("	Triangles    ", triangles);
 	printSize("	BVHs         ", bvh_nodes);
@@ -66,7 +66,7 @@ void GPU_Scene::printInfo(const uint64& max_size) const {
 	printSize("	Texture Data ", texture_data);
 }
 
-void GPU_Scene::updateTextures() {
+void KL::GPU_Scene::updateTextures() {
 	for (SHADER::Texture* texture : FILE->textures) {
 		vector<uint> data = texture->toRgba8Texture();
 		texture_data.insert(texture_data.end(), data.begin(), data.end());
@@ -74,27 +74,27 @@ void GPU_Scene::updateTextures() {
 	}
 }
 
-void GPU_Scene::updateTick() {
+void KL::GPU_Scene::updateTick() {
 	triangles.clear();
 	bvh_nodes.clear();
 
-	for (CLASS::Object* object : FILE->active_scene->ptr->objects) {
+	for (KL::Object* object : FILE->active_scene->ptr->objects) {
 		object->f_compileMatrix();
 		vector<GPU_Triangle> mesh_triangles;
-		if (object->data->type == CLASS::OBJECT::DATA::Type::MESH) {
-			CLASS::OBJECT::DATA::Mesh* mesh = object->data->getMesh();
-			for (CLASS::OBJECT::DATA::MESH::Face* face : mesh->faces) {
+		if (object->data->type == KL::OBJECT::DATA::Type::MESH) {
+			KL::OBJECT::DATA::Mesh* mesh = object->data->getMesh();
+			for (KL::OBJECT::DATA::MESH::Face* face : mesh->faces) {
 				mesh_triangles.push_back(faceToGpuTri(object->transform_matrix, mesh, face));
 			}
 		}
-		else if (object->data->type == CLASS::OBJECT::DATA::Type::GROUP) {
-			const CLASS::OBJECT::DATA::Group* group = object->data->getGroup();
-			for (CLASS::Object* sub_object : group->objects) {
+		else if (object->data->type == KL::OBJECT::DATA::Type::GROUP) {
+			const KL::OBJECT::DATA::Group* group = object->data->getGroup();
+			for (KL::Object* sub_object : group->objects) {
 				sub_object->f_compileMatrix();
 				sub_object->transform_matrix *= object->transform_matrix;
-				if (sub_object->data->type == CLASS::OBJECT::DATA::Type::MESH) {
-					CLASS::OBJECT::DATA::Mesh* mesh = sub_object->data->getMesh();
-					for (CLASS::OBJECT::DATA::MESH::Face* face : mesh->faces) {
+				if (sub_object->data->type == KL::OBJECT::DATA::Type::MESH) {
+					KL::OBJECT::DATA::Mesh* mesh = sub_object->data->getMesh();
+					for (KL::OBJECT::DATA::MESH::Face* face : mesh->faces) {
 						mesh_triangles.push_back(faceToGpuTri(sub_object->transform_matrix, mesh, face));
 					}
 				}
@@ -110,29 +110,29 @@ void GPU_Scene::updateTick() {
 	}
 }
 
-uint64 GPU_Scene::bvhNodesSize() const {
+uint64 KL::GPU_Scene::bvhNodesSize() const {
 	return sizeof(GPU_BVH) * bvh_nodes.size();
 }
 
-uint64 GPU_Scene::texturesSize() const {
+uint64 KL::GPU_Scene::texturesSize() const {
 	return sizeof(GPU_Texture) * textures.size();
 }
 
-uint64 GPU_Scene::trianglesSize() const {
+uint64 KL::GPU_Scene::trianglesSize() const {
 	return sizeof(GPU_Triangle) * triangles.size();
 }
 
-uint64 GPU_Scene::textureDataSize() const {
+uint64 KL::GPU_Scene::textureDataSize() const {
 	return sizeof(uint) * texture_data.size();
 }
 
-Lace GPU_Triangle::print() const {
+KL::Lace KL::GPU_Triangle::print() const {
 	Lace lace;
 	lace << "Tri: (" << pos_a<< ") : (" << normal_a << ") : (" << vec2(uv_a_x, uv_a_y) << ") | (" << pos_b << ") : (" << normal_b << ") : (" << vec2(uv_b_x, uv_b_y) << ") | (" << pos_c << ") : (" << normal_c << ") : (" << vec2(uv_c_x, uv_c_y) << ")";
 	return lace;
 }
 
-void GPU_BVH::growToInclude(const vec3& min, const vec3& max) {
+void KL::GPU_BVH::growToInclude(const vec3& min, const vec3& max) {
 	p_min.x = min.x < p_min.x ? min.x : p_min.x;
 	p_min.y = min.y < p_min.y ? min.y : p_min.y;
 	p_min.z = min.z < p_min.z ? min.z : p_min.z;
@@ -141,21 +141,21 @@ void GPU_BVH::growToInclude(const vec3& min, const vec3& max) {
 	p_max.z = max.z > p_max.z ? max.z : p_max.z;
 }
 
-vec3 GPU_BVH::getSize() {
+vec3 KL::GPU_BVH::getSize() {
 	return p_max - p_min;
 }
 
-vec3 GPU_BVH::getCenter() {
+vec3 KL::GPU_BVH::getCenter() {
 	return (p_min + p_max) / 2.0f;
 }
 
-Lace GPU_BVH::print() const {
+KL::Lace KL::GPU_BVH::print() const {
 	Lace lace;
 	lace << "Bvh: (" << p_min<< ") | (" << p_max << ") | " << pointer << " | " << tri_count;
 	return lace;
 }
 
-BVH_Builder::BVH_Builder(const vector<GPU_Triangle>& triangles, const uint& depth) :
+KL::BVH_Builder::BVH_Builder(const vector<GPU_Triangle>& triangles, const uint& depth) :
 	triangles(triangles)
 {
 	for (uint i = 0; i < len32(triangles); i++) {
@@ -178,14 +178,14 @@ BVH_Builder::BVH_Builder(const vector<GPU_Triangle>& triangles, const uint& dept
 	}
 }
 
-void BVH_Builder::splitBvh(const uint& parentIndex, const uint& triGlobalStart, const uint& triNum, const uint& depth) {
+void KL::BVH_Builder::splitBvh(const uint& parentIndex, const uint& triGlobalStart, const uint& triNum, const uint& depth) {
 	GPU_BVH parent = node_list[parentIndex];
 	vec3 size = parent.getSize();
-	float parentCost = nodeCost(size, triNum);
+	vec1 parentCost = nodeCost(size, triNum);
 
 	uint8 split_axis;
-	float splitPos;
-	float cost;
+	vec1 splitPos;
+	vec1 cost;
 
 	splitAxis(parent, triGlobalStart, triNum, split_axis, splitPos, cost);
 
@@ -231,7 +231,7 @@ void BVH_Builder::splitBvh(const uint& parentIndex, const uint& triGlobalStart, 
 	}
 }
 
-void BVH_Builder::splitAxis(const GPU_BVH& node, const uint& start, const uint& count, uint8& axis, float& pos, float& cost) const {
+void KL::BVH_Builder::splitAxis(const GPU_BVH& node, const uint& start, const uint& count, uint8& axis, vec1& pos, vec1& cost) const {
 	if (count <= 1) {
 		axis = 0;
 		pos = 0.0f;
@@ -239,17 +239,17 @@ void BVH_Builder::splitAxis(const GPU_BVH& node, const uint& start, const uint& 
 		return;
 	}
 
-	float bestSplitPos = 0;
+	vec1 bestSplitPos = 0;
 	uint8 bestSplitAxis = 0;
 	const uint8 numSplitTests = 5;
 
-	float bestCost = MAX_VEC1;
+	vec1 bestCost = MAX_VEC1;
 
 	for (uint8 axis = 0; axis < 3; axis++) {
 		for (uint8 i = 0; i < numSplitTests; i++) {
-			float splitT = (u_to_f(i) + 1.0f) / (u_to_f(numSplitTests) + 1.0f);
-			float splitPos = glm::lerp(node.p_min[axis], node.p_max[axis], splitT);
-			float cost = splitEval(axis, splitPos, start, count);
+			vec1 splitT = (u_to_f(i) + 1.0f) / (u_to_f(numSplitTests) + 1.0f);
+			vec1 splitPos = glm::lerp(node.p_min[axis], node.p_max[axis], splitT);
+			vec1 cost = splitEval(axis, splitPos, start, count);
 			if (cost < bestCost) {
 				bestCost = cost;
 				bestSplitPos = splitPos;
@@ -263,7 +263,7 @@ void BVH_Builder::splitAxis(const GPU_BVH& node, const uint& start, const uint& 
 	cost = bestCost;
 }
 
-float BVH_Builder::splitEval(const uint8& splitAxis, const float& splitPos, const uint& start, const uint& count) const {
+vec1 KL::BVH_Builder::splitEval(const uint8& splitAxis, const vec1& splitPos, const uint& start, const uint& count) const {
 	GPU_BVH boundsLeft;
 	GPU_BVH boundsRight;
 	uint numOnLeft = 0;
@@ -281,23 +281,23 @@ float BVH_Builder::splitEval(const uint8& splitAxis, const float& splitPos, cons
 		}
 	}
 
-	float costA = nodeCost(boundsLeft.getSize(), numOnLeft);
-	float costB = nodeCost(boundsRight.getSize(), numOnRight);
+	vec1 costA = nodeCost(boundsLeft.getSize(), numOnLeft);
+	vec1 costB = nodeCost(boundsRight.getSize(), numOnRight);
 	return costA + costB;
 }
 
-float BVH_Builder::nodeCost(const vec3& size, const uint& numTriangles) {
-	const float halfArea = size.x * size.y + size.x * size.z + size.y * size.z;
+vec1 KL::BVH_Builder::nodeCost(const vec3& size, const uint& numTriangles) {
+	const vec1 halfArea = size.x * size.y + size.x * size.z + size.y * size.z;
 	return halfArea * numTriangles;
 }
 
-Lace GPU_Texture::print() const {
+KL::Lace KL::GPU_Texture::print() const {
 	Lace lace;
 	lace << "Texture: (" << start<< ") | (" << width << " x " << height << ") | " << format;
 	return lace;
 }
 
-GPU_Triangle faceToGpuTri(const mat4& matrix, CLASS::OBJECT::DATA::Mesh* mesh, CLASS::OBJECT::DATA::MESH::Face* face) {
+KL::GPU_Triangle KL::faceToGpuTri(const mat4& matrix, KL::OBJECT::DATA::Mesh* mesh, KL::OBJECT::DATA::MESH::Face* face) {
 	const vec4 vert4_a = matrix * vec4(d_to_f(face->vertices[0]->position), 1.0);
 	const vec4 vert4_b = matrix * vec4(d_to_f(face->vertices[1]->position), 1.0);
 	const vec4 vert4_c = matrix * vec4(d_to_f(face->vertices[2]->position), 1.0);
@@ -326,7 +326,7 @@ GPU_Triangle faceToGpuTri(const mat4& matrix, CLASS::OBJECT::DATA::Mesh* mesh, C
 		nor_b = vec3(nor4_b.x, nor4_b.y, nor4_b.z) / nor4_b.w;
 		nor_c = vec3(nor4_c.x, nor4_c.y, nor4_c.z) / nor4_c.w;
 	}
-	return GPU_Triangle(
+	return KL::GPU_Triangle(
 		vert_a,
 		vert_b,
 		vert_c,

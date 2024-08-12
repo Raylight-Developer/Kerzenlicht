@@ -10,31 +10,31 @@
 #include "Shader/Shader.hpp"
 
 // FWD DECL OTHER
-namespace CLASS {
+namespace KL {
 	struct Scene;
 	struct Data;
 }
 namespace SHADER {
-	struct Material;
+	struct Shader;
 }
 
 // FWD DECL THIS
 
 // DECL
-namespace CLASS {
+namespace KL {
 	struct Object {
 		string name;
 		OBJECT::Data* data;
 		Object* parent;
 		Transform transform;
 		Transform node_transform;
-		vector<SHADER::Material*> materials;
-		unordered_map<string, CLASS::Data> properties;
+		vector<KL::Shader*> materials;
+		unordered_map<string, KL::Data> properties;
 
 		bool viewport_visibility;
 		bool render_visibility;
 
-		CLASS::Node_Tree* node_tree;
+		KL::Node_Tree* node_tree;
 
 		dmat4 transform_matrix;
 

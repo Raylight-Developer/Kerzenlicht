@@ -4,7 +4,7 @@
 
 #include "Object/Object.hpp"
 
-namespace CLASS {
+namespace KL {
 	struct Scene {
 		vector<Object*> objects;
 		Object* active_camera;

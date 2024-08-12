@@ -166,7 +166,7 @@ string preprocessShader(const string& file_path) {
 	throw runtime_error(to_string(errno));
 }
 
-CLASS::Transform::Transform(const dvec3& position, const dvec3& rotation, const dvec3& scale, const Rotation_Type& type) :
+KL::Transform::Transform(const dvec3& position, const dvec3& rotation, const dvec3& scale, const Rotation_Type& type) :
 	rotation_type(type),
 	position(position),
 	euler_rotation(rotation),
@@ -176,7 +176,7 @@ CLASS::Transform::Transform(const dvec3& position, const dvec3& rotation, const 
 	axis_rotation = dvec3(0.0);
 }
 
-CLASS::Transform::Transform(const dvec3& position, const dvec3& axis, const dvec3& rotation, const dvec3& scale, const Rotation_Type& type) :
+KL::Transform::Transform(const dvec3& position, const dvec3& axis, const dvec3& rotation, const dvec3& scale, const Rotation_Type& type) :
 	rotation_type(type),
 	position(position),
 	euler_rotation(rotation),
@@ -186,7 +186,7 @@ CLASS::Transform::Transform(const dvec3& position, const dvec3& axis, const dvec
 	quat_rotation = dquat(1.0, 0.0, 0.0, 0.0);
 }
 
-CLASS::Transform::Transform(const dvec3& position, const dquat& rotation, const dvec3& scale, const Rotation_Type& type) :
+KL::Transform::Transform(const dvec3& position, const dquat& rotation, const dvec3& scale, const Rotation_Type& type) :
 	rotation_type(type),
 	position(position),
 	quat_rotation(rotation),
@@ -196,7 +196,7 @@ CLASS::Transform::Transform(const dvec3& position, const dquat& rotation, const 
 	axis_rotation = dvec3(0.0);
 }
 // TODO account for different rotation modes
-CLASS::Transform CLASS::Transform::operator+(const Transform& other) const {
+KL::Transform KL::Transform::operator+(const Transform& other) const {
 	Transform result;
 	result.position       = position       + other.position;
 	result.euler_rotation = euler_rotation + other.euler_rotation;
@@ -205,7 +205,7 @@ CLASS::Transform CLASS::Transform::operator+(const Transform& other) const {
 	result.scale          = scale          + other.scale;
 	return result;
 }
-CLASS::Transform CLASS::Transform::operator-(const Transform& other) const {
+KL::Transform KL::Transform::operator-(const Transform& other) const {
 	Transform result;
 	result.position       = position       - other.position;
 	result.euler_rotation = euler_rotation - other.euler_rotation;
@@ -214,7 +214,7 @@ CLASS::Transform CLASS::Transform::operator-(const Transform& other) const {
 	result.scale          = scale          - other.scale;
 	return result;
 }
-CLASS::Transform CLASS::Transform::operator*(const Transform& other) const {
+KL::Transform KL::Transform::operator*(const Transform& other) const {
 	Transform result;
 	result.position       = position       * other.position;
 	result.euler_rotation = euler_rotation * other.euler_rotation;
@@ -223,7 +223,7 @@ CLASS::Transform CLASS::Transform::operator*(const Transform& other) const {
 	result.scale          = scale          * other.scale;
 	return result;
 }
-CLASS::Transform CLASS::Transform::operator/(const Transform& other) const {
+KL::Transform KL::Transform::operator/(const Transform& other) const {
 	Transform result;
 	result.position       = position       / other.position;
 	result.euler_rotation = euler_rotation / other.euler_rotation;
@@ -233,7 +233,7 @@ CLASS::Transform CLASS::Transform::operator/(const Transform& other) const {
 	return result;
 }
 
-CLASS::Transform CLASS::Transform::operator*(const dvec1& other) const {
+KL::Transform KL::Transform::operator*(const dvec1& other) const {
 	Transform result;
 	result.position       = position       * other;
 	result.euler_rotation = euler_rotation * other;
@@ -243,7 +243,7 @@ CLASS::Transform CLASS::Transform::operator*(const dvec1& other) const {
 	return result;
 }
 
-void CLASS::Transform::moveLocal(const dvec3& value) {
+void KL::Transform::moveLocal(const dvec3& value) {
 	const dmat4 matrix = glm::yawPitchRoll(euler_rotation.y * DEG_RAD, euler_rotation.x * DEG_RAD, euler_rotation.z * DEG_RAD);
 	const dvec3 x_vector = matrix[0];
 	const dvec3 y_vector = matrix[1];
@@ -253,24 +253,24 @@ void CLASS::Transform::moveLocal(const dvec3& value) {
 	position += value.z * z_vector;
 }
 
-void CLASS::Transform::rotate(const dvec3& value) {
+void KL::Transform::rotate(const dvec3& value) {
 	euler_rotation += value;
 
 	if (euler_rotation.x > 89.0)  euler_rotation.x = 89.0;
 	if (euler_rotation.x < -89.0) euler_rotation.x = -89.0;
 }
 
-dmat4 CLASS::Transform::getMatrix() const {
+dmat4 KL::Transform::getMatrix() const {
 	const dmat4 translation_matrix = glm::translate(dmat4(1.0), position);
 	const dmat4 scale_matrix = glm::scale(dmat4(1.0), scale);
 	dmat4 rotation_matrix = dmat4(1.0);
 
 	switch (rotation_type) {
-		case CLASS::Rotation_Type::QUATERNION: {
+		case KL::Rotation_Type::QUATERNION: {
 			rotation_matrix = glm::toMat4(quat_rotation);
 			break;
 		}
-		case CLASS::Rotation_Type::XYZ: {
+		case KL::Rotation_Type::XYZ: {
 			const dmat4 rotationX = glm::rotate(dmat4(1.0), euler_rotation.x * DEG_RAD, dvec3(1.0, 0.0, 0.0));
 			const dmat4 rotationY = glm::rotate(dmat4(1.0), euler_rotation.y * DEG_RAD, dvec3(0.0, 1.0, 0.0));
 			const dmat4 rotationZ = glm::rotate(dmat4(1.0), euler_rotation.z * DEG_RAD, dvec3(0.0, 0.0, 1.0));
@@ -281,7 +281,7 @@ dmat4 CLASS::Transform::getMatrix() const {
 	return translation_matrix * rotation_matrix * scale_matrix;
 }
 
-string CLASS::Transform::to_string() const {
+string KL::Transform::to_string() const {
 	Lace value;
 	value << position << " | " << euler_rotation << " | " << scale;
 	return value.str();

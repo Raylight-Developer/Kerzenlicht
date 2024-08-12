@@ -2,7 +2,7 @@
 
 #include "Include.hpp"
 
-namespace CLASS::OBJECT::DATA {
+namespace KL::OBJECT::DATA {
 	namespace CURVE {
 		namespace SPLINE {
 			enum struct Type {

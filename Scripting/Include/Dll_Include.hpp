@@ -12,6 +12,6 @@
 #include "Object/Object.hpp"
 #include "Object/Nodes/Object_Nodes.hpp"
 
-using Data = CLASS::Data;
-using Data_Type = CLASS::DATA::Type;
-using Script = CLASS::NODE::EXEC::Script_Node;
+using Data      = KL::Data;
+using Data_Type = KL::DATA::Type;
+using Script    = KL::NODE::EXEC::Script_Node;

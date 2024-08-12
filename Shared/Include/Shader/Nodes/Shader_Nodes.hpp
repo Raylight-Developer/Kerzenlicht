@@ -9,7 +9,7 @@
 // FWD DECL OTHER
 
 // FWD DECL THIS
-namespace CLASS {
+namespace KL {
 	namespace NODE {
 		enum struct Type;
 		namespace CONSTRAINT {
@@ -39,17 +39,17 @@ namespace CLASS {
 	}
 }
 
-using Data = CLASS::Data;
-namespace DATA = CLASS::DATA;
+using Data = KL::Data;
+namespace DATA = KL::DATA;
 
 // DECL
 namespace SHADER {
 	namespace NODE {
 		namespace EXEC {
 			enum struct Type { TICK };
-			struct Tick : CLASS::Node {
-				CLASS::NODE::PORT::Exec_O_Port* port_tick;
-				CLASS::NODE::PORT::Data_O_Port* port_delta;
+			struct Tick : KL::Node {
+				KL::NODE::PORT::Exec_O_Port* port_tick;
+				KL::NODE::PORT::Data_O_Port* port_delta;
 
 				const dvec1* delta;
 

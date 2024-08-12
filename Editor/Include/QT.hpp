@@ -1,8 +1,6 @@
 #pragma once
 
-#include "Shared.hpp"
-
-#undef FILE
+#include "Include.hpp"
 
 #include <QtOpenGL/qopenglfunctions_4_5_core.h>
 #include <QtOpenGLWidgets>
@@ -223,5 +221,5 @@ namespace GUI {
 	};
 };
 
-inline ivec2 p_to_i(const QPoint& val) { return ivec2(val.x(), val.y()); }
-inline dvec2 p_to_d(const QPointF& val) { return dvec2(val.x(), val.y()); }
+ivec2 p_to_i(const QPoint& val);
+dvec2 p_to_d(const QPointF& val);

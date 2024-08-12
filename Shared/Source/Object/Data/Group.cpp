@@ -2,6 +2,6 @@
 
 #include "Object/Object.hpp"
 
-CLASS::OBJECT::DATA::Group::Group() {
+KL::OBJECT::DATA::Group::Group() {
 	objects = vector<Object*>();
 };

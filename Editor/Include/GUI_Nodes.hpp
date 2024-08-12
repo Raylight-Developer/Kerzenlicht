@@ -34,12 +34,12 @@ namespace GUI {
 			Node_Tree();
 			~Node_Tree();
 
-			CLASS::Node_Tree* toExecTree();
+			KL::Node_Tree* toExecTree();
 		};
 		struct Node : QGraphicsItem {
 			QString label;
 			QRectF rect;
-			CLASS::NODE::Type type;
+			KL::NODE::Type type;
 			uint16 sub_type;
 			QPointF real_pos;
 			QPointF node_pos;
@@ -62,7 +62,7 @@ namespace GUI {
 			QRectF rect;
 			QColor color;
 			QString label;
-			CLASS::NODE::PORT::Type type;
+			KL::NODE::PORT::Type type;
 
 			Port(Node* node);
 
@@ -73,30 +73,30 @@ namespace GUI {
 			struct Data_I_Port : Port {
 				Connection* connection; // src
 
-				CLASS::DATA::Modifier modifier;
-				CLASS::DATA::Type data_type;
+				KL::DATA::Modifier modifier;
+				KL::DATA::Type data_type;
 
-				CLASS::DATA::Type any_data_type;
+				KL::DATA::Type any_data_type;
 
-				Data_I_Port(Node* parent, const uint16& slot_id, const QString& label, const CLASS::DATA::Type& type, const CLASS::DATA::Modifier& modifier = CLASS::DATA::Modifier::SINGLE);
+				Data_I_Port(Node* parent, const uint16& slot_id, const QString& label, const KL::DATA::Type& type, const KL::DATA::Modifier& modifier = KL::DATA::Modifier::SINGLE);
 				~Data_I_Port();
 
-				void setDataType(const CLASS::DATA::Type& type);
+				void setDataType(const KL::DATA::Type& type);
 				void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget = nullptr) override;
 			};
 
 			struct Data_O_Port : Port {
 				vector<Connection*> outgoing_connections; // ref
 
-				CLASS::DATA::Modifier modifier;
-				CLASS::DATA::Type data_type;
+				KL::DATA::Modifier modifier;
+				KL::DATA::Type data_type;
 
-				CLASS::DATA::Type any_data_type;
+				KL::DATA::Type any_data_type;
 
-				Data_O_Port(Node* parent, const uint16& slot_id, const QString& label, const CLASS::DATA::Type& type, const CLASS::DATA::Modifier& modifier = CLASS::DATA::Modifier::SINGLE);
+				Data_O_Port(Node* parent, const uint16& slot_id, const QString& label, const KL::DATA::Type& type, const KL::DATA::Modifier& modifier = KL::DATA::Modifier::SINGLE);
 				~Data_O_Port();
 
-				void setDataType(const CLASS::DATA::Type& type);
+				void setDataType(const KL::DATA::Type& type);
 				void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget = nullptr) override;
 			};
 
@@ -124,7 +124,7 @@ namespace GUI {
 			QPointF pos_l;
 			QPointF pos_r;
 
-			CLASS::DATA::Type data_type;
+			KL::DATA::Type data_type;
 			QColor color;
 
 			Connection(Port* port_l, Port* port_r);

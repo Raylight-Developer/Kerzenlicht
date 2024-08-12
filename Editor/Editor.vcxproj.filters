@@ -47,22 +47,28 @@
     <ClCompile Include="Source\Core\Python_API.cpp">
       <Filter>Source\Core</Filter>
     </ClCompile>
-    <ClCompile Include="..\Shared\Source\Scene.cpp">
-      <Filter>Shared\Source</Filter>
+    <ClCompile Include="Source\Workspaces\Graph_Editor.cpp">
+      <Filter>Source\Workspaces</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Workspaces\History.cpp">
+      <Filter>Source\Workspaces</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Workspaces\Speadsheet_Editor.cpp">
+      <Filter>Source\Workspaces</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Editor_File.cpp">
+      <Filter>Source\Core</Filter>
     </ClCompile>
     <ClCompile Include="..\Shared\Source\Data_Property.cpp">
+      <Filter>Shared\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Shared\Source\File.cpp">
       <Filter>Shared\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\Shared\Source\Lace.cpp">
       <Filter>Shared\Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\Shared\Source\Object\Nodes\Compiler.cpp">
-      <Filter>Shared\Source</Filter>
-    </ClCompile>
     <ClCompile Include="..\Shared\Source\Nodes.cpp">
-      <Filter>Shared\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Shared\Source\Object\Nodes\Object_Nodes.cpp">
       <Filter>Shared\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\Shared\Source\Object\Data.cpp">
@@ -107,35 +113,29 @@
     <ClCompile Include="..\Shared\Source\Object\Data\Volume.cpp">
       <Filter>Shared\Source</Filter>
     </ClCompile>
+    <ClCompile Include="..\Shared\Source\Object\Nodes\Compiler.cpp">
+      <Filter>Shared\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Shared\Source\Object\Nodes\Object_Nodes.cpp">
+      <Filter>Shared\Source</Filter>
+    </ClCompile>
     <ClCompile Include="..\Shared\Source\Object\Object.cpp">
       <Filter>Shared\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\Shared\Source\Ops.cpp">
       <Filter>Shared\Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\Shared\Source\Shader\Shader.cpp">
-      <Filter>Shared\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Shared\Source\Shader\Nodes\Shader_Nodes.cpp">
-      <Filter>Shared\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Workspaces\Graph_Editor.cpp">
-      <Filter>Source\Workspaces</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Workspaces\History.cpp">
-      <Filter>Source\Workspaces</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Workspaces\Speadsheet_Editor.cpp">
-      <Filter>Source\Workspaces</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Shared\Source\File.cpp">
+    <ClCompile Include="..\Shared\Source\Scene.cpp">
       <Filter>Shared\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\Shared\Source\Session.cpp">
       <Filter>Shared\Source</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Core\Editor_File.cpp">
-      <Filter>Source\Core</Filter>
+    <ClCompile Include="..\Shared\Source\Shader\Nodes\Shader_Nodes.cpp">
+      <Filter>Shared\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Shared\Source\Shader\Shader.cpp">
+      <Filter>Shared\Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -181,19 +181,28 @@
     <ClInclude Include="Include\GUI_Nodes.hpp">
       <Filter>Include\Core</Filter>
     </ClInclude>
+    <ClInclude Include="Include\Workspaces\Speadsheet_Editor.hpp">
+      <Filter>Include\Workspaces</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Workspaces\History.hpp">
+      <Filter>Include\Workspaces</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Workspaces\Graph_Editor.hpp">
+      <Filter>Include\Workspaces</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Core\Editor_File.hpp">
+      <Filter>Include\Core</Filter>
+    </ClInclude>
     <ClInclude Include="..\Shared\Include\Data_Property.hpp">
+      <Filter>Shared\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Shared\Include\File.hpp">
       <Filter>Shared\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\Shared\Include\Include.hpp">
       <Filter>Shared\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\Shared\Include\Lace.hpp">
-      <Filter>Shared\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Shared\Include\Object\Nodes\Compiler.hpp">
-      <Filter>Shared\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Shared\Include\Object\Nodes\Object_Nodes.hpp">
       <Filter>Shared\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\Shared\Include\Nodes.hpp">
@@ -241,53 +250,38 @@
     <ClInclude Include="..\Shared\Include\Object\Data\Volume.hpp">
       <Filter>Shared\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\Shared\Include\Object\Nodes\Compiler.hpp">
+      <Filter>Shared\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Shared\Include\Object\Nodes\Object_Nodes.hpp">
+      <Filter>Shared\Include</Filter>
+    </ClInclude>
     <ClInclude Include="..\Shared\Include\Object\Object.hpp">
       <Filter>Shared\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\Shared\Include\Ops.hpp">
       <Filter>Shared\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\Shared\Include\Shared.hpp">
-      <Filter>Shared\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\Shared\Include\Scene.hpp">
       <Filter>Shared\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\Shared\Include\Shader\Shader.hpp">
+    <ClInclude Include="..\Shared\Include\Session.hpp">
       <Filter>Shared\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\Shared\Include\Shader\Nodes\Shader_Nodes.hpp">
       <Filter>Shared\Include</Filter>
     </ClInclude>
-    <ClInclude Include="Include\Workspaces\Speadsheet_Editor.hpp">
-      <Filter>Include\Workspaces</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Workspaces\History.hpp">
-      <Filter>Include\Workspaces</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Workspaces\Graph_Editor.hpp">
-      <Filter>Include\Workspaces</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Shared\Include\Session.hpp">
+    <ClInclude Include="..\Shared\Include\Shader\Shader.hpp">
       <Filter>Shared\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\Shared\Include\File.hpp">
+    <ClInclude Include="..\Shared\Include\Shared.hpp">
       <Filter>Shared\Include</Filter>
     </ClInclude>
-    <ClInclude Include="Include\Core\Editor_File.hpp">
-      <Filter>Include\Core</Filter>
+    <ClInclude Include="..\Shared\External\stb_image.h">
+      <Filter>Shared\External</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Filter Include="Shared">
-      <UniqueIdentifier>{d9fd2588-6a7a-48a9-9719-dd9ed47d9173}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Shared\Include">
-      <UniqueIdentifier>{339c3c9c-5b4b-4dee-89b7-a9951ee83975}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Shared\Source">
-      <UniqueIdentifier>{bb4a9004-446b-4ab6-81ab-e6e893106fc4}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Include">
       <UniqueIdentifier>{4d567220-9fe9-4e46-9066-3ab50f3fd179}</UniqueIdentifier>
     </Filter>
@@ -308,6 +302,18 @@
     </Filter>
     <Filter Include="Source\Workspaces">
       <UniqueIdentifier>{1ffeab3f-93a5-45d3-87b0-708d6cb6bee3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shared">
+      <UniqueIdentifier>{506420d3-6aca-48be-8801-4018723c6a0e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shared\Include">
+      <UniqueIdentifier>{8a39aabc-995d-4c13-98e4-53268d0eb86b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shared\Source">
+      <UniqueIdentifier>{ce252d54-ef09-4996-b45b-11f0a77a694e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shared\External">
+      <UniqueIdentifier>{0b37c6a0-b344-4d31-ae76-0e773bb429dc}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

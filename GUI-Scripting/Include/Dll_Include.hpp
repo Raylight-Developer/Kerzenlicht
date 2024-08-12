@@ -11,5 +11,5 @@
 #include "GUI_Nodes.hpp"
 #include "GUI_Object_Nodes.hpp"
 
-using Data_Type = CLASS::DATA::Type;
+using Data_Type  = KL::DATA::Type;
 using Gui_Script = GUI::NODE::EXEC::Script_Node;

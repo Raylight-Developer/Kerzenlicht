@@ -2,13 +2,13 @@
 
 #include "Object/Object.hpp"
 
-CLASS::OBJECT::DATA::Camera::Camera() {
+KL::OBJECT::DATA::Camera::Camera() {
 	focal_angle  = 50.0;
 	focal_length = 0.05;
 	sensor_size  = 0.036;
 }
 
-void CLASS::OBJECT::DATA::Camera::compile(CLASS::Scene* scene, CLASS::Object* object) {
+void KL::OBJECT::DATA::Camera::compile(KL::Scene* scene, KL::Object* object) {
 	const dmat4 matrix = glm::yawPitchRoll(object->transform.euler_rotation.y * DEG_RAD, object->transform.euler_rotation.x * DEG_RAD, object->transform.euler_rotation.z * DEG_RAD);
 	const dvec3 x_vector = matrix[0];
 	const dvec3 y_vector = matrix[1];

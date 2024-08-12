@@ -55,8 +55,8 @@ namespace GUI {
 				Script(const ivec2& pos, const string& script_id = "");
 				~Script();
 				void clearIO();
-				void addDataInput (const uint16& slot_id, const string& label, const CLASS::DATA::Type& type, const CLASS::DATA::Modifier& modifier = CLASS::DATA::Modifier::SINGLE);
-				void addDataOutput(const uint16& slot_id, const string& label, const CLASS::DATA::Type& type, const CLASS::DATA::Modifier& modifier = CLASS::DATA::Modifier::SINGLE);
+				void addDataInput (const uint16& slot_id, const string& label, const KL::DATA::Type& type, const KL::DATA::Modifier& modifier = KL::DATA::Modifier::SINGLE);
+				void addDataOutput(const uint16& slot_id, const string& label, const KL::DATA::Type& type, const KL::DATA::Modifier& modifier = KL::DATA::Modifier::SINGLE);
 				void addExecInput (const uint16& slot_id, const string& label);
 				void addExecOutput(const uint16& slot_id, const string& label);
 				void renderDefault(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget);
@@ -74,8 +74,8 @@ namespace GUI {
 				Script* node;
 			public:
 				Script_Node(Script* node);
-				virtual void addDataInput (const string& label, const CLASS::DATA::Type& type, const CLASS::DATA::Modifier& modifier = CLASS::DATA::Modifier::SINGLE) const;
-				virtual void addDataOutput(const string& label, const CLASS::DATA::Type& type, const CLASS::DATA::Modifier& modifier = CLASS::DATA::Modifier::SINGLE) const;
+				virtual void addDataInput (const string& label, const KL::DATA::Type& type, const KL::DATA::Modifier& modifier = KL::DATA::Modifier::SINGLE) const;
+				virtual void addDataOutput(const string& label, const KL::DATA::Type& type, const KL::DATA::Modifier& modifier = KL::DATA::Modifier::SINGLE) const;
 				virtual void addExecInput (const string& label) const;
 				virtual void addExecOutput(const string& label) const;
 				virtual void clearIO() const;
@@ -94,10 +94,10 @@ namespace GUI {
 			struct Pointer : Node {
 				PORT::Data_O_Port* o_pointer;
 
-				CLASS::DATA::Type pointer_type;
+				KL::DATA::Type pointer_type;
 				void* pointer;
 
-				Pointer(const ivec2& pos, const CLASS::DATA::Type& pointer_type);
+				Pointer(const ivec2& pos, const KL::DATA::Type& pointer_type);
 
 				void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget = nullptr) override;
 			};
@@ -105,7 +105,7 @@ namespace GUI {
 				PORT::Data_I_Port* i_pointer;
 				PORT::Data_O_Port* o_value;
 
-				CLASS::NODE::LINK::GET::Type mini_type;
+				KL::NODE::LINK::GET::Type mini_type;
 
 				Get(const ivec2& pos);
 			};
@@ -116,7 +116,7 @@ namespace GUI {
 				PORT::Exec_I_Port* i_exec;
 				PORT::Exec_O_Port* o_exec;
 
-				CLASS::NODE::LINK::SET::Type mini_type;
+				KL::NODE::LINK::SET::Type mini_type;
 
 				Set(const ivec2& pos);
 			};
@@ -163,7 +163,7 @@ namespace GUI {
 				Print(const ivec2& pos);
 			};
 			struct Cast : Node {
-				CLASS::NODE::UTIL::CAST::Type mini_type;
+				KL::NODE::UTIL::CAST::Type mini_type;
 				PORT::Data_I_Port* i_value;
 				PORT::Data_O_Port* o_value;
 

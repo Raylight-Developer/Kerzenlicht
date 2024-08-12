@@ -5,7 +5,7 @@
 #include "Lace.hpp"
 
 // FWD DECL OTHER
-namespace CLASS {
+namespace KL {
 	#ifdef COMPILE_EDITOR
 		struct Editor_File;
 	#elif COMPILE_RENDERER
@@ -13,10 +13,11 @@ namespace CLASS {
 	#else
 		struct File;
 	#endif
+	struct Lace;
 }
 
 // FWD DECL THIS
-#define ENDL Lace_NL()
+#define ENDL KL::Lace_NL()
 
 #define ANSI_RESET "\033[0m"
 
@@ -30,47 +31,49 @@ namespace CLASS {
 #define ANSI_White  "\033[97m"
 
 // DECL
-struct Session {
-	static Session& getInstance();
+namespace KL {
+	struct Session {
+		static Session& getInstance();
 
-	void flushLog();
+		void flushLog();
 
-	void setLog(Lace* ptr);
-	Lace* getLog();
+		void setLog(Lace* ptr);
+		Lace* getLog();
 
-	#ifdef COMPILE_EDITOR
-		void setFile(CLASS::Editor_File* ptr);
-		CLASS::Editor_File* getFile();
-	#elif COMPILE_RENDERER
-		void setFile(CLASS::Render_File* ptr);
-		CLASS::Render_File* getFile();
-	#else
-		void setFile(CLASS::File* ptr);
-		CLASS::File* getFile();
-	#endif
+#ifdef COMPILE_EDITOR
+		void setFile(KL::Editor_File* ptr);
+		KL::Editor_File* getFile();
+#elif COMPILE_RENDERER
+		void setFile(KL::Render_File* ptr);
+		KL::Render_File* getFile();
+#else
+		void setFile(KL::File* ptr);
+		KL::File* getFile();
+#endif
 
-private:
-	Session() : log(nullptr) , file(nullptr) {}
-	~Session() = default;
+	private:
+		Session();
+		~Session() = default;
 
-	Session(const Session&) = delete;
-	Session& operator=(const Session&) = delete;
+		Session(const Session&) = delete;
+		Session& operator=(const Session&) = delete;
 
-	Lace* log;
-	#ifdef COMPILE_EDITOR
-		CLASS::Editor_File* file;
-	#elif COMPILE_RENDERER
-		CLASS::Render_File* file;
-	#else
-		CLASS::File* file;
-	#endif
-};
+		Lace* log;
+#ifdef COMPILE_EDITOR
+		KL::Editor_File* file;
+#elif COMPILE_RENDERER
+		KL::Render_File* file;
+#else
+		KL::File* file;
+#endif
+	};
+}
 
 #undef LOG
 #undef FILE
 
-#define LOG *Session::getInstance().getLog()
-#define FILE Session::getInstance().getFile()
-#define FLUSH Session::getInstance().flushLog()
-#define COUT_S Lace lace; lace <<
+#define LOG *KL::Session::getInstance().getLog()
+#define FILE KL::Session::getInstance().getFile()
+#define FLUSH KL::Session::getInstance().flushLog()
+#define COUT_S KL::Lace lace; lace <<
 #define COUT_E ; cout << lace.str()

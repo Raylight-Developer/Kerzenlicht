@@ -2,7 +2,7 @@
 
 #include "Include.hpp"
 
-namespace CLASS::OBJECT::DATA {
+namespace KL::OBJECT::DATA {
 	namespace VOLUME {
 		enum struct Type {
 			HOMOGENEOUS,

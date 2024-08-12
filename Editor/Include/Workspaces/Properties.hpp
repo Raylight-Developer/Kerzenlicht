@@ -19,7 +19,7 @@ namespace GUI {
 
 		struct Object_Properties : GUI::Linear_Contents {
 			Workspace_Properties* parent;
-			CLASS::File* file;
+			KL::File* file;
 
 			Object_Properties(Workspace_Properties* i_parent);
 		};

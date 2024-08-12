@@ -1,10 +1,10 @@
 #include "Rendering/Renderer.hpp"
 
-Renderer::Renderer() {
+KL::Renderer::Renderer() {
 	window = nullptr;
 	Lace* log = new Lace();
 	Session::getInstance().setLog(log);
-	file = new CLASS::Render_File();
+	file = new KL::Render_File();
 	file->f_loadAsciiFile("../Editor/Resources/Assets/Ganyu.krz");
 	Session::getInstance().setFile(file);
 	gpu_data = new GPU_Scene();
@@ -37,7 +37,7 @@ Renderer::Renderer() {
 	view_layer = 0;
 }
 
-void Renderer::init() {
+void KL::Renderer::init() {
 	initGlfw();
 	initImGui();
 	systemInfo();
@@ -46,7 +46,7 @@ void Renderer::init() {
 	displayLoop();
 }
 
-void Renderer::exit() {
+void KL::Renderer::exit() {
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplGlfw_Shutdown();
 	ImGui::DestroyContext();
@@ -55,7 +55,7 @@ void Renderer::exit() {
 	glfwTerminate();
 }
 
-void Renderer::initGlfw() {
+void KL::Renderer::initGlfw() {
 	glfwInit();
 
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
@@ -98,7 +98,7 @@ void Renderer::initGlfw() {
 	glfwSetKeyCallback(window, key);
 }
 
-void Renderer::initImGui() {
+void KL::Renderer::initImGui() {
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 	ImGuiIO& io = ImGui::GetIO(); (void)io;
@@ -112,7 +112,7 @@ void Renderer::initImGui() {
 	ImGui_ImplOpenGL3_Init("#version 460");
 }
 
-void Renderer::systemInfo() {
+void KL::Renderer::systemInfo() {
 	GLint work_grp_cnt[3];
 	glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_COUNT, 0, &work_grp_cnt[0]);
 	glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_COUNT, 1, &work_grp_cnt[1]);
@@ -152,12 +152,12 @@ void Renderer::systemInfo() {
 	LOG << ENDL << "SSBO struct alignment multiplier: " << uniformBufferOffsetAlignment;
 }
 
-void Renderer::pipeline() {
+void KL::Renderer::pipeline() {
 	glViewport(0, 0, display_resolution.x , display_resolution.y);
 }
 
-void Renderer::tickUpdate() {
-	for (const CLASS::Object* object : FILE->active_scene->ptr->objects) {
+void KL::Renderer::tickUpdate() {
+	for (const KL::Object* object : FILE->active_scene->ptr->objects) {
 		if (object->node_tree) {
 			object->node_tree->exec(&frame_time);
 		}
@@ -176,7 +176,7 @@ void Renderer::tickUpdate() {
 	ssboBinding(8, ul_to_u(gpu_data->textureDataSize()), gpu_data->texture_data.data());
 }
 
-void Renderer::guiLoop() {
+void KL::Renderer::guiLoop() {
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplGlfw_NewFrame();
 
@@ -194,7 +194,7 @@ void Renderer::guiLoop() {
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
-void Renderer::gameLoop() {
+void KL::Renderer::gameLoop() {
 	if (keys[GLFW_KEY_D]) {
 		FILE->default_camera->transform.moveLocal(dvec3(1.0, 0.0, 0.0)* camera_move_sensitivity * frame_time);
 		reset = true;
@@ -237,7 +237,7 @@ void Renderer::gameLoop() {
 	}
 }
 
-void Renderer::displayLoop() {
+void KL::Renderer::displayLoop() {
 	const GLfloat vertices[16] = {
 		-1.0f, -1.0f, 0.0f, 0.0f,
 		-1.0f,  1.0f, 0.0f, 1.0f,
@@ -307,7 +307,7 @@ void Renderer::displayLoop() {
 		glUniform1ui(glGetUniformLocation(compute_program, "ray_bounces"), 1);
 		glUniform1ui(glGetUniformLocation(compute_program, "samples_per_pixel"), 1);
 
-		CLASS::OBJECT::DATA::Camera* camera = FILE->default_camera->data->getCamera();
+		KL::OBJECT::DATA::Camera* camera = FILE->default_camera->data->getCamera();
 		camera->compile(FILE->active_scene->ptr, FILE->default_camera);
 		glUniform3fv(glGetUniformLocation(compute_program, "camera_pos"),  1, value_ptr(d_to_f(FILE->default_camera->transform.position)));
 		glUniform3fv(glGetUniformLocation(compute_program, "camera_p_uv"), 1, value_ptr(d_to_f(camera->projection_center)));
@@ -358,7 +358,7 @@ void Renderer::displayLoop() {
 	}
 }
 
-void Renderer::framebufferSize(GLFWwindow* window, int width, int height) {
+void KL::Renderer::framebufferSize(GLFWwindow* window, int width, int height) {
 	Renderer* instance = static_cast<Renderer*>(glfwGetWindowUserPointer(window));
 	glViewport(0, 0, width, height);
 	instance->display_resolution.x = width;
@@ -369,12 +369,12 @@ void Renderer::framebufferSize(GLFWwindow* window, int width, int height) {
 	instance->runframe = 0;
 }
 
-void Renderer::cursorPos(GLFWwindow* window, double xpos, double ypos) {
+void KL::Renderer::cursorPos(GLFWwindow* window, double xpos, double ypos) {
 	Renderer* instance = static_cast<Renderer*>(glfwGetWindowUserPointer(window));
 	instance->current_mouse = dvec2(xpos, ypos);
 }
 
-void Renderer::mouseButton(GLFWwindow* window, int button, int action, int mods) {
+void KL::Renderer::mouseButton(GLFWwindow* window, int button, int action, int mods) {
 	Renderer* instance = static_cast<Renderer*>(glfwGetWindowUserPointer(window));
 	if (action == GLFW_PRESS) {
 		instance->keys[button] = true;
@@ -396,7 +396,7 @@ void Renderer::mouseButton(GLFWwindow* window, int button, int action, int mods)
 	}
 }
 
-void Renderer::scroll(GLFWwindow* window, double xoffset, double yoffset) {
+void KL::Renderer::scroll(GLFWwindow* window, double xoffset, double yoffset) {
 	Renderer* instance = static_cast<Renderer*>(glfwGetWindowUserPointer(window));
 	if (yoffset < 0) {
 		instance->reset = true;
@@ -410,7 +410,7 @@ void Renderer::scroll(GLFWwindow* window, double xoffset, double yoffset) {
 	}
 }
 
-void Renderer::key(GLFWwindow* window, int key, int scancode, int action, int mods) {
+void KL::Renderer::key(GLFWwindow* window, int key, int scancode, int action, int mods) {
 	Renderer* instance = static_cast<Renderer*>(glfwGetWindowUserPointer(window));
 	// Input Handling
 	if (key == GLFW_KEY_F5 && action == GLFW_PRESS) {

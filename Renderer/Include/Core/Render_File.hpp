@@ -15,14 +15,14 @@
 #include "Object/Nodes/Object_Nodes.hpp"
 
 // FWD DECL OTHER
-namespace CLASS {
+namespace KL {
 	struct File;
 }
 
 // FWD DECL THIS
 
 // DECL
-namespace CLASS {
+namespace KL {
 	struct Render_File : File {
 		Render_File();
 

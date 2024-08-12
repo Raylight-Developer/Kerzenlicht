@@ -2,12 +2,12 @@
 
 #include "Include.hpp"
 
-namespace CLASS {
+namespace KL {
 	struct Object;
 	struct Scene;
 }
 
-namespace CLASS::OBJECT::DATA {
+namespace KL::OBJECT::DATA {
 	struct Camera {
 		dvec1 focal_length;
 		dvec1 focal_angle;
@@ -19,6 +19,6 @@ namespace CLASS::OBJECT::DATA {
 
 		Camera();
 
-		void compile(CLASS::Scene* scene, CLASS::Object* object);
+		void compile(KL::Scene* scene, KL::Object* object);
 	};
 }

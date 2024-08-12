@@ -72,7 +72,7 @@ namespace GUI {
 
 			uvec3 compute_layout;
 			vector<VIEWPORT_REALTIME::GPU_Triangle> triangles;
-			unordered_map<CLASS::Object*, vector<VIEWPORT_REALTIME::Triangle>> triangle_map;
+			unordered_map<KL::Object*, vector<VIEWPORT_REALTIME::Triangle>> triangle_map;
 
 			GLuint compute_shader_program;
 			GLuint display_shader_program;

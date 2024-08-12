@@ -15,7 +15,7 @@ int main(int argc, char* argv[]) {
 	Lace log = Lace();
 	Session::getInstance().setLog(&log);
 
-	CLASS::File file = CLASS::File::f_getAsciiFile("./Resources/Assets/Save.krz");
+	KL::File file = KL::File::f_getAsciiFile("./Resources/Assets/Save.krz");
 	Session::getInstance().setFile(&file);
 
 	FILE->f_saveBinaryFile("./Resources/Assets/Save.krzb");

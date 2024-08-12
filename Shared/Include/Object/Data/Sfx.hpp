@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Include.hpp"
-namespace CLASS::OBJECT::DATA {
+namespace KL::OBJECT::DATA {
 	struct Sfx {
 		dvec1 attenuation;
 		dvec1 volume;

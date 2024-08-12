@@ -8,30 +8,35 @@
 	#include "File.hpp"
 #endif
 
-Session& Session::getInstance() {
+KL::Session::Session() :
+	log(nullptr),
+	file(nullptr)
+{}
+
+KL::Session& KL::Session::getInstance() {
 	static Session instance;
 	return instance;
 }
 
-void Session::flushLog() {
+void KL::Session::flushLog() {
 	cout << log->str();
 	log->clear();
 }
 
-void Session::setLog(Lace* ptr) { log = ptr; }
+void KL::Session::setLog(Lace* ptr) { log = ptr; }
 
-Lace* Session::getLog() { return log; }
+KL::Lace* KL::Session::getLog() { return log; }
 
 #ifdef COMPILE_EDITOR
-void Session::setFile(CLASS::Editor_File* ptr) { file = ptr; }
+void KL::Session::setFile(KL::Editor_File* ptr) { file = ptr; }
 
-CLASS::Editor_File* Session::getFile() { return file; }
+KL::Editor_File* KL::Session::getFile() { return file; }
 #elif COMPILE_RENDERER
-void Session::setFile(CLASS::Render_File* ptr) { file = ptr; }
+void KL::Session::setFile(KL::Render_File* ptr) { file = ptr; }
 
-CLASS::Render_File* Session::getFile() { return file; }
+KL::Render_File* KL::Session::getFile() { return file; }
 #else
-void Session::setFile(CLASS::File* ptr) { file = ptr; }
+void KL::Session::setFile(KL::File* ptr) { file = ptr; }
 
-CLASS::File* Session::getFile() { return file; }
+KL::File* KL::Session::getFile() { return file; }
 #endif

@@ -11,7 +11,7 @@ GUI::WORKSPACE::Workspace_Shelf::Workspace_Shelf(Workspace_Manager* parent) :
 	objects = new Tree_Item(tree, "Objects");
 	object_data = new Tree_Item(tree, "Data");
 
-	for (const CLASS::Object* object : parent->parent->file->objects) {
+	for (const KL::Object* object : parent->parent->file->objects) {
 		auto item = new Tree_Item(objects, QString::fromStdString(object->name), 1);
 		item->setData(0, 1000, reinterpret_cast<uint64>(object));
 	}

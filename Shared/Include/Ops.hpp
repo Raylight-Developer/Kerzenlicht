@@ -22,7 +22,7 @@ string processSubShader(const string& file_path);
 string preprocessShader(const string& file_path);
 
 // Math
-namespace CLASS {
+namespace KL {
 	enum struct Rotation_Type {
 		QUATERNION,
 		AXIS,

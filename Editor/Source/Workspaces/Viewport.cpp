@@ -96,7 +96,7 @@ GUI::WORKSPACE::Viewport::Viewport(Workspace_Viewport* parent) :
 	fullscreen_quad_EBO = 0U;
 
 	triangles = vector<VIEWPORT_REALTIME::GPU_Triangle>();
-	triangle_map = unordered_map<CLASS::Object*, vector<VIEWPORT_REALTIME::Triangle>>();
+	triangle_map = unordered_map<KL::Object*, vector<VIEWPORT_REALTIME::Triangle>>();
 
 	fps_counter = 0;
 	fps_measure = chrono::steady_clock::now();
@@ -191,12 +191,12 @@ void GUI::WORKSPACE::Viewport::f_pipeline() {
 void GUI::WORKSPACE::Viewport::f_uploadData() {
 	triangles.clear();
 	triangle_map.clear();
-	for (CLASS::Object* object : FILE->active_scene->ptr->objects) {
+	for (KL::Object* object : FILE->active_scene->ptr->objects) {
 		object->f_compileMatrix();
 		vector <VIEWPORT_REALTIME::Triangle>  temp;
-		if (object->data->type == CLASS::OBJECT::DATA::Type::MESH) {
-			const CLASS::OBJECT::DATA::Mesh* mesh = object->data->getMesh();
-			for (const CLASS::OBJECT::DATA::MESH::Face* face : mesh->faces) {
+		if (object->data->type == KL::OBJECT::DATA::Type::MESH) {
+			const KL::OBJECT::DATA::Mesh* mesh = object->data->getMesh();
+			for (const KL::OBJECT::DATA::MESH::Face* face : mesh->faces) {
 				const dvec4 vert4_a = object->transform_matrix * dvec4(face->vertices[0]->position, 1.0);
 				const dvec4 vert4_b = object->transform_matrix * dvec4(face->vertices[1]->position, 1.0);
 				const dvec4 vert4_c = object->transform_matrix * dvec4(face->vertices[2]->position, 1.0);
@@ -207,14 +207,14 @@ void GUI::WORKSPACE::Viewport::f_uploadData() {
 				temp.push_back(VIEWPORT_REALTIME::Triangle(vert_a, vert_b, vert_c));
 			}
 		}
-		else if (object->data->type == CLASS::OBJECT::DATA::Type::GROUP) {
-			const CLASS::OBJECT::DATA::Group* group = object->data->getGroup();
-			for (CLASS::Object* sub_object : group->objects) {
+		else if (object->data->type == KL::OBJECT::DATA::Type::GROUP) {
+			const KL::OBJECT::DATA::Group* group = object->data->getGroup();
+			for (KL::Object* sub_object : group->objects) {
 				sub_object->f_compileMatrix();
 				sub_object->transform_matrix *= object->transform_matrix;
-				if (sub_object->data->type == CLASS::OBJECT::DATA::Type::MESH) {
-					const CLASS::OBJECT::DATA::Mesh* mesh = sub_object->data->getMesh();
-					for (const CLASS::OBJECT::DATA::MESH::Face* face : mesh->faces) {
+				if (sub_object->data->type == KL::OBJECT::DATA::Type::MESH) {
+					const KL::OBJECT::DATA::Mesh* mesh = sub_object->data->getMesh();
+					for (const KL::OBJECT::DATA::MESH::Face* face : mesh->faces) {
 						const dvec4 vert4_a = sub_object->transform_matrix * dvec4(face->vertices[0]->position, 1.0);
 						const dvec4 vert4_b = sub_object->transform_matrix * dvec4(face->vertices[1]->position, 1.0);
 						const dvec4 vert4_c = sub_object->transform_matrix * dvec4(face->vertices[2]->position, 1.0);
@@ -245,7 +245,7 @@ void GUI::WORKSPACE::Viewport::f_updateTick() {
 	}
 	if (frame_counter != 0) delta = chrono::duration_cast<std::chrono::milliseconds>(chrono::steady_clock::now() - last_delta).count() / 1000.0;
 	last_delta = chrono::steady_clock::now();
-	for (const CLASS::Object* object : FILE->active_scene->ptr->objects)
+	for (const KL::Object* object : FILE->active_scene->ptr->objects)
 		if (object->node_tree)
 			object->node_tree->exec(&delta);  // TODO Fix not loading without Execute Load To View
 	frame_counter++;
@@ -254,7 +254,7 @@ void GUI::WORKSPACE::Viewport::f_updateTick() {
 }
 
 void GUI::WORKSPACE::Viewport::f_selectObject(const dvec2& uv) { // TODO fix slight missalignment
-	CLASS::OBJECT::DATA::Camera* camera = FILE->default_camera->data->getCamera();
+	KL::OBJECT::DATA::Camera* camera = FILE->default_camera->data->getCamera();
 	camera->compile(FILE->active_scene->ptr, FILE->default_camera);
 	const VIEWPORT_REALTIME::Ray ray = VIEWPORT_REALTIME::Ray(
 		d_to_f(FILE->default_camera->transform.position),
@@ -268,7 +268,7 @@ void GUI::WORKSPACE::Viewport::f_selectObject(const dvec2& uv) { // TODO fix sli
 
 	dvec1 t_dist = MAX_DIST;
 	dvec1 closest_dist = MAX_DIST;
-	CLASS::Object* closest = nullptr;
+	KL::Object* closest = nullptr;
 	for (const auto& [object, triangles] : triangle_map) {
 		for (const VIEWPORT_REALTIME::Triangle& tri : triangles) {
 			if (VIEWPORT_REALTIME::f_rayTriangleIntersection(ray, tri, t_dist)) {
@@ -300,7 +300,7 @@ void GUI::WORKSPACE::Viewport::paintGL() {
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	f_updateTick();
-	CLASS::OBJECT::DATA::Camera* camera = FILE->default_camera->data->getCamera();
+	KL::OBJECT::DATA::Camera* camera = FILE->default_camera->data->getCamera();
 	camera->compile(FILE->active_scene->ptr, FILE->default_camera);
 
 	glUseProgram(compute_shader_program);

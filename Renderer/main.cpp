@@ -5,7 +5,7 @@
 //#define RENDER_ANIMATION_MODE
 
 int main(int argc, char *argv[]) {
-	Renderer renderer = Renderer();
+	KL::Renderer renderer = KL::Renderer();
 	renderer.init();
 	return 0;
 }

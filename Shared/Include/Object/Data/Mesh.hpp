@@ -4,7 +4,7 @@
 
 #include "Shader/Shader.hpp"
 
-namespace CLASS::OBJECT::DATA {
+namespace KL::OBJECT::DATA {
 	namespace MESH {
 		struct Vertex {
 			dvec3 position;
@@ -22,7 +22,7 @@ namespace CLASS::OBJECT::DATA {
 		vector<MESH::Face*> faces;
 		map<MESH::Face*, vector<dvec2>> uvs;
 		map<MESH::Face*, vector<dvec3>> normals;
-		map<MESH::Face*, SHADER::Material*> materials;
+		map<MESH::Face*, KL::Shader*> materials;
 		map<string, vector<MESH::Vertex*>> vertex_groups;
 
 		Mesh();

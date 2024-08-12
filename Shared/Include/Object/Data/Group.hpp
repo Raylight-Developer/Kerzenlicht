@@ -1,11 +1,11 @@
 #pragma once
 
 #include "Include.hpp"
-namespace CLASS {
+namespace KL {
 	struct Object;
 }
 
-namespace CLASS::OBJECT::DATA {
+namespace KL::OBJECT::DATA {
 	struct Group {
 		vector<Object*> objects;
 

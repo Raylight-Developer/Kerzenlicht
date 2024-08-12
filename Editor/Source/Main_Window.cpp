@@ -10,13 +10,13 @@ GUI::WORKSPACE::App::App(int argc, char* argv[]) :
 GUI::WORKSPACE::Main_Window::Main_Window(GUI::Application* app) :
 	GUI::Window(),
 	app(app),
-	log(new Lace()),
-	file(new CLASS::Editor_File()),
+	log(new KL::Lace()),
+	file(new KL::Editor_File()),
 	mouse_pressed(false),
 	key_pressed(false)
 {
-	Session::getInstance().setLog(log);
-	Session::getInstance().setFile(file);
+	KL::Session::getInstance().setLog(log);
+	KL::Session::getInstance().setFile(file);
 
 	setWindowTitle("Kerzenlicht");
 	setWindowIcon(QPixmap("./Resources/Icon.png"));

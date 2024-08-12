@@ -11,27 +11,27 @@
 #include "GUI_Object_Nodes.hpp"
 
 // FWD DECL OTHER
-namespace CLASS {
+namespace KL {
 	struct File;
 }
 
 // FWD DECL THIS
-namespace CLASS {
+namespace KL {
 	struct Editor_File;
 }
 
 // DECL
-namespace CLASS {
+namespace KL {
 	struct Editor_File : File {
-		unordered_map<CLASS::Node_Tree*, GUI::NODE::Node_Tree*> nodetree_map;
-		unordered_map<CLASS::Node*, GUI::NODE::Node*> node_map;
+		unordered_map<KL::Node_Tree*, GUI::NODE::Node_Tree*> nodetree_map;
+		unordered_map<KL::Node*, GUI::NODE::Node*> node_map;
 
 		Editor_File();
 
-		CLASS::Node_Tree* f_loadAsciiNodeTree   (const Token_Array& token_data) override;
-		void              f_loadAsciiBuild      (const Token_Array& token_data) override;
+		Node_Tree* f_loadAsciiNodeTree (const Token_Array& token_data) override;
+		void       f_loadAsciiBuild    (const Token_Array& token_data) override;
 
-		void f_saveAsciiNodeTree(Lace& lace, CLASS::Node_Tree* data, const uint64& i) override;
+		void f_saveAsciiNodeTree(Lace& lace, Node_Tree* data, const uint64& i) override;
 		void f_saveBinaryNodeTree(Bin_Lace& bin, Node_Tree* data) override;
 	};
 }

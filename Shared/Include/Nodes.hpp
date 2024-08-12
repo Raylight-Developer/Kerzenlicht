@@ -5,7 +5,7 @@
 #include "Data_Property.hpp"
 
 // FWD DECL OTHER
-namespace CLASS {
+namespace KL {
 	struct Scene;
 	struct Object;
 	namespace NODE {
@@ -14,7 +14,7 @@ namespace CLASS {
 		}
 	}
 }
-namespace CLASS  {
+namespace KL  {
 	struct Data;
 	namespace DATA {
 		enum struct Type;
@@ -23,7 +23,7 @@ namespace CLASS  {
 }
 
 // FWD DECL THIS
-namespace CLASS {
+namespace KL {
 	struct Node;
 	struct Node_Tree;
 	namespace NODE {
@@ -40,7 +40,7 @@ namespace CLASS {
 }
 
 // DECL
-namespace CLASS {
+namespace KL {
 	struct Node_Tree {
 		string name;
 

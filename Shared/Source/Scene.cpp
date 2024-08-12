@@ -1,10 +1,10 @@
 #include "Scene.hpp"
 
-CLASS::Scene::Scene() {
-	objects = vector<CLASS::Object*>();
+KL::Scene::Scene() {
+	objects = vector<KL::Object*>();
 	active_camera = nullptr;
 	current_frame = 0;
 }
 
-CLASS::Scene::~Scene() {
+KL::Scene::~Scene() {
 }

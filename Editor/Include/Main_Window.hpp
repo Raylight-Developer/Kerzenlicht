@@ -27,8 +27,8 @@ namespace GUI {
 
 		struct Main_Window : GUI::Window {
 			GUI::Application* app;
-			Lace* log;
-			CLASS::Editor_File* file;
+			KL::Lace* log;
+			KL::Editor_File* file;
 
 			map<string, Workspace_Manager*> workspaces;
 

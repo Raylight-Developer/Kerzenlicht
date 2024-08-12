@@ -93,7 +93,7 @@ void GUI::WORKSPACE::Workspace_API::f_executeCode() {
 		}
 	}
 	catch (const exception& e) {
-		Lace Err;
+		KL::Lace Err;
 		Err << "Error occurred: " << e.what();
 		console_output->setText(QString::fromStdString(Err.str()));
 		console_output_history->setText(console_output_history->toPlainText() + "╠══[" + QString::fromStdString(to_string(history_counter)) + "]══════════╣\n" + QString::fromStdString(Err.str() + "\n"));

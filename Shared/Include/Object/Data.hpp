@@ -16,7 +16,7 @@
 #include "Data/Sfx.hpp"
 #include "Data/Vfx.hpp"
 
-namespace CLASS::OBJECT::DATA {
+namespace KL::OBJECT::DATA {
 	enum struct Type {
 		NONE,
 		ATMOSPHERE,
@@ -35,14 +35,14 @@ namespace CLASS::OBJECT::DATA {
 	};
 
 }
-namespace CLASS::OBJECT {
+namespace KL::OBJECT {
 	struct Data {
 		string name;
 		DATA::Type type;
 		void* data;
 
 		Data();
-		Data(const CLASS::OBJECT::DATA::Type& type, void* data);
+		Data(const KL::OBJECT::DATA::Type& type, void* data);
 
 		DATA::Atmosphere* getAtmosphere() const { return static_cast<DATA::Atmosphere*>(data); };
 		DATA::Primitive* getPrimitive()   const { return static_cast<DATA::Primitive*>(data); };

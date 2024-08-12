@@ -4,14 +4,14 @@
 #include "Ops.hpp"
 
 // FWD DECL OTHER
-namespace CLASS {
+namespace KL {
 	struct Scene;
 	struct Object;
 	struct Transform;
 }
 
 // FWD DECL THIS
-namespace CLASS {
+namespace KL {
 	namespace DATA {
 		enum struct Type;
 		enum struct Modifier;
@@ -20,7 +20,7 @@ namespace CLASS {
 }
 
 // DECL
-namespace CLASS {
+namespace KL {
 	namespace DATA {
 		enum struct Type {
 			NONE,
@@ -60,11 +60,11 @@ namespace CLASS {
 		int64  getInt()    const;
 		uint64 getUint()   const;
 		dvec1  getDouble() const;
-		CLASS::Scene* getScene()    const;
-		CLASS::Object* getObject()  const;
+		KL::Scene* getScene()    const;
+		KL::Object* getObject()  const;
 
 		string to_string() const;
 	};
 }
 
-uvec3 typeColor(const CLASS::DATA::Type& type);
+uvec3 typeColor(const KL::DATA::Type& type);

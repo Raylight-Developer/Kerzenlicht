@@ -1,14 +1,14 @@
 ﻿#include "Core/Editor_File.hpp"
 
-#define NL << Lace_NL() <<
-#define SP << Lace_S() <<
+#define NL << KL::Lace_NL() <<
+#define SP << KL::Lace_S() <<
 
-CLASS::Editor_File::Editor_File() :
+KL::Editor_File::Editor_File() :
 	File()
 {}
 
-CLASS::Node_Tree* CLASS::Editor_File::f_loadAsciiNodeTree(const vector<vector<string>>&token_data) {
-	auto node_tree = new CLASS::Node_Tree();
+KL::Node_Tree* KL::Editor_File::f_loadAsciiNodeTree(const vector<vector<string>>&token_data) {
+	auto node_tree = new KL::Node_Tree();
 	auto gui_node_tree = new GUI::NODE::Node_Tree();
 	node_tree->name = f_join(token_data[0], 4);
 
@@ -37,7 +37,7 @@ CLASS::Node_Tree* CLASS::Editor_File::f_loadAsciiNodeTree(const vector<vector<st
 			const uint64 pointer = str_to_ul(read_data[1][1]);
 			const ivec2  pos = str_to_i(read_data[2][1], read_data[2][2]);
 
-			CLASS::Node* node = nullptr;
+			KL::Node* node = nullptr;
 			GUI::NODE::Node* gui_node = nullptr;
 			if      (read_data[3][1] == "CONSTRAINT") {
 			}
@@ -160,11 +160,11 @@ CLASS::Node_Tree* CLASS::Editor_File::f_loadAsciiNodeTree(const vector<vector<st
 			LOG << ENDL << ANSI_B << "      [Build-E]" << ANSI_RESET; FLUSH;
 			is_processing = false;
 			for (const Tokens& sub_tokens : read_data) {
-				auto node_l = static_cast<CLASS::Node*>(pointer_map[str_to_ul(sub_tokens[1])]);
+				auto node_l = static_cast<KL::Node*>(pointer_map[str_to_ul(sub_tokens[1])]);
 				auto port_l = static_cast<NODE::PORT::Exec_O_Port*>(
 					node_l->outputs[str_to_ul(sub_tokens[2])]
 					);
-				auto node_r = static_cast<CLASS::Node*>(pointer_map[str_to_ul(sub_tokens[5])]);
+				auto node_r = static_cast<KL::Node*>(pointer_map[str_to_ul(sub_tokens[5])]);
 				auto port_r = static_cast<NODE::PORT::Exec_I_Port*>(
 					node_r->inputs[str_to_ul(sub_tokens[3])]
 					);
@@ -185,11 +185,11 @@ CLASS::Node_Tree* CLASS::Editor_File::f_loadAsciiNodeTree(const vector<vector<st
 			LOG << ENDL << ANSI_B << "      [Build-D]" << ANSI_RESET; FLUSH;
 			is_processing = false;
 			for (const Tokens& sub_tokens : read_data) {
-				auto node_l = static_cast<CLASS::Node*>(pointer_map[str_to_ul(sub_tokens[1])]);
+				auto node_l = static_cast<KL::Node*>(pointer_map[str_to_ul(sub_tokens[1])]);
 				auto port_l = static_cast<NODE::PORT::Data_O_Port*>(
 					node_l->outputs[str_to_ul(sub_tokens[2])]
 					);
-				auto node_r = static_cast<CLASS::Node*>(pointer_map[str_to_ul(sub_tokens[5])]);
+				auto node_r = static_cast<KL::Node*>(pointer_map[str_to_ul(sub_tokens[5])]);
 				auto port_r = static_cast<NODE::PORT::Data_I_Port*>(
 					node_r->inputs[str_to_ul(sub_tokens[3])]
 					);
@@ -215,14 +215,14 @@ CLASS::Node_Tree* CLASS::Editor_File::f_loadAsciiNodeTree(const vector<vector<st
 	return node_tree;
 }
 
-void CLASS::Editor_File::f_loadAsciiBuild(const Token_Array& token_data) {
+void KL::Editor_File::f_loadAsciiBuild(const Token_Array& token_data) {
 	LOG << ENDL << ANSI_B << "    [Build]" << ANSI_RESET; FLUSH;
 
 	bool is_processing = false;
 	Token_Array read_data = Token_Array();
 	for (const Tokens& tokens : token_data) {
 		if (tokens[0] == "Active-Scene") {
-			active_scene->set(static_cast<CLASS::Scene*>(pointer_map[str_to_ul(tokens[2])]));
+			active_scene->set(static_cast<KL::Scene*>(pointer_map[str_to_ul(tokens[2])]));
 		}
 		else if (tokens[0] == "┌Data-Group") {
 			is_processing = true;
@@ -231,7 +231,7 @@ void CLASS::Editor_File::f_loadAsciiBuild(const Token_Array& token_data) {
 		else if (tokens[0] == "└Data-Group") {
 			is_processing = false;
 			for (const Tokens& sub_tokens : read_data) {
-				static_cast<CLASS::OBJECT::Data*>(pointer_map[str_to_ul(sub_tokens[1])])->getGroup()->objects.push_back(static_cast<CLASS::Object*>(pointer_map[str_to_ul(sub_tokens[3])]));
+				static_cast<KL::OBJECT::Data*>(pointer_map[str_to_ul(sub_tokens[1])])->getGroup()->objects.push_back(static_cast<KL::Object*>(pointer_map[str_to_ul(sub_tokens[3])]));
 			}
 		}
 		else if (tokens[0] == "┌Object-Data") {
@@ -241,7 +241,7 @@ void CLASS::Editor_File::f_loadAsciiBuild(const Token_Array& token_data) {
 		else if (tokens[0] == "└Object-Data") {
 			is_processing = false;
 			for (const Tokens& sub_tokens : read_data) {
-				static_cast<CLASS::Object*>(pointer_map[str_to_ul(sub_tokens[1])])->data = static_cast<CLASS::OBJECT::Data*>(pointer_map[str_to_ul(sub_tokens[3])]);
+				static_cast<KL::Object*>(pointer_map[str_to_ul(sub_tokens[1])])->data = static_cast<KL::OBJECT::Data*>(pointer_map[str_to_ul(sub_tokens[3])]);
 			}
 		}
 		else if (tokens[0] == "┌Object-Node") {
@@ -251,7 +251,7 @@ void CLASS::Editor_File::f_loadAsciiBuild(const Token_Array& token_data) {
 		else if (tokens[0] == "└Object-Node") {
 			is_processing = false;
 			for (const Tokens& sub_tokens : read_data) {
-				static_cast<CLASS::Object*>(pointer_map[str_to_ul(sub_tokens[1])])->node_tree = static_cast<CLASS::Node_Tree*>(pointer_map[str_to_ul(sub_tokens[3])]);
+				static_cast<KL::Object*>(pointer_map[str_to_ul(sub_tokens[1])])->node_tree = static_cast<KL::Node_Tree*>(pointer_map[str_to_ul(sub_tokens[3])]);
 			}
 		}
 		else if (tokens[0] == "┌Node-Pointer") {
@@ -262,10 +262,10 @@ void CLASS::Editor_File::f_loadAsciiBuild(const Token_Array& token_data) {
 			is_processing = false;
 			for (const Tokens& sub_tokens : read_data) {
 				auto ptr = static_cast<NODE::LINK::Pointer*>(pointer_map[str_to_ul(sub_tokens[1])]);
-				ptr->pointer = static_cast<CLASS::Object*>(pointer_map[str_to_ul(sub_tokens[3])]);
+				ptr->pointer = static_cast<KL::Object*>(pointer_map[str_to_ul(sub_tokens[3])]);
 
 				auto gui_ptr = static_cast<GUI::NODE::LINK::Pointer*>(node_map.at(ptr));
-				gui_ptr->pointer = static_cast<CLASS::Object*>(pointer_map[str_to_ul(sub_tokens[3])]);
+				gui_ptr->pointer = static_cast<KL::Object*>(pointer_map[str_to_ul(sub_tokens[3])]);
 			}
 		}
 		else if (is_processing) {
@@ -274,14 +274,14 @@ void CLASS::Editor_File::f_loadAsciiBuild(const Token_Array& token_data) {
 	}
 }
 
-void CLASS::Editor_File::f_saveAsciiNodeTree(Lace& lace, CLASS::Node_Tree* data, const uint64& i) {
+void KL::Editor_File::f_saveAsciiNodeTree(Lace& lace, KL::Node_Tree* data, const uint64& i) {
 	uint64 j = 0;
 	lace NL "┌Node-Tree [ " << i << " ] " << data->name;
 	lace++;
 	lace NL ptr_to_str(data);
 	lace NL "┌Nodes( " << data->nodes.size() << " )";
 	lace++;
-	for (CLASS::Node* node : data->nodes) {
+	for (KL::Node* node : data->nodes) {
 		lace NL "┌Node [ " << j++ << " ] " << node->name;
 		lace++;
 		lace NL ptr_to_str(node);
@@ -305,7 +305,7 @@ void CLASS::Editor_File::f_saveAsciiNodeTree(Lace& lace, CLASS::Node_Tree* data,
 			case NODE::EXEC::Type::SCRIPT: {
 				lace NL "Type EXEC :: SCRIPT";
 				lace NL "┌Script";
-				lace NL Lace_S() << static_cast<CLASS::NODE::EXEC::Script*>(node)->script_id;
+				lace NL Lace_S() << static_cast<KL::NODE::EXEC::Script*>(node)->script_id;
 				lace NL "└Script";
 				break;
 			}
@@ -326,7 +326,7 @@ void CLASS::Editor_File::f_saveAsciiNodeTree(Lace& lace, CLASS::Node_Tree* data,
 				break;
 			}
 			case NODE::LINK::Type::GET: {
-				switch (static_cast<CLASS::NODE::LINK::Get*>(node)->mini_type) {
+				switch (static_cast<KL::NODE::LINK::Get*>(node)->mini_type) {
 				case NODE::LINK::GET::Type::FIELD: {
 					lace NL "Type LINK :: GET :: FIELD";
 					lace NL "┌Field";
@@ -338,7 +338,7 @@ void CLASS::Editor_File::f_saveAsciiNodeTree(Lace& lace, CLASS::Node_Tree* data,
 				break;
 			}
 			case NODE::LINK::Type::SET: {
-				switch (static_cast<CLASS::NODE::LINK::Set*>(node)->mini_type) {
+				switch (static_cast<KL::NODE::LINK::Set*>(node)->mini_type) {
 				case NODE::LINK::SET::Type::EULER_ROTATION_X: {
 					lace NL "Type LINK :: SET :: TRANSFORM :: EULER_ROTATION :: X";
 					break;
@@ -407,7 +407,7 @@ void CLASS::Editor_File::f_saveAsciiNodeTree(Lace& lace, CLASS::Node_Tree* data,
 	for (const auto node_l : data->nodes) {
 		for (const auto& port : node_l->outputs) {
 			if (port->type == NODE::PORT::Type::EXEC_O) {
-				const auto port_l = static_cast<CLASS::NODE::PORT::Exec_O_Port*>(port);
+				const auto port_l = static_cast<KL::NODE::PORT::Exec_O_Port*>(port);
 				if (port_l->connection) {
 					const auto port_r = port_l->connection;
 					const auto node_r = port_r->node;
@@ -427,7 +427,7 @@ void CLASS::Editor_File::f_saveAsciiNodeTree(Lace& lace, CLASS::Node_Tree* data,
 	for (const auto node_r : data->nodes) {
 		for (const auto& port : node_r->inputs) {
 			if (port->type == NODE::PORT::Type::DATA_I) {
-				const auto port_r = static_cast<CLASS::NODE::PORT::Data_I_Port*>(port);
+				const auto port_r = static_cast<KL::NODE::PORT::Data_I_Port*>(port);
 				if (port_r->connection) {
 					const auto port_l = port_r->connection;
 					const auto node_l = port_l->node;
@@ -446,7 +446,7 @@ void CLASS::Editor_File::f_saveAsciiNodeTree(Lace& lace, CLASS::Node_Tree* data,
 	lace NL "└Node-Tree";
 }
 
-void CLASS::Editor_File::f_saveBinaryNodeTree(Bin_Lace & bin, Node_Tree* data) {
+void KL::Editor_File::f_saveBinaryNodeTree(Bin_Lace & bin, Node_Tree* data) {
 	uint64 size = 0;
 	Bin_Lace bytes;
 
@@ -460,7 +460,7 @@ void CLASS::Editor_File::f_saveBinaryNodeTree(Bin_Lace & bin, Node_Tree* data) {
 	size += 8;
 	size += 2;
 
-	for (CLASS::Node* node : data->nodes) {
+	for (KL::Node* node : data->nodes) {
 		bytes << ul_to_uh(node->name.size());
 		bytes << node->name;
 		bytes << ptr(node);

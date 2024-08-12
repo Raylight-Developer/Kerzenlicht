@@ -1,5 +1,7 @@
 #include "QT.hpp"
 
+#include "Ops.hpp"
+
 GUI::Application::Application(int argc, char* argv[]) :
 	QApplication(argc, argv)
 {
@@ -515,4 +517,12 @@ void BranchDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option
 	const QWidget* widget = option.widget;
 	QStyle* style = widget ? widget->style() : static_cast<QApplication*>(QCoreApplication::instance())->style();
 	style->drawPrimitive(QStyle::PE_IndicatorBranch, &branch, painter, widget);
+}
+
+ivec2 p_to_i(const QPoint& val) {
+	return ivec2(val.x(), val.y());
+}
+
+dvec2 p_to_d(const QPointF& val) {
+	return dvec2(val.x(), val.y());
 }

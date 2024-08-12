@@ -43,12 +43,12 @@ GUI::WORKSPACE::Workspace_Object_Node_Editor::Workspace_Object_Node_Editor(Works
 			recompileDLL(dynlib);
 
 			for (auto node : node_tree->nodes) {
-				if (node->type == CLASS::NODE::Type::EXEC and node->sub_type == e_to_u(CLASS::NODE::EXEC::Type::SCRIPT)) {
-					static_cast<CLASS::NODE::EXEC::Script*>(node)->recompile(dynlib);
+				if (node->type == KL::NODE::Type::EXEC and node->sub_type == e_to_u(KL::NODE::EXEC::Type::SCRIPT)) {
+					static_cast<KL::NODE::EXEC::Script*>(node)->recompile(dynlib);
 				}
 			}
 			for (auto node : gui_node_tree->nodes) {
-				if (node->type == CLASS::NODE::Type::EXEC and node->sub_type == e_to_u(CLASS::NODE::EXEC::Type::SCRIPT)) {
+				if (node->type == KL::NODE::Type::EXEC and node->sub_type == e_to_u(KL::NODE::EXEC::Type::SCRIPT)) {
 					static_cast<GUI::NODE::EXEC::Script*>(node)->recompile(dynlib);
 				}
 			}
@@ -91,7 +91,7 @@ GUI::WORKSPACE::Object_Node_Viewport::~Object_Node_Viewport() {
 	delete selection_rect;
 }
 
-void GUI::WORKSPACE::Object_Node_Viewport::f_objectChanged(CLASS::Object* object) {
+void GUI::WORKSPACE::Object_Node_Viewport::f_objectChanged(KL::Object* object) {
 	for (auto item: scene->items()) {
 		if (dynamic_cast<GUI::NODE::Node*>(item)) {
 			scene->removeItem(item);
@@ -452,7 +452,7 @@ void GUI::WORKSPACE::Object_Node_Viewport::dropEvent(QDropEvent* event) {
 			}
 			else if (type == "LINK") {
 				if (sub_type == "LINK_POINTER_SCENE") {
-					auto t_node = new GUI::NODE::LINK::Pointer(drop_pos, CLASS::DATA::Type::SCENE);
+					auto t_node = new GUI::NODE::LINK::Pointer(drop_pos, KL::DATA::Type::SCENE);
 					t_node->pointer = FILE->active_scene->ptr;
 					node = t_node;
 				}
@@ -483,9 +483,9 @@ void GUI::WORKSPACE::Object_Node_Viewport::dropEvent(QDropEvent* event) {
 			qulonglong ptr;
 			stream >> ptr;
 			
-			auto object = reinterpret_cast<CLASS::Object*>(ptr);
+			auto object = reinterpret_cast<KL::Object*>(ptr);
 
-			auto t_node = new GUI::NODE::LINK::Pointer(drop_pos, CLASS::DATA::Type::OBJECT);
+			auto t_node = new GUI::NODE::LINK::Pointer(drop_pos, KL::DATA::Type::OBJECT);
 			t_node->pointer = object;
 			node = t_node;
 			return;

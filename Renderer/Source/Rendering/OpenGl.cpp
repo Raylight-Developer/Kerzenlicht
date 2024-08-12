@@ -31,7 +31,7 @@ GLuint fragmentShaderProgram(const string& file_path) {
 GLuint computeShaderProgram(const string& file_path) {
 	GLuint compute_program;
 	string compute_code = preprocessShader("./Resources/Shaders/" + file_path + ".comp");
-	compute_code = SHADER::Material::compileMaterials(compute_code);
+	compute_code = KL::Shader::compileMaterials(compute_code);
 	LOG << ENDL << compute_code;
 	ofstream outFile;
 	outFile.open("./Resources/Shaders/" + file_path + "_Compiled.comp");

@@ -1,6 +1,6 @@
 #include "Object/Object.hpp"
 
-CLASS::Object::Object() :
+KL::Object::Object() :
 	name("New Object"),
 	node_tree(nullptr),
 	parent(nullptr),
@@ -16,7 +16,7 @@ CLASS::Object::Object() :
 	viewport_visibility = true;
 }
 
-void CLASS::Object::f_compileMatrix() {
+void KL::Object::f_compileMatrix() {
 	if (parent) {
 		parent->f_compileMatrix();
 		transform_matrix = parent->transform_matrix * (transform.getMatrix() * node_transform.getMatrix());

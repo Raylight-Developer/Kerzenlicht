@@ -12,57 +12,59 @@
 #include "Core/Gpu_Scene.hpp"
 #include "Core/Render_File.hpp"
 
-struct Renderer {
-	GLFWwindow* window;
-	CLASS::Render_File* file;
-	GPU_Scene* gpu_data;
+namespace KL {
+	struct Renderer {
+		GLFWwindow* window;
+		Render_File* file;
+		GPU_Scene* gpu_data;
 
-	dvec1 display_aspect_ratio;
-	dvec1 render_aspect_ratio;
-	uvec2 display_resolution;
-	uvec2 render_resolution;
+		dvec1 display_aspect_ratio;
+		dvec1 render_aspect_ratio;
+		uvec2 display_resolution;
+		uvec2 render_resolution;
 
-	uint   frame_counter;
-	uint   frame_count;
-	uint64 runframe;
+		uint   frame_counter;
+		uint   frame_count;
+		uint64 runframe;
 
-	bool recompile;
-	bool reset;
-	bool debug;
+		bool recompile;
+		bool reset;
+		bool debug;
 
-	dvec1 camera_move_sensitivity;
-	dvec1 camera_view_sensitivity;
-	vector<bool> keys;
+		dvec1 camera_move_sensitivity;
+		dvec1 camera_view_sensitivity;
+		vector<bool> keys;
 
-	dvec2 current_mouse;
-	dvec2 last_mouse;
+		dvec2 current_mouse;
+		dvec2 last_mouse;
 
-	dvec1 current_time;
-	dvec1 window_time;
-	dvec1 frame_time;
-	dvec1 last_time;
+		dvec1 current_time;
+		dvec1 window_time;
+		dvec1 frame_time;
+		dvec1 last_time;
 
-	uint view_layer;
+		uint view_layer;
 
-	Renderer();
+		Renderer();
 
-	void init();
-	void exit();
+		void init();
+		void exit();
 
-	void initGlfw();
-	void initImGui();
-	void systemInfo();
+		void initGlfw();
+		void initImGui();
+		void systemInfo();
 
-	void pipeline();
-	void tickUpdate();
+		void pipeline();
+		void tickUpdate();
 
-	void guiLoop();
-	void gameLoop();
-	void displayLoop();
+		void guiLoop();
+		void gameLoop();
+		void displayLoop();
 
-	static void framebufferSize(GLFWwindow* window, int width, int height);
-	static void cursorPos(GLFWwindow* window, dvec1 xpos, dvec1 ypos);
-	static void mouseButton(GLFWwindow* window, int button, int action, int mods);
-	static void scroll(GLFWwindow* window, dvec1 xoffset, dvec1 yoffset);
-	static void key(GLFWwindow* window, int key, int scancode, int action, int mods);
-};
+		static void framebufferSize(GLFWwindow* window, int width, int height);
+		static void cursorPos(GLFWwindow* window, dvec1 xpos, dvec1 ypos);
+		static void mouseButton(GLFWwindow* window, int button, int action, int mods);
+		static void scroll(GLFWwindow* window, dvec1 xoffset, dvec1 yoffset);
+		static void key(GLFWwindow* window, int key, int scancode, int action, int mods);
+	};
+}

@@ -2,7 +2,7 @@
 
 #include "Include.hpp"
 
-namespace CLASS::OBJECT::DATA {
+namespace KL::OBJECT::DATA {
 	struct Atmosphere {
 		dvec1 radius;
 		dvec1 thickness;
