@@ -84,36 +84,17 @@ string f_closingPair(const Tokens& lines, const string& open, const string& clos
 }
 
 string f_join(const Tokens& tokens, const string& join, const uint64& start, const uint64& end) {
-	if (tokens.empty() || start >= tokens.size() || start > end) {
-		return "";
-	}
-
-	std::ostringstream result;
-	for (uint64_t i = start; i <= end && i < tokens.size(); ++i) {
-		if (i > start) {
-			result << join;
+	return accumulate(
+		tokens.begin() + start, tokens.end() - end, string(),
+		[join](const string& accumulator, const string& current) {
+			return accumulator.empty() ? current : accumulator + join + current;
 		}
-		result << tokens[i];
-	}
-
-	return result.str();
+	);
 }
 
 string f_join(const Tokens& tokens, const uint64& start, const uint64& end) {
-	if (tokens.empty() || start >= tokens.size() || start > end) {
-		return "";
-	}
-
-	std::ostringstream result;
-	for (uint64_t i = start; i <= end && i < tokens.size(); ++i) {
-		result << tokens[i];
-	}
-
-	return result.str();
-}
-string f_str(const Tokens& tokens) {
 	return accumulate(
-		tokens.begin(), tokens.end(), string(),
+		tokens.begin() + start, tokens.end() - end, string(),
 		[](const string& accumulator, const string& current) {
 			return accumulator.empty() ? current : accumulator + " " + current;
 		}

@@ -28,7 +28,7 @@ namespace KL {
 		Object* parent;
 		Transform transform;
 		Transform node_transform;
-		vector<KL::Shader*> materials;
+		vector<KL::Shader*> shaders;
 		unordered_map<string, KL::Data> properties;
 
 		bool viewport_visibility;

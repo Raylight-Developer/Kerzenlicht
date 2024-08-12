@@ -20,9 +20,11 @@ namespace KL::OBJECT::DATA {
 	struct Mesh {
 		vector<MESH::Vertex*> vertices;
 		vector<MESH::Face*> faces;
+		vector<KL::Shader*> shader_slots;
+
 		map<MESH::Face*, vector<dvec2>> uvs;
 		map<MESH::Face*, vector<dvec3>> normals;
-		map<MESH::Face*, KL::Shader*> materials;
+		map<MESH::Face*, uint> shaders;
 		map<string, vector<MESH::Vertex*>> vertex_groups;
 
 		Mesh();

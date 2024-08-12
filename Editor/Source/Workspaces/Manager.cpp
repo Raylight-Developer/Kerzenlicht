@@ -77,8 +77,6 @@ void GUI::WORKSPACE::Workspace_Dock_Header::f_initWorkspacesMenu() {
 
 	GUI::Button* api = new GUI::Button(select_workspace_type);
 	api->setObjectName("Option_Button");
-	GUI::Button* file_view = new GUI::Button(select_workspace_type);
-	file_view->setObjectName("Option_Button");
 	GUI::Button* log = new GUI::Button(select_workspace_type);
 	log->setObjectName("Option_Button");
 	GUI::Button* shelf = new GUI::Button(select_workspace_type);
@@ -87,16 +85,16 @@ void GUI::WORKSPACE::Workspace_Dock_Header::f_initWorkspacesMenu() {
 	scene_outliner->setObjectName("Option_Button");
 	GUI::Button* properties = new GUI::Button(select_workspace_type);
 	properties->setObjectName("Option_Button");
+	GUI::Button* object_nodes = new GUI::Button(select_workspace_type);
+	object_nodes->setObjectName("Option_Button");
+	GUI::Button* shader_editor = new GUI::Button(select_workspace_type);
+	shader_editor->setObjectName("Option_Button");
 	GUI::Button* viewport = new GUI::Button(select_workspace_type);
 	viewport->setObjectName("Option_Button");
 
 	api->setIcon(QIcon("./Resources/Icons/Workspaces/Api.png"));
 	api->setText(" API");
 	connect(api, &GUI::Button::clicked, [this]() {f_setWorkspace(Workspace_Type::API); });
-
-	file_view->setIcon(QIcon("./Resources/Icons/Workspaces/Outliner.png"));
-	file_view->setText(" Object Nodes");
-	connect(file_view, &GUI::Button::clicked, [this]() {f_setWorkspace(Workspace_Type::OBJECT_NODE_EDITOR); });
 
 	shelf->setIcon(QIcon("./Resources/Icons/Workspaces/Outliner.png"));
 	shelf->setText(" Outliner");
@@ -109,15 +107,24 @@ void GUI::WORKSPACE::Workspace_Dock_Header::f_initWorkspacesMenu() {
 	properties->setIcon(QIcon("./Resources/Icons/Workspaces/Properties.png"));
 	properties->setText(" Properties");
 	connect(properties, &GUI::Button::clicked, [this]() {f_setWorkspace(Workspace_Type::PROPERTIES); });
+	
+	object_nodes->setIcon(QIcon("./Resources/Icons/Workspaces/Outliner.png"));
+	object_nodes->setText(" Object Nodes");
+	connect(object_nodes, &GUI::Button::clicked, [this]() {f_setWorkspace(Workspace_Type::OBJECT_NODE_EDITOR); });
+
+	shader_editor->setIcon(QIcon("./Resources/Icons/Workspaces/Outliner.png"));
+	shader_editor->setText(" Shader Editor");
+	connect(shader_editor, &GUI::Button::clicked, [this]() {f_setWorkspace(Workspace_Type::SHADER_EDITOR); });
 
 	viewport->setIcon(QIcon("./Resources/Icons/Workspaces/Viewport.png"));
 	viewport->setText(" Viewport");
 	connect(viewport, &GUI::Button::clicked, [this]() {f_setWorkspace(Workspace_Type::VIEWPORT); });
 
 	layout->addWidget(api);
-	layout->addWidget(file_view);
 	layout->addWidget(scene_outliner);
 	layout->addWidget(properties);
+	layout->addWidget(object_nodes);
+	layout->addWidget(shader_editor);
 	layout->addWidget(viewport);
 }
 
@@ -134,14 +141,6 @@ void GUI::WORKSPACE::Workspace_Dock_Header::f_setWorkspace(const Workspace_Type&
 			parent->workspace = new Workspace_API(parent);
 			parent->setWidget(parent->workspace);
 			floating_workspace_toggle->setText("API");
-			break;
-		}
-		case (Workspace_Type::OBJECT_NODE_EDITOR): {
-			parent->setWindowTitle("Object Nodes");
-			change_workspace_type->setIcon(QIcon("./Resources/Icons/Workspaces/Outliner.png"));
-			parent->workspace = new Workspace_Object_Node_Editor(parent);
-			parent->setWidget(parent->workspace);
-			floating_workspace_toggle->setText("Object Nodes");
 			break;
 		}
 		case (Workspace_Type::SHELF): {
@@ -166,6 +165,22 @@ void GUI::WORKSPACE::Workspace_Dock_Header::f_setWorkspace(const Workspace_Type&
 			parent->workspace = new Workspace_Properties(parent);
 			parent->setWidget(parent->workspace);
 			floating_workspace_toggle->setText("Properties");
+			break;
+		}
+		case (Workspace_Type::OBJECT_NODE_EDITOR): {
+			parent->setWindowTitle("Object Nodes");
+			change_workspace_type->setIcon(QIcon("./Resources/Icons/Workspaces/Outliner.png"));
+			parent->workspace = new Workspace_Object_Node_Editor(parent);
+			parent->setWidget(parent->workspace);
+			floating_workspace_toggle->setText("Object Nodes");
+			break;
+		}
+		case (Workspace_Type::SHADER_EDITOR): {
+			parent->setWindowTitle("Shader Editor");
+			change_workspace_type->setIcon(QIcon("./Resources/Icons/Workspaces/Outliner.png"));
+			parent->workspace = new Workspace_Shader_Editor(parent);
+			parent->setWidget(parent->workspace);
+			floating_workspace_toggle->setText("Shader Editor");
 			break;
 		}
 		case (Workspace_Type::VIEWPORT): {

@@ -7,9 +7,8 @@ Tokens f_split(const string& input);
 Tokens f_split(const string& input, const string& delimiter);
 Tokens f_closingPair(const Token_Array& tokens, const string& open = "┌", const string& close = "└");
 string f_closingPair(const Tokens& lines, const string& open = "┌", const string& close = "└");
-string f_join(const Tokens& tokens, const string& join, const uint64& start = 0, const uint64& end = MAX_UINT64);
-string f_join(const Tokens& tokens, const uint64& start = 0, const uint64& end = MAX_UINT64);
-string f_str(const Tokens& tokens);
+string f_join(const Tokens& tokens, const string& join, const uint64& start = 0, const uint64& end = 0);
+string f_join(const Tokens& tokens, const uint64& start = 0, const uint64& end = 0);
 string f_prependToLine(const string& value, const string& character);
 
 string f_remove(const string& input, const string& remove);

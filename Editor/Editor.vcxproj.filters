@@ -137,6 +137,9 @@
     <ClCompile Include="..\Shared\Source\Shader\Shader.cpp">
       <Filter>Shared\Source</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Workspaces\Shader_Editor.cpp">
+      <Filter>Source\Workspaces</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\Workspaces\API.hpp">
@@ -279,6 +282,9 @@
     </ClInclude>
     <ClInclude Include="..\Shared\External\stb_image.h">
       <Filter>Shared\External</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Workspaces\Shader_Editor.hpp">
+      <Filter>Include\Workspaces</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -46,6 +46,7 @@
     <ClInclude Include="Include\Workspaces\Object_Node_Editor.hpp" />
     <ClInclude Include="Include\GUI_Nodes.hpp" />
     <ClInclude Include="Include\GUI_Object_Nodes.hpp" />
+    <ClInclude Include="Include\Workspaces\Shader_Editor.hpp" />
     <ClInclude Include="Include\Workspaces\Shelf.hpp" />
     <ClInclude Include="Include\Workspaces\Speadsheet_Editor.hpp" />
     <QtMoc Include="Include\GUI.hpp" />
@@ -99,6 +100,7 @@
     <ClCompile Include="Source\Workspaces\Manager.cpp" />
     <ClCompile Include="Source\Workspaces\Scene_Outliner.cpp" />
     <ClCompile Include="Source\Workspaces\Properties.cpp" />
+    <ClCompile Include="Source\Workspaces\Shader_Editor.cpp" />
     <ClCompile Include="Source\Workspaces\Viewport.cpp" />
     <ClCompile Include="Source\Core\Python_API.cpp" />
     <ClCompile Include="main.cpp" />

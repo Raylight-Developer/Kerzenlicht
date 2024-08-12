@@ -5,20 +5,20 @@
 └Header
 ┌Node-Trees( 1 )
  ┌Node-Tree [ 0 ] #
-  * 1960492343920
+  * 2424879057216
   ┌Nodes( 10 )
    ┌Node [ 0 ] #
-    * 1960492340176
+    * 2424879056800
     ( -120 0 )
     Type EXEC :: TICK
    └Node
    ┌Node [ 1 ] #
-    * 1960446494160
+    * 2424878172800
     ( 1100 -110 )
     Type LINK :: SET :: TRANSFORM :: EULER_ROTATION :: X
    └Node
    ┌Node [ 2 ] #
-    * 1960492343504
+    * 2424879055136
     ( -120 -90 )
     Type LINK :: POINTER
     ┌Pointer
@@ -26,7 +26,7 @@
     └Pointer
    └Node
    ┌Node [ 3 ] #
-    * 1960497099088
+    * 2424936539856
     ( 120 -20 )
     Type EXEC :: SCRIPT
     ┌Script
@@ -34,7 +34,7 @@
     └Script
    └Node
    ┌Node [ 4 ] #
-    * 1960492341840
+    * 2424879055552
     ( 120 200 )
     Type LINK :: POINTER
     ┌Pointer
@@ -42,7 +42,7 @@
     └Pointer
    └Node
    ┌Node [ 5 ] #
-    * 1960446522864
+    * 2424878201840
     ( 120 100 )
     Type LINK :: GET :: FIELD
     ┌Field
@@ -50,12 +50,12 @@
     └Field
    └Node
    ┌Node [ 6 ] #
-    * 1960492340592
+    * 2424879054096
     ( 360 80 )
     Type MATH :: ADD
    └Node
    ┌Node [ 7 ] #
-    * 1960446522096
+    * 2424878199536
     ( 360 200 )
     Type LINK :: GET :: FIELD
     ┌Field
@@ -63,45 +63,57 @@
     └Field
    └Node
    ┌Node [ 8 ] #
-    * 1960492343088
+    * 2424879053264
     ( 600 200 )
     Type UTIL :: CAST :: INT_TO_DOUBLE
    └Node
    ┌Node [ 9 ] #
-    * 1960492344128
+    * 2424879056592
     ( 860 80 )
     Type MATH :: ADD
    └Node
   └Nodes
   ┌Build-E
-   * 1960492340176 0 0 * 1960497099088
-   * 1960497099088 0 0 * 1960446494160
+   * 2424879056800 0 0 * 2424936539856
+   * 2424936539856 0 0 * 2424878172800
   └Build-E
   ┌Build-D
-   * 1960492343504 0 1 * 1960446494160
-   * 1960492344128 0 2 * 1960446494160
-   * 1960492340176 1 1 * 1960497099088
-   * 1960492343504 0 0 * 1960446522864
-   * 1960497099088 1 0 * 1960492340592
-   * 1960446522864 0 1 * 1960492340592
-   * 1960492341840 0 0 * 1960446522096
-   * 1960446522096 0 0 * 1960492343088
-   * 1960492340592 0 0 * 1960492344128
-   * 1960492343088 0 1 * 1960492344128
+   * 2424879055136 0 1 * 2424878172800
+   * 2424879056592 0 2 * 2424878172800
+   * 2424879056800 1 1 * 2424936539856
+   * 2424879055136 0 0 * 2424878201840
+   * 2424936539856 1 0 * 2424879054096
+   * 2424878201840 0 1 * 2424879054096
+   * 2424879055552 0 0 * 2424878199536
+   * 2424878199536 0 0 * 2424879053264
+   * 2424879054096 0 0 * 2424879056592
+   * 2424879053264 0 1 * 2424879056592
   └Build-D
  └Node-Tree
 └Node-Trees
-┌Materials( 2 )
- ┌Material [ 0 ] UVdebug
-  * 1960498382752
- └Material
- ┌Material [ 1 ] CosineDistanceDebug
-  * 1960498378272
- └Material
-└Materials
+┌Shaders( 2 )
+ ┌Shader [ 0 ] UV debug
+  * 2133789651665
+  Type CODE
+  ┌Code
+vec2 uv =
+	hit_data.uvw.x * vec2(hit_data.hit_tri.uv_a_x, hit_data.hit_tri.uv_a_y) +
+	hit_data.uvw.y * vec2(hit_data.hit_tri.uv_b_x, hit_data.hit_tri.uv_b_y) +
+	hit_data.uvw.z * vec2(hit_data.hit_tri.uv_c_x, hit_data.hit_tri.uv_c_y);
+return sampleTextureRgba8u(textures[0], vec2(uv.x, 1 - uv.y));
+  └Code
+ └Shader
+ ┌Shader [ 1 ] Cosine Distance Debug
+  * 2133789651665
+  Type CODE
+  ┌Code
+return vec4(vec3(cos(2.0 * hit_data.t_dist) * 0.5 + 0.5), 1.0);
+  └Code
+ └Shader
+└Shaders
 ┌Data( 3 )
  ┌Data [ 0 ] Cube
-  * 1960492575872
+  * 2424923403600
   Type MESH
   ┌Mesh
    ┌Vertices( 8 )
@@ -137,7 +149,7 @@
   └Mesh
  └Data
  ┌Data [ 1 ] Plane
-  * 1960492576000
+  * 2424923401552
   Type MESH
   ┌Mesh
    ┌Vertices( 4 )
@@ -159,27 +171,27 @@
   └Mesh
  └Data
  ┌Data [ 2 ] Container
-  * 1960492573824
+  * 2424923399888
   Type GROUP
  └Data
 └Data
 ┌Objects( 3 )
  ┌Object [ 0 ] Cube
-  * 1960498777024
+  * 2424923114608
   Position ( 0.0 0.6 0.0 )
   Rotation ( 0.0 0.0 0.0 )
   Scale    ( 1.0 1.0 1.0 )
   Type MESH
  └Object
  ┌Object [ 1 ] Plane
-  * 1960498777680
+  * 2424923115264
   Position ( 0.0 0.0 0.0 )
   Rotation ( 0.0 0.0 0.0 )
   Scale    ( 1.0 1.0 1.0 )
   Type MESH
  └Object
  ┌Object [ 2 ] Container
-  * 1960498758192
+  * 2424923115920
   Position ( 0.0 0.0 0.0 )
   Rotation ( 0.0 0.0 0.0 )
   Scale    ( 1.0 1.0 1.0 )
@@ -188,28 +200,28 @@
 └Objects
 ┌Scenes( 1 )
  ┌Scene [ 0 ]
-  * 1960497683232
+  * 2424923051392
   ┌Objects
-   * 1960498758192
+   * 2424923115920
   └Objects
  └Scene
 └Scenes
 ┌Build-Steps
- Active-Scene * 1960497683232
+ Active-Scene * 2424923051392
  ┌Data-Group
-  * 1960492573824 * 1960498777024
-  * 1960492573824 * 1960498777680
+  * 2424923399888 * 2424923114608
+  * 2424923399888 * 2424923115264
  └Data-Group
  ┌Object-Data
-  * 1960498777024 * 1960492575872
-  * 1960498777680 * 1960492576000
-  * 1960498758192 * 1960492573824
+  * 2424923114608 * 2424923403600
+  * 2424923115264 * 2424923401552
+  * 2424923115920 * 2424923399888
  └Object-Data
  ┌Object-Node
-  * 1960498758192 * 1960492343920
+  * 2424923115920 * 2424879057216
  └Object-Node
  ┌Node-Pointer
-  * 1960492343504 * 1960498777024
-  * 1960492341840 * 1960497683232
+  * 2424879055136 * 2424923114608
+  * 2424879055552 * 2424923051392
  └Node-Pointer
 └Build-Steps

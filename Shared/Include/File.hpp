@@ -29,7 +29,7 @@ namespace KL {
 		NONE,
 		HEADER,
 		TEXTURE,
-		MATERIAL,
+		SHADER,
 		NODE_TREE,
 		DATA,
 		OBJECT,
@@ -41,7 +41,7 @@ namespace KL {
 		map<uint64, void*> pointer_map;
 
 		vector<SHADER::Texture*> textures;
-		vector<KL::Shader*> materials;
+		vector<KL::Shader*> shaders;
 
 		vector<OBJECT::Data*> object_data;
 		vector<Node_Tree*> node_trees;
@@ -73,7 +73,7 @@ namespace KL {
 		virtual void              f_loadAscii           (const Token_Array& token_data, const Tokens& line_data);
 		virtual void              f_loadAsciiHeader     (const Token_Array& token_data, const Tokens& line_data);
 		virtual SHADER::Texture*  f_loadAsciiTexture    (const Token_Array& token_data, const Tokens& line_data);
-		virtual KL::Shader*       f_loadAsciiMaterial   (const Token_Array& token_data, const Tokens& line_data);
+		virtual KL::Shader*       f_loadAsciiShader     (const Token_Array& token_data, const Tokens& line_data);
 		virtual KL::Node_Tree*    f_loadAsciiNodeTree   (const Token_Array& token_data, const Tokens& line_data);
 		virtual OBJECT::Data*     f_loadAsciiData       (const Token_Array& token_data, const Tokens& line_data);
 		virtual OBJECT::Data*     f_loadAsciiAtmosphere (const Token_Array& token_data, const Tokens& line_data);
@@ -98,7 +98,7 @@ namespace KL {
 		virtual void f_saveAscii           (Lace& lace);
 		virtual void f_saveAsciiHeader     (Lace& lace);
 		virtual void f_saveAsciiNodeTree   (Lace& lace, Node_Tree*              data, const uint64& i);
-		virtual void f_saveAsciiMaterial   (Lace& lace, const KL::Shader*       data, const uint64& i);
+		virtual void f_saveAsciiShader     (Lace& lace, const KL::Shader*       data, const uint64& i);
 		virtual void f_saveAsciiData       (Lace& lace);
 		virtual void f_saveAsciiAtmosphere (Lace& lace, const OBJECT::Data*     data, const uint64& i);
 		virtual void f_saveAsciiPrimitive  (Lace& lace, const OBJECT::Data*     data, const uint64& i);

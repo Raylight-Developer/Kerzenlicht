@@ -48,6 +48,9 @@
 #include <glm/gtx/rotate_vector.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+#undef min
+#undef max
+
 using namespace std;
 
 typedef std::byte  Byte;  // 8-bits

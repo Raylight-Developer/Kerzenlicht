@@ -91,26 +91,26 @@
   └Build-D
  └Node-Tree
 └Node-Trees
-┌Materials( 3 )
- ┌Material [ 0 ] UV debug
+┌Shaders( 2 )
+ ┌Shader [ 0 ] UV debug
   * 2133789651665
-  Type GLSL
+  Type CODE
   ┌Code
-	vec2 uv =
-		hit_data.uvw.x * vec2(hit_data.hit_tri.uv_a_x, hit_data.hit_tri.uv_a_y) +
-		hit_data.uvw.y * vec2(hit_data.hit_tri.uv_b_x, hit_data.hit_tri.uv_b_y) +
-		hit_data.uvw.z * vec2(hit_data.hit_tri.uv_c_x, hit_data.hit_tri.uv_c_y);
-	return sampleTextureRgba8u(textures[0], vec2(uv.x, 1 - uv.y));
+vec2 uv =
+	hit_data.uvw.x * vec2(hit_data.hit_tri.uv_a_x, hit_data.hit_tri.uv_a_y) +
+	hit_data.uvw.y * vec2(hit_data.hit_tri.uv_b_x, hit_data.hit_tri.uv_b_y) +
+	hit_data.uvw.z * vec2(hit_data.hit_tri.uv_c_x, hit_data.hit_tri.uv_c_y);
+return sampleTextureRgba8u(textures[0], vec2(uv.x, 1 - uv.y));
   └Code
- └Material
- ┌Material [ 1 ] Cosine Distance Debug
+ └Shader
+ ┌Shader [ 1 ] Cosine Distance Debug
   * 2133789651665
-  Type GLSL
+  Type CODE
   ┌Code
-	return vec4(vec3(cos(2.0 * hit_data.t_dist) * 0.5 + 0.5), 1.0);
+return vec4(vec3(cos(2.0 * hit_data.t_dist) * 0.5 + 0.5), 1.0);
   └Code
- └Material
-└Materials
+ └Shader
+└Shaders
 ┌Data( 3 )
  ┌Data [ 0 ] Cube
   * 2133601162048

@@ -9,7 +9,7 @@ KL::File::File() {
 	pointer_map = {};
 	object_data = {};
 	node_trees = {};
-	materials = {};
+	shaders = {};
 	objects = {};
 	scenes = {};
 
@@ -118,8 +118,8 @@ void KL::File::f_loadAscii(const Token_Array& token_data, const Tokens& line_dat
 				is_processing = Parse_Type::BUILD_STEPS;
 			else if (tokens[0] == "┌Node-Tree")
 				is_processing = Parse_Type::NODE_TREE;
-			else if (tokens[0] == "┌Material")
-				is_processing = Parse_Type::MATERIAL;
+			else if (tokens[0] == "┌Shader")
+				is_processing = Parse_Type::SHADER;
 			else if (tokens[0] == "┌Texture")
 				is_processing = Parse_Type::TEXTURE;
 			else if (tokens[0] == "┌Header")
@@ -146,10 +146,10 @@ void KL::File::f_loadAscii(const Token_Array& token_data, const Tokens& line_dat
 				is_processing = Parse_Type::NONE;
 				node_trees.push_back(f_loadAsciiNodeTree(t_data, l_data));
 			}
-			else if (is_processing == Parse_Type::MATERIAL and tokens[0] == "└Material") {
+			else if (is_processing == Parse_Type::SHADER and tokens[0] == "└Shader") {
 				LOG << ENDL << ANSI_B << "  [Data-Block]" << ANSI_RESET; FLUSH;
 				is_processing = Parse_Type::NONE;
-				materials.push_back(f_loadAsciiMaterial(t_data, l_data));
+				shaders.push_back(f_loadAsciiShader(t_data, l_data));
 			}
 			else if (is_processing == Parse_Type::TEXTURE and tokens[0] == "└Texture") {
 				LOG << ENDL << ANSI_B << "  [Data-Block]" << ANSI_RESET; FLUSH;
@@ -199,20 +199,35 @@ void KL::File::f_loadAsciiHeader(const Token_Array& token_data, const Tokens& li
 KL::SHADER::Texture* KL::File::f_loadAsciiTexture(const Token_Array& token_data, const Tokens& line_data) {
 	SHADER::Texture* texture = new SHADER::Texture();
 	texture->name = f_join(token_data[0], 4);
+
+	LOG << ENDL << ANSI_B << "    [Texture]" << ANSI_RESET; FLUSH;
+	LOG << ENDL << "      " << ANSI_PURPLE  << texture->name << ANSI_RESET; FLUSH;
+
 	texture->loadFromFile(f_join(token_data[1]));
 	return texture;
 }
 
-KL::Shader* KL::File::f_loadAsciiMaterial(const Token_Array& token_data, const Tokens& line_data) {
-	KL::Shader* material = new KL::Shader();
-	material->name = f_join(token_data[0], 4);
-	material->type = SHADER::Type::CODE;
+KL::Shader* KL::File::f_loadAsciiShader(const Token_Array& token_data, const Tokens& line_data) {
+	KL::Shader* shader = new KL::Shader();
+	shader->name = f_join(token_data[0], 4);
 
-	material->shader_code = f_closingPair(line_data, "┌Code", "└Code");
+	LOG << ENDL << ANSI_B << "    [Shader]" << ANSI_RESET; FLUSH;
+	LOG << ENDL << "      " << ANSI_PURPLE  << shader->name << ANSI_RESET; FLUSH;
 
-	LOG << ENDL << material->shader_code;
+	if      (token_data[2][1] == "NONE")
+		shader->type = SHADER::Type::NONE;
+	else if (token_data[2][1] == "CODE")
+		shader->type = SHADER::Type::CODE;
+	else if (token_data[2][1] == "NODES")
+		shader->type = SHADER::Type::NODES;
 
-	return material;
+	if (shader->type == SHADER::Type::CODE)
+		shader->shader_code = f_closingPair(line_data, "┌Code", "└Code");
+
+	LOG << ENDL << shader->shader_code;
+
+	pointer_map[str_to_ul(token_data[1][1])] = shader;
+	return shader;
 }
 
 KL::Node_Tree* KL::File::f_loadAsciiNodeTree(const Token_Array& token_data, const Tokens& line_data) {
@@ -518,6 +533,7 @@ KL::OBJECT::Data* KL::File::f_loadAsciiMesh(const Token_Array& token_data, const
 		if (
 			tokens[0] == "┌Vertices(" or
 			tokens[0] == "┌Normals(" or
+			tokens[0] == "┌Shaders(" or
 			tokens[0] == "┌Faces(" or
 			tokens[0] == "┌UVs("
 			) {
@@ -550,10 +566,13 @@ KL::OBJECT::Data* KL::File::f_loadAsciiMesh(const Token_Array& token_data, const
 			LOG << ENDL << "        Faces"; FLUSH;
 			for (const Tokens& token_data : read_data) {
 				KL::OBJECT::DATA::MESH::Face* face = new KL::OBJECT::DATA::MESH::Face();
-				for (uint64 i = 0; i < str_to_u(token_data[1]); i++) {
+				for (uint64 i = 0; i < str_to_ul(token_data[1]); i++) {
 					face->vertices.push_back(mesh->vertices[str_to_ul(token_data[i + 3])]);
 				}
 				mesh->faces.push_back(face);
+				if (str_to_ul(token_data[1]) + 4 < token_data.size()) {
+					mesh->shaders[face] = str_to_u(token_data.back());
+				}
 			}
 		}
 		else if (tokens[0] == "└Normals") {
@@ -572,6 +591,13 @@ KL::OBJECT::Data* KL::File::f_loadAsciiMesh(const Token_Array& token_data, const
 				for (uint64 i = 0; i < str_to_u(token_data[1]); i ++) {
 					mesh->uvs[mesh->faces[str_to_ul(token_data[0])]].push_back(str_to_d(token_data[3 + i * 4], token_data[4 + i * 4]));
 				}
+			}
+		}
+		else if (tokens[0] == "└Shaders") {
+			is_processing = false;
+			LOG << ENDL << "        Shaders"; FLUSH;
+			for (const Tokens& token_data : read_data) {
+				mesh->shader_slots.push_back(static_cast<KL::Shader*>(pointer_map[str_to_ul(token_data[2])]));
 			}
 		}
 		else if (is_processing) {
@@ -745,12 +771,12 @@ void KL::File::f_saveAscii(Lace & lace) {
 	lace NL "└Node-Trees";
 
 	count = 0;
-	lace NL "┌Materials( " << materials.size() << " )";
+	lace NL "┌Shaders( " << shaders.size() << " )";
 	lace++;
-	for (const KL::Shader* material : materials)
-		f_saveAsciiMaterial(lace, material, count++);
+	for (const KL::Shader* shader : shaders)
+		f_saveAsciiShader(lace, shader, count++);
 	lace--;
-	lace NL "└Materials";
+	lace NL "└Shaders";
 
 	lace NL "┌Data( " << object_data.size() << " )";
 	lace++;
@@ -957,12 +983,26 @@ void KL::File::f_saveAsciiNodeTree(Lace& lace, KL::Node_Tree* data, const uint64
 		lace NL "└Node-Tree";
 }
 
-void KL::File::f_saveAsciiMaterial(Lace& lace, const KL::Shader* data, const uint64& i) {
-	lace NL "┌Material [ " << i << " ] " << data->name;
+void KL::File::f_saveAsciiShader(Lace& lace, const KL::Shader* data, const uint64& i) {
+	lace NL "┌Shader [ " << i << " ] " << data->name;
 	lace++;
 	lace NL ptr_to_str(data);
+	switch (data->type) {
+		case SHADER::Type::NONE: lace NL "Type " << "NONE";  break;
+		case SHADER::Type::CODE: {
+			lace NL "Type " << "CODE";
+			lace NL "┌Code";
+			lace << "\n" << data->shader_code;
+			lace NL "└Code";
+			break;
+		}
+		case SHADER::Type::NODES: {
+			lace NL "Type " << "NODES";
+			break;
+		}
+	}
 	lace--;
-	lace NL "└Material";
+	lace NL "└Shader";
 }
 
 void KL::File::f_saveAsciiData(Lace& lace) {
@@ -1090,6 +1130,13 @@ void KL::File::f_saveAsciiMesh(Lace& lace, const KL::OBJECT::Data* data, const u
 	}
 	lace--;
 	lace NL "└Vertices";
+	lace NL "┌Shaders( "<< mesh->shader_slots.size() <<" )";
+	lace++;
+	for (uint64 i = 0; i < mesh->shader_slots.size(); i++) {
+		lace NL i SP ptr_to_str(mesh->shader_slots[i]);
+	}
+	lace--;
+	lace NL "└Shaders";
 	lace NL "┌Vertex-Groups( " << mesh->vertex_groups.size() << " )";
 	lace NL "└Vertex-Groups";
 	lace NL "┌Faces( " << mesh->faces.size() << " )";
@@ -1101,6 +1148,9 @@ void KL::File::f_saveAsciiMesh(Lace& lace, const KL::OBJECT::Data* data, const u
 				if (mesh->faces[i]->vertices[j] == mesh->vertices[k])
 					lace SP k;
 		lace SP "]";
+		if (f_hasMapKey(mesh->shaders, mesh->faces[i])) {
+			lace SP mesh->shaders.at(mesh->faces[i]);
+		}
 	}
 	lace--;
 	lace NL "└Faces";
@@ -1253,7 +1303,7 @@ void KL::File::f_saveBinary(Bin_Lace & bin) {
 		f_saveBinaryNodeTree(bin, node);
 	}
 
-	bin << materials.size();
+	bin << shaders.size();
 
 	bin << object_data.size();
 

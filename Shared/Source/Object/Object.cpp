@@ -9,7 +9,7 @@ KL::Object::Object() :
 	transform = Transform();
 	node_transform = Transform();
 	transform_matrix = dmat4(1.0);
-	materials = {};
+	shaders = {};
 	properties = {};
 
 	render_visibility = true;

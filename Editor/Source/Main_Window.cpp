@@ -15,6 +15,8 @@ GUI::WORKSPACE::Main_Window::Main_Window(GUI::Application* app) :
 	mouse_pressed(false),
 	key_pressed(false)
 {
+	QFontDatabase::addApplicationFont("./Resources/Fonts/RobotoMono-Medium.ttf");
+
 	KL::Session::getInstance().setLog(log);
 	KL::Session::getInstance().setFile(file);
 
@@ -25,7 +27,7 @@ GUI::WORKSPACE::Main_Window::Main_Window(GUI::Application* app) :
 
 	file->f_loadAsciiFile("./Resources/Assets/Default.krz");
 
-	Workspace_Manager* ws_1 = new Workspace_Manager(this, Workspace_Type::OBJECT_NODE_EDITOR);
+	Workspace_Manager* ws_1 = new Workspace_Manager(this, Workspace_Type::SHADER_EDITOR);
 	Workspace_Manager* ws_2 = new Workspace_Manager(this, Workspace_Type::SHELF);
 	Workspace_Manager* ws_3 = new Workspace_Manager(this, Workspace_Type::VIEWPORT);
 

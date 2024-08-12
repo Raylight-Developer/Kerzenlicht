@@ -336,6 +336,9 @@ GUI::Text_Edit::Text_Edit(QWidget* parent) :
 	setSizePolicy(QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Expanding);
 	setAttribute(Qt::WidgetAttribute::WA_StyledBackground);
 	setContentsMargins(0, 0, 0, 0);
+
+	setLineWrapMode(QPlainTextEdit::LineWrapMode::NoWrap);
+	setTabStopDistance(40);
 }
 
 GUI::Text_Stream::Text_Stream(QWidget* parent) :

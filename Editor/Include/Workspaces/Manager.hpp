@@ -12,9 +12,9 @@
 #include "Workspaces/Shelf.hpp"
 #include "Workspaces/Viewport.hpp"
 #include "Workspaces/Properties.hpp"
+#include "Workspaces/Shader_Editor.hpp"
 #include "Workspaces/Scene_Outliner.hpp"
 #include "Workspaces/Object_Node_Editor.hpp"
-//#include "Workspaces/Shader_Node_Editor.hpp"
 
 namespace GUI {
 	namespace WORKSPACE {
@@ -24,7 +24,7 @@ namespace GUI {
 		enum struct Workspace_Type {
 			NONE,
 			OBJECT_NODE_EDITOR,
-			SHADER_NODE_EDITOR,
+			SHADER_EDITOR,
 			SPREADSHEET_EDITOR,
 			SCENE_OUTLINER,
 			GRAPH_EDITOR,
