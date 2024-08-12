@@ -1,18 +1,15 @@
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
 #version 460
-//#extension GL_ARB_gpu_shader_int64: enable
-
 #include "Globals.comp"
 #include "Inputs.comp"
-
 #include "Utilities.comp"
 #include "Random.comp"
-
 #include "Intersections.comp"
 #include "Hook.comp"
 #include "Pathtrace.comp"
-
+//-------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 void main() {
 	ivec2 pixel_id = ivec2(gl_GlobalInvocationID.xy);
 	vec2 uv = (pixel_id - 1 - vec2(resolution) / 2.0) / float(max(resolution.x, resolution.y));

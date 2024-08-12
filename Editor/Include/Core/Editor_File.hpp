@@ -28,8 +28,8 @@ namespace KL {
 
 		Editor_File();
 
-		Node_Tree* f_loadAsciiNodeTree (const Token_Array& token_data) override;
-		void       f_loadAsciiBuild    (const Token_Array& token_data) override;
+		Node_Tree* f_loadAsciiNodeTree (const Token_Array& token_data, const Tokens& line_data) override;
+		void       f_loadAsciiBuild    (const Token_Array& token_data, const Tokens& line_data) override;
 
 		void f_saveAsciiNodeTree(Lace& lace, Node_Tree* data, const uint64& i) override;
 		void f_saveBinaryNodeTree(Bin_Lace& bin, Node_Tree* data) override;

@@ -30,6 +30,20 @@ struct Texture {
 	uint height;
 	uint format; // 32
 };
+
+struct Shader {
+	vec3  baseColor;
+	float subsurface;
+	float roughness;
+	float metallic;
+	float specular;
+	float specularTint;
+	float clearcoat;
+	float clearcoatGloss;
+	float anisotropic;
+	float sheen;
+	float sheenTint;
+};
 // INTERNAL ---------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
 struct Ray {

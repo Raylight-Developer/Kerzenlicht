@@ -7,7 +7,7 @@ KL::Editor_File::Editor_File() :
 	File()
 {}
 
-KL::Node_Tree* KL::Editor_File::f_loadAsciiNodeTree(const vector<vector<string>>&token_data) {
+KL::Node_Tree* KL::Editor_File::f_loadAsciiNodeTree(const Token_Array&token_data, const Tokens& line_data) {
 	auto node_tree = new KL::Node_Tree();
 	auto gui_node_tree = new GUI::NODE::Node_Tree();
 	node_tree->name = f_join(token_data[0], 4);
@@ -215,7 +215,7 @@ KL::Node_Tree* KL::Editor_File::f_loadAsciiNodeTree(const vector<vector<string>>
 	return node_tree;
 }
 
-void KL::Editor_File::f_loadAsciiBuild(const Token_Array& token_data) {
+void KL::Editor_File::f_loadAsciiBuild(const Token_Array& token_data, const Tokens& line_data) {
 	LOG << ENDL << ANSI_B << "    [Build]" << ANSI_RESET; FLUSH;
 
 	bool is_processing = false;

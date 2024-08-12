@@ -20,30 +20,6 @@ layout(std430, binding = 8) buffer TextureDataBuffer {
 	uint texture_data[];
 };
 
-//layout(rgba8, binding = 4) readonly uniform image2D image_texture;
-
-//layout(std430, binding = 2) buffer MaterialDataBuffer {
-//	Material materials[];
-//};
-//layout(std430, binding = 3) buffer LightDataBuffer {
-//	Light lights[];
-//};
-//layout(std430, binding = 4) buffer SplineControlDataBuffer {
-//	Spline_Point spline_controls[];
-//};
-//layout(std430, binding = 5) buffer SplineDataBuffer {
-//	Spline splines[];
-//};
-//layout(std430, binding = 6) buffer CurveDataBuffer {
-//	Curve curves[];
-//};
-//layout(std430, binding = 7) buffer VertexDataBuffer {
-//	Vertex vertices[];
-//};
-//layout(std430, binding = 9) buffer MeshDataBuffer {
-//	Mesh meshes[];
-//};
-
 uniform uint  frame_count;
 uniform float aspect_ratio;
 uniform float current_time;
@@ -53,14 +29,6 @@ uniform bool  debug;
 
 uniform uint  ray_bounces;
 uniform uint  samples_per_pixel;
-
-//uniform vec3  camera_pos;
-//uniform vec3  camera_xvec;
-//uniform vec3  camera_yvec;
-//uniform vec3  camera_zvec;
-//uniform float camera_sensor_size;
-//uniform float camera_focal_angle;
-//uniform float camera_focal_length;
 
 uniform vec3 camera_pos;
 uniform vec3 camera_p_uv;

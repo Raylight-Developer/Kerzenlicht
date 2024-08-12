@@ -72,9 +72,10 @@ string KL::Shader::compileMaterials(const string & code) {
 	uint64 id = 0;
 	for (KL::Shader* material : FILE->materials) {
 		Lace shader_code;
-		shader_code << "else if (hit_data.material == " << id++ << ") {";
-		shader_code << ENDL << material->shader_code;
-		shader_code << ENDL << "}";
+		shader_code << ENDL << Lace_TAB() << "else if (hit_data.material == " << id++ << ") {";
+		shader_code << ENDL << f_prependToLine(material->shader_code, "\t\t");
+		shader_code << Lace_TAB() << "}";
+		cout << material->shader_code;
 
 		material_code.push_back(shader_code.str());
 	}

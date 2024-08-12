@@ -33,10 +33,7 @@ GLuint computeShaderProgram(const string& file_path) {
 	string compute_code = preprocessShader("./Resources/Shaders/" + file_path + ".comp");
 	compute_code = KL::Shader::compileMaterials(compute_code);
 	LOG << ENDL << compute_code;
-	ofstream outFile;
-	outFile.open("./Resources/Shaders/" + file_path + "_Compiled.comp");
-	outFile << compute_code;
-	outFile.close();
+	writeToFile("./Resources/Shaders/" + file_path + "_Compiled.comp", compute_code);
 	const char* compute_code_cstr = compute_code.c_str();
 	GLuint comp_shader = glCreateShader(GL_COMPUTE_SHADER);
 	glShaderSource(comp_shader, 1, &compute_code_cstr, NULL);

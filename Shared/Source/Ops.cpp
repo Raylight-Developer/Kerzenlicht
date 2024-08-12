@@ -13,14 +13,18 @@ Tokens f_split(const string& input) {
 }
 
 Tokens f_split(const string& input, const string& delimiter) {
-	Tokens tokens;
-	uint64 start = 0, end = 0;
-	while ((end = input.find(delimiter, start)) != string::npos) {
-		tokens.push_back(input.substr(start, end - start));
+	Tokens result;
+	uint64 start = 0;
+	uint64 end = input.find(delimiter);
+
+	while (end != string::npos) {
+		result.push_back(input.substr(start, end - start));
 		start = end + delimiter.length();
+		end = input.find(delimiter, start);
 	}
-	tokens.push_back(input.substr(start));
-	return tokens;
+
+	result.push_back(input.substr(start));
+	return result;
 }
 
 Tokens f_closingPair(const Token_Array& tokens, const string& open, const string& close) {
@@ -53,22 +57,59 @@ Tokens f_closingPair(const Token_Array& tokens, const string& open, const string
 	return {};
 }
 
-string f_join(const Tokens& tokens, const string& join, const uint64& start, const uint64& end) {
-	return accumulate(
-		tokens.begin() + start, tokens.end() - end, string(),
-		[join](const string& accumulator, const string& current) {
-			return accumulator.empty() ? current : accumulator + join + current;
+string f_closingPair(const Tokens& lines, const string& open, const string& close) {
+	uint openCount = 0;
+	bool collecting = false;
+	vector<string> result;
+
+	for (const string& line : lines) {
+		if (f_contains(line, open)) {
+			openCount++;
+			if (openCount == 1) {
+				collecting = true;
+			}
+		} 
+		else if (f_contains(line, close)) {
+			openCount--;
+			if (openCount == 0) {
+				collecting = false;
+				return f_join(result, "\n");
+			}
 		}
-	);
+		else if (collecting) {
+			result.push_back(line);
+		}
+	}
+	return f_join(result, "\n");
+}
+
+string f_join(const Tokens& tokens, const string& join, const uint64& start, const uint64& end) {
+	if (tokens.empty() || start >= tokens.size() || start > end) {
+		return "";
+	}
+
+	std::ostringstream result;
+	for (uint64_t i = start; i <= end && i < tokens.size(); ++i) {
+		if (i > start) {
+			result << join;
+		}
+		result << tokens[i];
+	}
+
+	return result.str();
 }
 
 string f_join(const Tokens& tokens, const uint64& start, const uint64& end) {
-	return accumulate(
-		tokens.begin() + start, tokens.end() - end, string(),
-		[](const string& accumulator, const string& current) {
-			return accumulator.empty() ? current : accumulator + " " + current;
-		}
-	);
+	if (tokens.empty() || start >= tokens.size() || start > end) {
+		return "";
+	}
+
+	std::ostringstream result;
+	for (uint64_t i = start; i <= end && i < tokens.size(); ++i) {
+		result << tokens[i];
+	}
+
+	return result.str();
 }
 string f_str(const Tokens& tokens) {
 	return accumulate(
@@ -79,6 +120,18 @@ string f_str(const Tokens& tokens) {
 	);
 }
 
+string f_prependToLine(const string& value, const string& character) {
+	istringstream stream(value);
+	ostringstream result;
+	string line;
+
+	while (getline(stream, line)) {
+		result << character << line << "\n";
+	}
+
+	return result.str();
+}
+
 string f_remove(const string& input, const string& remove) {
 	string copy = input;
 	size_t pos = copy.find(remove);
@@ -87,6 +140,10 @@ string f_remove(const string& input, const string& remove) {
 		pos = copy.find(remove);
 	}
 	return copy;
+}
+
+bool f_contains(const string& input, const std::string& substring) {
+	return input.find(substring) != string::npos;
 }
 
 string f_replace(const string& input, const string& old_str, const string& new_str) {
@@ -121,18 +178,42 @@ string loadFromFile(const string& file_path) {
 	throw runtime_error(to_string(errno));
 }
 
+void writeToFile(const string& filename, const string& content) {
+	ofstream file(filename, ios::binary);
+
+	if (!file.is_open()) {
+		throw runtime_error("Unable to open file");
+	}
+
+	for (char c : content) {
+		if (c == '\r') {
+			continue;
+		}
+		else if (c == '\n') {
+			file.put('\n');
+		}
+		else {
+			file.put(c);
+		}
+	}
+	file.close();
+}
+
 string processSubShader(const string& file_path) {
 	ifstream in(file_path, ios::binary);
 	if (in) {
-		std::stringstream output;
-		std::string line;
+		KL::Lace output;
+		string line;
 
-		while (std::getline(in, line)) {
-			size_t includePos = line.find("#include");
-			size_t versionPos = line.find("#version");
-			size_t extensionPos = line.find("#extension");
-			if (includePos == std::string::npos && versionPos == std::string::npos && extensionPos == std::string::npos) {
-				output << line << endl;
+		while (getline(in, line)) {
+			if (!line.empty()) {
+				size_t includePos = line.find("#include");
+				size_t versionPos = line.find("#version");
+				size_t extensionPos = line.find("#extension");
+				if (includePos == string::npos && versionPos == string::npos && extensionPos == string::npos) {
+					line.erase(std::remove(line.begin(), line.end(), '\n'), line.end());
+					output << line << KL::Lace_NL();
+				}
 			}
 		}
 		return output.str();
@@ -143,25 +224,28 @@ string processSubShader(const string& file_path) {
 string preprocessShader(const string& file_path) {
 	ifstream in(file_path, ios::binary);
 	if (in) {
-		std::stringstream output;
-		std::string line;
+		KL::Lace output;
+		string line;
 
-		while (std::getline(in, line)) {
-			size_t includePos = line.find("#include");
-			if (includePos != std::string::npos) {
-				size_t quotePos = line.find("\"", includePos);
-				if (quotePos != std::string::npos) {
-					size_t endQuotePos = line.find("\"", quotePos + 1);
-					if (endQuotePos != std::string::npos) {
-						std::string includeFilename = line.substr(quotePos + 1, endQuotePos - quotePos - 1);
-						output << processSubShader("./Resources/Shaders/" + includeFilename) << endl;
-						continue;
+		while (getline(in, line)) {
+			if (!line.empty()) {
+				size_t includePos = line.find("#include");
+				if (includePos != string::npos) {
+					size_t quotePos = line.find("\"", includePos);
+					if (quotePos != string::npos) {
+						size_t endQuotePos = line.find("\"", quotePos + 1);
+						if (endQuotePos != string::npos) {
+							string includeFilename = line.substr(quotePos + 1, endQuotePos - quotePos - 1);
+							output << processSubShader("./Resources/Shaders/" + includeFilename);
+							continue;
+						}
 					}
 				}
+				line.erase(std::remove(line.begin(), line.end(), '\n'), line.end());
+				output << line << KL::Lace_NL();
 			}
-			output << line << endl;
 		}
-		return output.str();
+		return output.str().substr(0, output.str().size() - 1);
 	}
 	throw runtime_error(to_string(errno));
 }

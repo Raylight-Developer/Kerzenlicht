@@ -31,14 +31,16 @@ void KL::File::f_loadAsciiFile(const string& file_path) {
 
 	if (file.is_open()) {
 		Token_Array token_data = Token_Array();
+		Tokens line_data = Tokens();
 		string line;
 		while (getline(file, line)) {
 			Tokens tokens = f_split(line);
 			if (!tokens.empty()) {
 				token_data.push_back(tokens);
+				line_data.push_back(line);
 			}
 		}
-		f_loadAscii(token_data);
+		f_loadAscii(token_data, line_data);
 	}
 	else {
 		LOG << ENDL << ANSI_R << "  [File]" << ANSI_RESET << " Error Opening File"; FLUSH;
@@ -48,11 +50,7 @@ void KL::File::f_loadAsciiFile(const string& file_path) {
 }
 
 void KL::File::f_saveAsciiFile(const string& file_path) {
-	ofstream file(file_path);
-	if (file.is_open()) {
-		file << f_printFile();
-		file.close();
-	}
+	writeToFile(file_path, f_printFile());
 }
 
 void KL::File::f_loadBinaryFile(const string& file_path) {
@@ -107,11 +105,14 @@ void KL::File::f_fileStats() const {
 	FLUSH;
 }
 
-void KL::File::f_loadAscii(const Token_Array& token_data) {
-	Token_Array data = Token_Array();
+void KL::File::f_loadAscii(const Token_Array& token_data, const Tokens& line_data) {
+	Token_Array t_data = Token_Array();
+	Tokens l_data = Tokens();
 
 	Parse_Type is_processing = Parse_Type::NONE;
-	for (const auto& tokens : token_data) {
+	for (uint64 i = 0; i < token_data.size(); i++) {
+		const Tokens tokens = token_data[i];
+		const string line = line_data[i];
 		if (is_processing == Parse_Type::NONE) {
 			if      (tokens[0] == "┌Build-Steps")
 				is_processing = Parse_Type::BUILD_STEPS;
@@ -129,58 +130,61 @@ void KL::File::f_loadAscii(const Token_Array& token_data) {
 				is_processing = Parse_Type::SCENE;
 			else if (tokens[0] == "┌Data")
 				is_processing = Parse_Type::DATA;
-			data.clear();
-			data.push_back(tokens);
+			t_data.clear();
+			t_data.push_back(tokens);
+			l_data.clear();
+			l_data.push_back(line);
 		}
 		else {
 			if      (is_processing == Parse_Type::BUILD_STEPS and tokens[0] == "└Build-Steps") {
 				LOG << ENDL << ANSI_B << "  [Data-Block]" << ANSI_RESET; FLUSH;
 				is_processing = Parse_Type::NONE;
-				f_loadAsciiBuild(data);
+				f_loadAsciiBuild(t_data, l_data);
 			}
 			else if (is_processing == Parse_Type::NODE_TREE and tokens[0] == "└Node-Tree") {
 				LOG << ENDL << ANSI_B << "  [Data-Block]" << ANSI_RESET; FLUSH;
 				is_processing = Parse_Type::NONE;
-				node_trees.push_back(f_loadAsciiNodeTree(data));
+				node_trees.push_back(f_loadAsciiNodeTree(t_data, l_data));
 			}
 			else if (is_processing == Parse_Type::MATERIAL and tokens[0] == "└Material") {
 				LOG << ENDL << ANSI_B << "  [Data-Block]" << ANSI_RESET; FLUSH;
 				is_processing = Parse_Type::NONE;
-				materials.push_back(f_loadAsciiMaterial(data));
+				materials.push_back(f_loadAsciiMaterial(t_data, l_data));
 			}
 			else if (is_processing == Parse_Type::TEXTURE and tokens[0] == "└Texture") {
 				LOG << ENDL << ANSI_B << "  [Data-Block]" << ANSI_RESET; FLUSH;
 				is_processing = Parse_Type::NONE;
-				textures.push_back(f_loadAsciiTexture(data));
+				textures.push_back(f_loadAsciiTexture(t_data, l_data));
 			}
 			else if (is_processing == Parse_Type::HEADER and tokens[0] == "└Header") {
 				LOG << ENDL << ANSI_B << "  [Data-Block]" << ANSI_RESET; FLUSH;
 				is_processing = Parse_Type::NONE;
-				f_loadAsciiHeader(data);
+				f_loadAsciiHeader(t_data, l_data);
 			}
 			else if (is_processing == Parse_Type::OBJECT and tokens[0] == "└Object") {
 				LOG << ENDL << ANSI_B << "  [Data-Block]" << ANSI_RESET; FLUSH;
 				is_processing = Parse_Type::NONE;
-				objects.push_back(f_loadAsciiObject(data));
+				objects.push_back(f_loadAsciiObject(t_data, l_data));
 			}
 			else if (is_processing == Parse_Type::SCENE and tokens[0] == "└Scene") {
 				LOG << ENDL << ANSI_B << "  [Data-Block]" << ANSI_RESET; FLUSH;
 				is_processing = Parse_Type::NONE;
-				scenes.push_back(f_loadAsciiScene(data));
+				scenes.push_back(f_loadAsciiScene(t_data, l_data));
 			}
 			else if (is_processing == Parse_Type::DATA and tokens[0] == "└Data") {
 				LOG << ENDL << ANSI_B << "  [Data-Block]" << ANSI_RESET; FLUSH;
 				is_processing = Parse_Type::NONE;
-				object_data.push_back(f_loadAsciiData(data));
+				object_data.push_back(f_loadAsciiData(t_data, l_data));
 			}
 			else {
-				data.push_back(tokens);
+				t_data.push_back(tokens);
+				l_data.push_back(line);
 			}
 		}
 	}
 }
 
-void KL::File::f_loadAsciiHeader(const Token_Array& token_data) {
+void KL::File::f_loadAsciiHeader(const Token_Array& token_data, const Tokens& line_data) {
 	LOG << ENDL << ANSI_B << "    [Header]" << ANSI_RESET; FLUSH;
 	for (const Tokens& tokens : token_data) {
 		if (tokens[0] == "Version") {
@@ -192,26 +196,26 @@ void KL::File::f_loadAsciiHeader(const Token_Array& token_data) {
 	}
 }
 
-KL::SHADER::Texture* KL::File::f_loadAsciiTexture(const Token_Array& token_data) {
+KL::SHADER::Texture* KL::File::f_loadAsciiTexture(const Token_Array& token_data, const Tokens& line_data) {
 	SHADER::Texture* texture = new SHADER::Texture();
 	texture->name = f_join(token_data[0], 4);
 	texture->loadFromFile(f_join(token_data[1]));
 	return texture;
 }
 
-KL::Shader* KL::File::f_loadAsciiMaterial(const Token_Array& token_data) {
+KL::Shader* KL::File::f_loadAsciiMaterial(const Token_Array& token_data, const Tokens& line_data) {
 	KL::Shader* material = new KL::Shader();
 	material->name = f_join(token_data[0], 4);
 	material->type = SHADER::Type::CODE;
 
-	material->shader_code = f_join(f_closingPair(token_data, "┌Code", "└Code"), "\n");
+	material->shader_code = f_closingPair(line_data, "┌Code", "└Code");
 
 	LOG << ENDL << material->shader_code;
 
 	return material;
 }
 
-KL::Node_Tree* KL::File::f_loadAsciiNodeTree(const Token_Array& token_data) {
+KL::Node_Tree* KL::File::f_loadAsciiNodeTree(const Token_Array& token_data, const Tokens& line_data) {
 	auto node_tree = new KL::Node_Tree();
 	node_tree->name = f_join(token_data[0], 4);
 
@@ -382,37 +386,37 @@ KL::Node_Tree* KL::File::f_loadAsciiNodeTree(const Token_Array& token_data) {
 	return node_tree;
 }
 
-KL::OBJECT::Data* KL::File::f_loadAsciiData(const Token_Array& token_data) {
+KL::OBJECT::Data* KL::File::f_loadAsciiData(const Token_Array& token_data, const Tokens& line_data) {
 	if      (token_data[2][1] == "ATMOSPHERE")
-		return f_loadAsciiAtmosphere(token_data);
+		return f_loadAsciiAtmosphere(token_data, line_data);
 	else if (token_data[2][1] == "PRIMITIVE")
-		return f_loadAsciiPrimitive (token_data);
+		return f_loadAsciiPrimitive (token_data, line_data);
 	else if (token_data[2][1] == "SKELETON")
-		return f_loadAsciiSkeleton  (token_data);
+		return f_loadAsciiSkeleton  (token_data, line_data);
 	else if (token_data[2][1] == "CAMERA")
-		return f_loadAsciiCamera    (token_data);
+		return f_loadAsciiCamera    (token_data, line_data);
 	else if (token_data[2][1] == "VOLUME")
-		return f_loadAsciiVolume    (token_data);
+		return f_loadAsciiVolume    (token_data, line_data);
 	else if (token_data[2][1] == "CURVE")
-		return f_loadAsciiCurve     (token_data);
+		return f_loadAsciiCurve     (token_data, line_data);
 	else if (token_data[2][1] == "EMPTY")
-		return f_loadAsciiEmpty     (token_data);
+		return f_loadAsciiEmpty     (token_data, line_data);
 	else if (token_data[2][1] == "FORCE")
-		return f_loadAsciiForce     (token_data);
+		return f_loadAsciiForce     (token_data, line_data);
 	else if (token_data[2][1] == "GROUP")
-		return f_loadAsciiGroup     (token_data);
+		return f_loadAsciiGroup     (token_data, line_data);
 	else if (token_data[2][1] == "LIGHT")
-		return f_loadAsciiLight     (token_data);
+		return f_loadAsciiLight     (token_data, line_data);
 	else if (token_data[2][1] == "MESH")
-		return f_loadAsciiMesh      (token_data);
+		return f_loadAsciiMesh      (token_data, line_data);
 	else if (token_data[2][1] == "SFX")
-		return f_loadAsciiSfx       (token_data);
+		return f_loadAsciiSfx       (token_data, line_data);
 	else if (token_data[2][1] == "VFX")
-		return f_loadAsciiVfx       (token_data);
+		return f_loadAsciiVfx       (token_data, line_data);
 	return new KL::OBJECT::Data();
 }
 
-KL::OBJECT::Data* KL::File::f_loadAsciiAtmosphere(const Token_Array& token_data) {
+KL::OBJECT::Data* KL::File::f_loadAsciiAtmosphere(const Token_Array& token_data, const Tokens& line_data) {
 	KL::OBJECT::Data* data = new KL::OBJECT::Data();
 	data->name = f_join(token_data[0], 4);
 	data->type = KL::OBJECT::DATA::Type::ATMOSPHERE;
@@ -420,7 +424,7 @@ KL::OBJECT::Data* KL::File::f_loadAsciiAtmosphere(const Token_Array& token_data)
 	return data;
 }
 
-KL::OBJECT::Data* KL::File::f_loadAsciiPrimitive(const Token_Array& token_data) {
+KL::OBJECT::Data* KL::File::f_loadAsciiPrimitive(const Token_Array& token_data, const Tokens& line_data) {
 	KL::OBJECT::Data* data = new KL::OBJECT::Data();
 	data->name = f_join(token_data[0], 4);
 	data->type = KL::OBJECT::DATA::Type::PRIMITIVE;
@@ -428,7 +432,7 @@ KL::OBJECT::Data* KL::File::f_loadAsciiPrimitive(const Token_Array& token_data) 
 	return data;
 }
 
-KL::OBJECT::Data* KL::File::f_loadAsciiSkeleton(const Token_Array& token_data) {
+KL::OBJECT::Data* KL::File::f_loadAsciiSkeleton(const Token_Array& token_data, const Tokens& line_data) {
 	KL::OBJECT::Data* data = new KL::OBJECT::Data();
 	data->name = f_join(token_data[0], 4);
 	data->type = KL::OBJECT::DATA::Type::SKELETON;
@@ -436,7 +440,7 @@ KL::OBJECT::Data* KL::File::f_loadAsciiSkeleton(const Token_Array& token_data) {
 	return data;
 }
 
-KL::OBJECT::Data* KL::File::f_loadAsciiCamera(const Token_Array& token_data) {
+KL::OBJECT::Data* KL::File::f_loadAsciiCamera(const Token_Array& token_data, const Tokens& line_data) {
 	KL::OBJECT::Data* data = new KL::OBJECT::Data();
 	KL::OBJECT::DATA::Camera* camera = new KL::OBJECT::DATA::Camera();
 	data->name = f_join(token_data[0], 4);
@@ -446,7 +450,7 @@ KL::OBJECT::Data* KL::File::f_loadAsciiCamera(const Token_Array& token_data) {
 	return data;
 }
 
-KL::OBJECT::Data* KL::File::f_loadAsciiVolume(const Token_Array& token_data) {
+KL::OBJECT::Data* KL::File::f_loadAsciiVolume(const Token_Array& token_data, const Tokens& line_data) {
 	KL::OBJECT::Data* data = new KL::OBJECT::Data();
 	data->name = f_join(token_data[0], 4);
 	data->type = KL::OBJECT::DATA::Type::VOLUME;
@@ -454,7 +458,7 @@ KL::OBJECT::Data* KL::File::f_loadAsciiVolume(const Token_Array& token_data) {
 	return data;
 }
 
-KL::OBJECT::Data* KL::File::f_loadAsciiCurve(const Token_Array& token_data) {
+KL::OBJECT::Data* KL::File::f_loadAsciiCurve(const Token_Array& token_data, const Tokens& line_data) {
 	KL::OBJECT::Data* data = new KL::OBJECT::Data();
 	data->name = f_join(token_data[0], 4);
 	data->type = KL::OBJECT::DATA::Type::CURVE;
@@ -462,7 +466,7 @@ KL::OBJECT::Data* KL::File::f_loadAsciiCurve(const Token_Array& token_data) {
 	return data;
 }
 
-KL::OBJECT::Data* KL::File::f_loadAsciiEmpty(const Token_Array& token_data) {
+KL::OBJECT::Data* KL::File::f_loadAsciiEmpty(const Token_Array& token_data, const Tokens& line_data) {
 	KL::OBJECT::Data* data = new KL::OBJECT::Data();
 	data->name = f_join(token_data[0], 4);
 	data->type = KL::OBJECT::DATA::Type::EMPTY;
@@ -470,7 +474,7 @@ KL::OBJECT::Data* KL::File::f_loadAsciiEmpty(const Token_Array& token_data) {
 	return data;
 }
 
-KL::OBJECT::Data* KL::File::f_loadAsciiForce(const Token_Array& token_data) {
+KL::OBJECT::Data* KL::File::f_loadAsciiForce(const Token_Array& token_data, const Tokens& line_data) {
 	KL::OBJECT::Data* data = new KL::OBJECT::Data();
 	data->name = f_join(token_data[0], 4);
 	data->type = KL::OBJECT::DATA::Type::FORCE;
@@ -478,7 +482,7 @@ KL::OBJECT::Data* KL::File::f_loadAsciiForce(const Token_Array& token_data) {
 	return data;
 }
 
-KL::OBJECT::Data* KL::File::f_loadAsciiGroup(const Token_Array& token_data) {
+KL::OBJECT::Data* KL::File::f_loadAsciiGroup(const Token_Array& token_data, const Tokens& line_data) {
 	KL::OBJECT::Data* data = new KL::OBJECT::Data();
 	KL::OBJECT::DATA::Group* group = new KL::OBJECT::DATA::Group();
 	data->name = f_join(token_data[0], 4);
@@ -489,7 +493,7 @@ KL::OBJECT::Data* KL::File::f_loadAsciiGroup(const Token_Array& token_data) {
 	return data;
 }
 
-KL::OBJECT::Data* KL::File::f_loadAsciiLight(const Token_Array& token_data) {
+KL::OBJECT::Data* KL::File::f_loadAsciiLight(const Token_Array& token_data, const Tokens& line_data) {
 	KL::OBJECT::Data* data = new KL::OBJECT::Data();
 	data->name = f_join(token_data[0], 4);
 	data->type = KL::OBJECT::DATA::Type::LIGHT;
@@ -497,7 +501,7 @@ KL::OBJECT::Data* KL::File::f_loadAsciiLight(const Token_Array& token_data) {
 	return data;
 }
 
-KL::OBJECT::Data* KL::File::f_loadAsciiMesh(const Token_Array& token_data) {
+KL::OBJECT::Data* KL::File::f_loadAsciiMesh(const Token_Array& token_data, const Tokens& line_data) {
 	KL::OBJECT::Data* data = new KL::OBJECT::Data();
 	KL::OBJECT::DATA::Mesh * mesh = new KL::OBJECT::DATA::Mesh();
 	data->name = f_join(token_data[0], 4);
@@ -578,7 +582,7 @@ KL::OBJECT::Data* KL::File::f_loadAsciiMesh(const Token_Array& token_data) {
 	return data;
 }
 
-KL::OBJECT::Data* KL::File::f_loadAsciiSfx(const Token_Array& token_data) {
+KL::OBJECT::Data* KL::File::f_loadAsciiSfx(const Token_Array& token_data, const Tokens& line_data) {
 	KL::OBJECT::Data* data = new KL::OBJECT::Data();
 	data->name = f_join(token_data[0], 4);
 	data->type = KL::OBJECT::DATA::Type::SFX;
@@ -586,7 +590,7 @@ KL::OBJECT::Data* KL::File::f_loadAsciiSfx(const Token_Array& token_data) {
 	return data;
 }
 
-KL::OBJECT::Data* KL::File::f_loadAsciiVfx(const Token_Array& token_data) {
+KL::OBJECT::Data* KL::File::f_loadAsciiVfx(const Token_Array& token_data, const Tokens& line_data) {
 	KL::OBJECT::Data* data = new KL::OBJECT::Data();
 	data->name = f_join(token_data[0], 4);
 	data->type = KL::OBJECT::DATA::Type::VFX;
@@ -594,7 +598,7 @@ KL::OBJECT::Data* KL::File::f_loadAsciiVfx(const Token_Array& token_data) {
 	return data;
 }
 
-KL::Object* KL::File::f_loadAsciiObject(const Token_Array& token_data) {
+KL::Object* KL::File::f_loadAsciiObject(const Token_Array& token_data, const Tokens& line_data) {
 	KL::Object* object = new KL::Object();
 	object->name = f_join(token_data[0], 4);
 
@@ -624,7 +628,7 @@ KL::Object* KL::File::f_loadAsciiObject(const Token_Array& token_data) {
 	return object;
 };
 
-KL::Scene* KL::File::f_loadAsciiScene(const Token_Array& token_data) {
+KL::Scene* KL::File::f_loadAsciiScene(const Token_Array& token_data, const Tokens& line_data) {
 	LOG << ENDL << ANSI_B << "    [Scene]" << ANSI_RESET; FLUSH;
 
 	KL::Scene* scene = new KL::Scene();
@@ -653,7 +657,7 @@ KL::Scene* KL::File::f_loadAsciiScene(const Token_Array& token_data) {
 	return scene;
 }
 
-void KL::File::f_loadAsciiBuild(const Token_Array& token_data) {
+void KL::File::f_loadAsciiBuild(const Token_Array& token_data, const Tokens& line_data) {
 	LOG << ENDL << ANSI_B << "    [Build]" << ANSI_RESET; FLUSH;
 
 	bool is_processing = false;
@@ -1100,24 +1104,28 @@ void KL::File::f_saveAsciiMesh(Lace& lace, const KL::OBJECT::Data* data, const u
 	}
 	lace--;
 	lace NL "└Faces";
-	lace NL "┌Normals( 0 )";
+	lace NL "┌Normals( " << mesh->normals.size() << " )";
 	lace++;
-	// TODO Fix crash if no normal layers are present
-	for (uint64 i = 0; i < mesh->faces.size(); i++) {
-		lace NL i SP mesh->normals.at(mesh->faces[i]).size();
-		for (uint64 j = 0; j < mesh->normals.at(mesh->faces[i]).size(); j++) {
-			lace SP "(" SP mesh->normals.at(mesh->faces[i])[j] SP ")";
+	// TODO Fix crash if no normal layers are present or only certain faces contain data
+	for (uint64 k = 0; mesh->normals.size(); k++) {
+		for (uint64 i = 0; i < mesh->faces.size(); i++) {
+			lace NL i SP mesh->normals.at(mesh->faces[i]).size();
+			for (uint64 j = 0; j < mesh->normals.at(mesh->faces[i]).size(); j++) {
+				lace SP "(" SP mesh->normals.at(mesh->faces[i])[j] SP ")";
+			}
 		}
 	}
 	lace--;
 	lace NL "└Normals";
-	lace NL "┌UVs( 0 )";
+	lace NL "┌UVs( "<< mesh->uvs.size() <<" )";
 	lace++;
-	// TODO Fix crash if no uv layers are present
-	for (uint64 i = 0; i < mesh->faces.size(); i++) {
-		lace NL i SP mesh->uvs.at(mesh->faces[i]).size();
-		for (uint64 j = 0; j < mesh->uvs.at(mesh->faces[i]).size(); j++) {
-			lace SP "(" SP mesh->uvs.at(mesh->faces[i])[j] SP ")";
+	// TODO Fix crash if no uv layers are present or only certain faces contain data
+	for (uint64 k = 0; mesh->uvs.size(); k++) {
+		for (uint64 i = 0; i < mesh->faces.size(); i++) {
+			lace NL i SP mesh->uvs.at(mesh->faces[i]).size();
+			for (uint64 j = 0; j < mesh->uvs.at(mesh->faces[i]).size(); j++) {
+				lace SP "(" SP mesh->uvs.at(mesh->faces[i])[j] SP ")";
+			}
 		}
 	}
 	lace--;

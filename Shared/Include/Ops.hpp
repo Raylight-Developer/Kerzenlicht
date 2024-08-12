@@ -6,16 +6,21 @@
 Tokens f_split(const string& input);
 Tokens f_split(const string& input, const string& delimiter);
 Tokens f_closingPair(const Token_Array& tokens, const string& open = "┌", const string& close = "└");
-string f_join(const Tokens& tokens, const string& join, const uint64& start = 0, const uint64& end = 0);
-string f_join(const Tokens& tokens, const uint64& start = 0, const uint64& end = 0);
+string f_closingPair(const Tokens& lines, const string& open = "┌", const string& close = "└");
+string f_join(const Tokens& tokens, const string& join, const uint64& start = 0, const uint64& end = MAX_UINT64);
+string f_join(const Tokens& tokens, const uint64& start = 0, const uint64& end = MAX_UINT64);
 string f_str(const Tokens& tokens);
+string f_prependToLine(const string& value, const string& character);
 
 string f_remove(const string& input, const string& remove);
 string f_replace(const string& input, const string& old_str, const string& new_str);
 string f_strip(const string& str);
+bool   f_contains(const string& input, const string& substring);
 
 // I/O
 string loadFromFile(const string& file_path);
+void writeToFile(const string& filename, const string& content);
+
 
 // Opengl
 string processSubShader(const string& file_path);
@@ -157,6 +162,46 @@ T f_ramp(const map<U, T>& curve, const U& t) {
 }
 
 template<typename K, typename V>
+bool f_hasMapValue(const map<K, V>& map, const V& value) {
+	for (const auto& pair : map) {
+		if (pair.second == value) {
+			return true;
+		}
+	}
+	return false;
+}
+
+template<typename K, typename V>
+bool f_hasMapValue(const unordered_map<K, V>& map, const V& value) {
+	for (const auto& pair : map) {
+		if (pair.second == value) {
+			return true;
+		}
+	}
+	return false;
+}
+
+template<typename K, typename V>
+bool f_hasMapKey(const map<K, V>& map, const K& value) {
+	for (const auto& pair : map) {
+		if (pair.first == value) {
+			return true;
+		}
+	}
+	return false;
+}
+
+template<typename K, typename V>
+bool f_hasMapKey(const unordered_map<K, V>& map, const K& value) {
+	for (const auto& pair : map) {
+		if (pair.first == value) {
+			return true;
+		}
+	}
+	return false;
+}
+
+template<typename K, typename V>
 K f_getMapKey(const map<K, V>& map, const V& value) {
 	for (const auto& pair : map) {
 		if (pair.second == value) {
@@ -177,10 +222,19 @@ K f_getMapKey(const unordered_map<K, V>& map, const V& value) {
 }
 
 template<typename T>
-uint64 f_getVectorIndex(const vector<T>& vec, const T& value) {
-	auto it = std::find(vec.begin(), vec.end(), value);
+bool f_hasVectorItem(const vector<T>& vec, const T& value) {
+	auto it = find(vec.begin(), vec.end(), value);
 	if (it != vec.end()) {
-		return std::distance(vec.begin(), it);
+		return true;
+	}
+	return false;
+}
+
+template<typename T>
+uint64 f_getVectorIndex(const vector<T>& vec, const T& value) {
+	auto it = find(vec.begin(), vec.end(), value);
+	if (it != vec.end()) {
+		return distance(vec.begin(), it);
 	}
 	return MAX_UINT64;
 }
@@ -219,5 +273,5 @@ void f_removeMapItem(unordered_map<K, V>& map, const K& key) {
 
 template<typename T>
 void f_removeVectorItem(vector<T>& vec, const T& value) {
-	vec.erase(std::find(vec.begin(), vec.end(), value));
+	vec.erase(find(vec.begin(), vec.end(), value));
 }
