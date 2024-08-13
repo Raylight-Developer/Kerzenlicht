@@ -5,20 +5,20 @@
 └Header
 ┌Node-Trees( 1 )
  ┌Node-Tree [ 0 ] #
-  * 2424879057216
+  * 2195247859952
   ┌Nodes( 10 )
    ┌Node [ 0 ] #
-    * 2424879056800
+    * 2195247857248
     ( -120 0 )
     Type EXEC :: TICK
    └Node
    ┌Node [ 1 ] #
-    * 2424878172800
+    * 2195246977296
     ( 1100 -110 )
     Type LINK :: SET :: TRANSFORM :: EULER_ROTATION :: X
    └Node
    ┌Node [ 2 ] #
-    * 2424879055136
+    * 2195247857456
     ( -120 -90 )
     Type LINK :: POINTER
     ┌Pointer
@@ -26,7 +26,7 @@
     └Pointer
    └Node
    ┌Node [ 3 ] #
-    * 2424936539856
+    * 2195304542288
     ( 120 -20 )
     Type EXEC :: SCRIPT
     ┌Script
@@ -34,7 +34,7 @@
     └Script
    └Node
    ┌Node [ 4 ] #
-    * 2424879055552
+    * 2195247853920
     ( 120 200 )
     Type LINK :: POINTER
     ┌Pointer
@@ -42,7 +42,7 @@
     └Pointer
    └Node
    ┌Node [ 5 ] #
-    * 2424878201840
+    * 2195247001840
     ( 120 100 )
     Type LINK :: GET :: FIELD
     ┌Field
@@ -50,12 +50,12 @@
     └Field
    └Node
    ┌Node [ 6 ] #
-    * 2424879054096
+    * 2195247858912
     ( 360 80 )
     Type MATH :: ADD
    └Node
    ┌Node [ 7 ] #
-    * 2424878199536
+    * 2195247002096
     ( 360 200 )
     Type LINK :: GET :: FIELD
     ┌Field
@@ -63,57 +63,54 @@
     └Field
    └Node
    ┌Node [ 8 ] #
-    * 2424879053264
+    * 2195247859744
     ( 600 200 )
     Type UTIL :: CAST :: INT_TO_DOUBLE
    └Node
    ┌Node [ 9 ] #
-    * 2424879056592
+    * 2195247856832
     ( 860 80 )
     Type MATH :: ADD
    └Node
   └Nodes
   ┌Build-E
-   * 2424879056800 0 0 * 2424936539856
-   * 2424936539856 0 0 * 2424878172800
+   * 2195247857248 0 0 * 2195304542288
+   * 2195304542288 0 0 * 2195246977296
   └Build-E
   ┌Build-D
-   * 2424879055136 0 1 * 2424878172800
-   * 2424879056592 0 2 * 2424878172800
-   * 2424879056800 1 1 * 2424936539856
-   * 2424879055136 0 0 * 2424878201840
-   * 2424936539856 1 0 * 2424879054096
-   * 2424878201840 0 1 * 2424879054096
-   * 2424879055552 0 0 * 2424878199536
-   * 2424878199536 0 0 * 2424879053264
-   * 2424879054096 0 0 * 2424879056592
-   * 2424879053264 0 1 * 2424879056592
+   * 2195247857456 0 1 * 2195246977296
+   * 2195247856832 0 2 * 2195246977296
+   * 2195247857248 1 1 * 2195304542288
+   * 2195247857456 0 0 * 2195247001840
+   * 2195304542288 1 0 * 2195247858912
+   * 2195247001840 0 1 * 2195247858912
+   * 2195247853920 0 0 * 2195247002096
+   * 2195247002096 0 0 * 2195247859744
+   * 2195247858912 0 0 * 2195247856832
+   * 2195247859744 0 1 * 2195247856832
   └Build-D
  └Node-Tree
 └Node-Trees
 ┌Shaders( 2 )
  ┌Shader [ 0 ] UV debug
-  * 2133789651665
+  * 2195305726816
   Type CODE
   ┌Code
-vec2 uv =
-	hit_data.uvw.x * vec2(hit_data.hit_tri.uv_a_x, hit_data.hit_tri.uv_a_y) +
-	hit_data.uvw.y * vec2(hit_data.hit_tri.uv_b_x, hit_data.hit_tri.uv_b_y) +
-	hit_data.uvw.z * vec2(hit_data.hit_tri.uv_c_x, hit_data.hit_tri.uv_c_y);
-return sampleTextureRgba8u(textures[0], vec2(uv.x, 1 - uv.y));
+float val = sin(2.5 * hit_data.t_dist) * 0.5 + 0.5;
+return vec4(val, 0, val, 1.0);
   └Code
  └Shader
  ┌Shader [ 1 ] Cosine Distance Debug
-  * 2133789651665
+  * 2195305730336
   Type CODE
   ┌Code
-return vec4(vec3(cos(2.0 * hit_data.t_dist) * 0.5 + 0.5), 1.0);
+return vec4(vec3(cos(5.0 * hit_data.t_dist) * 0.5 + 0.5), 1.0);
   └Code
  └Shader
 └Shaders
 ┌Data( 3 )
  ┌Data [ 0 ] Cube
-  * 2424923403600
+  * 2195305853520
   Type MESH
   ┌Mesh
    ┌Vertices( 8 )
@@ -126,21 +123,24 @@ return vec4(vec3(cos(2.0 * hit_data.t_dist) * 0.5 + 0.5), 1.0);
     6 ( -0.2 -0.2 0.2 )
     7 ( -0.2 0.2 0.2 )
    └Vertices
+   ┌Shaders( 1 )
+    0 * 2195305730336
+   └Shaders
    ┌Vertex-Groups( 0 )
    └Vertex-Groups
    ┌Faces( 12 )
-    0 3 [ 1 2 0 ]
-    1 3 [ 3 6 2 ]
-    2 3 [ 7 4 6 ]
-    3 3 [ 5 0 4 ]
-    4 3 [ 6 0 2 ]
-    5 3 [ 3 5 7 ]
-    6 3 [ 1 3 2 ]
-    7 3 [ 3 7 6 ]
-    8 3 [ 7 5 4 ]
-    9 3 [ 5 1 0 ]
-    10 3 [ 6 4 0 ]
-    11 3 [ 3 1 5 ]
+    0 3 [ 1 2 0 ] 0
+    1 3 [ 3 6 2 ] 0
+    2 3 [ 7 4 6 ] 0
+    3 3 [ 5 0 4 ] 0
+    4 3 [ 6 0 2 ] 0
+    5 3 [ 3 5 7 ] 0
+    6 3 [ 1 3 2 ] 0
+    7 3 [ 3 7 6 ] 0
+    8 3 [ 7 5 4 ] 0
+    9 3 [ 5 1 0 ] 0
+    10 3 [ 6 4 0 ] 0
+    11 3 [ 3 1 5 ] 0
    └Faces
    ┌Normals( 0 )
    └Normals
@@ -149,7 +149,7 @@ return vec4(vec3(cos(2.0 * hit_data.t_dist) * 0.5 + 0.5), 1.0);
   └Mesh
  └Data
  ┌Data [ 1 ] Plane
-  * 2424923401552
+  * 2195305853392
   Type MESH
   ┌Mesh
    ┌Vertices( 4 )
@@ -158,11 +158,14 @@ return vec4(vec3(cos(2.0 * hit_data.t_dist) * 0.5 + 0.5), 1.0);
     2 ( 2.0 0.0 2.0 )
     3 ( -2.0 0.0 2.0 )
    └Vertices
+   ┌Shaders( 1 )
+    0 * 2195305726816
+   └Shaders
    ┌Vertex-Groups( 0 )
    └Vertex-Groups
    ┌Faces( 2 )
-    0 3 [ 1 2 0 ]
-    1 3 [ 1 3 2 ]
+    0 3 [ 1 2 0 ] 0
+    1 3 [ 1 3 2 ] 0
    └Faces
    ┌Normals( 0 )
    └Normals
@@ -171,27 +174,27 @@ return vec4(vec3(cos(2.0 * hit_data.t_dist) * 0.5 + 0.5), 1.0);
   └Mesh
  └Data
  ┌Data [ 2 ] Container
-  * 2424923399888
+  * 2195305859792
   Type GROUP
  └Data
 └Data
 ┌Objects( 3 )
  ┌Object [ 0 ] Cube
-  * 2424923114608
+  * 2195247915488
   Position ( 0.0 0.6 0.0 )
   Rotation ( 0.0 0.0 0.0 )
   Scale    ( 1.0 1.0 1.0 )
   Type MESH
  └Object
  ┌Object [ 1 ] Plane
-  * 2424923115264
+  * 2195305787136
   Position ( 0.0 0.0 0.0 )
   Rotation ( 0.0 0.0 0.0 )
   Scale    ( 1.0 1.0 1.0 )
   Type MESH
  └Object
  ┌Object [ 2 ] Container
-  * 2424923115920
+  * 2195305787792
   Position ( 0.0 0.0 0.0 )
   Rotation ( 0.0 0.0 0.0 )
   Scale    ( 1.0 1.0 1.0 )
@@ -200,28 +203,28 @@ return vec4(vec3(cos(2.0 * hit_data.t_dist) * 0.5 + 0.5), 1.0);
 └Objects
 ┌Scenes( 1 )
  ┌Scene [ 0 ]
-  * 2424923051392
+  * 2195291065648
   ┌Objects
-   * 2424923115920
+   * 2195305787792
   └Objects
  └Scene
 └Scenes
 ┌Build-Steps
- Active-Scene * 2424923051392
+ Active-Scene * 2195291065648
  ┌Data-Group
-  * 2424923399888 * 2424923114608
-  * 2424923399888 * 2424923115264
+  * 2195305859792 * 2195247915488
+  * 2195305859792 * 2195305787136
  └Data-Group
  ┌Object-Data
-  * 2424923114608 * 2424923403600
-  * 2424923115264 * 2424923401552
-  * 2424923115920 * 2424923399888
+  * 2195247915488 * 2195305853520
+  * 2195305787136 * 2195305853392
+  * 2195305787792 * 2195305859792
  └Object-Data
  ┌Object-Node
-  * 2424923115920 * 2424879057216
+  * 2195305787792 * 2195247859952
  └Object-Node
  ┌Node-Pointer
-  * 2424879055136 * 2424923114608
-  * 2424879055552 * 2424923051392
+  * 2195247857456 * 2195247915488
+  * 2195247853920 * 2195291065648
  └Node-Pointer
 └Build-Steps

@@ -161,63 +161,41 @@ T f_ramp(const map<U, T>& curve, const U& t) {
 }
 
 template<typename K, typename V>
-bool f_hasMapValue(const map<K, V>& map, const V& value) {
+pair<bool, V> f_getMapValue(const map<K, V>& map, const K& key, const V& fail) {
+	auto it = map.find(key);
+	if (it != map.end()) {
+		return make_pair(true, it->second);
+	}
+	return make_pair(false, fail);
+}
+
+template<typename K, typename V>
+pair<bool, V> f_getMapValue(const unordered_map<K, V>& map, const K& key, const V& fail) {
+	auto it = map.find(key);
+	if (it != map.end()) {
+		return make_pair(true, it->second);
+	}
+	return make_pair(false, fail);
+}
+
+template<typename K, typename V>
+pair<bool, K> f_getMapKey(const map<K, V>& map, const V& value, const K& fail) {
 	for (const auto& pair : map) {
 		if (pair.second == value) {
-			return true;
+			return make_pair(true, pair.first);
 		}
 	}
-	return false;
+	return make_pair(false, fail);
 }
 
 template<typename K, typename V>
-bool f_hasMapValue(const unordered_map<K, V>& map, const V& value) {
+pair<bool, K> f_getMapKey(const unordered_map<K, V>& map, const V& value, const K& fail) {
 	for (const auto& pair : map) {
 		if (pair.second == value) {
-			return true;
+			return make_pair(true, pair.first);
 		}
 	}
-	return false;
-}
-
-template<typename K, typename V>
-bool f_hasMapKey(const map<K, V>& map, const K& value) {
-	for (const auto& pair : map) {
-		if (pair.first == value) {
-			return true;
-		}
-	}
-	return false;
-}
-
-template<typename K, typename V>
-bool f_hasMapKey(const unordered_map<K, V>& map, const K& value) {
-	for (const auto& pair : map) {
-		if (pair.first == value) {
-			return true;
-		}
-	}
-	return false;
-}
-
-template<typename K, typename V>
-K f_getMapKey(const map<K, V>& map, const V& value) {
-	for (const auto& pair : map) {
-		if (pair.second == value) {
-			return pair.first;
-		}
-	}
-	throw runtime_error("Value not found in map");
-}
-
-template<typename K, typename V>
-K f_getMapKey(const unordered_map<K, V>& map, const V& value) {
-	for (const auto& pair : map) {
-		if (pair.second == value) {
-			return pair.first;
-		}
-	}
-	throw runtime_error("Value not found in map");
+	return make_pair(false, fail);
 }
 
 template<typename T>
@@ -230,12 +208,12 @@ bool f_hasVectorItem(const vector<T>& vec, const T& value) {
 }
 
 template<typename T>
-uint64 f_getVectorIndex(const vector<T>& vec, const T& value) {
+pair<bool, uint64> f_getVectorIndex(const vector<T>& vec, const T& value, const uint64& fail = 0U) {
 	auto it = find(vec.begin(), vec.end(), value);
 	if (it != vec.end()) {
-		return distance(vec.begin(), it);
+		return make_pair(true, distance(vec.begin(), it));
 	}
-	return MAX_UINT64;
+	return make_pair(false, fail);
 }
 
 template<typename K, typename V>

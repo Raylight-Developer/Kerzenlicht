@@ -311,7 +311,14 @@ KL::GPU_Triangle KL::faceToGpuTri(const mat4& matrix, KL::OBJECT::DATA::Mesh* me
 	vec2 uv_b = vec2(0.0f);
 	vec2 uv_c = vec2(0.0f);
 
-	uint material_index = 0;// ul_to_u(f_getVectorIndex(FILE->materials, mesh->materials[face]));
+	uint material_index = MAX_UINT32;
+	auto [exists_a, value] = f_getMapValue(mesh->shaders, face, 0U);
+	if (exists_a) {
+		if (mesh->shader_slots.size() > mesh->shaders[face]) {
+			auto [exists, index] = f_getVectorIndex(FILE->shaders, mesh->shader_slots[value]);
+			if (exists) material_index = ul_to_u(index);
+		}
+	}
 
 	if (mesh->uvs.size() > 0) {
 		uv_a = d_to_f(mesh->uvs[face][0]);

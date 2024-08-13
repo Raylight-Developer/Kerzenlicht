@@ -1148,8 +1148,9 @@ void KL::File::f_saveAsciiMesh(Lace& lace, const KL::OBJECT::Data* data, const u
 				if (mesh->faces[i]->vertices[j] == mesh->vertices[k])
 					lace SP k;
 		lace SP "]";
-		if (f_hasMapKey(mesh->shaders, mesh->faces[i])) {
-			lace SP mesh->shaders.at(mesh->faces[i]);
+		auto [exists, index] = f_getMapValue(mesh->shaders, mesh->faces[i], 0U);
+		if (exists) {
+			lace SP index;
 		}
 	}
 	lace--;

@@ -8,6 +8,10 @@ GLuint computeShaderProgram(const string& file_path);
 GLuint renderLayer(const uvec2& resolution);
 void   bindRenderLayer(const GLuint& program_id, const GLuint& unit, const GLuint& id, const string& name);
 
+void checkShaderCompilation(const GLuint& shader, const string& shader_code);
+void checkProgramLinking(const GLuint& program);
+void printShaderErrorWithContext(const string& shaderSource, const string& errorLog);
+
 template <typename T>
 GLuint ssboBinding(const GLuint& binding, const GLuint& size, const T& data) {
 	GLuint buffer;

@@ -2,7 +2,7 @@
 
 KL::Renderer::Renderer() {
 	window = nullptr;
-	Lace* log = new Lace();
+	Lace* log = new Lace("\t");
 	Session::getInstance().setLog(log);
 	file = new KL::Render_File();
 	file->f_loadAsciiFile("../Editor/Resources/Assets/Ganyu.krz");
