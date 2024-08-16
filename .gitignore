@@ -1,19 +1,4 @@
 .vs/
 x64/
 enc_temp_folder/
-External/
-Resources/Other
-Resources/glad.c
-Resources/Dev/
-Kerzenlicht Renderer.vcxproj.user
-Resources/Assets/Test.krz
-Resources/Testing.blend
-Engine/Editor.vcxproj.user
-Runtime/Runtime.vcxproj.user
-Editor/Editor.vcxproj.user
-Scripting/Scripting.vcxproj.user
-Shared/Shared.vcxproj.user
-Runtime/Resources/Ganyu.krz
-Runtime/Resources/Shaders/Render_Compiled.comp
-/GUI-Scripting/Release
 *.user
