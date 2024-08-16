@@ -123,7 +123,7 @@ void printShaderErrorWithContext(const string& shaderSource, const string& error
 	for (uint64 i = startLine; i < endLine; ++i) {
 		LOG << ENDL << (i + 1) << ": " << lines[i];
 		if (i == lineNumber - 1) {
-			LOG << ENDL << ANSI_R << "   ^-- Error here: " << ANSI_RESET << errorLog;
+			LOG << ENDL << ANSI_R << "^-- Error here: " << ANSI_RESET << errorLog;
 		}
 	}
 	LOG -= 1;

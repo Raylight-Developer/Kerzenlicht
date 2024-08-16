@@ -16,3 +16,4 @@ Shared/Shared.vcxproj.user
 Runtime/Resources/Ganyu.krz
 Runtime/Resources/Shaders/Render_Compiled.comp
 /GUI-Scripting/Release
+*.user
