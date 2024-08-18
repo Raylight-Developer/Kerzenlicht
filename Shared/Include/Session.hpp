@@ -17,18 +17,18 @@ namespace KL {
 }
 
 // FWD DECL THIS
-#define ENDL KL::Lace_NL()
+#define ENDL << KL::Lace_NL()
 
-#define ANSI_RESET "\033[0m"
+#define ANSI_RESET  << "\033[0m"
 
-#define ANSI_Black  "\033[90m"
-#define ANSI_R      "\033[91m"
-#define ANSI_G      "\033[92m"
-#define ANSI_Yellow "\033[93m"
-#define ANSI_B      "\033[94m"
-#define ANSI_PURPLE "\033[95m"
-#define ANSI_Cyan   "\033[96m"
-#define ANSI_White  "\033[97m"
+#define ANSI_BLACK  << "\033[90m"
+#define ANSI_R      << "\033[91m"
+#define ANSI_G      << "\033[92m"
+#define ANSI_YELLOW << "\033[93m"
+#define ANSI_B      << "\033[94m"
+#define ANSI_PURPLE << "\033[95m"
+#define ANSI_CYAN   << "\033[96m"
+#define ANSI_WHITE  << "\033[97m"
 
 // DECL
 namespace KL {
@@ -37,19 +37,19 @@ namespace KL {
 
 		void flushLog();
 
-		void setLog(Lace* ptr);
+		void setLog(Lace* uptr);
 		Lace* getLog();
 
-#ifdef COMPILE_EDITOR
-		void setFile(KL::Editor_File* ptr);
-		KL::Editor_File* getFile();
-#elif COMPILE_RENDERER
-		void setFile(KL::Render_File* ptr);
-		KL::Render_File* getFile();
-#else
-		void setFile(KL::File* ptr);
-		KL::File* getFile();
-#endif
+		#ifdef COMPILE_EDITOR
+			void setFile(KL::Editor_File* uptr);
+			KL::Editor_File* getFile();
+		#elif COMPILE_RENDERER
+			void setFile(KL::Render_File* ptr);
+			KL::Render_File* getFile();
+		#else
+			void setFile(KL::File* ptr);
+			KL::File* getFile();
+		#endif
 
 	private:
 		Session();
@@ -59,13 +59,13 @@ namespace KL {
 		Session& operator=(const Session&) = delete;
 
 		Lace* log;
-#ifdef COMPILE_EDITOR
-		KL::Editor_File* file;
-#elif COMPILE_RENDERER
-		KL::Render_File* file;
-#else
-		KL::File* file;
-#endif
+		#ifdef COMPILE_EDITOR
+			KL::Editor_File* file;
+		#elif COMPILE_RENDERER
+			KL::Render_File* file;
+		#else
+			KL::File* file;
+		#endif
 	};
 }
 

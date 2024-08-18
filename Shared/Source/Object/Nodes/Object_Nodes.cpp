@@ -84,7 +84,7 @@ EXEC::Script::Script(const string& script_id) :
 			buildFunc(wrapper);
 		}
 		else {
-			//LOG << ENDL << HTML_RED << "[DLL Binding]" << HTML_RESET << " Unable to resolve Script ID"; FLUSH;
+			//LOG ENDL << HTML_RED << "[DLL Binding]" << HTML_RESET << " Unable to resolve Script ID"; FLUSH;
 		}
 	}
 }
@@ -128,7 +128,7 @@ void EXEC::Script::reloadFunctions() {
 		buildFunc(wrapper);
 	}
 	else {
-		//LOG << ENDL << HTML_RED << "[DLL Binding]" << HTML_RESET << " Unable to resolve Script ID"; FLUSH;
+		//LOG ENDL << HTML_RED << "[DLL Binding]" << HTML_RESET << " Unable to resolve Script ID"; FLUSH;
 	}
 }
 

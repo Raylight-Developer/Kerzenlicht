@@ -2,12 +2,6 @@
 
 #include "Include.hpp"
 
-#include <QtOpenGL/qopenglfunctions_4_5_core.h>
-#include <QtOpenGLWidgets>
-#include <QtWidgets>
-#include <QtCore>
-#include <QtGui>
-
 namespace GUI {
 	// Base Classes
 	struct Application;

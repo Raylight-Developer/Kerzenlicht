@@ -23,12 +23,12 @@ void KL::Session::flushLog() {
 	log->clear();
 }
 
-void KL::Session::setLog(Lace* ptr) { log = ptr; }
+void KL::Session::setLog(Lace* uptr) { log = uptr; }
 
 KL::Lace* KL::Session::getLog() { return log; }
 
 #ifdef COMPILE_EDITOR
-void KL::Session::setFile(KL::Editor_File* ptr) { file = ptr; }
+void KL::Session::setFile(KL::Editor_File* uptr) { file = uptr; }
 
 KL::Editor_File* KL::Session::getFile() { return file; }
 #elif COMPILE_RENDERER

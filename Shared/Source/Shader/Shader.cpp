@@ -24,7 +24,7 @@ bool KL::SHADER::Texture::loadFromFile(const string & file_path) {
 	int width, height, channels;
 	unsigned char* tex_data = stbi_load(file_path.c_str(), &width, &height, &channels, STBI_rgb_alpha);
 	if (tex_data == nullptr) {
-		LOG << ENDL << ANSI_R << "[Texture]" << ANSI_RESET << " Failed to load image: " << file_path << " " << stbi_failure_reason();
+		LOG ENDL ANSI_R << "[Texture]" ANSI_RESET << " Failed to load image: " << file_path << " " << stbi_failure_reason();
 		return false;
 	}
 	uint64 totalPixels = width * height * 4;
@@ -72,8 +72,8 @@ string KL::Shader::compileMaterials(const string & code) {
 	uint64 id = 0;
 	for (KL::Shader* material : FILE->shaders) {
 		Lace shader_code;
-		shader_code << ENDL << Lace_TAB() << "else if (hit_data.material == " << id++ << ") {";
-		shader_code << ENDL << f_prependToLine(material->shader_code, "\t\t");
+		shader_code ENDL << Lace_TAB() << "else if (hit_data.material == " << id++ << ") {";
+		shader_code ENDL << f_prependToLine(material->shader_code, "\t\t");
 		shader_code << Lace_TAB() << "}";
 		cout << material->shader_code;
 
@@ -90,6 +90,6 @@ string KL::Shader::compileMaterials(const string & code) {
 		startPos += comp_material_code.length();
 	}
 
-	LOG << ENDL << comp_material_code; FLUSH;
+	LOG ENDL << comp_material_code; FLUSH;
 	return hooked_code;
 }

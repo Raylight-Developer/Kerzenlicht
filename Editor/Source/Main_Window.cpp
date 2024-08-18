@@ -45,7 +45,7 @@ GUI::WORKSPACE::Main_Window::Main_Window(GUI::Application* app) :
 
 	showMaximized();
 
-	LOG << ENDL << ANSI_G << "Fully Initialized" << ANSI_RESET; FLUSH;
+	LOG ENDL ANSI_G << "Fully Initialized" ANSI_RESET; FLUSH;
 }
 
 bool GUI::WORKSPACE::Main_Window::eventFilter(QObject* object, QEvent* event) {

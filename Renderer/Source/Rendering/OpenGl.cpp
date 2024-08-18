@@ -80,7 +80,7 @@ void checkShaderCompilation(const GLuint& shader, const string& shader_code) {
 	if (!success) {
 		GLchar infoLog[512];
 		glGetShaderInfoLog(shader, sizeof(infoLog), nullptr, infoLog);
-		LOG << ENDL << ENDL << ANSI_R << "[OpenGL]" << ANSI_RESET << " Shader Compilation Failed: "; FLUSH;
+		LOG ENDL ENDL ANSI_R << "[OpenGL]" ANSI_RESET << " Shader Compilation Failed: "; FLUSH;
 		printShaderErrorWithContext(shader_code, infoLog);
 		exit(1);
 	}
@@ -92,7 +92,7 @@ void checkProgramLinking(const GLuint& program) {
 	if (!success) {
 		GLchar infoLog[512];
 		glGetProgramInfoLog(program, sizeof(infoLog), nullptr, infoLog);
-		LOG << ENDL << ENDL << ANSI_R << "[OpenGL]" << ANSI_RESET << " Program Linking Failed: " << infoLog; FLUSH;
+		LOG ENDL ENDL ANSI_R << "[OpenGL]" ANSI_RESET << " Program Linking Failed: " << infoLog; FLUSH;
 		exit(1);
 	}
 }
@@ -101,14 +101,14 @@ void printShaderErrorWithContext(const string& shaderSource, const string& error
 	LOG += 1;
 	size_t pos = errorLog.find('(');
 	if (pos == string::npos) {
-		LOG << ENDL << "Error: Unable to parse error log."; FLUSH;
+		LOG ENDL << "Error: Unable to parse error log."; FLUSH;
 		LOG -= 1;
 		return;
 	}
 
 	size_t endPos = errorLog.find(')', pos);
 	if (endPos == string::npos) {
-		LOG << ENDL << "Error: Unable to parse error log."; FLUSH;
+		LOG ENDL << "Error: Unable to parse error log."; FLUSH;
 		LOG -= 1;
 		return;
 	}
@@ -121,12 +121,12 @@ void printShaderErrorWithContext(const string& shaderSource, const string& error
 	uint64 endLine = min(lines.size(), lineNumber + 3);
 
 	for (uint64 i = startLine; i < endLine; ++i) {
-		LOG << ENDL << (i + 1) << ": " << lines[i];
+		LOG ENDL << (i + 1) << ": " << lines[i];
 		if (i == lineNumber - 1) {
-			LOG << ENDL << ANSI_R << "^-- Error here: " << ANSI_RESET << errorLog;
+			LOG ENDL ANSI_R << "^-- Error here: " ANSI_RESET << errorLog;
 		}
 	}
 	LOG -= 1;
-	LOG << ENDL << ENDL;
+	LOG ENDL ENDL;
 	FLUSH;
 }

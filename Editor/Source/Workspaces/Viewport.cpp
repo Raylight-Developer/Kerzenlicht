@@ -20,7 +20,7 @@ GUI::WORKSPACE::Timeline::Timeline(Workspace_Viewport* parent) :
 
 	connect(slider, &GUI::Slider::valueChanged, [this, current_frame](int value) {
 		current_frame->setText(QString::number(value));
-		FILE->active_scene->ptr->current_frame = value;
+		FILE->active_scene->uptr->current_frame = value;
 
 		if (this->parent->viewport) this->parent->viewport->f_updateTick();
 	});
@@ -67,12 +67,12 @@ void GUI::WORKSPACE::Workspace_Viewport::f_systemInfo() {
 	status.dwLength = sizeof(status);
 	GlobalMemoryStatusEx(&status);
 
-	LOG << ENDL << ANSI_B << "[System]" << ANSI_RESET;
-	LOG << ENDL << ANSI_B << "  [CPU]" << ANSI_RESET;
-	LOG << ENDL << "    " << thread::hardware_concurrency() << " Threads";
-	LOG << ENDL << ANSI_B << "  [GPU]" << ANSI_RESET;
-	LOG << ENDL << ANSI_B << "  [RAM]" << ANSI_RESET;
-	LOG << ENDL << "    " << d_to_u(ceil((double)(status.ullTotalPhys / (1024.0 * 1024.0 * 1024.0)))) << " GB - " << status.ullTotalPhys / (1024 * 1024) << " MB";
+	LOG ENDL ANSI_B << "[System]" ANSI_RESET;
+	LOG ENDL ANSI_B << "  [CPU]" ANSI_RESET;
+	LOG ENDL << "    " << thread::hardware_concurrency() << " Threads";
+	LOG ENDL ANSI_B << "  [GPU]" ANSI_RESET;
+	LOG ENDL ANSI_B << "  [RAM]" ANSI_RESET;
+	LOG ENDL << "    " << d_to_u(ceil((double)(status.ullTotalPhys / (1024.0 * 1024.0 * 1024.0)))) << " GB - " << status.ullTotalPhys / (1024 * 1024) << " MB";
 	FLUSH;
 }
 
@@ -191,7 +191,7 @@ void GUI::WORKSPACE::Viewport::f_pipeline() {
 void GUI::WORKSPACE::Viewport::f_uploadData() {
 	triangles.clear();
 	triangle_map.clear();
-	for (KL::Object* object : FILE->active_scene->ptr->objects) {
+	for (KL::Object* object : FILE->active_scene->uptr->objects) {
 		object->f_compileMatrix();
 		vector <VIEWPORT_REALTIME::Triangle>  temp;
 		if (object->data->type == KL::OBJECT::DATA::Type::MESH) {
@@ -245,7 +245,7 @@ void GUI::WORKSPACE::Viewport::f_updateTick() {
 	}
 	if (frame_counter != 0) delta = chrono::duration_cast<std::chrono::milliseconds>(chrono::steady_clock::now() - last_delta).count() / 1000.0;
 	last_delta = chrono::steady_clock::now();
-	for (const KL::Object* object : FILE->active_scene->ptr->objects)
+	for (const KL::Object* object : FILE->active_scene->uptr->objects)
 		if (object->node_tree)
 			object->node_tree->exec(&delta);  // TODO Fix not loading without Execute Load To View
 	frame_counter++;
@@ -255,7 +255,7 @@ void GUI::WORKSPACE::Viewport::f_updateTick() {
 
 void GUI::WORKSPACE::Viewport::f_selectObject(const dvec2& uv) { // TODO fix slight missalignment
 	KL::OBJECT::DATA::Camera* camera = FILE->default_camera->data->getCamera();
-	camera->compile(FILE->active_scene->ptr, FILE->default_camera);
+	camera->compile(FILE->active_scene->uptr, FILE->default_camera);
 	const VIEWPORT_REALTIME::Ray ray = VIEWPORT_REALTIME::Ray(
 		d_to_f(FILE->default_camera->transform.position),
 		d_to_f(normalize(
@@ -301,7 +301,7 @@ void GUI::WORKSPACE::Viewport::paintGL() {
 
 	f_updateTick();
 	KL::OBJECT::DATA::Camera* camera = FILE->default_camera->data->getCamera();
-	camera->compile(FILE->active_scene->ptr, FILE->default_camera);
+	camera->compile(FILE->active_scene->uptr, FILE->default_camera);
 
 	glUseProgram(compute_shader_program);
 	glUniform3fv(glGetUniformLocation(compute_shader_program, "camera_pos"),  1, value_ptr(d_to_f(FILE->default_camera->transform.position)));

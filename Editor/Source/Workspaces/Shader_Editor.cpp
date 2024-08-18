@@ -85,7 +85,7 @@ GUI::WORKSPACE::Shader_Node_Shelf::Shader_Node_Shelf(Workspace_Shader_Editor* pa
 
 	for (KL::Shader* shader : FILE->shaders) {
 		auto item = new Tree_Item(this, QString::fromStdString(shader->name), 1);
-		item->setData(0, 1000, ptr(shader));
+		item->setData(0, 1000, uptr(shader));
 	}
 
 	QObject::connect(this, &GUI::Tree::itemDoubleClicked, [this](QTreeWidgetItem* item) {

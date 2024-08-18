@@ -58,12 +58,12 @@ void KL::GPU_Scene::print() const {
 	cout << data.str() << endl;
 }
 
-void KL::GPU_Scene::printInfo(const uint64& max_size) const {
+void KL::GPU_Scene::printInfo() const {
 	cout << "GPU Data:" << endl;
-	printSize("	Triangles    ", triangles);
-	printSize("	BVHs         ", bvh_nodes);
-	printSize("	Textures     ", textures);
-	printSize("	Texture Data ", texture_data);
+	printSize("  Triangles    ", triangles);
+	printSize("  BVHs         ", bvh_nodes);
+	printSize("  Textures     ", textures);
+	printSize("  Texture Data ", texture_data);
 }
 
 void KL::GPU_Scene::updateTextures() {
@@ -78,7 +78,7 @@ void KL::GPU_Scene::updateTick() {
 	triangles.clear();
 	bvh_nodes.clear();
 
-	for (KL::Object* object : FILE->active_scene->ptr->objects) {
+	for (KL::Object* object : FILE->active_scene->uptr->objects) {
 		object->f_compileMatrix();
 		vector<GPU_Triangle> mesh_triangles;
 		if (object->data->type == KL::OBJECT::DATA::Type::MESH) {
@@ -106,7 +106,7 @@ void KL::GPU_Scene::updateTick() {
 		BVH_Builder bvh_build = BVH_Builder(mesh_triangles, bvh_depth);
 		bvh_nodes.insert(bvh_nodes.end(), bvh_build.node_list.begin(), bvh_build.node_list.end());
 		triangles.insert(triangles.end(), bvh_build.triangles.begin(), bvh_build.triangles.end());
-		//LOG << ENDL << "Triangle Count: " << mesh_triangles.size() << "  BVH Depth: " << bvh_depth << "  BVH Nodes: " << bvh_nodes.size();
+		//LOG ENDL << "Triangle Count: " << mesh_triangles.size() << "  BVH Depth: " << bvh_depth << "  BVH Nodes: " << bvh_nodes.size();
 	}
 }
 
@@ -316,7 +316,9 @@ KL::GPU_Triangle KL::faceToGpuTri(const mat4& matrix, KL::OBJECT::DATA::Mesh* me
 	if (exists_a) {
 		if (mesh->shader_slots.size() > mesh->shaders[face]) {
 			auto [exists, index] = f_getVectorIndex(FILE->shaders, mesh->shader_slots[value]);
-			if (exists) material_index = ul_to_u(index);
+			if (exists) {
+				material_index = ul_to_u(index);
+			}
 		}
 	}
 

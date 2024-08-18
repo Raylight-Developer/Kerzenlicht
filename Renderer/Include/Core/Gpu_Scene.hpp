@@ -40,7 +40,7 @@ namespace KL {
 		uint64 textureDataSize() const;
 
 		void print() const;
-		void printInfo(const uint64& max_size) const;
+		void printInfo() const;
 	};
 
 	struct alignas(16) GPU_Triangle {

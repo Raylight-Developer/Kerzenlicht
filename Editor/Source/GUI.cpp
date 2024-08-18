@@ -241,7 +241,7 @@ GUI::Double_Input::Double_Input(QWidget* parent) :
 }
 
 bool GUI::Double_Input::eventFilter(QObject* watched, QEvent* event) {
-	if (event->type() == QEvent::Type::FocusOut or (event->type() == QEvent::Type::KeyPress and static_cast<QKeyEvent*>(event)->key() == Qt::Key::Key_Escape)) {
+	if (event->type() == QEvent::Type::FocusOut or (event->type() == QEvent::Type::KeyPress and static_cast<QKeyEvent*>(event)->key() == Qt::K::Key_Escape)) {
 		slider_input->show();
 		manual_input->hide();
 		manual_input->setText(QString::number(slider_input->value));

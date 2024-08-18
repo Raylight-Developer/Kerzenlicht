@@ -117,7 +117,7 @@ void KL::Renderer::systemInfo() {
 	glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_COUNT, 0, &work_grp_cnt[0]);
 	glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_COUNT, 1, &work_grp_cnt[1]);
 	glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_COUNT, 2, &work_grp_cnt[2]);
-	LOG << ENDL << "Max work groups per compute shader" <<
+	LOG ENDL << "Max work groups per compute shader" <<
 		" x:" << work_grp_cnt[0] <<
 		" y:" << work_grp_cnt[1] <<
 		" z:" << work_grp_cnt[2];
@@ -126,30 +126,30 @@ void KL::Renderer::systemInfo() {
 	glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_SIZE, 0, &work_grp_size[0]);
 	glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_SIZE, 1, &work_grp_size[1]);
 	glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_SIZE, 2, &work_grp_size[2]);
-	LOG << ENDL << "Max work group sizes" <<
+	LOG ENDL << "Max work group sizes" <<
 		" x:" << work_grp_size[0] <<
 		" y:" << work_grp_size[1] <<
 		" z:" << work_grp_size[2];
 
 	GLint work_grp_inv;
 	glGetIntegerv(GL_MAX_COMPUTE_WORK_GROUP_INVOCATIONS, &work_grp_inv);
-	LOG << ENDL << "Max invocations count per work group: " << work_grp_inv;
+	LOG ENDL << "Max invocations count per work group: " << work_grp_inv;
 
 	GLint uboMaxSize;
 	glGetIntegerv(GL_MAX_UNIFORM_BLOCK_SIZE , &uboMaxSize);
-	LOG << ENDL << "Maximum UBO size: " << d_to_ul(round(i_to_d(uboMaxSize) / (1024.0 * 1024.0))) << " Mb";
+	LOG ENDL << "Maximum UBO size: " << d_to_ul(round(i_to_d(uboMaxSize) / (1024.0 * 1024.0))) << " Mb";
 
 	GLint ssboMaxSize;
 	glGetIntegerv(GL_MAX_SHADER_STORAGE_BLOCK_SIZE, &ssboMaxSize);
-	LOG << ENDL << "Maximum SSBO size per binding: " << d_to_ul(round(i_to_d(ssboMaxSize) / (1024.0 * 1024.0))) << " Mb";
+	LOG ENDL << "Maximum SSBO size per binding: " << d_to_ul(round(i_to_d(ssboMaxSize) / (1024.0 * 1024.0))) << " Mb";
 
 	GLint maxSSBOBindings;
 	glGetIntegerv(GL_MAX_SHADER_STORAGE_BUFFER_BINDINGS, &maxSSBOBindings);
-	LOG << ENDL << "Maximum SSBO bindings: " << maxSSBOBindings;
+	LOG ENDL << "Maximum SSBO bindings: " << maxSSBOBindings;
 
 	GLint uniformBufferOffsetAlignment;
 	glGetIntegerv(GL_SHADER_STORAGE_BUFFER_OFFSET_ALIGNMENT, &uniformBufferOffsetAlignment);
-	LOG << ENDL << "SSBO struct alignment multiplier: " << uniformBufferOffsetAlignment;
+	LOG ENDL << "SSBO struct alignment multiplier: " << uniformBufferOffsetAlignment;
 }
 
 void KL::Renderer::pipeline() {
@@ -157,7 +157,7 @@ void KL::Renderer::pipeline() {
 }
 
 void KL::Renderer::tickUpdate() {
-	for (const KL::Object* object : FILE->active_scene->ptr->objects) {
+	for (const KL::Object* object : FILE->active_scene->uptr->objects) {
 		if (object->node_tree) {
 			object->node_tree->exec(&frame_time);
 		}
@@ -285,6 +285,7 @@ void KL::Renderer::displayLoop() {
 	GLuint normal_render_layer = renderLayer(render_resolution);
 
 	gpu_data->updateTextures();
+	gpu_data->printInfo();
 
 	glBindVertexArray(VAO);
 	while (!glfwWindowShouldClose(window)) {
@@ -308,7 +309,7 @@ void KL::Renderer::displayLoop() {
 		glUniform1ui(glGetUniformLocation(compute_program, "samples_per_pixel"), 1);
 
 		KL::OBJECT::DATA::Camera* camera = FILE->default_camera->data->getCamera();
-		camera->compile(FILE->active_scene->ptr, FILE->default_camera);
+		camera->compile(FILE->active_scene->uptr, FILE->default_camera);
 		glUniform3fv(glGetUniformLocation(compute_program, "camera_pos"),  1, value_ptr(d_to_f(FILE->default_camera->transform.position)));
 		glUniform3fv(glGetUniformLocation(compute_program, "camera_p_uv"), 1, value_ptr(d_to_f(camera->projection_center)));
 		glUniform3fv(glGetUniformLocation(compute_program, "camera_p_u"),  1, value_ptr(d_to_f(camera->projection_u)));

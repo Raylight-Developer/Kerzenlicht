@@ -38,7 +38,7 @@ namespace KL {
 	};
 
 	struct File {
-		map<uint64, void*> pointer_map;
+		BiMap<uint64, uint64> pointer_map; // hash - pointer_address
 
 		vector<SHADER::Texture*> textures;
 		vector<KL::Shader*> shaders;

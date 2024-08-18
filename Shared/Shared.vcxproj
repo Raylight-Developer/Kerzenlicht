@@ -103,10 +103,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="External\stb_image.h" />
+    <ClInclude Include="Include\Glm.hpp" />
     <ClInclude Include="Include\Data_Property.hpp" />
     <ClInclude Include="Include\File.hpp" />
     <ClInclude Include="Include\Include.hpp" />
     <ClInclude Include="Include\Lace.hpp" />
+    <ClInclude Include="Include\Macros.hpp" />
     <ClInclude Include="Include\Object\Nodes\Compiler.hpp" />
     <ClInclude Include="Include\Object\Nodes\Object_Nodes.hpp" />
     <ClInclude Include="Include\Nodes.hpp" />
@@ -131,6 +133,8 @@
     <ClInclude Include="Include\Ops.hpp" />
     <ClInclude Include="Include\Shared.hpp" />
     <ClInclude Include="Include\Scene.hpp" />
+    <ClInclude Include="Include\String.hpp" />
+    <ClInclude Include="Include\Types.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Session.cpp" />

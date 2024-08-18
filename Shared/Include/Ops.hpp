@@ -66,14 +66,14 @@ namespace KL {
 
 	template<typename T>
 	struct Observable_Ptr {
-		T* ptr;
+		T* uptr;
 		map<void*, function<void()>> callbacks;
 
-		Observable_Ptr() : ptr(nullptr) {}
-		Observable_Ptr(T* pointer) : ptr(pointer) {}
+		Observable_Ptr() : uptr(nullptr) {}
+		Observable_Ptr(T* pointer) : uptr(pointer) {}
 
 		void set(T* pointer) {
-			ptr = pointer;
+			uptr = pointer;
 			for (const auto& [key, func] : callbacks)
 				func();
 		}
@@ -86,6 +86,65 @@ namespace KL {
 			callbacks.clear();
 		}
 	};
+
+	template <typename K, typename V>
+	struct BiMap {
+		map<K, V> key_to_val;
+		map<V, K> val_to_key;
+
+		void insert(const K& key, const V& val) {
+			if (key_to_val.find(key) != key_to_val.end() || val_to_key.find(val) != val_to_key.end()) {
+				throw std::runtime_error("Key or value already exists");
+			}
+			key_to_val[key] = val;
+			val_to_key[val] = key;
+		}
+
+		void removeKey(const K& key) {
+			auto it = key_to_val.find(key);
+			if (it == key_to_val.end()) {
+				throw std::runtime_error("Key not found");
+			}
+			V value = it->second;
+			key_to_val.erase(it);
+			val_to_key.erase(value);
+		}
+
+		void removeVal(const V& val) {
+			auto it = val_to_key.find(val);
+			if (it == val_to_key.end()) {
+				throw std::runtime_error("Value not found");
+			}
+			K key = it->second;
+			val_to_key.erase(it);
+			key_to_val.erase(key);
+		}
+
+		V getVal(const K& key) const {
+			auto it = key_to_val.find(key);
+			if (it != key_to_val.end()) {
+				return it->second;
+			}
+			throw std::runtime_error("Key not found");
+		}
+
+		K getKey(const V& value) const {
+			auto it = val_to_key.find(value);
+			if (it != val_to_key.end()) {
+				return it->second;
+			}
+			throw std::runtime_error("Value not found");
+		}
+
+		void clear() {
+			key_to_val.clear();
+			val_to_key.clear();
+		}
+
+		uint64 size() const {
+			return key_to_val.size();
+		}
+	};
 }
 // Templates
 template<typename T>
@@ -93,13 +152,13 @@ uint e_to_u(const T& enumerator) {
 	return static_cast<uint>(enumerator);
 };
 
-template <typename T>
-string ptr_to_str(const T pointer) {
-	return "* " + to_string(reinterpret_cast<uint64>(pointer));
+template<typename T>
+T ptr(const uint64& hash) {
+	return reinterpret_cast<T>(hash);
 }
 
 template <typename T>
-uint64 ptr(const T pointer) {
+uint64 uptr(const T pointer) {
 	return reinterpret_cast<uint64>(pointer);
 }
 
