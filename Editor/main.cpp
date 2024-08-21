@@ -10,16 +10,6 @@ int main(int argc, char* argv[]) {
 
 	GUI::WORKSPACE::App* application = new GUI::WORKSPACE::App(argc, argv);
 	application->exec();
-/*
-	QApplication* app = new QApplication(argc, argv);
-	Lace log = Lace();
-	Session::getInstance().setLog(&log);
-
-	KL::File file = KL::File::f_getAsciiFile("./Resources/Assets/Save.krz");
-	Session::getInstance().setFile(&file);
-
-	FILE->f_saveBinaryFile("./Resources/Assets/Save.krzb");
-*/
 
 	return 0;
 }

@@ -91,21 +91,35 @@
   └Build-D
  └Node-Tree
 └Node-Trees
+┌Textures( 1 )
+  ┌Texture [ 0 ] Checker
+   * 2159854365162
+   ./Resources/Checker.png
+  └Texture
+└Textures
 ┌Shaders( 2 )
  ┌Shader [ 0 ] UV debug
   * 2133789651665
   Type CODE
+  ┌Inputs( 1 )
+   ┌Input [ 0 ]
+    * 2159854365162
+    Type TEXTURE
+   └Input
+  └Inputs
   ┌Code
 vec2 uv =
 	hit_data.uvw.x * vec2(hit_data.hit_tri.uv_a_x, hit_data.hit_tri.uv_a_y) +
 	hit_data.uvw.y * vec2(hit_data.hit_tri.uv_b_x, hit_data.hit_tri.uv_b_y) +
 	hit_data.uvw.z * vec2(hit_data.hit_tri.uv_c_x, hit_data.hit_tri.uv_c_y);
-return sampleTextureRgba8u(textures[0], vec2(uv.x, 1 - uv.y));
+return sampleTextureRgba8u(<inputs>[0], vec2(uv.x, 1 - uv.y));
   └Code
  └Shader
  ┌Shader [ 1 ] Cosine Distance Debug
-  * 2133789651665
+  * 2198716546185
   Type CODE
+  ┌Inputs( 0 )
+  └Inputs
   ┌Code
 return vec4(vec3(cos(2.0 * hit_data.t_dist) * 0.5 + 0.5), 1.0);
   └Code
@@ -117,28 +131,28 @@ return vec4(vec3(cos(2.0 * hit_data.t_dist) * 0.5 + 0.5), 1.0);
   Type MESH
   ┌Mesh
    ┌Vertices( 8 )
-    0 ( 0.2 -0.2 -0.2 )
-    1 ( 0.2 0.2 -0.2 )
-    2 ( 0.2 -0.2 0.2 )
-    3 ( 0.2 0.2 0.2 )
+    0 (  0.2 -0.2 -0.2 )
+    1 (  0.2  0.2 -0.2 )
+    2 (  0.2 -0.2  0.2 )
+    3 (  0.2  0.2  0.2 )
     4 ( -0.2 -0.2 -0.2 )
-    5 ( -0.2 0.2 -0.2 )
-    6 ( -0.2 -0.2 0.2 )
-    7 ( -0.2 0.2 0.2 )
+    5 ( -0.2  0.2 -0.2 )
+    6 ( -0.2 -0.2  0.2 )
+    7 ( -0.2  0.2  0.2 )
    └Vertices
    ┌Vertex-Groups( 0 )
    └Vertex-Groups
    ┌Faces( 12 )
-    0 3 [ 1 2 0 ]
-    1 3 [ 3 6 2 ]
-    2 3 [ 7 4 6 ]
-    3 3 [ 5 0 4 ]
-    4 3 [ 6 0 2 ]
-    5 3 [ 3 5 7 ]
-    6 3 [ 1 3 2 ]
-    7 3 [ 3 7 6 ]
-    8 3 [ 7 5 4 ]
-    9 3 [ 5 1 0 ]
+    0  3 [ 1 2 0 ]
+    1  3 [ 3 6 2 ]
+    2  3 [ 7 4 6 ]
+    3  3 [ 5 0 4 ]
+    4  3 [ 6 0 2 ]
+    5  3 [ 3 5 7 ]
+    6  3 [ 1 3 2 ]
+    7  3 [ 3 7 6 ]
+    8  3 [ 7 5 4 ]
+    9  3 [ 5 1 0 ]
     10 3 [ 6 4 0 ]
     11 3 [ 3 1 5 ]
    └Faces
@@ -153,10 +167,10 @@ return vec4(vec3(cos(2.0 * hit_data.t_dist) * 0.5 + 0.5), 1.0);
   Type MESH
   ┌Mesh
    ┌Vertices( 4 )
-    0 ( 2.0 0.0 -2.0 )
+    0 (  2.0 0.0 -2.0 )
     1 ( -2.0 0.0 -2.0 )
-    2 ( 2.0 0.0 2.0 )
-    3 ( -2.0 0.0 2.0 )
+    2 (  2.0 0.0  2.0 )
+    3 ( -2.0 0.0  2.0 )
    └Vertices
    ┌Vertex-Groups( 0 )
    └Vertex-Groups

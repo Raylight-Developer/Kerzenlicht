@@ -127,11 +127,14 @@
 					{
 						"scope": "kerz.glsl",
 						"settings": {
-							"foreground": "#cacaca"
+							"foreground": "#959595"
 						}
 					}
 				]
 			}
 		}
+	},
+	"dependencies": {
+		"kerzenlicht-language": "file:"
 	}
 }

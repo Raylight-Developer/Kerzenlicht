@@ -234,7 +234,7 @@
       <SDLCheck>false</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;COMPILE_EDITOR;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Programs\Coding\Lib\python 3.11\include;C:\Programs\Coding\Lib\pybind 2.11.1\include;C:\Programs\Coding\Lib\glm 0.9.9.8;C:\Programs\Coding\Lib\glfw-3.3.8;C:\Programs\Coding\Lib\glad</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Programs\Coding\Lib\python 3.11\include;C:\Programs\Coding\Lib\pybind 2.11.1\include;C:\Programs\Coding\Lib\glm 0.9.9.8;C:\Programs\Coding\Lib\glfw-3.3.8;C:\Programs\Coding\Lib\glad;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <OpenMPSupport>true</OpenMPSupport>

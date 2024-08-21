@@ -8,6 +8,9 @@ namespace KL {
 	struct Scene;
 	struct Object;
 	struct Transform;
+	namespace SHADER {
+		struct Texture;
+	}
 }
 
 // FWD DECL THIS
@@ -51,6 +54,8 @@ namespace KL {
 		Data(const bool& data);
 		Data(const uint64& data);
 		Data(const int64& data);
+		Data(Object* data);
+		Data(SHADER::Texture* data);
 
 		Data operator+(const Data& other);
 		Data operator-(const Data& other);
@@ -62,6 +67,7 @@ namespace KL {
 		dvec1  getDouble() const;
 		KL::Scene* getScene()    const;
 		KL::Object* getObject()  const;
+		KL::SHADER::Texture* getTexture()  const;
 
 		string to_string() const;
 	};

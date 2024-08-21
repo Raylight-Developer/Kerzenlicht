@@ -6,6 +6,18 @@
 	"scopeName": "source.krz",
 	"patterns": [
 		{
+			"name": "kerz.glsl",
+			"begin": "^[ ]*┌Code",
+			"end": "^[ ]*└Code",
+			"contentName": "source.code",
+			"patterns": [
+				{
+					"name": "source.code.line",
+					"match": "^(?!^[ ]*┌Code)(?!^[ ]*└Code).+"
+				}
+			]
+		},
+		{
 			"name": "kerz.section.squiggly",
 			"match": "[ ]*[└┌]"
 		},
@@ -80,10 +92,6 @@
 		{
 			"name": "kerz.comment",
 			"match": "\\/\\/.*"
-		},
-		{
-			"name": "kerz.glsl",
-			"match": "┌Code([\\s\\S]*?)└Code"
 		}
 	]
 }

@@ -21,6 +21,7 @@ KL::SHADER::Texture::Texture() :
 #include "stb_image.h"
 
 bool KL::SHADER::Texture::loadFromFile(const string & file_path) {
+	this->file_path = file_path;
 	int width, height, channels;
 	unsigned char* tex_data = stbi_load(file_path.c_str(), &width, &height, &channels, STBI_rgb_alpha);
 	if (tex_data == nullptr) {
@@ -70,12 +71,33 @@ string KL::Shader::compileMaterials(const string & code) {
 	vector<string> material_code;
 
 	uint64 id = 0;
-	for (KL::Shader* material : FILE->shaders) {
+	for (KL::Shader* shader : FILE->shaders) {
+		string process_shader = shader->shader_code;
+
+		uint64 input_pos = process_shader.find("<inputs>[");
+		while (input_pos != string::npos) {
+			uint64 end_pos = process_shader.find("]", input_pos);
+			string index_str = process_shader.substr(input_pos + 9, end_pos - (input_pos + 9));
+			uint64 index = str_to_ul(index_str);
+
+			switch (shader->inputs[index].type) {
+				case (DATA::Type::TEXTURE) : {
+					process_shader.replace(input_pos, 9, "textures[");
+					auto [exists, result_index] = f_getVectorIndex(FILE->textures, shader->inputs[index].getTexture(), MAX_UINT64);
+					if (exists) {
+						process_shader.replace(input_pos + 9, index_str.length(), to_string(result_index));
+					}
+					break;
+				}
+			}
+			input_pos = process_shader.find("<inputs>[");
+		}
+
 		Lace shader_code;
 		shader_code ENDL << Lace_TAB() << "else if (hit_data.material == " << id++ << ") {";
-		shader_code ENDL << f_prependToLine(material->shader_code, "\t\t");
+		shader_code ENDL << f_prependToLine(process_shader, "\t\t");
 		shader_code << Lace_TAB() << "}";
-		cout << material->shader_code;
+		cout << shader->shader_code;
 
 		material_code.push_back(shader_code.str());
 	}

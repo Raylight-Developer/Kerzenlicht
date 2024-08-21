@@ -370,7 +370,7 @@ void GUI::WORKSPACE::Object_Node_Viewport::mouseMoveEvent(QMouseEvent* event) {
 
 void GUI::WORKSPACE::Object_Node_Viewport::keyPressEvent(QKeyEvent* event) {
 	Graphics_View::keyPressEvent(event);
-	if (event->key() == Qt::K::Key_Delete) {
+	if (event->key() == Qt::Key_Delete) {
 		for (NODE::Node* node : selection) {
 			scene->removeItem(node);
 			active_node_tree->nodes.erase(std::find(active_node_tree->nodes.begin(), active_node_tree->nodes.end(), node));

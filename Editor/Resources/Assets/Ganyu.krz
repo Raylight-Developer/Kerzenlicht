@@ -5,6 +5,7 @@
 └Node-Trees
 ┌Textures( 1 )
   ┌Texture [ 0 ] Ganyu
+   * 2159854365162
    ./Resources/Ganyu.jpg
   └Texture
 └Textures
@@ -12,12 +13,18 @@
  ┌Shader [ 0 ] Ganyu
   * 2133789651665
   Type CODE
+  ┌Inputs( 1 )
+   ┌Input [ 0 ]
+    * 2159854365162
+    Type TEXTURE
+   └Input
+  └Inputs
   ┌Code
 vec2 uv =
 	hit_data.uvw.x * vec2(hit_data.hit_tri.uv_a_x, hit_data.hit_tri.uv_a_y) +
 	hit_data.uvw.y * vec2(hit_data.hit_tri.uv_b_x, hit_data.hit_tri.uv_b_y) +
 	hit_data.uvw.z * vec2(hit_data.hit_tri.uv_c_x, hit_data.hit_tri.uv_c_y);
-return sampleTextureRgba8u(textures[0], vec2(uv.x, 1 - uv.y));
+return sampleTextureRgba8u(<inputs>[000], vec2(uv.x, 1 - uv.y));
   └Code
  └Shader
 └Shaders

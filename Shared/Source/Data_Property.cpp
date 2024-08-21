@@ -1,5 +1,8 @@
 #include "Data_Property.hpp"
 
+#include "Object/Object.hpp"
+#include "Shader/Shader.hpp"
+
 KL::Data::Data() {
 	data = nullptr;
 	type = DATA::Type::NONE;
@@ -26,6 +29,14 @@ KL::Data::Data(const uint64& data) : data(data) {
 }
 KL::Data::Data(const int64& data) : data(data) {
 	modifier = DATA::Modifier::SINGLE; type = DATA::Type::INT;
+}
+
+KL::Data::Data(Object* data) : data(data) {
+	modifier = DATA::Modifier::SINGLE; type = DATA::Type::OBJECT;
+}
+
+KL::Data::Data(SHADER::Texture* data) : data(data) {
+	modifier = DATA::Modifier::SINGLE; type = DATA::Type::TEXTURE;
 }
 
 KL::Data KL::Data::operator+(const KL::Data & other) {
@@ -98,6 +109,10 @@ KL::Scene* KL::Data::getScene() const {
 
 KL::Object* KL::Data::getObject() const {
 	return any_cast<KL::Object*>(data);
+}
+
+KL::SHADER::Texture* KL::Data::getTexture() const {
+	return any_cast<KL::SHADER::Texture*>(data);
 }
 
 string KL::Data::to_string() const {

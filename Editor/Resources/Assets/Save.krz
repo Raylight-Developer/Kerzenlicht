@@ -91,6 +91,12 @@
   └Build-D
  └Node-Tree
 └Node-Trees
+┌Textures( 1 )
+  ┌Texture [ 0 ] Checker
+   * 2159854365162
+   ./Resources/Checker.png
+  └Texture
+└Textures
 ┌Shaders( 2 )
  ┌Shader [ 0 ] UV debug
   * 2195305726816
@@ -103,6 +109,8 @@ return vec4(val, 0, val, 1.0);
  ┌Shader [ 1 ] Cosine Distance Debug
   * 2195305730336
   Type CODE
+  ┌Inputs( 0 )
+  └Inputs
   ┌Code
 return vec4(vec3(cos(5.0 * hit_data.t_dist) * 0.5 + 0.5), 1.0);
   └Code

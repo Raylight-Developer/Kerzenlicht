@@ -275,7 +275,7 @@ void KL::Editor_File::f_loadAsciiBuild(const Token_Array& token_data, const Toke
 	}
 }
 
-void KL::Editor_File::f_saveAsciiNodeTree(Lace& lace, KL::Node_Tree* data, const uint64& i) {
+void KL::Editor_File::f_saveAsciiNodeTree(Lace& lace, const KL::Node_Tree* data, const uint64& i) {
 	uint64 j = 0;
 	lace NL << "┌Node-Tree [ " << i << " ] " << data->name;
 	lace++;

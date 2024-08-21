@@ -40,6 +40,7 @@ namespace KL {
 		}
 		struct Texture {
 			string name;
+			string file_path;
 			uvec2 resolution;
 			TEXTURE::Format format;
 			vector<uint> data;
@@ -58,6 +59,7 @@ namespace KL {
 
 		SHADER::Type type;
 		string shader_code;
+		vector<Data> inputs;
 		KL::Node_Tree* node_tree;
 
 		Shader();
