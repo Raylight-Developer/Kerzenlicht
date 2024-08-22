@@ -30,6 +30,11 @@ namespace KL {
 #define ANSI_CYAN   << "\033[96m"
 #define ANSI_WHITE  << "\033[97m"
 
+#define NL  << KL::Lace_NL()
+#define SP  << KL::Lace_S()
+#define TAB << KL::Lace_TAB()
+#define PTR << "* "
+
 // DECL
 namespace KL {
 	struct Session {

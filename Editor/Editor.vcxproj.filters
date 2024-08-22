@@ -59,6 +59,9 @@
     <ClCompile Include="Source\Core\Editor_File.cpp">
       <Filter>Source\Core</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Workspaces\Shader_Editor.cpp">
+      <Filter>Source\Workspaces</Filter>
+    </ClCompile>
     <ClCompile Include="..\Shared\Source\Data_Property.cpp">
       <Filter>Shared\Source</Filter>
     </ClCompile>
@@ -137,8 +140,8 @@
     <ClCompile Include="..\Shared\Source\Shader\Shader.cpp">
       <Filter>Shared\Source</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Workspaces\Shader_Editor.cpp">
-      <Filter>Source\Workspaces</Filter>
+    <ClCompile Include="..\Shared\Source\Gpu_Scene.cpp">
+      <Filter>Shared\Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -195,6 +198,9 @@
     </ClInclude>
     <ClInclude Include="Include\Core\Editor_File.hpp">
       <Filter>Include\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Workspaces\Shader_Editor.hpp">
+      <Filter>Include\Workspaces</Filter>
     </ClInclude>
     <ClInclude Include="..\Shared\Include\Data_Property.hpp">
       <Filter>Shared\Include</Filter>
@@ -280,11 +286,11 @@
     <ClInclude Include="..\Shared\Include\Shared.hpp">
       <Filter>Shared\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\Shared\Include\Gpu_Scene.hpp">
+      <Filter>Shared\Include</Filter>
+    </ClInclude>
     <ClInclude Include="..\Shared\External\stb_image.h">
       <Filter>Shared\External</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Workspaces\Shader_Editor.hpp">
-      <Filter>Include\Workspaces</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -310,16 +316,16 @@
       <UniqueIdentifier>{1ffeab3f-93a5-45d3-87b0-708d6cb6bee3}</UniqueIdentifier>
     </Filter>
     <Filter Include="Shared">
-      <UniqueIdentifier>{506420d3-6aca-48be-8801-4018723c6a0e}</UniqueIdentifier>
+      <UniqueIdentifier>{d6cf6780-a563-4954-b8e2-c0b1e48173f0}</UniqueIdentifier>
     </Filter>
     <Filter Include="Shared\Include">
-      <UniqueIdentifier>{8a39aabc-995d-4c13-98e4-53268d0eb86b}</UniqueIdentifier>
+      <UniqueIdentifier>{1dd227d6-0ee2-44d0-a181-de230c124c51}</UniqueIdentifier>
     </Filter>
     <Filter Include="Shared\Source">
-      <UniqueIdentifier>{ce252d54-ef09-4996-b45b-11f0a77a694e}</UniqueIdentifier>
+      <UniqueIdentifier>{ca0815c0-f05e-4ebb-ba7a-e959a4888f7a}</UniqueIdentifier>
     </Filter>
     <Filter Include="Shared\External">
-      <UniqueIdentifier>{0b37c6a0-b344-4d31-ae76-0e773bb429dc}</UniqueIdentifier>
+      <UniqueIdentifier>{8e698fc2-2683-4e5c-925d-38a3cea63d21}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

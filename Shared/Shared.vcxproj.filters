@@ -113,6 +113,9 @@
     <ClInclude Include="Include\Types.hpp">
       <Filter>Include</Filter>
     </ClInclude>
+    <ClInclude Include="Include\Gpu_Scene.hpp">
+      <Filter>Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Ops.cpp">
@@ -192,6 +195,9 @@
     </ClCompile>
     <ClCompile Include="Source\Object\Data\Volume.cpp">
       <Filter>Source\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Gpu_Scene.cpp">
+      <Filter>Source</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

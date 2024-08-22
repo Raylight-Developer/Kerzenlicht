@@ -5,6 +5,7 @@
 #include "QT.hpp"
 
 #include "Core/Editor_File.hpp"
+#include "Gpu_Scene.hpp"
 
 // FWD DECL OTHER
 namespace GUI {
@@ -65,42 +66,72 @@ namespace GUI {
 		struct Viewport : QOpenGLWindow, protected QOpenGLFunctions_4_5_Core {
 			Workspace_Viewport* parent;
 
-			uvec2 resolution;
-			dvec1 aspect_ratio;
-			dvec1 resolution_scale;
+			KL::GPU_Scene* gpu_data;
+
+			dvec1 render_scale;
+			dvec1 display_aspect_ratio;
+			dvec1 render_aspect_ratio;
+			uvec2 display_resolution;
 			uvec2 render_resolution;
 
 			uvec3 compute_layout;
 			vector<VIEWPORT_REALTIME::GPU_Triangle> triangles;
 			unordered_map<KL::Object*, vector<VIEWPORT_REALTIME::Triangle>> triangle_map;
 
-			GLuint compute_shader_program;
-			GLuint display_shader_program;
+			GLuint compute_program;
+			GLuint post_program;
 
-			GLuint compute_render;
+			GLuint accumulation_render_layer;
+			GLuint normal_render_layer;
+			GLuint bvh_render_layer;
+			GLuint raw_render_layer;
 
-			GLuint fullscreen_quad_VAO;
-			GLuint fullscreen_quad_VBO;
-			GLuint fullscreen_quad_EBO;
+			uint   frame_counter;
+			uint   frame_count;
+			uint64 runframe;
 
-			uint8 fps_counter;
-			chrono::steady_clock::time_point fps_measure;
+			bool recompile;
+			bool reset;
+			bool debug;
 
-			uint64 frame_counter;
-			chrono::steady_clock::time_point last_delta;
-			dvec1 delta;
+			chrono::high_resolution_clock::time_point current_time;
+			chrono::high_resolution_clock::time_point start_time;
+			chrono::high_resolution_clock::time_point last_time;
+			dvec1 window_time;
+			dvec1 frame_time;
+
+			uint view_layer;
 
 			Viewport(Workspace_Viewport* parent);
 
 			void f_pipeline();
 			void f_uploadData();
-			void f_updateTick();
+			void f_tickUpdate();
 
 			void f_selectObject(const dvec2& uv);
 
 			void initializeGL() override;
 			void paintGL() override;
 			void resizeGL(int w, int h) override;
+
+
+			GLuint renderLayer(const uvec2& resolution);
+			GLuint fragmentShaderProgram(const string& file_path);
+			GLuint computeShaderProgram(const string& file_path);
+			void bindRenderLayer(const GLuint& program_id, const GLuint& unit, const GLuint& id, const string& name);
+			void checkShaderCompilation(const GLuint& shader, const string& shader_code);
+			void checkProgramLinking(const GLuint& program);
+			void printShaderErrorWithContext(const string& shaderSource, const string& errorLog);
+
+			template <typename T>
+			GLuint ssboBinding(const GLuint& binding, const GLuint& size, const T& data) {
+				GLuint buffer;
+				glGenBuffers(1, &buffer);
+				glBindBuffer(GL_SHADER_STORAGE_BUFFER, buffer);
+				glBufferData(GL_SHADER_STORAGE_BUFFER, size, data, GL_STATIC_DRAW);
+				glBindBufferBase(GL_SHADER_STORAGE_BUFFER, binding, buffer);
+				return buffer;
+			}
 		};
 	}
 }

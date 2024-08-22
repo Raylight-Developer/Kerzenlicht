@@ -14,6 +14,7 @@
     <ClInclude Include="..\Shared\External\stb_image.h" />
     <ClInclude Include="..\Shared\Include\Data_Property.hpp" />
     <ClInclude Include="..\Shared\Include\File.hpp" />
+    <ClInclude Include="..\Shared\Include\Gpu_Scene.hpp" />
     <ClInclude Include="..\Shared\Include\Include.hpp" />
     <ClInclude Include="..\Shared\Include\Lace.hpp" />
     <ClInclude Include="..\Shared\Include\Nodes.hpp" />
@@ -64,6 +65,7 @@
   <ItemGroup>
     <ClCompile Include="..\Shared\Source\Data_Property.cpp" />
     <ClCompile Include="..\Shared\Source\File.cpp" />
+    <ClCompile Include="..\Shared\Source\Gpu_Scene.cpp" />
     <ClCompile Include="..\Shared\Source\Lace.cpp" />
     <ClCompile Include="..\Shared\Source\Nodes.cpp" />
     <ClCompile Include="..\Shared\Source\Object\Data.cpp" />

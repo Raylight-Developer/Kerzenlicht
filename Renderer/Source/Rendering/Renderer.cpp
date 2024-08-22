@@ -42,7 +42,7 @@ void KL::Renderer::init() {
 	initImGui();
 	systemInfo();
 
-	pipeline();
+	f_pipeline();
 	displayLoop();
 }
 
@@ -152,24 +152,22 @@ void KL::Renderer::systemInfo() {
 	LOG ENDL << "SSBO struct alignment multiplier: " << uniformBufferOffsetAlignment;
 }
 
-void KL::Renderer::pipeline() {
+void KL::Renderer::f_pipeline() {
 	glViewport(0, 0, display_resolution.x , display_resolution.y);
 }
 
-void KL::Renderer::tickUpdate() {
+void KL::Renderer::f_tickUpdate() {
 	for (const KL::Object* object : FILE->active_scene->uptr->objects) {
 		if (object->node_tree) {
 			object->node_tree->exec(&frame_time);
 		}
 	}
 
-	gpu_data->updateTick();
+	gpu_data->f_tickUpdate();
 	
 	GLint ssboMaxSize;
 	glGetIntegerv(GL_MAX_SHADER_STORAGE_BLOCK_SIZE, &ssboMaxSize);
-	//gpu_data->printInfo(ssboMaxSize);
 
-	// SSBOs
 	ssboBinding(5, ul_to_u(gpu_data->trianglesSize()  ), gpu_data->triangles.data());
 	ssboBinding(6, ul_to_u(gpu_data->bvhNodesSize()   ), gpu_data->bvh_nodes.data());
 	ssboBinding(7, ul_to_u(gpu_data->texturesSize()   ), gpu_data->textures.data());
@@ -280,9 +278,9 @@ void KL::Renderer::displayLoop() {
 
 	// Compute Output
 	GLuint accumulation_render_layer = renderLayer(render_resolution);
-	GLuint raw_render_layer = renderLayer(render_resolution);
-	GLuint bvh_render_layer = renderLayer(render_resolution);
-	GLuint normal_render_layer = renderLayer(render_resolution);
+	GLuint normal_render_layer       = renderLayer(render_resolution);
+	GLuint bvh_render_layer          = renderLayer(render_resolution);
+	GLuint raw_render_layer          = renderLayer(render_resolution);
 
 	gpu_data->updateTextures();
 	gpu_data->printInfo();
@@ -295,7 +293,7 @@ void KL::Renderer::displayLoop() {
 		window_time += frame_time;
 
 		gameLoop();
-		tickUpdate();
+		f_tickUpdate();
 
 		glUseProgram(compute_program);
 		glUniform1ui(glGetUniformLocation(compute_program, "frame_count"), ul_to_u(runframe));

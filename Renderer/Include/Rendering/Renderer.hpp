@@ -9,7 +9,7 @@
 
 #include "OpenGL.hpp"
 
-#include "Core/Gpu_Scene.hpp"
+#include "Gpu_Scene.hpp"
 #include "Core/Render_File.hpp"
 
 namespace KL {
@@ -54,8 +54,8 @@ namespace KL {
 		void initImGui();
 		void systemInfo();
 
-		void pipeline();
-		void tickUpdate();
+		void f_pipeline();
+		void f_tickUpdate();
 
 		void guiLoop();
 		void gameLoop();

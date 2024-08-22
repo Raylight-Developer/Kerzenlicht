@@ -10,16 +10,32 @@ GUI::WORKSPACE::Workspace_Shader_Editor::Workspace_Shader_Editor(Workspace_Manag
 	active_shader(nullptr)
 {
 	parent->setMaximumWidth(800);
-	//viewport = new Shader_Node_Viewport(this);
-	shelf = new Shader_Node_Shelf(this);
+	shelf = new Shader_Shelf(this);
 
 	glsl_editor = new Shader_Code_Editor(this);
+	shader_inputs = new Shader_Inputs(this);
 
 	auto splitter = new GUI::Splitter(this);
-	splitter->addWidget(glsl_editor);
 	splitter->addWidget(shelf);
+	splitter->addWidget(glsl_editor);
+	splitter->addWidget(shader_inputs);
 
 	addWidget(splitter);
+}
+
+GUI::WORKSPACE::Shader_Shelf::Shader_Shelf(Workspace_Shader_Editor* parent) :
+	parent(parent),
+	Tree(parent)
+{
+	for (KL::Shader* shader : FILE->shaders) {
+		auto item = new Tree_Item(this, QString::fromStdString(shader->name), 1);
+		item->setData(0, 1000, uptr(shader));
+	}
+
+	QObject::connect(this, &GUI::Tree::itemDoubleClicked, [this](QTreeWidgetItem* item) {
+		this->parent->glsl_editor->load(ptr<KL::Shader*>(item->data(0,1000).toULongLong()));
+		this->parent->shader_inputs->load(ptr<KL::Shader*>(item->data(0,1000).toULongLong()));
+	});
 }
 
 GUI::WORKSPACE::Shader_Code_Editor::Shader_Code_Editor(Workspace_Shader_Editor* parent) :
@@ -75,22 +91,6 @@ void GUI::WORKSPACE::Shader_Code_Editor::onTextChanged() {
 		completer->setModel(new QStringListModel(suggestions, completer));
 		completer->complete();
 	}
-}
-
-GUI::WORKSPACE::Shader_Node_Shelf::Shader_Node_Shelf(Workspace_Shader_Editor* parent) :
-	parent(parent),
-	Tree(parent)
-{
-	setMaximumWidth(100);
-
-	for (KL::Shader* shader : FILE->shaders) {
-		auto item = new Tree_Item(this, QString::fromStdString(shader->name), 1);
-		item->setData(0, 1000, uptr(shader));
-	}
-
-	QObject::connect(this, &GUI::Tree::itemDoubleClicked, [this](QTreeWidgetItem* item) {
-		this->parent->glsl_editor->load(reinterpret_cast<KL::Shader*>(item->data(0,1000).toULongLong()));
-	});
 }
 
 GUI::WORKSPACE::SHADER_EDITOR::Syntax_Highlighter::Syntax_Highlighter(QTextDocument* parent) : QSyntaxHighlighter(parent) {
@@ -159,5 +159,26 @@ void GUI::WORKSPACE::SHADER_EDITOR::Syntax_Highlighter::highlightBlock(const QSt
 			QRegularExpressionMatch match = matchIterator.next();
 			setFormat(match.capturedStart(), match.capturedLength(), rule.format);
 		}
+	}
+}
+
+GUI::WORKSPACE::Shader_Inputs::Shader_Inputs(Workspace_Shader_Editor* parent) :
+	parent(parent)
+{
+
+}
+
+void GUI::WORKSPACE::Shader_Inputs::load(KL::Shader* shader) {
+	clear();
+	for (const Data& data : shader->inputs) {
+		QListWidgetItem* item = new QListWidgetItem(this);
+		item->setData(1000, uptr(shader));
+		switch (data.type) {
+			case DATA::Type::TEXTURE: {
+				item->setText("TEXTURE | " + QString::fromStdString(data.getTexture()->name));
+				break;
+			}
+		}
+		addItem(item);
 	}
 }

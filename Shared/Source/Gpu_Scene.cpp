@@ -1,8 +1,14 @@
-﻿#include "Core/Gpu_Scene.hpp"
+﻿#include "Gpu_Scene.hpp"
 
-#define NL << Lace_NL()
-#define SP << Lace_S()
-#define TAB << Lace_TAB()
+#ifdef COMPILE_EDITOR
+	#include "Core/Editor_File.hpp"
+#elif COMPILE_RENDERER
+	#include "Core/Render_File.hpp"
+#else
+	#include "File.hpp"
+#endif
+
+#include "Session.hpp"
 
 KL::GPU_Scene::GPU_Scene() {
 	triangles = {};
@@ -74,7 +80,7 @@ void KL::GPU_Scene::updateTextures() {
 	}
 }
 
-void KL::GPU_Scene::updateTick() {
+void KL::GPU_Scene::f_tickUpdate() {
 	triangles.clear();
 	bvh_nodes.clear();
 

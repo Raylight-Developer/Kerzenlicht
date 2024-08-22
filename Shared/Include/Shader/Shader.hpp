@@ -64,6 +64,6 @@ namespace KL {
 
 		Shader();
 
-		static string compileMaterials(const string& code);
+		static string f_compileShaders(const string& code);
 	};
 }

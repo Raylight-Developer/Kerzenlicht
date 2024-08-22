@@ -101,7 +101,7 @@ string f_join(const Tokens& tokens, const uint64& start, const uint64& end) {
 	);
 }
 
-string f_prependToLine(const string& value, const string& character) {
+string f_addLinesToLine(const string& value, const string& character) {
 	istringstream stream(value);
 	ostringstream result;
 	string line;

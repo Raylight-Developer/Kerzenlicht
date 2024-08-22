@@ -94,7 +94,7 @@
 ┌Textures( 1 )
   ┌Texture [ 0 ] Checker
    * 2159854365162
-   ./Resources/Checker.png
+   ./Resources/Textures/UV_Checker.png
   └Texture
 └Textures
 ┌Shaders( 2 )

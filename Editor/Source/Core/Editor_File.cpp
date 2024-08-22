@@ -1,9 +1,5 @@
 ﻿#include "Core/Editor_File.hpp"
 
-#define NL << KL::Lace_NL()
-#define SP << KL::Lace_S()
-#define PTR << "* "
-
 KL::Editor_File::Editor_File() :
 	File()
 {}

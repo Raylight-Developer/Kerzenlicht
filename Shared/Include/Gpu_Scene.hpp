@@ -2,9 +2,7 @@
 
 #include "Shared.hpp"
 
-#include "Core/Render_File.hpp"
-
-#include "Rendering/OpenGl.hpp"
+#include "File.hpp"
 
 namespace KL {
 	struct GPU_Scene;
@@ -32,7 +30,7 @@ namespace KL {
 		GPU_Scene();
 
 		void updateTextures();
-		void updateTick();
+		void f_tickUpdate();
 
 		uint64 bvhNodesSize() const;
 		uint64 texturesSize() const;

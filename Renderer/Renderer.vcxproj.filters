@@ -43,9 +43,6 @@
     <ClCompile Include="Resources\glad.c">
       <Filter>Resources</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Core\Gpu_Scene.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
     <ClCompile Include="..\Shared\Source\Data_Property.cpp">
       <Filter>Shared\Source</Filter>
     </ClCompile>
@@ -148,6 +145,9 @@
     <ClCompile Include="Include\External\imgui-1.90\imgui_tables.cpp">
       <Filter>External</Filter>
     </ClCompile>
+    <ClCompile Include="..\Shared\Source\Gpu_Scene.cpp">
+      <Filter>Shared\Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\Rendering\Renderer.hpp">
@@ -157,9 +157,6 @@
       <Filter>Include</Filter>
     </ClInclude>
     <ClInclude Include="Include\Rendering\OpenGl.hpp">
-      <Filter>Include</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Core\Gpu_Scene.hpp">
       <Filter>Include</Filter>
     </ClInclude>
     <ClInclude Include="..\Shared\Include\Data_Property.hpp">
@@ -275,6 +272,9 @@
     </ClInclude>
     <ClInclude Include="..\Shared\External\stb_image.h">
       <Filter>Shared\External</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Shared\Include\Gpu_Scene.hpp">
+      <Filter>Shared\Include</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

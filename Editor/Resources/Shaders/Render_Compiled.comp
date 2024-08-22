@@ -1,0 +1,409 @@
+//-------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
+#version 460
+//-------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
+struct Triangle {
+	vec3  pos_a;
+	float uv_a_x;
+	vec3  normal_a;
+	float uv_a_y; // 32
+	vec3  pos_b;
+	float uv_b_x;
+	vec3  normal_b;
+	float uv_b_y; // 64
+	vec3  pos_c;
+	float uv_c_x;
+	vec3  normal_c;
+	float uv_c_y; // 96
+	vec3  padding;
+	uint  material; // 128
+};
+struct Bvh {
+	vec3 p_min;
+	uint pointer;   // 16
+	vec3 p_max;
+	uint tri_count; // 32 // If == 0, pointer leads to other Bvh Node, else leads to Triangle Start Index
+};
+struct Texture {
+	uint start;
+	uint width;
+	uint height;
+	uint format; // 32
+};
+struct Shader {
+	vec3  baseColor;
+	float subsurface;
+	float roughness;
+	float metallic;
+	float specular;
+	float specularTint;
+	float clearcoat;
+	float clearcoatGloss;
+	float anisotropic;
+	float sheen;
+	float sheenTint;
+};
+// INTERNAL ---------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
+struct Ray {
+	vec3  origin;
+	vec3  direction;
+};
+struct Hit {
+	bool  error;
+	vec3  pos;
+	float t_dist;
+	bool  inside;
+	bool  mesh_hit;
+	uint  bvh_depth;
+	uint material;
+	vec3  hit_pos;
+	vec3  hit_normal;
+	vec3  uvw;
+	Triangle hit_tri;
+};
+// DEFINITIONS ------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
+#define TWO_PI   6.28318530718
+#define PI       3.14159265359
+#define HALF_PI  1.57079632679
+#define INV_PI   0.31830988618
+#define DEG_RAD  0.01745329252
+#define RAD_DEG  0.01745329252
+#define MAX_DIST 10000.0
+#define EPSILON  0.0001
+#define MAX_UINT 4294967295
+//-------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
+layout(local_size_x = 32, local_size_y = 32, local_size_z = 1) in;
+layout(rgba32f, binding = 0)           uniform image2D accumulation_render_layer;
+layout(rgba32f, binding = 1) writeonly uniform image2D raw_render_layer;
+layout(rgba32f, binding = 2) writeonly uniform image2D bvh_render_layer;
+layout(rgba32f, binding = 3) writeonly uniform image2D normal_render_layer;
+layout(std430, binding = 5) buffer TriangleDataBuffer {
+	Triangle triangles[];
+};
+layout(std430, binding = 6) buffer BvhBuffer {
+	Bvh bvh_nodes[];
+};
+layout(std430, binding = 7) buffer TextureBuffer {
+	Texture textures[];
+};
+layout(std430, binding = 8) buffer TextureDataBuffer {
+	uint texture_data[];
+};
+uniform uint  frame_count;
+uniform float aspect_ratio;
+uniform float current_time;
+uniform uvec2 resolution;
+uniform bool  reset;
+uniform bool  debug;
+uniform uint  ray_bounces;
+uniform uint  samples_per_pixel;
+uniform vec3 camera_pos;
+uniform vec3 camera_p_uv;
+uniform vec3 camera_p_u;
+uniform vec3 camera_p_v;
+//-------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
+float f_lerp(in float a,in float b, in float t) {
+	return a + t * (b - a);
+}
+//-------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
+vec3 f_lerp(in vec3 a,in vec3 b, in float t) {
+	return a + t * (b - a);
+}
+//-------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
+float f_mapFloat(float from_min, float from_max, float to_min, float to_max, float value) {
+	return (to_min + ((to_max - to_min) / (from_max - from_min)) * (value - from_min));
+}
+//-------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
+float f_mapFloatClamp(float from_min, float from_max, float to_min, float to_max, float value) {
+	if (value > from_max) return to_max;
+	else if (value < from_min) return to_min;
+	else return (to_min + ((to_max - to_min) / (from_max - from_min)) * (value - from_min));
+}
+//-------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
+vec2 f_mapVec2(vec2 from_min, vec2 from_max, vec2 to_min, vec2 to_max, vec2 value) {
+	return vec2(f_mapFloat(from_min.x, from_max.x, to_min.x, to_max.x, value.x), f_mapFloat(from_min.y, from_max.y, to_min.y, to_max.y, value.y));
+}
+//-------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
+vec4 sampleTextureRgba8u(in Texture tex, in vec2 uv) {
+	uint x = uint(uv.x * float(tex.width));
+	uint y = uint(uv.y * float(tex.height));
+	x = clamp(x, 0, tex.width - 1);
+	y = clamp(y, 0, tex.height - 1);
+	uint index = tex.start + y * tex.width + x;
+	uint color = texture_data[index];
+	return vec4(
+		float((color >> 24) & 0xFF) / 255.0,
+		float((color >> 16) & 0xFF) / 255.0,
+		float((color >> 8) & 0xFF) / 255.0,
+		float(color & 0xFF) / 255.0
+	);
+}
+//-------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
+vec4 sampleTextureRgba16f(in Texture tex, in vec2 uv) {
+	uint x = uint(uv.x * float(tex.width));
+	uint y = uint(uv.y * float(tex.height));
+	x = clamp(x, 0, tex.width - 1);
+	y = clamp(y, 0, tex.height - 1);
+	uint index = tex.start + (y * tex.width + x) * 2;
+	uint color_a = texture_data[index];
+	uint color_b = texture_data[index+1];
+	vec2 rg = unpackHalf2x16(color_a);
+	vec2 ba = unpackHalf2x16(color_b);
+	return vec4(
+		rg.x,
+		rg.y,
+		ba.x,
+		ba.y
+	);
+}
+//-------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
+vec4 sampleTextureRgba32f(in Texture tex, in vec2 uv) {
+	uint x = uint(uv.x * float(tex.width));
+	uint y = uint(uv.y * float(tex.height));
+	x = clamp(x, 0, tex.width - 1);
+	y = clamp(y, 0, tex.height - 1);
+	uint index = tex.start + (y * tex.width + x) * 4;
+	return vec4(
+		texture_data[index],
+		texture_data[index + 1],
+		texture_data[index + 2],
+		texture_data[index + 3]
+	);
+}
+//-------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
+uint f_tea(in uint val0, in uint val1) {
+	uint v0 = val0;
+	uint v1 = val1;
+	uint s0 = 0;
+	for (uint n = 0; n < 16; n++) {
+		s0 += 0x9e3779b9;
+		v0 += ((v1 << 4) + 0xa341316c) ^ (v1 + s0) ^ ((v1 >> 5) + 0xc8013ea4);
+		v1 += ((v0 << 4) + 0xad90777d) ^ (v0 + s0) ^ ((v0 >> 5) + 0x7e95761e);
+	}
+	return v0;
+}
+//-------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
+uint f_pcg(inout uint state) {
+	uint prev = state * 747796405u + 2891336453u;
+	uint word = ((prev >> ((prev >> 28u) + 4u)) ^ prev) * 277803737u;
+	state = prev;
+	return (word >> 22u) ^ word;
+}
+//-------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
+float f_rand(inout uint seed) { // [0 to 1]
+	uint r = f_pcg(seed);
+	return uintBitsToFloat(0x3f800000 | (r >> 9)) - 1.0f;
+}
+//-------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
+float f_randAround(inout uint seed, int range) { // [-1 to 1]
+	uint r = f_pcg(seed);
+	return f_mapFloat(0, 1, -range, range, uintBitsToFloat(0x3f800000 | (r >> 9)) - 1.0f);
+}
+//-------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
+bool f_rayBvhIntersection(in Ray ray, in Bvh box, inout float ray_length) {
+	vec3 t0 = (box.p_min - ray.origin) * ray.direction;
+	vec3 t1 = (box.p_max - ray.origin) * ray.direction;
+	float tmin = max(max(min(t0.x, t1.x), min(t0.y, t1.y)), min(t0.z, t1.z));
+	float tmax = min(min(max(t0.x, t1.x), max(t0.y, t1.y)), max(t0.z, t1.z));
+	if (all(greaterThanEqual(ray.origin, box.p_min)) && all(lessThanEqual(ray.origin, box.p_max))) {
+		ray_length = tmax;
+		return true;
+	}
+	else if (tmin <= tmax) {
+		ray_length = tmin;
+		return true;
+	}
+	return false;
+}
+//-------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
+bool f_rayTriangleIntersection(in Ray ray, in vec3 vertex_a, in vec3 vertex_b, in vec3 vertex_c, inout float ray_length) {
+	vec3 v1v0 = vertex_b - vertex_a;
+	vec3 v2v0 = vertex_c - vertex_a;
+	vec3 rov0 = ray.origin- vertex_a;
+	vec3  normal = cross(v1v0, v2v0);
+	vec3  q = cross(rov0, ray.direction);
+	float d = 1.0 / dot(ray.direction, normal);
+	float u = d * dot(-q, v2v0);
+	float v = d * dot(q, v1v0);
+	float t = d * dot(-normal, rov0);
+	if (u < 0.0 || v < 0.0 || (u + v) > 1.0)
+		return false;
+	ray_length = t;
+	return true;
+}
+//-------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
+vec3 f_barycentricCoords(in vec3 hit_pos, in vec3 vertex_a, in vec3 vertex_b, in vec3 vertex_c) {
+	vec3 v0 = vertex_b - vertex_a;
+	vec3 v1 = vertex_c - vertex_a;
+	vec3 v2 = hit_pos  - vertex_a;
+	float d00 = dot(v0, v0);
+	float d01 = dot(v0, v1);
+	float d11 = dot(v1, v1);
+	float d20 = dot(v2, v0);
+	float d21 = dot(v2, v1);
+	float denom = d00 * d11 - d01 * d01;
+	float v = (d11 * d20 - d01 * d21) / denom;
+	float w = (d00 * d21 - d01 * d20) / denom;
+	float u = 1.0 - v - w;
+	return vec3(u, v, w);
+}
+//-------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
+Hit f_SceneIntersection(in Ray ray) {
+	Hit hit_data;
+	hit_data.error = false;
+	hit_data.mesh_hit = false;
+	hit_data.bvh_depth = 0;
+	hit_data.material = 0;
+	hit_data.t_dist = MAX_DIST;
+	float t_dist = MAX_DIST;
+	float bvh_t_length = MAX_DIST;
+	Ray bvh_ray = Ray(ray.origin, 1.0 / ray.direction);
+	// Bvh Top-Down traversal
+	for (uint i = 0; i < bvh_nodes.length(); i++) {
+		Bvh node = bvh_nodes[i];
+		if (f_rayBvhIntersection(
+			bvh_ray,
+			node,
+			bvh_t_length
+		)) {
+			if (bvh_t_length < MAX_DIST && bvh_t_length > EPSILON) {
+				hit_data.bvh_depth++;
+				if (node.tri_count > 0) {
+					for (uint i = node.pointer; i < node.pointer + node.tri_count; i++) {
+						Triangle tri = triangles[i];
+						if (f_rayTriangleIntersection(
+							ray,
+							tri.pos_a,
+							tri.pos_b,
+							tri.pos_c,
+							t_dist
+						)) {
+							if (t_dist < hit_data.t_dist && t_dist > EPSILON) {
+								hit_data.t_dist = t_dist;
+								hit_data.pos = ray.origin + ray.direction * t_dist;
+								hit_data.inside = false;
+								hit_data.mesh_hit = true;
+					
+								hit_data.uvw = f_barycentricCoords(
+									hit_data.pos,
+									tri.pos_a,
+									tri.pos_b,
+									tri.pos_c
+								);
+								hit_data.material = tri.material;
+					
+								hit_data.hit_tri = tri;
+								hit_data.hit_normal = hit_data.uvw.x * tri.normal_a + hit_data.uvw.y * tri.normal_b + hit_data.uvw.z * tri.normal_c;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	return hit_data;
+}
+//-------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
+vec4 f_shade(in Hit hit_data, inout Ray ray) {
+	if (hit_data.material == MAX_UINT) {
+		ray.direction = reflect(ray.direction, hit_data.hit_normal);
+		ray.origin = hit_data.hit_pos + ray.direction * EPSILON;
+		return vec4(0.9, 0.9, 0.9, 1.0);
+	}
+	else if (hit_data.material == 0) {
+		vec2 uv =
+			hit_data.uvw.x * vec2(hit_data.hit_tri.uv_a_x, hit_data.hit_tri.uv_a_y) +
+			hit_data.uvw.y * vec2(hit_data.hit_tri.uv_b_x, hit_data.hit_tri.uv_b_y) +
+			hit_data.uvw.z * vec2(hit_data.hit_tri.uv_c_x, hit_data.hit_tri.uv_c_y);
+		return sampleTextureRgba8u(textures[0], vec2(uv.x, 1 - uv.y));
+	} 
+	else if (hit_data.material == 1) {
+		return vec4(vec3(cos(5.0 * hit_data.t_dist) * 0.5 + 0.5), 1.0);
+	}
+	// ERROR
+	hit_data.error = true;
+	return vec4(1, 0, 1, 1);
+}
+//-------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
+Ray f_cameraRay(vec2 uv) {
+	return Ray(camera_pos, normalize(camera_p_uv + (camera_p_u * uv.x) + (camera_p_v * uv.y) - camera_pos));
+}
+//vec4 f_environmentTexture(in Ray ray) {
+//	ray.direction = eulerToRot(vec3(0,-90,0)) * ray.direction;
+//
+//	float phi = atan(ray.direction.y, r.direction.x);
+//	float theta = acos(ray.direction.z);
+//	float u = phi / TWO_PI + 0.5;
+//	float v = theta / PI;
+//
+//	return texture(environment_texture, vec2(u,v)) * HDRI_STRENGTH;
+//}
+vec4 f_pathTrace(in Ray ray, in vec2 uv, in ivec2 pixel_id) {
+	vec4 radiance;
+	float alpha = 1.0f;
+	for (uint b = 0; b < ray_bounces; b++) {
+		Hit hit_data = f_SceneIntersection(ray);
+		if (hit_data.mesh_hit) {
+			imageStore(normal_render_layer, pixel_id, vec4(abs(hit_data.hit_normal), 1));
+			radiance = f_shade(hit_data, ray);
+		}
+		else {
+			imageStore(normal_render_layer, pixel_id, vec4(0));
+			radiance = vec4(0,0,0,1);
+		}
+		for (int i = 0; i < hit_data.bvh_depth; i++) alpha *= 0.95;
+		imageStore(bvh_render_layer, pixel_id, vec4(vec3(1-alpha), 1));
+		return radiance;
+	}
+}
+vec4 f_render(in vec2 uv, in ivec2 pixel_id) {
+	vec4 color = vec4(0);
+	//const vec2 pixel_size = 1 / resolution.xy;
+	//for (uint x = 0; x < samples_per_pixel; x++) {
+	//	for (uint y = 0; y < samples_per_pixel; y++) {
+	//		vec2 subpixelUV = uv - (vec2(0.5) * pixel_size) + (vec2(float(x) / float(samples_per_pixel), float(y) / float(samples_per_pixel)) * pixel_size);
+	//		Ray ray = f_cameraRay(subpixelUV);
+	//		color += f_pathTrace(ray);
+	//	}
+	//}
+	//color /= float(samples_per_pixel * samples_per_pixel);
+	Ray ray = f_cameraRay(uv);
+	color = f_pathTrace(ray, uv, pixel_id);
+	//Ray ray = f_cameraRay(uv);
+	//color = vec4(abs(ray.direction), 1);
+	return clamp(color, 0, 1);
+}
+//-------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
+void main() {
+	ivec2 pixel_id = ivec2(gl_GlobalInvocationID.xy);
+	vec2 uv = (pixel_id - 1 - vec2(resolution) / 2.0) / float(max(resolution.x, resolution.y));
+	vec4 color = f_render(uv, pixel_id);
+	vec4 previous_color = imageLoad(accumulation_render_layer, pixel_id);
+	if (frame_count == 0 || bool(reset)) previous_color = vec4(0);
+	vec4 full_color = previous_color + color;
+	imageStore(accumulation_render_layer, pixel_id, vec4(full_color.rgb / full_color.a, 1));
+	imageStore(raw_render_layer, pixel_id, color);
+}

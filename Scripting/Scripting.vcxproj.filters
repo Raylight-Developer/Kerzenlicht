@@ -8,16 +8,16 @@
       <UniqueIdentifier>{4d005fa3-9df4-4830-a129-8ab529dfc59c}</UniqueIdentifier>
     </Filter>
     <Filter Include="Shared">
-      <UniqueIdentifier>{a9f3839c-8cdd-48f7-bc0b-2f07994682cc}</UniqueIdentifier>
+      <UniqueIdentifier>{a526698e-9a22-4d44-b248-6ea0b7afc96d}</UniqueIdentifier>
     </Filter>
     <Filter Include="Shared\Include">
-      <UniqueIdentifier>{5c14c4a1-ab68-4fdc-b401-85b680d14e34}</UniqueIdentifier>
+      <UniqueIdentifier>{2348718d-8f7e-419c-9923-719ab870b9a8}</UniqueIdentifier>
     </Filter>
     <Filter Include="Shared\Source">
-      <UniqueIdentifier>{1918f5e5-04c4-4d85-91ea-a3c5e954b454}</UniqueIdentifier>
+      <UniqueIdentifier>{eaa29ec5-b34f-4685-800f-ef3633ed8416}</UniqueIdentifier>
     </Filter>
     <Filter Include="Shared\External">
-      <UniqueIdentifier>{e6137c31-d6a9-46d3-825a-176aacfc77b7}</UniqueIdentifier>
+      <UniqueIdentifier>{129bbc53-e570-4e96-ba50-b550a8ba1a62}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -101,6 +101,9 @@
       <Filter>Shared\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\Shared\Source\Shader\Shader.cpp">
+      <Filter>Shared\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Shared\Source\Gpu_Scene.cpp">
       <Filter>Shared\Source</Filter>
     </ClCompile>
   </ItemGroup>
@@ -196,6 +199,9 @@
       <Filter>Shared\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\Shared\Include\Shared.hpp">
+      <Filter>Shared\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Shared\Include\Gpu_Scene.hpp">
       <Filter>Shared\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\Shared\External\stb_image.h">

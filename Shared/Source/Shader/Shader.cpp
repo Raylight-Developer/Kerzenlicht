@@ -1,11 +1,11 @@
 #include "Shader/Shader.hpp"
 
 #ifdef COMPILE_EDITOR
-#include "Core/Editor_File.hpp"
+	#include "Core/Editor_File.hpp"
 #elif COMPILE_RENDERER
-#include "Core/Render_File.hpp"
+	#include "Core/Render_File.hpp"
 #else
-#include "File.hpp"
+	#include "File.hpp"
 #endif
 
 #include "Session.hpp"
@@ -16,8 +16,9 @@ KL::SHADER::Texture::Texture() :
 	format = TEXTURE::Format::RGBAUINT8;
 }
 
-#define STB_IMAGE_IMPLEMENTATION
 #undef FILE
+#undef NL
+#define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
 bool KL::SHADER::Texture::loadFromFile(const string & file_path) {
@@ -66,7 +67,9 @@ KL::Shader::Shader() :
 	name("New Material")
 {}
 
-string KL::Shader::compileMaterials(const string & code) {
+string KL::Shader::f_compileShaders(const string & code) {
+	const string input = "<inputs>[";
+
 	string hooked_code = code;
 	vector<string> material_code;
 
@@ -74,18 +77,19 @@ string KL::Shader::compileMaterials(const string & code) {
 	for (KL::Shader* shader : FILE->shaders) {
 		string process_shader = shader->shader_code;
 
-		uint64 input_pos = process_shader.find("<inputs>[");
+		uint64 input_pos = process_shader.find(input);
 		while (input_pos != string::npos) {
 			uint64 end_pos = process_shader.find("]", input_pos);
-			string index_str = process_shader.substr(input_pos + 9, end_pos - (input_pos + 9));
+			string index_str = process_shader.substr(input_pos + input.length(), end_pos - (input_pos + input.length()));
 			uint64 index = str_to_ul(index_str);
 
 			switch (shader->inputs[index].type) {
 				case (DATA::Type::TEXTURE) : {
-					process_shader.replace(input_pos, 9, "textures[");
+					const string section = "textures[";
+					process_shader.replace(input_pos, section.length(), section);
 					auto [exists, result_index] = f_getVectorIndex(FILE->textures, shader->inputs[index].getTexture(), MAX_UINT64);
 					if (exists) {
-						process_shader.replace(input_pos + 9, index_str.length(), to_string(result_index));
+						process_shader.replace(input_pos + section.length(), index_str.length(), to_string(result_index));
 					}
 					break;
 				}
@@ -95,9 +99,8 @@ string KL::Shader::compileMaterials(const string & code) {
 
 		Lace shader_code;
 		shader_code ENDL << Lace_TAB() << "else if (hit_data.material == " << id++ << ") {";
-		shader_code ENDL << f_prependToLine(process_shader, "\t\t");
+		shader_code ENDL << f_addLinesToLine(process_shader, "\t\t");
 		shader_code << Lace_TAB() << "}";
-		cout << shader->shader_code;
 
 		material_code.push_back(shader_code.str());
 	}

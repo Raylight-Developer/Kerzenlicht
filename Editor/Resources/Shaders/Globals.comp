@@ -1,0 +1,81 @@
+//-------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
+struct Triangle {
+	vec3  pos_a;
+	float uv_a_x;
+	vec3  normal_a;
+	float uv_a_y; // 32
+	vec3  pos_b;
+	float uv_b_x;
+	vec3  normal_b;
+	float uv_b_y; // 64
+	vec3  pos_c;
+	float uv_c_x;
+	vec3  normal_c;
+	float uv_c_y; // 96
+	vec3  padding;
+	uint  material; // 128
+};
+
+struct Bvh {
+	vec3 p_min;
+	uint pointer;   // 16
+	vec3 p_max;
+	uint tri_count; // 32 // If == 0, pointer leads to other Bvh Node, else leads to Triangle Start Index
+};
+
+struct Texture {
+	uint start;
+	uint width;
+	uint height;
+	uint format; // 32
+};
+
+struct Shader {
+	vec3  baseColor;
+	float subsurface;
+	float roughness;
+	float metallic;
+	float specular;
+	float specularTint;
+	float clearcoat;
+	float clearcoatGloss;
+	float anisotropic;
+	float sheen;
+	float sheenTint;
+};
+// INTERNAL ---------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
+struct Ray {
+	vec3  origin;
+	vec3  direction;
+};
+struct Hit {
+	bool  error;
+	vec3  pos;
+	float t_dist;
+	bool  inside;
+	bool  mesh_hit;
+
+	uint  bvh_depth;
+	uint material;
+
+	vec3  hit_pos;
+	vec3  hit_normal;
+	vec3  uvw;
+
+	Triangle hit_tri;
+};
+// DEFINITIONS ------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
+#define TWO_PI   6.28318530718
+#define PI       3.14159265359
+#define HALF_PI  1.57079632679
+#define INV_PI   0.31830988618
+#define DEG_RAD  0.01745329252
+#define RAD_DEG  0.01745329252
+
+#define MAX_DIST 10000.0
+#define EPSILON  0.0001
+
+#define MAX_UINT 4294967295

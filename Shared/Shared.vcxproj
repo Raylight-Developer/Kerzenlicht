@@ -106,6 +106,7 @@
     <ClInclude Include="Include\Glm.hpp" />
     <ClInclude Include="Include\Data_Property.hpp" />
     <ClInclude Include="Include\File.hpp" />
+    <ClInclude Include="Include\Gpu_Scene.hpp" />
     <ClInclude Include="Include\Include.hpp" />
     <ClInclude Include="Include\Lace.hpp" />
     <ClInclude Include="Include\Macros.hpp" />
@@ -137,6 +138,7 @@
     <ClInclude Include="Include\Types.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\Gpu_Scene.cpp" />
     <ClCompile Include="Source\Session.cpp" />
     <ClCompile Include="Source\File.cpp" />
     <ClCompile Include="Source\Scene.cpp" />

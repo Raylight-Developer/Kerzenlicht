@@ -93,6 +93,7 @@
   <ItemGroup>
     <ClCompile Include="..\Shared\Source\Data_Property.cpp" />
     <ClCompile Include="..\Shared\Source\File.cpp" />
+    <ClCompile Include="..\Shared\Source\Gpu_Scene.cpp" />
     <ClCompile Include="..\Shared\Source\Lace.cpp" />
     <ClCompile Include="..\Shared\Source\Nodes.cpp" />
     <ClCompile Include="..\Shared\Source\Object\Data.cpp" />
@@ -118,7 +119,6 @@
     <ClCompile Include="..\Shared\Source\Shader\Nodes\Shader_Nodes.cpp" />
     <ClCompile Include="..\Shared\Source\Shader\Shader.cpp" />
     <ClCompile Include="Source\Core\Render_File.cpp" />
-    <ClCompile Include="Source\Core\Gpu_Scene.cpp" />
     <ClCompile Include="Include\External\imgui-1.90\backends\imgui_impl_glfw.cpp" />
     <ClCompile Include="Include\External\imgui-1.90\backends\imgui_impl_opengl3.cpp" />
     <ClCompile Include="Include\External\imgui-1.90\imgui.cpp" />
@@ -136,6 +136,7 @@
     <ClInclude Include="..\Shared\External\stb_image.h" />
     <ClInclude Include="..\Shared\Include\Data_Property.hpp" />
     <ClInclude Include="..\Shared\Include\File.hpp" />
+    <ClInclude Include="..\Shared\Include\Gpu_Scene.hpp" />
     <ClInclude Include="..\Shared\Include\Include.hpp" />
     <ClInclude Include="..\Shared\Include\Lace.hpp" />
     <ClInclude Include="..\Shared\Include\Nodes.hpp" />
@@ -162,7 +163,6 @@
     <ClInclude Include="..\Shared\Include\Shader\Nodes\Shader_Nodes.hpp" />
     <ClInclude Include="..\Shared\Include\Shader\Shader.hpp" />
     <ClInclude Include="..\Shared\Include\Shared.hpp" />
-    <ClInclude Include="Include\Core\Gpu_Scene.hpp" />
     <ClInclude Include="Include\External\imgui-1.90\backends\imgui_impl_glfw.h" />
     <ClInclude Include="Include\External\imgui-1.90\backends\imgui_impl_opengl3.h" />
     <ClInclude Include="Include\External\imgui-1.90\imconfig.h" />

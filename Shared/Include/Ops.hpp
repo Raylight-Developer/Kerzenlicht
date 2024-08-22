@@ -9,7 +9,7 @@ Tokens f_closingPair(const Token_Array& tokens, const string& open = "┌", cons
 string f_closingPair(const Tokens& lines, const string& open = "┌", const string& close = "└");
 string f_join(const Tokens& tokens, const string& join, const uint64& start = 0, const uint64& end = 0);
 string f_join(const Tokens& tokens, const uint64& start = 0, const uint64& end = 0);
-string f_prependToLine(const string& value, const string& character);
+string f_addLinesToLine(const string& value, const string& character);
 
 string f_remove(const string& input, const string& remove);
 string f_replace(const string& input, const string& old_str, const string& new_str);
