@@ -10,8 +10,7 @@ GUI::WORKSPACE::Timeline::Timeline(Workspace_Viewport* parent) :
 	slider->setRange(0, 240);
 
 	info = new GUI::Label(this);
-	info->setText("FPS: 0 Frame: ");
-	info->setFixedWidth(64);
+	info->setText("FPS: 0 | Frame: 0 | Delta: 0.016ms");
 
 	GUI::Value_Input* current_frame = new GUI::Value_Input(this);
 	current_frame->setText("0");
@@ -34,9 +33,9 @@ GUI::WORKSPACE::Timeline::Timeline(Workspace_Viewport* parent) :
 			current_frame->setText(QString::number(slider->minimum()));
 	});
 
-	addWidget(slider);
-	addWidget(current_frame);
 	addWidget(info);
+	addWidget(current_frame);
+	addWidget(slider);
 }
 
 GUI::WORKSPACE::Workspace_Viewport::Workspace_Viewport(Workspace_Manager* parent) :
@@ -98,12 +97,18 @@ GUI::WORKSPACE::Viewport::Viewport(Workspace_Viewport* parent) :
 	reset(false),
 	debug(false),
 
-	post_program(0U),
+	compute_program(0),
+	post_program(0),
 
 	window_time(0.0),
 	frame_time(FPS_60),
 
-	view_layer(0)
+	view_layer(0),
+	
+	accumulation_render_layer (0),
+	normal_render_layer(0),
+	bvh_render_layer(0),
+	raw_render_layer(0)
 {
 	setObjectName("Viewport_Realtime");
 }
@@ -113,8 +118,8 @@ void GUI::WORKSPACE::Viewport::f_pipeline() {
 	const GLfloat vertices[16] = {
 		-1.0f, -1.0f, 0.0f, 0.0f,
 		-1.0f,  1.0f, 0.0f, 1.0f,
-		1.0f,  1.0f, 1.0f, 1.0f,
-		1.0f, -1.0f, 1.0f, 0.0f,
+		 1.0f,  1.0f, 1.0f, 1.0f,
+		 1.0f, -1.0f, 1.0f, 0.0f,
 	};
 	const GLuint indices[6] = {
 		0, 1, 2,
@@ -222,12 +227,15 @@ void GUI::WORKSPACE::Viewport::f_tickUpdate() {
 	GLint ssboMaxSize;
 	glGetIntegerv(GL_MAX_SHADER_STORAGE_BLOCK_SIZE, &ssboMaxSize);
 
-	ssboBinding(5, ul_to_u(gpu_data->trianglesSize()  ), gpu_data->triangles.data());
-	ssboBinding(6, ul_to_u(gpu_data->bvhNodesSize()   ), gpu_data->bvh_nodes.data());
-	ssboBinding(7, ul_to_u(gpu_data->texturesSize()   ), gpu_data->textures.data());
-	ssboBinding(8, ul_to_u(gpu_data->textureDataSize()), gpu_data->texture_data.data());
+	glDeleteBuffers(1, &buffers["ssbo    5"]);
+	glDeleteBuffers(1, &buffers["ssbo    6"]);
+	glDeleteBuffers(1, &buffers["ssbo    7"]);
+	glDeleteBuffers(1, &buffers["ssbo    8"]);
 
-	requestUpdate();
+	buffers["ssbo    5"] = ssboBinding(5, ul_to_u(gpu_data->trianglesSize()  ), gpu_data->triangles.data());
+	buffers["ssbo    6"] = ssboBinding(6, ul_to_u(gpu_data->bvhNodesSize()   ), gpu_data->bvh_nodes.data());
+	buffers["ssbo    7"] = ssboBinding(7, ul_to_u(gpu_data->texturesSize()   ), gpu_data->textures.data());
+	buffers["ssbo    8"] = ssboBinding(8, ul_to_u(gpu_data->textureDataSize()), gpu_data->texture_data.data());
 }
 
 void GUI::WORKSPACE::Viewport::f_selectObject(const dvec2& uv) { // TODO fix slight missalignment
@@ -274,6 +282,8 @@ void GUI::WORKSPACE::Viewport::initializeGL() {
 }
 
 void GUI::WORKSPACE::Viewport::paintGL() {
+	glClear(GL_COLOR_BUFFER_BIT);
+
 	current_time = chrono::high_resolution_clock::now();
 	frame_time = chrono::duration<double>(current_time - last_time).count();
 	last_time = current_time;
@@ -298,13 +308,10 @@ void GUI::WORKSPACE::Viewport::paintGL() {
 	glUniform3fv(glGetUniformLocation(compute_program, "camera_p_uv"), 1, value_ptr(d_to_f(camera->projection_center)));
 	glUniform3fv(glGetUniformLocation(compute_program, "camera_p_u"),  1, value_ptr(d_to_f(camera->projection_u)));
 	glUniform3fv(glGetUniformLocation(compute_program, "camera_p_v"),  1, value_ptr(d_to_f(camera->projection_v)));
-
 	glBindImageTexture(0, accumulation_render_layer, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
 	glBindImageTexture(1, raw_render_layer         , 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
 	glBindImageTexture(2, bvh_render_layer         , 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
 	glBindImageTexture(3, normal_render_layer      , 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
-	//glBindImageTexture(4, tex.ID, 0, GL_FALSE      , 0, GL_READ_ONLY, GL_RGBA8);
-
 	glDispatchCompute(compute_layout.x, compute_layout.y, compute_layout.z);
 
 	glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
@@ -332,9 +339,11 @@ void GUI::WORKSPACE::Viewport::paintGL() {
 
 	if (window_time > 1.0) {
 		frame_count = frame_counter;
-		window_time -= 1.0;
+		window_time = 0.0;
 		frame_counter = 0;
+		parent->timeline->info->setText("FPS: " + QString::number(frame_count) + " | Frame: 0 | Delta: " + QString::number(frame_time) + "ms");
 	}
+	requestUpdate();
 }
 
 void GUI::WORKSPACE::Viewport::resizeGL(int w, int h) {
@@ -345,6 +354,12 @@ void GUI::WORKSPACE::Viewport::resizeGL(int w, int h) {
 	render_aspect_ratio = u_to_d(render_resolution.x) / u_to_d(render_resolution.y);
 
 	// Compute Output
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glDeleteTextures(1, &accumulation_render_layer);
+	glDeleteTextures(1, &normal_render_layer);
+	glDeleteTextures(1, &bvh_render_layer);
+	glDeleteTextures(1, &raw_render_layer); // TODO Fix all other potential OpenGL memory Leaks
+
 	accumulation_render_layer = renderLayer(render_resolution);
 	normal_render_layer       = renderLayer(render_resolution);
 	bvh_render_layer          = renderLayer(render_resolution);

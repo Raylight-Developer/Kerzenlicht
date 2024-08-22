@@ -102,6 +102,8 @@ namespace GUI {
 
 			uint view_layer;
 
+			unordered_map<string, GLuint> buffers;
+
 			Viewport(Workspace_Viewport* parent);
 
 			void f_pipeline();
@@ -113,7 +115,6 @@ namespace GUI {
 			void initializeGL() override;
 			void paintGL() override;
 			void resizeGL(int w, int h) override;
-
 
 			GLuint renderLayer(const uvec2& resolution);
 			GLuint fragmentShaderProgram(const string& file_path);

@@ -75,8 +75,8 @@ void KL::GPU_Scene::printInfo() const {
 void KL::GPU_Scene::updateTextures() {
 	for (SHADER::Texture* texture : FILE->textures) {
 		vector<uint> data = texture->toRgba8Texture();
+		textures.push_back(GPU_Texture(ul_to_u(texture_data.size()), texture->resolution.x, texture->resolution.y, 0));
 		texture_data.insert(texture_data.end(), data.begin(), data.end());
-		textures.push_back(GPU_Texture(ul_to_u(textures.size()), texture->resolution.x, texture->resolution.y, 0));
 	}
 }
 
