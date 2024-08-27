@@ -67,11 +67,11 @@ void GUI::WORKSPACE::Workspace_Viewport::f_systemInfo() {
 	GlobalMemoryStatusEx(&status);
 
 	LOG ENDL ANSI_B << "[System]" ANSI_RESET;
+	LOG ENDL ANSI_B << "  [RAM]" ANSI_RESET;
+	LOG ENDL << "    " << d_to_u(ceil((double)(status.ullTotalPhys / (1024.0 * 1024.0 * 1024.0)))) << " GB - " << status.ullTotalPhys / (1024 * 1024) << " MB";
 	LOG ENDL ANSI_B << "  [CPU]" ANSI_RESET;
 	LOG ENDL << "    " << thread::hardware_concurrency() << " Threads";
 	LOG ENDL ANSI_B << "  [GPU]" ANSI_RESET;
-	LOG ENDL ANSI_B << "  [RAM]" ANSI_RESET;
-	LOG ENDL << "    " << d_to_u(ceil((double)(status.ullTotalPhys / (1024.0 * 1024.0 * 1024.0)))) << " GB - " << status.ullTotalPhys / (1024 * 1024) << " MB";
 	FLUSH;
 }
 

@@ -32,35 +32,6 @@ void KL::GPU_Scene::print() const {
 	for (const uint& pixel : texture_data)
 		data SP << pixel;
 	data NL;
-	//data << "Materials" << NL();
-	//for (const GPU_Material& mat : materials) {
-	//	data << TAB() << mat.albedo << NL();
-	//}
-	//data << "Light" << NL();
-	//for (const GPU_Light& light : lights) {
-	//	data << TAB() << light.color << NL();
-	//}
-	//data << "Spline_Handle" << NL();
-	//for (const GPU_Spline_Point& handle : spline_controls) {
-	//	data << TAB() << handle.position << NL();
-	//}
-	//data << "Spline" << NL();
-	//for (const GPU_Spline& spline : splines) {
-	//	data << TAB() << spline.handle_pointer << NL();
-	//}
-	//data << "Curve" << NL();
-	//for (const GPU_Curve& curve : curves) {
-	//	data << TAB() << curve.spline_pointer << NL();
-	//}
-	//data << "Vertex" << NL();
-	//data << TAB() << vertices.size() << NL();
-	//for (const GPU_Vertex& vert : vertices) {
-	//	data << TAB() << vert.position << NL();
-	//}
-	//data << "Mesh" << NL();
-	//for (const GPU_Mesh& mesh : meshes) {
-	//	data << TAB() << mesh.triangle_pointer << NL();
-	//}
 	cout << data.str() << endl;
 }
 
@@ -72,7 +43,7 @@ void KL::GPU_Scene::printInfo() const {
 	printSize("  Texture Data ", texture_data);
 }
 
-void KL::GPU_Scene::updateTextures() {
+void KL::GPU_Scene::updateTextures() { // TODO handle different formats
 	for (SHADER::Texture* texture : FILE->textures) {
 		vector<uint> data = texture->toRgba8Texture();
 		textures.push_back(GPU_Texture(ul_to_u(texture_data.size()), texture->resolution.x, texture->resolution.y, 0));

@@ -61,7 +61,7 @@ namespace KL {
 		void rotate(const dvec3& value);
 
 		dmat4 getMatrix() const;
-		string to_string() const;
+		string toString() const;
 	};
 
 	template<typename T>

@@ -104,6 +104,8 @@ void KL::File::f_fileStats() const {
 	LOG ENDL << "  Object Data ( " << object_data.size() << " )";
 	LOG ENDL << "  Textures    ( " << textures.size() << " )";
 	LOG ENDL << "  Pointer_Map ( " << pointer_map.size() << " )";
+
+	LOG ENDL << "RAM: " << RAM << " b | " << RAM / 1024 << " Mb";
 	FLUSH;
 }
 
@@ -561,13 +563,13 @@ KL::OBJECT::Data* KL::File::f_loadAsciiMesh(const Token_Array& token_data, const
 			tokens[0] == "┌Shaders(" or
 			tokens[0] == "┌Faces(" or
 			tokens[0] == "┌UVs("
-			) {
+		) {
 			is_processing = true;
 			read_data.clear();
 		}
 		else if (
 			tokens[0] == "┌Vertex-Group"
-			) {
+		) {
 			is_processing = true;
 			read_data.clear();
 			read_data.push_back(tokens);

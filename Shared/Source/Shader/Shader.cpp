@@ -14,6 +14,9 @@ KL::SHADER::Texture::Texture() :
 	name("New Texture")
 {
 	format = TEXTURE::Format::RGBAUINT8;
+	file_path = "";
+	resolution = uvec2(0, 0);
+	data = {};
 }
 
 #undef FILE
@@ -21,7 +24,7 @@ KL::SHADER::Texture::Texture() :
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
-bool KL::SHADER::Texture::loadFromFile(const string & file_path) {
+bool KL::SHADER::Texture::loadFromFile(const string & file_path) { // TODO handle different formats
 	this->file_path = file_path;
 	int width, height, channels;
 	unsigned char* tex_data = stbi_load(file_path.c_str(), &width, &height, &channels, STBI_rgb_alpha);
@@ -64,7 +67,9 @@ vector<uint> KL::SHADER::Texture::toRgba8Texture() const {
 #define FILE Session::getInstance().getFile()
 
 KL::Shader::Shader() :
-	name("New Material")
+	name("New Material"),
+	node_tree(nullptr),
+	type(KL::SHADER::Type::NONE)
 {}
 
 string KL::Shader::f_compileShaders(const string & code) {
@@ -114,7 +119,5 @@ string KL::Shader::f_compileShaders(const string & code) {
 		hooked_code.replace(startPos, toFind.length(), comp_material_code);
 		startPos += comp_material_code.length();
 	}
-
-	LOG ENDL << comp_material_code; FLUSH;
 	return hooked_code;
 }
