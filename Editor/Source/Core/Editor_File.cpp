@@ -275,13 +275,13 @@ void KL::Editor_File::f_saveAsciiNodeTree(Lace& lace, const KL::Node_Tree* data,
 	uint64 j = 0;
 	lace NL << "┌Node-Tree [ " << i << " ] " << data->name;
 	lace++;
-	lace NL PTR << f_ptrKey(data);
+	lace NL PTR << uptr(data);
 	lace NL << "┌Nodes( " << data->nodes.size() << " )";
 	lace++;
 	for (KL::Node* node : data->nodes) {
 		lace NL << "┌Node [ " << j++ << " ] " << node->name;
 		lace++;
-		lace NL PTR << f_ptrKey(node);
+		lace NL PTR << uptr(node);
 		lace NL << "( " << node_map[node]->node_pos << " )";
 		switch (node->type) {
 		case NODE::Type::CONSTRAINT: {
@@ -412,7 +412,7 @@ void KL::Editor_File::f_saveAsciiNodeTree(Lace& lace, const KL::Node_Tree* data,
 					const uint64 port_r_id = distance(node_r->inputs.begin(), find(node_r->inputs.begin(), node_r->inputs.end(), port_r));
 					//const uint64 node_r_id = distance(data->nodes.begin(), find(data->nodes.begin(), data->nodes.end(), node_r));
 					//lace NL node_l_id SP port_l_id SP node_r_id SP port_r_id;
-					lace NL PTR << f_ptrKey(node_l) SP << port_l_id SP << port_r_id SP PTR << f_ptrKey(node_r);
+					lace NL PTR << uptr(node_l) SP << port_l_id SP << port_r_id SP PTR << uptr(node_r);
 				}
 			}
 		}
@@ -432,7 +432,7 @@ void KL::Editor_File::f_saveAsciiNodeTree(Lace& lace, const KL::Node_Tree* data,
 					const uint64 port_r_id = distance(node_r->inputs.begin(), find(node_r->inputs.begin(), node_r->inputs.end(), port_r));
 					//const uint64 node_l_id = distance(data->nodes.begin(), find(data->nodes.begin(), data->nodes.end(), node_l));
 					//lace NL node_l_id SP port_l_id SP node_r_id SP port_r_id;
-					lace NL PTR << f_ptrKey(node_l) SP << port_l_id SP << port_r_id SP PTR << f_ptrKey(node_r);
+					lace NL PTR << uptr(node_l) SP << port_l_id SP << port_r_id SP PTR << uptr(node_r);
 				}
 			}
 		}
@@ -449,7 +449,7 @@ void KL::Editor_File::f_saveBinaryNodeTree(Bin_Lace & bin, Node_Tree* data) {
 
 	bytes << ul_to_u(data->name.size());
 	bytes << data->name;
-	bytes << f_ptrKey(data);
+	bytes << uptr(data);
 	bytes << ul_to_uh(data->nodes.size());
 
 	size += 4;
@@ -460,7 +460,7 @@ void KL::Editor_File::f_saveBinaryNodeTree(Bin_Lace & bin, Node_Tree* data) {
 	for (KL::Node* node : data->nodes) {
 		bytes << ul_to_uh(node->name.size());
 		bytes << node->name;
-		bytes << f_ptrKey(node);
+		bytes << uptr(node);
 		const auto pos = node_map[node]->scenePos();
 		bytes << uvec2(pos.x(), pos.y());
 

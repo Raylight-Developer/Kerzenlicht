@@ -863,13 +863,13 @@ void KL::File::f_saveAsciiNodeTree(Lace& lace, const KL::Node_Tree* data, const 
 	uint64 j = 0;
 	lace NL << "┌Node-Tree [ " << i << " ] " << data->name;
 	lace++;
-	lace NL PTR << f_ptrKey(data);
+	lace NL PTR << uptr(data);
 	lace NL << "┌Nodes( " << data->nodes.size() << " )";
 	lace++;
 	for (KL::Node* node : data->nodes) {
 		lace NL << "┌Node [ " << j++ << " ] " << node->name;
 		lace++;
-		lace NL PTR << f_ptrKey(node);
+		lace NL PTR << uptr(node);
 		switch (node->type) {
 			case NODE::Type::CONSTRAINT: {
 				switch (static_cast<NODE::CONSTRAINT::Type>(node->sub_type)) {
@@ -999,7 +999,7 @@ void KL::File::f_saveAsciiNodeTree(Lace& lace, const KL::Node_Tree* data, const 
 					const uint64 port_r_id = distance(node_r->inputs.begin(), find(node_r->inputs.begin(), node_r->inputs.end(), port_r));
 					//const uint64 node_r_id = distance(data->nodes.begin(), find(data->nodes.begin(), data->nodes.end(), node_r));
 					//lace NL << node_l_id SP port_l_id SP node_r_id SP port_r_id;
-					lace NL PTR << f_ptrKey(node_l) SP << port_l_id SP << port_r_id SP PTR << f_ptrKey(node_r);
+					lace NL PTR << uptr(node_l) SP << port_l_id SP << port_r_id SP PTR << uptr(node_r);
 				}
 			}
 		}
@@ -1019,7 +1019,7 @@ void KL::File::f_saveAsciiNodeTree(Lace& lace, const KL::Node_Tree* data, const 
 						const uint64 port_r_id = distance(node_r->inputs.begin(), find(node_r->inputs.begin(), node_r->inputs.end(), port_r));
 						//const uint64 node_l_id = distance(data->nodes.begin(), find(data->nodes.begin(), data->nodes.end(), node_l));
 						//lace NL << node_l_id SP port_l_id SP node_r_id SP port_r_id;
-						lace NL PTR << f_ptrKey(node_l) SP << port_l_id SP << port_r_id SP PTR << f_ptrKey(node_r);
+						lace NL PTR << uptr(node_l) SP << port_l_id SP << port_r_id SP PTR << uptr(node_r);
 					}
 				}
 			}
@@ -1033,7 +1033,7 @@ void KL::File::f_saveAsciiNodeTree(Lace& lace, const KL::Node_Tree* data, const 
 void KL::File::f_saveAsciiTexture(Lace& lace, const SHADER::Texture* data, const uint64& i) {
 	lace NL << "┌Texture [ " << i << " ] " << data->name;
 	lace++;
-	lace NL PTR << f_ptrKey(data);
+	lace NL PTR << uptr(data);
 	lace NL << data->file_path;
 	lace--;
 	lace NL << "└Texture";
@@ -1042,7 +1042,7 @@ void KL::File::f_saveAsciiTexture(Lace& lace, const SHADER::Texture* data, const
 void KL::File::f_saveAsciiShader(Lace& lace, const KL::Shader* data, const uint64& i) {
 	lace NL << "┌Shader [ " << i << " ] " << data->name;
 	lace++;
-	lace NL PTR << f_ptrKey(data);
+	lace NL PTR << uptr(data);
 	switch (data->type) {
 		case SHADER::Type::NONE: lace NL << "Type " << "NONE";  break;
 		case SHADER::Type::CODE: {
@@ -1053,7 +1053,7 @@ void KL::File::f_saveAsciiShader(Lace& lace, const KL::Shader* data, const uint6
 				lace NL << "┌Input [ " << i << " ]";
 				switch (data->inputs[i].type) {
 					case DATA::Type::TEXTURE: {
-						lace NL SP PTR << f_ptrKey(data->inputs[i].getTexture());
+						lace NL SP PTR << uptr(data->inputs[i].getTexture());
 						lace NL SP << "Type TEXTURE";
 						break;
 					}
@@ -1099,7 +1099,7 @@ void KL::File::f_saveAsciiData(Lace& lace) {
 void KL::File::f_saveAsciiAtmosphere(Lace& lace, const KL::OBJECT::Data* data, const uint64& i) {
 	lace NL << "┌Data [ " << i << " ] " << data->name;
 	lace++;
-	lace NL PTR << f_ptrKey(data);
+	lace NL PTR << uptr(data);
 	lace NL << "Type ATMOSPHERE";
 	lace--;
 	lace NL << "└Data";
@@ -1108,7 +1108,7 @@ void KL::File::f_saveAsciiAtmosphere(Lace& lace, const KL::OBJECT::Data* data, c
 void KL::File::f_saveAsciiPrimitive(Lace& lace, const KL::OBJECT::Data* data, const uint64& i) {
 	lace NL << "┌Data [ " << i << " ] " << data->name;
 	lace++;
-	lace NL PTR << f_ptrKey(data);
+	lace NL PTR << uptr(data);
 	lace NL << "Type PRIMITIVE";
 	lace--;
 	lace NL << "└Data";
@@ -1117,7 +1117,7 @@ void KL::File::f_saveAsciiPrimitive(Lace& lace, const KL::OBJECT::Data* data, co
 void KL::File::f_saveAsciiSkeleton(Lace& lace, const KL::OBJECT::Data* data, const uint64& i) {
 	lace NL << "┌Data [ " << i << " ] " << data->name;
 	lace++;
-	lace NL PTR << f_ptrKey(data);
+	lace NL PTR << uptr(data);
 	lace NL << "Type SKELETON";
 	lace--;
 	lace NL << "└Data";
@@ -1126,7 +1126,7 @@ void KL::File::f_saveAsciiSkeleton(Lace& lace, const KL::OBJECT::Data* data, con
 void KL::File::f_saveAsciiCamera(Lace& lace, const KL::OBJECT::Data* data, const uint64& i) {
 	lace NL << "┌Data [ " << i << " ] " << data->name;
 	lace++;
-	lace NL PTR << f_ptrKey(data);
+	lace NL PTR << uptr(data);
 	lace NL << "Type CAMERA";
 	lace--;
 	lace NL << "└Data";
@@ -1135,7 +1135,7 @@ void KL::File::f_saveAsciiCamera(Lace& lace, const KL::OBJECT::Data* data, const
 void KL::File::f_saveAsciiVolume(Lace& lace, const KL::OBJECT::Data* data, const uint64& i) {
 	lace NL << "┌Data [ " << i << " ] " << data->name;
 	lace++;
-	lace NL PTR << f_ptrKey(data);
+	lace NL PTR << uptr(data);
 	lace NL << "Type VOLUME";
 	lace--;
 	lace NL << "└Data";
@@ -1144,7 +1144,7 @@ void KL::File::f_saveAsciiVolume(Lace& lace, const KL::OBJECT::Data* data, const
 void KL::File::f_saveAsciiCurve(Lace& lace, const KL::OBJECT::Data* data, const uint64& i) {
 	lace NL << "┌Data [ " << i << " ] " << data->name;
 	lace++;
-	lace NL PTR << f_ptrKey(data);
+	lace NL PTR << uptr(data);
 	lace NL << "Type CURVE";
 	lace--;
 	lace NL << "└Data";
@@ -1153,7 +1153,7 @@ void KL::File::f_saveAsciiCurve(Lace& lace, const KL::OBJECT::Data* data, const 
 void KL::File::f_saveAsciiEmpty(Lace& lace, const KL::OBJECT::Data* data, const uint64& i) {
 	lace NL << "┌Data [ " << i << " ] " << data->name;
 	lace++;
-	lace NL PTR << f_ptrKey(data);
+	lace NL PTR << uptr(data);
 	lace NL << "Type EMPTY";
 	lace--;
 	lace NL << "└Data";
@@ -1162,7 +1162,7 @@ void KL::File::f_saveAsciiEmpty(Lace& lace, const KL::OBJECT::Data* data, const 
 void KL::File::f_saveAsciiForce(Lace& lace, const KL::OBJECT::Data* data, const uint64& i) {
 	lace NL << "┌Data [ " << i << " ] " << data->name;
 	lace++;
-	lace NL PTR << f_ptrKey(data);
+	lace NL PTR << uptr(data);
 	lace NL << "Type FORCE";
 	lace--;
 	lace NL << "└Data";
@@ -1171,7 +1171,7 @@ void KL::File::f_saveAsciiForce(Lace& lace, const KL::OBJECT::Data* data, const 
 void KL::File::f_saveAsciiGroup(Lace& lace, const KL::OBJECT::Data* data, const uint64& i) {
 	lace NL << "┌Data [ " << i << " ] " << data->name;
 	lace++;
-	lace NL PTR << f_ptrKey(data);
+	lace NL PTR << uptr(data);
 	lace NL << "Type GROUP";
 	lace--;
 	lace NL << "└Data";
@@ -1180,7 +1180,7 @@ void KL::File::f_saveAsciiGroup(Lace& lace, const KL::OBJECT::Data* data, const 
 void KL::File::f_saveAsciiLight(Lace& lace, const KL::OBJECT::Data* data, const uint64& i) {
 	lace NL << "┌Data [ " << i << " ] " << data->name;
 	lace++;
-	lace NL PTR << f_ptrKey(data);
+	lace NL PTR << uptr(data);
 	lace NL << "Type LIGHT";
 	lace--;
 	lace NL << "└Data";
@@ -1190,7 +1190,7 @@ void KL::File::f_saveAsciiMesh(Lace& lace, const KL::OBJECT::Data* data, const u
 	const KL::OBJECT::DATA::Mesh* mesh = static_cast<KL::OBJECT::DATA::Mesh*>(data->data);
 	lace NL << "┌Data [ " << i << " ] " << data->name;
 	lace++;
-	lace NL PTR << f_ptrKey(data);
+	lace NL PTR << uptr(data);
 	lace NL << "Type MESH";
 	lace NL << "┌Mesh";
 	lace++;
@@ -1204,7 +1204,7 @@ void KL::File::f_saveAsciiMesh(Lace& lace, const KL::OBJECT::Data* data, const u
 	lace NL << "┌Shaders( "<< mesh->shader_slots.size() <<" )";
 	lace++;
 	for (uint64 i = 0; i < mesh->shader_slots.size(); i++) {
-		lace NL << i SP PTR << f_ptrKey(mesh->shader_slots[i]);
+		lace NL << i SP PTR << uptr(mesh->shader_slots[i]);
 	}
 	lace--;
 	lace NL << "└Shaders";
@@ -1263,7 +1263,7 @@ void KL::File::f_saveAsciiMesh(Lace& lace, const KL::OBJECT::Data* data, const u
 void KL::File::f_saveAsciiSfx(Lace& lace, const KL::OBJECT::Data* data, const uint64& i) {
 	lace NL << "┌Data [ " << i << " ] " << data->name;
 	lace++;
-	lace NL PTR << f_ptrKey(data);
+	lace NL PTR << uptr(data);
 	lace NL << "Type SFX";
 	lace--;
 	lace NL << "└Data";
@@ -1272,7 +1272,7 @@ void KL::File::f_saveAsciiSfx(Lace& lace, const KL::OBJECT::Data* data, const ui
 void KL::File::f_saveAsciiVfx(Lace& lace, const KL::OBJECT::Data* data, const uint64& i) {
 	lace NL << "┌Data [ " << i << " ] " << data->name;
 	lace++;
-	lace NL PTR << f_ptrKey(data);
+	lace NL PTR << uptr(data);
 	lace NL << "Type VFX";
 	lace--;
 	lace NL << "└Data";
@@ -1281,7 +1281,7 @@ void KL::File::f_saveAsciiVfx(Lace& lace, const KL::OBJECT::Data* data, const ui
 void KL::File::f_saveAsciiObject(Lace& lace, const KL::Object* data, const uint64& i) {
 	lace NL << "┌Object [ " << i << " ] " << data->name;
 	lace++;
-	lace NL PTR << f_ptrKey(data);
+	lace NL PTR << uptr(data);
 	lace NL << "Position ( " << data->transform.position << " )";
 	lace NL << "Rotation ( " << data->transform.euler_rotation << " )";
 	lace NL << "Scale    ( " << data->transform.scale << " )";
@@ -1308,11 +1308,11 @@ void KL::File::f_saveAsciiObject(Lace& lace, const KL::Object* data, const uint6
 void KL::File::f_saveAsciiScene(Lace& lace, const KL::Scene* data, const uint64& i) {
 	lace NL << "┌Scene [ " << i << " ]";
 	lace++;
-	lace NL PTR << f_ptrKey(data);
+	lace NL PTR << uptr(data);
 	lace NL << "┌Objects";
 	lace++;
 	for (auto object : data->objects)
-		lace NL PTR << f_ptrKey(object);
+		lace NL PTR << uptr(object);
 	lace--;
 	lace NL << "└Objects";
 	lace--;
@@ -1322,13 +1322,13 @@ void KL::File::f_saveAsciiScene(Lace& lace, const KL::Scene* data, const uint64&
 void KL::File::f_saveAsciiBuild(Lace& lace) {
 	lace NL << "┌Build-Steps";
 	lace++;
-	lace NL << "Active-Scene " PTR << f_ptrKey(active_scene->pointer);
+	lace NL << "Active-Scene " PTR << uptr(active_scene->pointer);
 	lace NL << "┌Data-Group";
 	lace++;
 	for (auto object : objects) {
 		if (object->data->type == OBJECT::DATA::Type::GROUP) {
 			for (auto child : object->data->getGroup()->objects) {
-				lace NL PTR << f_ptrKey(object->data) SP PTR << f_ptrKey(child);
+				lace NL PTR << uptr(object->data) SP PTR << uptr(child);
 			}
 		}
 	}
@@ -1338,7 +1338,7 @@ void KL::File::f_saveAsciiBuild(Lace& lace) {
 	lace++;
 	for (auto object : objects) {
 		if (object->data and object->data->type != OBJECT::DATA::Type::NONE) {
-			lace NL PTR << f_ptrKey(object) SP PTR << f_ptrKey(object->data);
+			lace NL PTR << uptr(object) SP PTR << uptr(object->data);
 		}
 	}
 	lace--;
@@ -1347,7 +1347,7 @@ void KL::File::f_saveAsciiBuild(Lace& lace) {
 	lace++;
 	for (auto object: objects) {
 		if (object->data->type != OBJECT::DATA::Type::NONE and object->node_tree) {
-			lace NL PTR << f_ptrKey(object) SP PTR << f_ptrKey(object->node_tree);
+			lace NL PTR << uptr(object) SP PTR << uptr(object->node_tree);
 		}
 	}
 	lace--;
@@ -1358,7 +1358,7 @@ void KL::File::f_saveAsciiBuild(Lace& lace) {
 		if (object->data->type != OBJECT::DATA::Type::NONE and object->node_tree) {
 			for (auto node : object->node_tree->nodes) {
 				if (node->type == KL::NODE::Type::LINK and node->sub_type == e_to_u(KL::NODE::LINK::Type::POINTER)) {
-					lace NL PTR << f_ptrKey(node) SP PTR << f_ptrKey(static_cast<KL::NODE::LINK::Pointer*>(node)->pointer);
+					lace NL PTR << uptr(node) SP PTR << uptr(static_cast<KL::NODE::LINK::Pointer*>(node)->pointer);
 				}
 			}
 		}
@@ -1397,7 +1397,7 @@ void KL::File::f_saveBinaryNodeTree(Bin_Lace & bin, Node_Tree* data) {
 
 	bytes << ul_to_u(data->name.size());
 	bytes << data->name;
-	bytes << f_ptrKey(data);
+	bytes << uptr(data);
 	bytes << ul_to_uh(data->nodes.size());
 
 	size += 4;
@@ -1408,7 +1408,7 @@ void KL::File::f_saveBinaryNodeTree(Bin_Lace & bin, Node_Tree* data) {
 	for (KL::Node* node : data->nodes) {
 		bytes << ul_to_uh(node->name.size());
 		bytes << node->name;
-		bytes << f_ptrKey(node);
+		bytes << uptr(node);
 
 		size += 2;
 		size += node->name.size();

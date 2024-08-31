@@ -9,16 +9,18 @@ GUI::WORKSPACE::App::App(int argc, char* argv[]) :
 
 GUI::WORKSPACE::Main_Window::Main_Window(GUI::Application* app) :
 	GUI::Window(),
-	app(app),
 	log(new KL::Lace()),
 	file(new KL::Editor_File()),
-	mouse_pressed(false),
-	key_pressed(false)
+	history(new KL::History_Manager()),
+	app(app),
+	key_pressed(false),
+	mouse_pressed(false)
 {
-	QFontDatabase::addApplicationFont("./Resources/Fonts/RobotoMono-Medium.ttf");
-
 	KL::Session::getInstance().setLog(log);
 	KL::Session::getInstance().setFile(file);
+	KL::Session::getInstance().setHistory(history);
+
+	QFontDatabase::addApplicationFont("./Resources/Fonts/RobotoMono-Medium.ttf");
 
 	setWindowTitle("Kerzenlicht");
 	setWindowIcon(QPixmap("./Resources/Icon.png"));

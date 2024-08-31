@@ -29,6 +29,7 @@ namespace GUI {
 			GUI::Application* app;
 			KL::Lace* log;
 			KL::Editor_File* file;
+			KL::History_Manager* history;
 
 			map<string, Workspace_Manager*> workspaces;
 

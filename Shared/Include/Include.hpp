@@ -25,6 +25,7 @@
 #include <array>
 #include <regex>
 #include <tuple>
+#include <stack>
 #include <any>
 #include <map>
 #include <set>

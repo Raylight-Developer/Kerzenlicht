@@ -50,7 +50,7 @@
     <ClCompile Include="Source\Workspaces\Graph_Editor.cpp">
       <Filter>Source\Workspaces</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Workspaces\History.cpp">
+    <ClCompile Include="Source\Workspaces\Action_History.cpp">
       <Filter>Source\Workspaces</Filter>
     </ClCompile>
     <ClCompile Include="Source\Workspaces\Speadsheet_Editor.cpp">
@@ -190,7 +190,7 @@
     <ClInclude Include="Include\Workspaces\Speadsheet_Editor.hpp">
       <Filter>Include\Workspaces</Filter>
     </ClInclude>
-    <ClInclude Include="Include\Workspaces\History.hpp">
+    <ClInclude Include="Include\Workspaces\Action_History.hpp">
       <Filter>Include\Workspaces</Filter>
     </ClInclude>
     <ClInclude Include="Include\Workspaces\Graph_Editor.hpp">

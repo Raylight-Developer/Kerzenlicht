@@ -116,6 +116,9 @@
     <ClInclude Include="Include\Gpu_Scene.hpp">
       <Filter>Include</Filter>
     </ClInclude>
+    <ClInclude Include="Include\History.hpp">
+      <Filter>Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Ops.cpp">
@@ -197,6 +200,9 @@
       <Filter>Source\Object</Filter>
     </ClCompile>
     <ClCompile Include="Source\Gpu_Scene.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\History.cpp">
       <Filter>Source</Filter>
     </ClCompile>
   </ItemGroup>

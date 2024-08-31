@@ -64,6 +64,16 @@ namespace KL {
 		string toString() const;
 	};
 
+	struct Observable {
+		map<void*, function<void()>> callbacks;
+
+		Observable();
+
+		void call();
+		void addCallback(void* key, function<void()> func);
+		void clearCallbacks();
+	};
+
 	template<typename T>
 	struct Observable_Ptr {
 		T* pointer;
@@ -79,7 +89,7 @@ namespace KL {
 		}
 
 		void addCallback(void* key, function<void()> func) {
-			callbacks[key] = move(func);
+			callbacks[key] = std::move(func);
 		}
 
 		void clearCallbacks() {

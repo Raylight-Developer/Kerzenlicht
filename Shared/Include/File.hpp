@@ -38,6 +38,7 @@ namespace KL {
 	};
 
 	struct File {
+		//TODO store pointer map as old if there are no duplicated pointers for conflict and to avoid re-writing files for versioning systems
 		BiMap<uint64, uint64> pointer_map; // hash - pointer_address
 
 		vector<SHADER::Texture*> textures;
@@ -69,8 +70,8 @@ namespace KL {
 		string f_printFile();
 		void   f_fileStats() const;
 
-		uint64 f_ptrVal(const void* key)const;
-		uint64 f_ptrKey(const void* val)const;
+		uint64 f_ptrVal(const void* key) const;
+		uint64 f_ptrKey(const void* val) const;
 
 	//private:
 		virtual void              f_loadAscii           (const Token_Array& token_data, const Tokens& line_data);
