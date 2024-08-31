@@ -38,7 +38,7 @@ namespace KL {
 		void flushLog();
 
 		#ifdef COMPILE_EDITOR
-			void setFile(KL::Editor_File* uptr);
+			void setFile(KL::Editor_File* pointer);
 			KL::Editor_File* getFile();
 			KL::Editor_File* file;
 		#elif COMPILE_RENDERER

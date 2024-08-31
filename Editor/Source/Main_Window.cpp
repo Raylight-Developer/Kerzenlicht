@@ -81,8 +81,8 @@ void GUI::WORKSPACE::Main_Window::closeEvent(QCloseEvent* event) {
 	reply = QMessageBox::question(this, "Exit And Save Changes", "Exit And Save Changes:", QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
 
 	if (reply == QMessageBox::Yes) {
-		delete log;
 		file->f_saveAsciiFile("./Resources/Assets/Save.krz");
+		delete log;
 		event->accept();
 	}
 	else if (reply == QMessageBox::No) {

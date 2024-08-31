@@ -19,7 +19,7 @@ GUI::WORKSPACE::Timeline::Timeline(Workspace_Viewport* parent) :
 
 	connect(slider, &GUI::Slider::valueChanged, [this, current_frame](int value) {
 		current_frame->setText(QString::number(value));
-		FILE->active_scene->uptr->current_frame = value;
+		FILE->active_scene->pointer->current_frame = value;
 
 		if (this->parent->viewport) this->parent->viewport->f_tickUpdate();
 	});
@@ -169,7 +169,7 @@ void GUI::WORKSPACE::Viewport::f_pipeline() {
 void GUI::WORKSPACE::Viewport::f_uploadData() {
 	triangles.clear();
 	triangle_map.clear();
-	for (KL::Object* object : FILE->active_scene->uptr->objects) {
+	for (KL::Object* object : FILE->active_scene->pointer->objects) {
 		object->f_compileMatrix();
 		vector <VIEWPORT_REALTIME::Triangle>  temp;
 		if (object->data->type == KL::OBJECT::DATA::Type::MESH) {
@@ -216,9 +216,11 @@ void GUI::WORKSPACE::Viewport::f_uploadData() {
 }
 
 void GUI::WORKSPACE::Viewport::f_tickUpdate() {
-	for (const KL::Object* object : FILE->active_scene->uptr->objects) {
-		if (object->node_tree) {
-			object->node_tree->exec(&frame_time);
+	if (FILE->active_scene->pointer) {
+		for (const KL::Object* object : FILE->active_scene->pointer->objects) {
+			if (object and object->node_tree) {
+				object->node_tree->exec(&frame_time);
+			}
 		}
 	}
 
@@ -240,7 +242,7 @@ void GUI::WORKSPACE::Viewport::f_tickUpdate() {
 
 void GUI::WORKSPACE::Viewport::f_selectObject(const dvec2& uv) { // TODO fix slight missalignment
 	KL::OBJECT::DATA::Camera* camera = FILE->default_camera->data->getCamera();
-	camera->compile(FILE->active_scene->uptr, FILE->default_camera);
+	camera->compile(FILE->active_scene->pointer, FILE->default_camera);
 	const VIEWPORT_REALTIME::Ray ray = VIEWPORT_REALTIME::Ray(
 		d_to_f(FILE->default_camera->transform.position),
 		d_to_f(normalize(
@@ -303,7 +305,7 @@ void GUI::WORKSPACE::Viewport::paintGL() {
 	glUniform1ui(glGetUniformLocation(compute_program, "samples_per_pixel"), 1);
 
 	KL::OBJECT::DATA::Camera* camera = FILE->default_camera->data->getCamera();
-	camera->compile(FILE->active_scene->uptr, FILE->default_camera);
+	camera->compile(FILE->active_scene->pointer, FILE->default_camera);
 	glUniform3fv(glGetUniformLocation(compute_program, "camera_pos"),  1, value_ptr(d_to_f(FILE->default_camera->transform.position)));
 	glUniform3fv(glGetUniformLocation(compute_program, "camera_p_uv"), 1, value_ptr(d_to_f(camera->projection_center)));
 	glUniform3fv(glGetUniformLocation(compute_program, "camera_p_u"),  1, value_ptr(d_to_f(camera->projection_u)));

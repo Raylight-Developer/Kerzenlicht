@@ -28,15 +28,15 @@ GUI::WORKSPACE::Workspace_Object_Node_Editor::Workspace_Object_Node_Editor(Works
 	addWidget(header);
 	addWidget(splitter);
 
-	FILE->active_object->addCallback(this, [this]() { viewport->f_objectChanged(FILE->active_object->uptr); });
+	FILE->active_object->addCallback(this, [this]() { viewport->f_objectChanged(FILE->active_object->pointer); });
 	connect(load_in, &GUI::Button::pressed, [this]() {
 		viewport->loadNodes();
 	});
 	connect(compile, &GUI::Button::pressed, [this]() { // CAN CRASH. [xmemory 1335 and exec()] STOP Executing nodes before
-		if (viewport->active_node_tree and FILE->active_object->uptr) {
+		if (viewport->active_node_tree and FILE->active_object->pointer) {
 			LOG ENDL ANSI_B << "[DLL Compilation]" ANSI_RESET << " Compiling Solution..."; FLUSH;
 
-			auto node_tree = FILE->active_object->uptr->node_tree;
+			auto node_tree = FILE->active_object->pointer->node_tree;
 			auto gui_node_tree = FILE->nodetree_map[node_tree];
 			
 			HINSTANCE dynlib;
@@ -108,18 +108,18 @@ void GUI::WORKSPACE::Object_Node_Viewport::f_objectChanged(KL::Object* object) {
 }
 
 void GUI::WORKSPACE::Object_Node_Viewport::loadNodes() {
-	if (active_node_tree and FILE->active_object->uptr) {
+	if (active_node_tree and FILE->active_object->pointer) {
 		LOG ENDL ANSI_B << "[Translation]" ANSI_RESET << " Compiling Nodes..."; FLUSH;
 
-		auto uptr = FILE->active_object->uptr->node_tree;
-		for (auto node : uptr->nodes) {
+		auto pointer = FILE->active_object->pointer->node_tree;
+		for (auto node : pointer->nodes) {
 			f_removeMapItem(FILE->node_map, node);
 		}
-		f_removeMapItem(FILE->nodetree_map, uptr);
-		f_removeVectorItem(FILE->node_trees, uptr);
+		f_removeMapItem(FILE->nodetree_map, pointer);
+		f_removeVectorItem(FILE->node_trees, pointer);
 
 		auto node_tree = active_node_tree->toExecTree();
-		FILE->active_object->uptr->node_tree = node_tree;
+		FILE->active_object->pointer->node_tree = node_tree;
 		FILE->node_trees.push_back(node_tree);
 		FILE->nodetree_map[node_tree] = active_node_tree;
 
@@ -453,7 +453,7 @@ void GUI::WORKSPACE::Object_Node_Viewport::dropEvent(QDropEvent* event) {
 			else if (type == "LINK") {
 				if (sub_type == "LINK_POINTER_SCENE") {
 					auto t_node = new GUI::NODE::LINK::Pointer(drop_pos, KL::DATA::Type::SCENE);
-					t_node->pointer = FILE->active_scene->uptr;
+					t_node->pointer = FILE->active_scene->pointer;
 					node = t_node;
 				}
 				else if (sub_type == "LINK_GET_FIELD") {
@@ -480,10 +480,10 @@ void GUI::WORKSPACE::Object_Node_Viewport::dropEvent(QDropEvent* event) {
 
 			QByteArray byteArray = event->mimeData()->data("OBJECT");
 			QDataStream stream(&byteArray, QIODevice::ReadOnly);
-			qulonglong uptr;
-			stream >> uptr;
+			qulonglong pointer;
+			stream >> pointer;
 			
-			auto object = reinterpret_cast<KL::Object*>(uptr);
+			auto object = reinterpret_cast<KL::Object*>(pointer);
 
 			auto t_node = new GUI::NODE::LINK::Pointer(drop_pos, KL::DATA::Type::OBJECT);
 			t_node->pointer = object;

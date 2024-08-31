@@ -23,20 +23,17 @@ void KL::Session::flushLog() {
 	log->clear();
 }
 
-void KL::Session::setLog(Lace* uptr) { log = uptr; }
+void KL::Session::setLog(Lace* ptr) { log = ptr; }
 
 KL::Lace* KL::Session::getLog() { return log; }
 
 #ifdef COMPILE_EDITOR
-void KL::Session::setFile(KL::Editor_File* uptr) { file = uptr; }
-
-KL::Editor_File* KL::Session::getFile() { return file; }
+	void KL::Session::setFile(KL::Editor_File* ptr) { file = ptr; }
+	KL::Editor_File* KL::Session::getFile() { return file; }
 #elif COMPILE_RENDERER
-void KL::Session::setFile(KL::Render_File* ptr) { file = ptr; }
-
-KL::Render_File* KL::Session::getFile() { return file; }
+	void KL::Session::setFile(KL::Render_File* ptr) { file = ptr; }
+	KL::Render_File* KL::Session::getFile() { return file; }
 #else
-void KL::Session::setFile(KL::File* ptr) { file = ptr; }
-
-KL::File* KL::Session::getFile() { return file; }
+	void KL::Session::setFile(KL::File* ptr) { file = ptr; }
+	KL::File* KL::Session::getFile() { return file; }
 #endif

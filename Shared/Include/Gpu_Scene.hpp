@@ -115,19 +115,19 @@ namespace KL {
 
 	struct alignas(16) GPU_BVH {
 		vec3 p_min;
-		uint pointer;   // 16
+		uint uptr;   // 16
 		vec3 p_max;
 		uint tri_count; // 32
 
 		GPU_BVH(
 			const vec3& p_min     = vec3(0.0f),
 			const vec3& p_max     = vec3(0.0f),
-			const uint& pointer   = 0U,
+			const uint& uptr   = 0U,
 			const uint& tri_count = 0U
 		) :
 			p_min(p_min),
 			p_max(p_max),
-			pointer(pointer),
+			uptr(uptr),
 			tri_count(tri_count)
 		{}
 

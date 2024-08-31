@@ -258,10 +258,10 @@ void KL::Editor_File::f_loadAsciiBuild(const Token_Array& token_data, const Toke
 		else if (tokens[0] == "└Node-Pointer") {
 			is_processing = false;
 			for (const Tokens& sub_tokens : read_data) {
-				auto uptr = ptr<NODE::LINK::Pointer*>(pointer_map.getVal(str_to_ul(sub_tokens[1])));
-				uptr->pointer = ptr<KL::Object*>(pointer_map.getVal(str_to_ul(sub_tokens[3])));
+				auto pointer = ptr<NODE::LINK::Pointer*>(pointer_map.getVal(str_to_ul(sub_tokens[1])));
+				pointer->pointer = ptr<KL::Object*>(pointer_map.getVal(str_to_ul(sub_tokens[3])));
 
-				auto gui_ptr = static_cast<GUI::NODE::LINK::Pointer*>(node_map.at(uptr));
+				auto gui_ptr = static_cast<GUI::NODE::LINK::Pointer*>(node_map.at(pointer));
 				gui_ptr->pointer = ptr<KL::Object*>(pointer_map.getVal(str_to_ul(sub_tokens[3])));
 			}
 		}
@@ -275,13 +275,13 @@ void KL::Editor_File::f_saveAsciiNodeTree(Lace& lace, const KL::Node_Tree* data,
 	uint64 j = 0;
 	lace NL << "┌Node-Tree [ " << i << " ] " << data->name;
 	lace++;
-	lace NL PTR << uptr(data);
+	lace NL PTR << f_ptrKey(data);
 	lace NL << "┌Nodes( " << data->nodes.size() << " )";
 	lace++;
 	for (KL::Node* node : data->nodes) {
 		lace NL << "┌Node [ " << j++ << " ] " << node->name;
 		lace++;
-		lace NL PTR << uptr(node);
+		lace NL PTR << f_ptrKey(node);
 		lace NL << "( " << node_map[node]->node_pos << " )";
 		switch (node->type) {
 		case NODE::Type::CONSTRAINT: {
@@ -412,7 +412,7 @@ void KL::Editor_File::f_saveAsciiNodeTree(Lace& lace, const KL::Node_Tree* data,
 					const uint64 port_r_id = distance(node_r->inputs.begin(), find(node_r->inputs.begin(), node_r->inputs.end(), port_r));
 					//const uint64 node_r_id = distance(data->nodes.begin(), find(data->nodes.begin(), data->nodes.end(), node_r));
 					//lace NL node_l_id SP port_l_id SP node_r_id SP port_r_id;
-					lace NL PTR << uptr(node_l) SP << port_l_id SP << port_r_id SP PTR << uptr(node_r);
+					lace NL PTR << f_ptrKey(node_l) SP << port_l_id SP << port_r_id SP PTR << f_ptrKey(node_r);
 				}
 			}
 		}
@@ -432,7 +432,7 @@ void KL::Editor_File::f_saveAsciiNodeTree(Lace& lace, const KL::Node_Tree* data,
 					const uint64 port_r_id = distance(node_r->inputs.begin(), find(node_r->inputs.begin(), node_r->inputs.end(), port_r));
 					//const uint64 node_l_id = distance(data->nodes.begin(), find(data->nodes.begin(), data->nodes.end(), node_l));
 					//lace NL node_l_id SP port_l_id SP node_r_id SP port_r_id;
-					lace NL PTR << uptr(node_l) SP << port_l_id SP << port_r_id SP PTR << uptr(node_r);
+					lace NL PTR << f_ptrKey(node_l) SP << port_l_id SP << port_r_id SP PTR << f_ptrKey(node_r);
 				}
 			}
 		}
@@ -449,7 +449,7 @@ void KL::Editor_File::f_saveBinaryNodeTree(Bin_Lace & bin, Node_Tree* data) {
 
 	bytes << ul_to_u(data->name.size());
 	bytes << data->name;
-	bytes << uptr(data);
+	bytes << f_ptrKey(data);
 	bytes << ul_to_uh(data->nodes.size());
 
 	size += 4;
@@ -460,7 +460,7 @@ void KL::Editor_File::f_saveBinaryNodeTree(Bin_Lace & bin, Node_Tree* data) {
 	for (KL::Node* node : data->nodes) {
 		bytes << ul_to_uh(node->name.size());
 		bytes << node->name;
-		bytes << uptr(node);
+		bytes << f_ptrKey(node);
 		const auto pos = node_map[node]->scenePos();
 		bytes << uvec2(pos.x(), pos.y());
 

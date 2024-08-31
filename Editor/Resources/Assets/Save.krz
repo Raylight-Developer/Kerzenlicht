@@ -92,10 +92,10 @@
  └Node-Tree
 └Node-Trees
 ┌Textures( 1 )
-  ┌Texture [ 0 ] Checker
-   * 2159854365162
-   ./Resources/Textures/UV_Checker.png
-  └Texture
+ ┌Texture [ 0 ] Checker
+  * 2159854365162
+  ./Resources/Textures/UV_Checker.png
+ └Texture
 └Textures
 ┌Shaders( 2 )
  ┌Shader [ 0 ] UV debug
@@ -187,8 +187,8 @@ return vec4(vec3(cos(5.0 * hit_data.t_dist) * 0.5 + 0.5), 1.0);
    ┌Normals( 0 )
    └Normals
    ┌UVs( 2 )
-    0 3 ( 1 0 ) ( 0 1 ) ( 0 0 )
-    1 3 ( 1 0 ) ( 1 1 ) ( 0 1 )
+    0 3 ( 1.0 0.0 ) ( 0.0 1.0 ) ( 0.0 0.0 )
+    1 3 ( 1.0 0.0 ) ( 1.0 1.0 ) ( 0.0 1.0 )
    └UVs
   └Mesh
  └Data

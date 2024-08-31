@@ -69,6 +69,9 @@ namespace KL {
 		string f_printFile();
 		void   f_fileStats() const;
 
+		uint64 f_ptrVal(const void* key)const;
+		uint64 f_ptrKey(const void* val)const;
+
 	//private:
 		virtual void              f_loadAscii           (const Token_Array& token_data, const Tokens& line_data);
 		virtual void              f_loadAsciiHeader     (const Token_Array& token_data, const Tokens& line_data);

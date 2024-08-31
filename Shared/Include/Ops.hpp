@@ -66,14 +66,14 @@ namespace KL {
 
 	template<typename T>
 	struct Observable_Ptr {
-		T* uptr;
+		T* pointer;
 		map<void*, function<void()>> callbacks;
 
-		Observable_Ptr() : uptr(nullptr) {}
-		Observable_Ptr(T* pointer) : uptr(pointer) {}
+		Observable_Ptr() : pointer(nullptr) {}
+		Observable_Ptr(T* pointer) : pointer(pointer) {}
 
 		void set(T* pointer) {
-			uptr = pointer;
+			this->pointer = pointer;
 			for (const auto& [key, func] : callbacks)
 				func();
 		}
@@ -158,8 +158,8 @@ T ptr(const uint64& hash) {
 }
 
 template <typename T>
-uint64 uptr(const T pointer) {
-	return reinterpret_cast<uint64>(pointer);
+uint64 uptr(const T uptr) {
+	return reinterpret_cast<uint64>(uptr);
 }
 
 template<typename T>

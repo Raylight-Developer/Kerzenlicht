@@ -55,7 +55,7 @@ void KL::GPU_Scene::f_tickUpdate() {
 	triangles.clear();
 	bvh_nodes.clear();
 
-	for (KL::Object* object : FILE->active_scene->uptr->objects) {
+	for (KL::Object* object : FILE->active_scene->pointer->objects) {
 		object->f_compileMatrix();
 		vector<GPU_Triangle> mesh_triangles;
 		if (object->data->type == KL::OBJECT::DATA::Type::MESH) {
@@ -128,7 +128,7 @@ vec3 KL::GPU_BVH::getCenter() {
 
 KL::Lace KL::GPU_BVH::print() const {
 	Lace lace;
-	lace << "Bvh: (" << p_min<< ") | (" << p_max << ") | " << pointer << " | " << tri_count;
+	lace << "Bvh: (" << p_min<< ") | (" << p_max << ") | " << uptr << " | " << tri_count;
 	return lace;
 }
 
@@ -195,14 +195,14 @@ void KL::BVH_Builder::splitBvh(const uint& parentIndex, const uint& triGlobalSta
 		uint childIndexLeft = childIndexRight - 1;
 		node_list.push_back(GPU_BVH(boundsRight.p_min, boundsRight.p_max, triStartRight));
 
-		parent.pointer = childIndexLeft;
+		parent.uptr = childIndexLeft;
 		node_list[parentIndex] = parent;
 
 		splitBvh(childIndexLeft, triGlobalStart, numOnLeft, depth - 1);
 		splitBvh(childIndexRight, triGlobalStart + numOnLeft, numOnRight, depth - 1);
 	}
 	else {
-		parent.pointer = triGlobalStart;
+		parent.uptr = triGlobalStart;
 		parent.tri_count = triNum;
 		node_list[parentIndex] = parent;
 	}
