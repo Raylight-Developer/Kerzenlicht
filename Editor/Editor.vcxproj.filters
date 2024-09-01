@@ -309,9 +309,6 @@
     <Filter Include="Include\Core">
       <UniqueIdentifier>{86f2e4c0-34c0-460a-b4b4-2334b89f122e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Shaders">
-      <UniqueIdentifier>{abb45e05-37d0-41bc-a094-92510e282ca3}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source">
       <UniqueIdentifier>{4d005fa3-9df4-4830-a129-8ab529dfc59c}</UniqueIdentifier>
     </Filter>
@@ -333,17 +330,6 @@
     <Filter Include="Shared\External">
       <UniqueIdentifier>{8e698fc2-2683-4e5c-925d-38a3cea63d21}</UniqueIdentifier>
     </Filter>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Shaders\Realtime_Shader.comp">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="Resources\Shaders\Realtime_Shader.frag">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="Resources\Shaders\Realtime_Shader.vert">
-      <Filter>Shaders</Filter>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="Include\GUI.hpp">

@@ -157,7 +157,7 @@ void KL::Renderer::f_pipeline() {
 }
 
 void KL::Renderer::f_tickUpdate() {
-	for (const KL::Object* object : FILE->active_scene->uptr->objects) {
+	for (const KL::Object* object : FILE->active_scene->pointer->objects) {
 		if (object->node_tree) {
 			object->node_tree->exec(&frame_time);
 		}
@@ -267,8 +267,8 @@ void KL::Renderer::displayLoop() {
 	glVertexArrayVertexBuffer (VAO, 0, VBO, 0, 4 * sizeof(GLfloat));
 	glVertexArrayElementBuffer(VAO, EBO);
 
-	GLuint compute_program = computeShaderProgram("Render");
-	GLuint post_program = fragmentShaderProgram("Post");
+	GLuint compute_program = computeShaderProgram("Compute");
+	GLuint post_program = fragmentShaderProgram("Display");
 
 	const uvec3 compute_layout = uvec3(
 		d_to_u(ceil(u_to_d(render_resolution.x) / 32.0)),
@@ -307,7 +307,7 @@ void KL::Renderer::displayLoop() {
 		glUniform1ui(glGetUniformLocation(compute_program, "samples_per_pixel"), 1);
 
 		KL::OBJECT::DATA::Camera* camera = FILE->default_camera->data->getCamera();
-		camera->compile(FILE->active_scene->uptr, FILE->default_camera);
+		camera->compile(FILE->active_scene->pointer, FILE->default_camera);
 		glUniform3fv(glGetUniformLocation(compute_program, "camera_pos"),  1, value_ptr(d_to_f(FILE->default_camera->transform.position)));
 		glUniform3fv(glGetUniformLocation(compute_program, "camera_p_uv"), 1, value_ptr(d_to_f(camera->projection_center)));
 		glUniform3fv(glGetUniformLocation(compute_program, "camera_p_u"),  1, value_ptr(d_to_f(camera->projection_u)));
@@ -339,8 +339,8 @@ void KL::Renderer::displayLoop() {
 		runframe++;
 		if (reset) reset = false;
 		if (recompile) {
-			compute_program = computeShaderProgram("Render");
-			post_program = fragmentShaderProgram("Post");
+			compute_program = computeShaderProgram("Compute");
+			post_program = fragmentShaderProgram("Display");
 			recompile = false;
 		}
 

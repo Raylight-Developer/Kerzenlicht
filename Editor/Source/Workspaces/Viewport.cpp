@@ -2,6 +2,8 @@
 
 #include "Workspaces/Manager.hpp"
 
+#define PATH_TRACING true
+
 GUI::WORKSPACE::Timeline::Timeline(Workspace_Viewport* parent) :
 	GUI::Linear_Contents(parent, QBoxLayout::Direction::LeftToRight),
 	parent(parent)
@@ -90,129 +92,129 @@ GUI::WORKSPACE::Viewport::Viewport(Workspace_Viewport* parent) :
 
 	render_scale(1.0),
 
-	render_resolution(d_to_u(u_to_d(display_resolution) * render_scale)),
+	render_resolution(d_to_u(u_to_d(display_resolution)* render_scale)),
 	render_aspect_ratio(u_to_d(render_resolution.x) / u_to_d(render_resolution.y)),
 
 	recompile(false),
 	reset(false),
 	debug(false),
 
-	compute_program(0),
-	post_program(0),
+	gl_data({}),
 
 	window_time(0.0),
 	frame_time(FPS_60),
 
-	view_layer(0),
-	
-	accumulation_render_layer (0),
-	normal_render_layer(0),
-	bvh_render_layer(0),
-	raw_render_layer(0)
+	view_layer(0)
 {
 	setObjectName("Viewport_Realtime");
 }
 
 void GUI::WORKSPACE::Viewport::f_pipeline() {
-	// Pipeline Setup
-	const GLfloat vertices[16] = {
-		-1.0f, -1.0f, 0.0f, 0.0f,
-		-1.0f,  1.0f, 0.0f, 1.0f,
-		 1.0f,  1.0f, 1.0f, 1.0f,
-		 1.0f, -1.0f, 1.0f, 0.0f,
-	};
-	const GLuint indices[6] = {
-		0, 1, 2,
-		2, 3, 0
-	};
+	#ifdef PATH_TRACING
+		// Pipeline Setup
+		const GLfloat vertices[16] = {
+			-1.0f, -1.0f, 0.0f, 0.0f,
+			-1.0f,  1.0f, 0.0f, 1.0f,
+			 1.0f,  1.0f, 1.0f, 1.0f,
+			 1.0f, -1.0f, 1.0f, 0.0f,
+		};
+		const GLuint indices[6] = {
+			0, 1, 2,
+			2, 3, 0
+		};
 
-	// Display Quad
-	GLuint VAO, VBO, EBO;
-	glCreateVertexArrays(1, &VAO);
-	glCreateBuffers(1, &VBO);
-	glCreateBuffers(1, &EBO);
+		// Display Quad
+		gl_data["accumulation_render_layer"] = 0;
+		GLuint VBO, EBO;
+		glCreateVertexArrays(1, &gl_data["accumulation_render_layer"]);
+		glCreateBuffers(1, &VBO);
+		glCreateBuffers(1, &EBO);
 
-	glNamedBufferData(VBO, sizeof(vertices), vertices, GL_STATIC_DRAW);
-	glNamedBufferData(EBO, sizeof(indices), indices, GL_STATIC_DRAW);
+		glNamedBufferData(VBO, sizeof(vertices), vertices, GL_STATIC_DRAW);
+		glNamedBufferData(EBO, sizeof(indices), indices, GL_STATIC_DRAW);
 
-	glEnableVertexArrayAttrib (VAO, 0);
-	glVertexArrayAttribBinding(VAO, 0, 0);
-	glVertexArrayAttribFormat (VAO, 0, 2, GL_FLOAT, GL_FALSE, 0);
+		GLuint VAO = gl_data["accumulation_render_layer"];
+		glEnableVertexArrayAttrib (VAO, 0);
+		glVertexArrayAttribBinding(VAO, 0, 0);
+		glVertexArrayAttribFormat (VAO, 0, 2, GL_FLOAT, GL_FALSE, 0);
 
-	glEnableVertexArrayAttrib (VAO, 1);
-	glVertexArrayAttribBinding(VAO, 1, 0);
-	glVertexArrayAttribFormat (VAO, 1, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GLfloat));
+		glEnableVertexArrayAttrib (VAO, 1);
+		glVertexArrayAttribBinding(VAO, 1, 0);
+		glVertexArrayAttribFormat (VAO, 1, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GLfloat));
 
-	glVertexArrayVertexBuffer (VAO, 0, VBO, 0, 4 * sizeof(GLfloat));
-	glVertexArrayElementBuffer(VAO, EBO);
+		glVertexArrayVertexBuffer (VAO, 0, VBO, 0, 4 * sizeof(GLfloat));
+		glVertexArrayElementBuffer(VAO, EBO);
 
-	// Compute Output
-	accumulation_render_layer = renderLayer(render_resolution);
-	normal_render_layer       = renderLayer(render_resolution);
-	bvh_render_layer          = renderLayer(render_resolution);
-	raw_render_layer          = renderLayer(render_resolution);
+		// Compute Output
+		gl_data["accumulation_render_layer"] = renderLayer(render_resolution);
+		gl_data["normal_render_layer"]       = renderLayer(render_resolution);
+		gl_data["bvh_render_layer"]          = renderLayer(render_resolution);
+		gl_data["raw_render_layer"]          = renderLayer(render_resolution);
 
-	compute_program = computeShaderProgram("Render");
-	post_program = fragmentShaderProgram("Post");
+		gl_data["compute_program"] = computeShaderProgram ("Compute");
+		gl_data["display_program"] = fragmentShaderProgram("Display");
 
-	compute_layout = uvec3(
-		d_to_u(ceil(u_to_d(render_resolution.x) / 32.0)),
-		d_to_u(ceil(u_to_d(render_resolution.y) / 32.0)),
-		1U
-	);
+		gl_data["compute_layout_x"] = d_to_u(ceil(u_to_d(render_resolution.x) / 32.0));
+		gl_data["compute_layout_y"] = d_to_u(ceil(u_to_d(render_resolution.y) / 32.0));
+		gl_data["compute_layout_z"] = 1U;
 
-	glBindVertexArray(VAO);
-	gpu_data->updateTextures();
-	gpu_data->printInfo();
+		glBindVertexArray(VAO);
+		gpu_data->updateTextures();
+		gpu_data->printInfo();
+	#else
+	#endif
 }
 
 void GUI::WORKSPACE::Viewport::f_uploadData() {
-	triangles.clear();
-	triangle_map.clear();
-	for (KL::Object* object : FILE->active_scene->pointer->objects) {
-		object->f_compileMatrix();
-		vector <VIEWPORT_REALTIME::Triangle>  temp;
-		if (object->data->type == KL::OBJECT::DATA::Type::MESH) {
-			const KL::OBJECT::DATA::Mesh* mesh = object->data->getMesh();
-			for (const KL::OBJECT::DATA::MESH::Face* face : mesh->faces) {
-				const dvec4 vert4_a = object->transform_matrix * dvec4(face->vertices[0]->position, 1.0);
-				const dvec4 vert4_b = object->transform_matrix * dvec4(face->vertices[1]->position, 1.0);
-				const dvec4 vert4_c = object->transform_matrix * dvec4(face->vertices[2]->position, 1.0);
-				const dvec3 vert_a = dvec3(vert4_a.x, vert4_a.y, vert4_a.z) / vert4_a.w;
-				const dvec3 vert_b = dvec3(vert4_b.x, vert4_b.y, vert4_b.z) / vert4_b.w;
-				const dvec3 vert_c = dvec3(vert4_c.x, vert4_c.y, vert4_c.z) / vert4_c.w;
-				triangles.push_back(VIEWPORT_REALTIME::GPU_Triangle(vert_a, vert_b, vert_c));
-				temp.push_back(VIEWPORT_REALTIME::Triangle(vert_a, vert_b, vert_c));
+	#ifdef PATH_TRACING
+		triangles.clear();
+		triangle_map.clear();
+		for (KL::Object* object : FILE->active_scene->pointer->objects) {
+			object->f_compileMatrix();
+			vector <VIEWPORT_REALTIME::Triangle>  temp;
+			if (object->data->type == KL::OBJECT::DATA::Type::MESH) {
+				const KL::OBJECT::DATA::Mesh* mesh = object->data->getMesh();
+				for (const KL::OBJECT::DATA::MESH::Face* face : mesh->faces) {
+					const dvec4 vert4_a = object->transform_matrix * dvec4(face->vertices[0]->position, 1.0);
+					const dvec4 vert4_b = object->transform_matrix * dvec4(face->vertices[1]->position, 1.0);
+					const dvec4 vert4_c = object->transform_matrix * dvec4(face->vertices[2]->position, 1.0);
+					const dvec3 vert_a = dvec3(vert4_a.x, vert4_a.y, vert4_a.z) / vert4_a.w;
+					const dvec3 vert_b = dvec3(vert4_b.x, vert4_b.y, vert4_b.z) / vert4_b.w;
+					const dvec3 vert_c = dvec3(vert4_c.x, vert4_c.y, vert4_c.z) / vert4_c.w;
+					triangles.push_back(VIEWPORT_REALTIME::GPU_Triangle(vert_a, vert_b, vert_c));
+					temp.push_back(VIEWPORT_REALTIME::Triangle(vert_a, vert_b, vert_c));
+				}
 			}
-		}
-		else if (object->data->type == KL::OBJECT::DATA::Type::GROUP) {
-			const KL::OBJECT::DATA::Group* group = object->data->getGroup();
-			for (KL::Object* sub_object : group->objects) {
-				sub_object->f_compileMatrix();
-				sub_object->transform_matrix *= object->transform_matrix;
-				if (sub_object->data->type == KL::OBJECT::DATA::Type::MESH) {
-					const KL::OBJECT::DATA::Mesh* mesh = sub_object->data->getMesh();
-					for (const KL::OBJECT::DATA::MESH::Face* face : mesh->faces) {
-						const dvec4 vert4_a = sub_object->transform_matrix * dvec4(face->vertices[0]->position, 1.0);
-						const dvec4 vert4_b = sub_object->transform_matrix * dvec4(face->vertices[1]->position, 1.0);
-						const dvec4 vert4_c = sub_object->transform_matrix * dvec4(face->vertices[2]->position, 1.0);
-						const dvec3 vert_a = dvec3(vert4_a.x, vert4_a.y, vert4_a.z) / vert4_a.w;
-						const dvec3 vert_b = dvec3(vert4_b.x, vert4_b.y, vert4_b.z) / vert4_b.w;
-						const dvec3 vert_c = dvec3(vert4_c.x, vert4_c.y, vert4_c.z) / vert4_c.w;
-						triangles.push_back(VIEWPORT_REALTIME::GPU_Triangle(vert_a, vert_b, vert_c));
-						temp.push_back(VIEWPORT_REALTIME::Triangle(vert_a, vert_b, vert_c));
+			else if (object->data->type == KL::OBJECT::DATA::Type::GROUP) {
+				const KL::OBJECT::DATA::Group* group = object->data->getGroup();
+				for (KL::Object* sub_object : group->objects) {
+					sub_object->f_compileMatrix();
+					sub_object->transform_matrix *= object->transform_matrix;
+					if (sub_object->data->type == KL::OBJECT::DATA::Type::MESH) {
+						const KL::OBJECT::DATA::Mesh* mesh = sub_object->data->getMesh();
+						for (const KL::OBJECT::DATA::MESH::Face* face : mesh->faces) {
+							const dvec4 vert4_a = sub_object->transform_matrix * dvec4(face->vertices[0]->position, 1.0);
+							const dvec4 vert4_b = sub_object->transform_matrix * dvec4(face->vertices[1]->position, 1.0);
+							const dvec4 vert4_c = sub_object->transform_matrix * dvec4(face->vertices[2]->position, 1.0);
+							const dvec3 vert_a = dvec3(vert4_a.x, vert4_a.y, vert4_a.z) / vert4_a.w;
+							const dvec3 vert_b = dvec3(vert4_b.x, vert4_b.y, vert4_b.z) / vert4_b.w;
+							const dvec3 vert_c = dvec3(vert4_c.x, vert4_c.y, vert4_c.z) / vert4_c.w;
+							triangles.push_back(VIEWPORT_REALTIME::GPU_Triangle(vert_a, vert_b, vert_c));
+							temp.push_back(VIEWPORT_REALTIME::Triangle(vert_a, vert_b, vert_c));
+						}
 					}
 				}
 			}
+			triangle_map[object] = temp;
 		}
-		triangle_map[object] = temp;
-	}
 
-	GLuint triangle_buffer;
-	glGenBuffers(1, &triangle_buffer);
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, triangle_buffer);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(VIEWPORT_REALTIME::GPU_Triangle) * triangles.size(), triangles.data(), GL_DYNAMIC_DRAW);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, triangle_buffer);
+		GLuint triangle_buffer;
+		glGenBuffers(1, &triangle_buffer);
+		glBindBuffer(GL_SHADER_STORAGE_BUFFER, triangle_buffer);
+		glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(VIEWPORT_REALTIME::GPU_Triangle) * triangles.size(), triangles.data(), GL_DYNAMIC_DRAW);
+		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, triangle_buffer);
+	#else
+	#endif
 }
 
 void GUI::WORKSPACE::Viewport::f_tickUpdate() {
@@ -224,54 +226,60 @@ void GUI::WORKSPACE::Viewport::f_tickUpdate() {
 		}
 	}
 
-	gpu_data->f_tickUpdate();
+	#ifdef PATH_TRACING
+		gpu_data->f_tickUpdate();
 
-	GLint ssboMaxSize;
-	glGetIntegerv(GL_MAX_SHADER_STORAGE_BLOCK_SIZE, &ssboMaxSize);
+		GLint ssboMaxSize;
+		glGetIntegerv(GL_MAX_SHADER_STORAGE_BLOCK_SIZE, &ssboMaxSize);
 
-	glDeleteBuffers(1, &buffers["ssbo    5"]);
-	glDeleteBuffers(1, &buffers["ssbo    6"]);
-	glDeleteBuffers(1, &buffers["ssbo    7"]);
-	glDeleteBuffers(1, &buffers["ssbo    8"]);
+		glDeleteBuffers(1, &gl_data["ssbo 5"]);
+		glDeleteBuffers(1, &gl_data["ssbo 6"]);
+		glDeleteBuffers(1, &gl_data["ssbo 7"]);
+		glDeleteBuffers(1, &gl_data["ssbo 8"]);
 
-	buffers["ssbo    5"] = ssboBinding(5, ul_to_u(gpu_data->trianglesSize()  ), gpu_data->triangles.data());
-	buffers["ssbo    6"] = ssboBinding(6, ul_to_u(gpu_data->bvhNodesSize()   ), gpu_data->bvh_nodes.data());
-	buffers["ssbo    7"] = ssboBinding(7, ul_to_u(gpu_data->texturesSize()   ), gpu_data->textures.data());
-	buffers["ssbo    8"] = ssboBinding(8, ul_to_u(gpu_data->textureDataSize()), gpu_data->texture_data.data());
+		gl_data["ssbo 5"] = ssboBinding(5, ul_to_u(gpu_data->trianglesSize()  ), gpu_data->triangles.data());
+		gl_data["ssbo 6"] = ssboBinding(6, ul_to_u(gpu_data->bvhNodesSize()   ), gpu_data->bvh_nodes.data());
+		gl_data["ssbo 7"] = ssboBinding(7, ul_to_u(gpu_data->texturesSize()   ), gpu_data->textures.data());
+		gl_data["ssbo 8"] = ssboBinding(8, ul_to_u(gpu_data->textureDataSize()), gpu_data->texture_data.data());
+	#else
+	#endif
 }
 
 void GUI::WORKSPACE::Viewport::f_selectObject(const dvec2& uv) { // TODO fix slight missalignment
-	KL::OBJECT::DATA::Camera* camera = FILE->default_camera->data->getCamera();
-	camera->compile(FILE->active_scene->pointer, FILE->default_camera);
-	const VIEWPORT_REALTIME::Ray ray = VIEWPORT_REALTIME::Ray(
-		d_to_f(FILE->default_camera->transform.position),
-		d_to_f(normalize(
-			camera->projection_center
-			+ (camera->projection_u * uv.x)
-			+ (camera->projection_v * uv.y)
-			- FILE->default_camera->transform.position
-		))
-	);
+	#ifdef PATH_TRACING
+		KL::OBJECT::DATA::Camera* camera = FILE->default_camera->data->getCamera();
+		camera->compile(FILE->active_scene->pointer, FILE->default_camera);
+		const VIEWPORT_REALTIME::Ray ray = VIEWPORT_REALTIME::Ray(
+			d_to_f(FILE->default_camera->transform.position),
+			d_to_f(normalize(
+				camera->projection_center
+				+ (camera->projection_u * uv.x)
+				+ (camera->projection_v * uv.y)
+				- FILE->default_camera->transform.position
+			))
+		);
 
-	dvec1 t_dist = MAX_DIST;
-	dvec1 closest_dist = MAX_DIST;
-	KL::Object* closest = nullptr;
-	for (const auto& [object, triangles] : triangle_map) {
-		for (const VIEWPORT_REALTIME::Triangle& tri : triangles) {
-			if (VIEWPORT_REALTIME::f_rayTriangleIntersection(ray, tri, t_dist)) {
-				if (t_dist < closest_dist && t_dist > EPSILON) {
-					closest_dist = t_dist;
-					closest = object;
+		dvec1 t_dist = MAX_DIST;
+		dvec1 closest_dist = MAX_DIST;
+		KL::Object* closest = nullptr;
+		for (const auto& [object, triangles] : triangle_map) {
+			for (const VIEWPORT_REALTIME::Triangle& tri : triangles) {
+				if (VIEWPORT_REALTIME::f_rayTriangleIntersection(ray, tri, t_dist)) {
+					if (t_dist < closest_dist && t_dist > EPSILON) {
+						closest_dist = t_dist;
+						closest = object;
+					}
 				}
 			}
 		}
-	}
-	if (closest) {
-		FILE->active_object->set(closest);
-	}
-	else {
-		FILE->active_object->set(nullptr);
-	}
+		if (closest) {
+			FILE->active_object->set(closest);
+		}
+		else {
+			FILE->active_object->set(nullptr);
+		}
+	#else
+	#endif
 }
 
 void GUI::WORKSPACE::Viewport::initializeGL() {
@@ -293,49 +301,60 @@ void GUI::WORKSPACE::Viewport::paintGL() {
 
 	f_tickUpdate();
 
-	glUseProgram(compute_program);
-	glUniform1ui(glGetUniformLocation(compute_program, "frame_count"),  ul_to_u(runframe));
-	glUniform1f (glGetUniformLocation(compute_program, "aspect_ratio"), d_to_f(render_aspect_ratio));
-	glUniform1f (glGetUniformLocation(compute_program, "current_time"), d_to_f(chrono::duration<double>(current_time - start_time).count()));
-	glUniform2ui(glGetUniformLocation(compute_program, "resolution"), render_resolution.x, render_resolution.y);
-	glUniform1ui(glGetUniformLocation(compute_program, "reset"), static_cast<GLuint>(reset));
-	glUniform1ui(glGetUniformLocation(compute_program, "debug"), static_cast<GLuint>(debug));
+	#ifdef PATH_TRACING
+	{
+		const GLuint compute_program = gl_data["compute_program"];
+		glUseProgram(compute_program);
+		glUniform1ui(glGetUniformLocation(compute_program, "frame_count" ), ul_to_u(runframe));
+		glUniform1f (glGetUniformLocation(compute_program, "aspect_ratio"), d_to_f(render_aspect_ratio));
+		glUniform1f (glGetUniformLocation(compute_program, "current_time"), d_to_f(chrono::duration<double>(current_time - start_time).count()));
+		glUniform2ui(glGetUniformLocation(compute_program, "resolution"  ), render_resolution.x, render_resolution.y);
+		glUniform1ui(glGetUniformLocation(compute_program, "reset"), static_cast<GLuint>(reset));
+		glUniform1ui(glGetUniformLocation(compute_program, "debug"), static_cast<GLuint>(debug));
 
-	glUniform1ui(glGetUniformLocation(compute_program, "ray_bounces"), 1);
-	glUniform1ui(glGetUniformLocation(compute_program, "samples_per_pixel"), 1);
+		glUniform1ui(glGetUniformLocation(compute_program, "ray_bounces"), 1);
+		glUniform1ui(glGetUniformLocation(compute_program, "samples_per_pixel"), 1);
 
-	KL::OBJECT::DATA::Camera* camera = FILE->default_camera->data->getCamera();
-	camera->compile(FILE->active_scene->pointer, FILE->default_camera);
-	glUniform3fv(glGetUniformLocation(compute_program, "camera_pos"),  1, value_ptr(d_to_f(FILE->default_camera->transform.position)));
-	glUniform3fv(glGetUniformLocation(compute_program, "camera_p_uv"), 1, value_ptr(d_to_f(camera->projection_center)));
-	glUniform3fv(glGetUniformLocation(compute_program, "camera_p_u"),  1, value_ptr(d_to_f(camera->projection_u)));
-	glUniform3fv(glGetUniformLocation(compute_program, "camera_p_v"),  1, value_ptr(d_to_f(camera->projection_v)));
-	glBindImageTexture(0, accumulation_render_layer, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
-	glBindImageTexture(1, raw_render_layer         , 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
-	glBindImageTexture(2, bvh_render_layer         , 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
-	glBindImageTexture(3, normal_render_layer      , 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
-	glDispatchCompute(compute_layout.x, compute_layout.y, compute_layout.z);
+		KL::OBJECT::DATA::Camera* camera = FILE->default_camera->data->getCamera();
+		camera->compile(FILE->active_scene->pointer, FILE->default_camera);
+		glUniform3fv(glGetUniformLocation(compute_program, "camera_pos" ), 1, value_ptr(d_to_f(FILE->default_camera->transform.position)));
+		glUniform3fv(glGetUniformLocation(compute_program, "camera_p_uv"), 1, value_ptr(d_to_f(camera->projection_center)));
+		glUniform3fv(glGetUniformLocation(compute_program, "camera_p_u" ), 1, value_ptr(d_to_f(camera->projection_u)));
+		glUniform3fv(glGetUniformLocation(compute_program, "camera_p_v" ), 1, value_ptr(d_to_f(camera->projection_v)));
+		glBindImageTexture(0, gl_data["accumulation_render_layer"], 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
+		glBindImageTexture(1, gl_data["raw_render_layer"         ], 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
+		glBindImageTexture(2, gl_data["bvh_render_layer"         ], 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
+		glBindImageTexture(3, gl_data["normal_render_layer"      ], 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
+		glDispatchCompute(gl_data["compute_layout_x"], gl_data["compute_layout_y"], gl_data["compute_layout_z"]);
 
-	glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+		glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 
-	glUseProgram(post_program);
-	glClear(GL_COLOR_BUFFER_BIT);
-	glUniform1f (glGetUniformLocation(post_program, "display_aspect_ratio"), d_to_f(display_aspect_ratio));
-	glUniform1f (glGetUniformLocation(post_program, "render_aspect_ratio"), d_to_f(render_aspect_ratio));
-	glUniform1ui(glGetUniformLocation(post_program, "view_layer"), view_layer);
-	glUniform1ui(glGetUniformLocation(post_program, "debug"), static_cast<GLuint>(debug));
-	bindRenderLayer(post_program, 0, accumulation_render_layer, "accumulation_render_layer");
-	bindRenderLayer(post_program, 1, raw_render_layer         , "raw_render_layer"         );
-	bindRenderLayer(post_program, 2, bvh_render_layer         , "bvh_render_layer"         );
-	bindRenderLayer(post_program, 3, normal_render_layer      , "normal_render_layer"      );
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		const GLuint display_program = gl_data["display_program"];
+		glUseProgram(display_program);
+		glClear(GL_COLOR_BUFFER_BIT);
+		glUniform1f(glGetUniformLocation(display_program, "display_aspect_ratio"), d_to_f(display_aspect_ratio));
+		glUniform1f(glGetUniformLocation(display_program, "render_aspect_ratio"), d_to_f(render_aspect_ratio));
+		glUniform1ui(glGetUniformLocation(display_program, "view_layer"), view_layer);
+		glUniform1ui(glGetUniformLocation(display_program, "debug"), static_cast<GLuint>(debug));
+		bindRenderLayer(display_program, 0, gl_data["accumulation_render_layer"], "accumulation_render_layer");
+		bindRenderLayer(display_program, 1, gl_data["raw_render_layer"]         , "raw_render_layer"         );
+		bindRenderLayer(display_program, 2, gl_data["bvh_render_layer"]         , "bvh_render_layer"         );
+		bindRenderLayer(display_program, 3, gl_data["normal_render_layer"]      , "normal_render_layer"      );
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+	}
+	#else
+	{
+	}
+	#endif
 
 	frame_counter++;
 	runframe++;
 	if (reset) reset = false;
 	if (recompile) {
-		compute_program = computeShaderProgram("Render");
-		post_program = fragmentShaderProgram("Post");
+		#ifdef PATH_TRACING
+			gl_data["compute_program"] = computeShaderProgram("Compute");
+			gl_data["display_program"] = fragmentShaderProgram("Display");
+		#endif
 		recompile = false;
 	}
 
@@ -355,25 +374,26 @@ void GUI::WORKSPACE::Viewport::resizeGL(int w, int h) {
 	render_resolution = d_to_u(u_to_d(display_resolution) * render_scale);
 	render_aspect_ratio = u_to_d(render_resolution.x) / u_to_d(render_resolution.y);
 
-	// Compute Output
-	glBindTexture(GL_TEXTURE_2D, 0);
-	glDeleteTextures(1, &accumulation_render_layer);
-	glDeleteTextures(1, &normal_render_layer);
-	glDeleteTextures(1, &bvh_render_layer);
-	glDeleteTextures(1, &raw_render_layer); // TODO Fix all other potential OpenGL memory Leaks
-
-	accumulation_render_layer = renderLayer(render_resolution);
-	normal_render_layer       = renderLayer(render_resolution);
-	bvh_render_layer          = renderLayer(render_resolution);
-	raw_render_layer          = renderLayer(render_resolution);
-
-	compute_layout = uvec3(
-		d_to_u(ceil(u_to_d(render_resolution.x) / 32.0)),
-		d_to_u(ceil(u_to_d(render_resolution.y) / 32.0)),
-		1U
-	);
-
 	glViewport(0, 0, render_resolution.x, render_resolution.y);
+	#ifdef PATH_TRACING
+	{
+		// Compute Output
+		glBindTexture(GL_TEXTURE_2D, 0);
+		glDeleteTextures(1, &gl_data["accumulation_render_layer"]);
+		glDeleteTextures(1, &gl_data["normal_render_layer"]);
+		glDeleteTextures(1, &gl_data["bvh_render_layer"]);
+		glDeleteTextures(1, &gl_data["raw_render_layer"]); // TODO Fix all other potential OpenGL memory Leaks
+
+		gl_data["accumulation_render_layer"] = renderLayer(render_resolution);
+		gl_data["normal_render_layer"]       = renderLayer(render_resolution);
+		gl_data["bvh_render_layer"]          = renderLayer(render_resolution);
+		gl_data["raw_render_layer"]          = renderLayer(render_resolution);
+
+		gl_data["compute_layout_x"] = d_to_u(ceil(u_to_d(render_resolution.x) / 32.0));
+		gl_data["compute_layout_y"] = d_to_u(ceil(u_to_d(render_resolution.y) / 32.0));
+
+	}
+	#endif
 }
 
 bool GUI::WORKSPACE::VIEWPORT_REALTIME::f_rayTriangleIntersection(const Ray& ray, const Triangle& tri, dvec1& ray_length) {

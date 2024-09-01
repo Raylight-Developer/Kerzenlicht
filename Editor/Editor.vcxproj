@@ -114,11 +114,6 @@
     <ClCompile Include="Source\GUI_Object_Nodes.cpp" />
     <ClCompile Include="Source\Workspaces\Speadsheet_Editor.cpp" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Shaders\Realtime_Shader.comp" />
-    <None Include="Resources\Shaders\Realtime_Shader.frag" />
-    <None Include="Resources\Shaders\Realtime_Shader.vert" />
-  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{d09b4857-438f-41e0-a588-829587bfdd0a}</ProjectGuid>
     <Keyword>QtVS_v304</Keyword>

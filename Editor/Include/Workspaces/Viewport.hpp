@@ -74,17 +74,9 @@ namespace GUI {
 			uvec2 display_resolution;
 			uvec2 render_resolution;
 
-			uvec3 compute_layout;
-			vector<VIEWPORT_REALTIME::GPU_Triangle> triangles;
 			unordered_map<KL::Object*, vector<VIEWPORT_REALTIME::Triangle>> triangle_map;
-
-			GLuint compute_program;
-			GLuint post_program;
-
-			GLuint accumulation_render_layer;
-			GLuint normal_render_layer;
-			GLuint bvh_render_layer;
-			GLuint raw_render_layer;
+			vector<VIEWPORT_REALTIME::GPU_Triangle> triangles;
+			unordered_map<string, GLuint> gl_data;
 
 			uint   frame_counter;
 			uint   frame_count;
@@ -101,8 +93,6 @@ namespace GUI {
 			dvec1 frame_time;
 
 			uint view_layer;
-
-			unordered_map<string, GLuint> buffers;
 
 			Viewport(Workspace_Viewport* parent);
 
