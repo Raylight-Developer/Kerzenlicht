@@ -124,16 +124,16 @@ void GUI::WORKSPACE::Viewport::f_pipeline() {
 		};
 
 		// Display Quad
-		gl_data["accumulation_render_layer"] = 0;
+		gl_data["vao"] = 0;
 		GLuint VBO, EBO;
-		glCreateVertexArrays(1, &gl_data["accumulation_render_layer"]);
+		glCreateVertexArrays(1, &gl_data["vao"]);
 		glCreateBuffers(1, &VBO);
 		glCreateBuffers(1, &EBO);
 
 		glNamedBufferData(VBO, sizeof(vertices), vertices, GL_STATIC_DRAW);
 		glNamedBufferData(EBO, sizeof(indices), indices, GL_STATIC_DRAW);
 
-		GLuint VAO = gl_data["accumulation_render_layer"];
+		GLuint VAO = gl_data["vao"];
 		glEnableVertexArrayAttrib (VAO, 0);
 		glVertexArrayAttribBinding(VAO, 0, 0);
 		glVertexArrayAttribFormat (VAO, 0, 2, GL_FLOAT, GL_FALSE, 0);
