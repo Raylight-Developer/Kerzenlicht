@@ -2,8 +2,6 @@
 
 #include "Workspaces/Manager.hpp"
 
-#include "Object/Nodes/Compiler.hpp"
-
 GUI::WORKSPACE::Workspace_Shader_Editor::Workspace_Shader_Editor(Workspace_Manager* parent) :
 	GUI::Linear_Contents(parent, QBoxLayout::Direction::TopToBottom),
 	parent(parent),
@@ -15,12 +13,23 @@ GUI::WORKSPACE::Workspace_Shader_Editor::Workspace_Shader_Editor(Workspace_Manag
 	glsl_editor = new Shader_Code_Editor(this);
 	shader_inputs = new Shader_Inputs(this);
 
+	auto save_button = new Button(this);
+	save_button->setText("Save");
+
 	auto splitter = new GUI::Splitter(this);
 	splitter->addWidget(shelf);
 	splitter->addWidget(glsl_editor);
 	splitter->addWidget(shader_inputs);
 
-	addWidget(splitter);
+	auto header_splitter = new GUI::Splitter(this, true);
+	header_splitter->addWidget(save_button);
+	header_splitter->addWidget(splitter);
+
+	addWidget(header_splitter);
+
+	connect(save_button, &Button::clicked, [this]() {
+		glsl_editor->save();
+	});
 }
 
 GUI::WORKSPACE::Shader_Shelf::Shader_Shelf(Workspace_Shader_Editor* parent) :
@@ -48,13 +57,12 @@ GUI::WORKSPACE::Shader_Code_Editor::Shader_Code_Editor(Workspace_Shader_Editor* 
 }
 
 void GUI::WORKSPACE::Shader_Code_Editor::load(KL::Shader* shader) {
-	if (parent->active_shader != nullptr) {
-		const string editor_code = toPlainText().toStdString();
-		if (parent->active_shader->shader_code != editor_code) {
+	if (parent->active_shader) {
+		if (parent->active_shader->shader_code != toPlainText().toStdString()) {
 			QMessageBox::StandardButton reply;
 			reply = QMessageBox::question(this, "Save Changes", "Save Changes:", QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
 			if (reply == QMessageBox::Yes) {
-				parent->active_shader->shader_code = editor_code;
+				save();
 			}
 			else if (reply == QMessageBox::Cancel) {
 				return;
@@ -64,6 +72,17 @@ void GUI::WORKSPACE::Shader_Code_Editor::load(KL::Shader* shader) {
 	if (shader->type == KL::SHADER::Type::CODE) {
 		parent->active_shader = shader;
 		setPlainText(QString::fromStdString(shader->shader_code));
+	}
+}
+
+void GUI::WORKSPACE::Shader_Code_Editor::save() {
+	if (parent->active_shader != nullptr) {
+		auto pointer = make_unique<KL::SHADER_CMD::Shader_Code>(parent->active_shader, toPlainText().toStdString());
+
+		KL::Session::getInstance().getHistory()->execute(
+			std::move(pointer)
+		);
+		//UNDO(0);
 	}
 }
 

@@ -6,6 +6,7 @@
 
 #include "Core/Editor_File.hpp"
 
+#include "Shader/Shader.hpp"
 #include "Shader/Nodes/Shader_Nodes.hpp"
 
 //#include "GUI_Nodes.hpp"
@@ -80,6 +81,7 @@ namespace GUI {
 			Shader_Code_Editor(Workspace_Shader_Editor* parent);
 			
 			void load(KL::Shader* shader);
+			void save();
 
 			void keyPressEvent(QKeyEvent *event) override;
 			void onTextChanged();

@@ -91,6 +91,8 @@ void GUI::WORKSPACE::Workspace_Dock_Header::f_initWorkspacesMenu() {
 	shader_editor->setObjectName("Option_Button");
 	GUI::Button* viewport = new GUI::Button(select_workspace_type);
 	viewport->setObjectName("Option_Button");
+	GUI::Button* history = new GUI::Button(select_workspace_type);
+	history->setObjectName("Option_Button");
 
 	api->setIcon(QIcon("./Resources/Icons/Workspaces/Api.png"));
 	api->setText(" API");
@@ -120,12 +122,17 @@ void GUI::WORKSPACE::Workspace_Dock_Header::f_initWorkspacesMenu() {
 	viewport->setText(" Viewport");
 	connect(viewport, &GUI::Button::clicked, [this]() {f_setWorkspace(Workspace_Type::VIEWPORT); });
 
+	history->setIcon(QIcon("./Resources/Icons/Workspaces/Log.png"));
+	history->setText(" Viewport");
+	connect(history, &GUI::Button::clicked, [this]() {f_setWorkspace(Workspace_Type::HISTORY_MANAGER); });
+
 	layout->addWidget(api);
 	layout->addWidget(scene_outliner);
 	layout->addWidget(properties);
 	layout->addWidget(object_nodes);
 	layout->addWidget(shader_editor);
 	layout->addWidget(viewport);
+	layout->addWidget(history);
 }
 
 void GUI::WORKSPACE::Workspace_Dock_Header::f_selectWorkspaceTypeClick() {
@@ -189,6 +196,14 @@ void GUI::WORKSPACE::Workspace_Dock_Header::f_setWorkspace(const Workspace_Type&
 			parent->workspace = new Workspace_Viewport(parent);
 			parent->setWidget(parent->workspace);
 			floating_workspace_toggle->setText("Viewport");
+			break;
+		}
+		case (Workspace_Type::HISTORY_MANAGER): {
+			parent->setWindowTitle("History");
+			change_workspace_type->setIcon(QIcon("./Resources/Icons/Workspaces/Log.png"));
+			parent->workspace = new Workspace_History_Manager(parent);
+			parent->setWidget(parent->workspace);
+			floating_workspace_toggle->setText("History");
 			break;
 		}
 		default: {

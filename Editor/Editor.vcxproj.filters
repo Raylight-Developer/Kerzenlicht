@@ -50,7 +50,7 @@
     <ClCompile Include="Source\Workspaces\Graph_Editor.cpp">
       <Filter>Source\Workspaces</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Workspaces\Action_History.cpp">
+    <ClCompile Include="Source\Workspaces\History_Manager.cpp">
       <Filter>Source\Workspaces</Filter>
     </ClCompile>
     <ClCompile Include="Source\Workspaces\Speadsheet_Editor.cpp">
@@ -143,6 +143,9 @@
     <ClCompile Include="..\Shared\Source\Gpu_Scene.cpp">
       <Filter>Shared\Source</Filter>
     </ClCompile>
+    <ClCompile Include="..\Shared\Source\History.cpp">
+      <Filter>Shared\Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\Workspaces\API.hpp">
@@ -190,7 +193,7 @@
     <ClInclude Include="Include\Workspaces\Speadsheet_Editor.hpp">
       <Filter>Include\Workspaces</Filter>
     </ClInclude>
-    <ClInclude Include="Include\Workspaces\Action_History.hpp">
+    <ClInclude Include="Include\Workspaces\History_Manager.hpp">
       <Filter>Include\Workspaces</Filter>
     </ClInclude>
     <ClInclude Include="Include\Workspaces\Graph_Editor.hpp">
@@ -291,6 +294,9 @@
     </ClInclude>
     <ClInclude Include="..\Shared\External\stb_image.h">
       <Filter>Shared\External</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Shared\Include\History.hpp">
+      <Filter>Shared\Include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

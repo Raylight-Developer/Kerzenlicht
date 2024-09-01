@@ -37,8 +37,8 @@ namespace KL {
 		void setUID(uint64* ptr);
 		uint64* getUID();
 
-		void setLog(KL::Lace* ptr);
-		KL::Lace* getLog();
+		void setLog(Lace* ptr);
+		Lace* getLog();
 
 		void setHistory(History_Manager* ptr);
 		History_Manager* getHistory();
@@ -47,16 +47,16 @@ namespace KL {
 
 		#ifdef COMPILE_EDITOR
 			void setFile(KL::Editor_File* pointer);
-			KL::Editor_File* getFile();
-			KL::Editor_File* file;
+			Editor_File* getFile();
+			Editor_File* file;
 		#elif COMPILE_RENDERER
 			void setFile(KL::Render_File* ptr);
-			KL::Render_File* getFile();
-			KL::Render_File* file;
+			Render_File* getFile();
+			Render_File* file;
 		#else
 			void setFile(KL::File* ptr);
-			KL::File* getFile();
-			KL::File* file;
+			File* getFile();
+			File* file;
 		#endif
 	};
 }

@@ -4,6 +4,8 @@
 #include "Ops.hpp"
 #include "Data_Property.hpp"
 
+#include "History.hpp"
+
 #include "Nodes/Shader_Nodes.hpp"
 
 // FWD DECL OTHER
@@ -66,4 +68,17 @@ namespace KL {
 
 		static string f_compileShaders(const string& code);
 	};
+	namespace SHADER_CMD {
+		struct Shader_Code : History_Command {
+			Shader_Code(Shader* ptr, const string& cmd_new);
+
+			~Shader_Code() {};
+			void execute() override;
+			unique_ptr<History_Command> invert() const override;
+
+		private:
+			Shader* ptr;
+			string cmd_new, cmd_old;
+		};
+	}
 }

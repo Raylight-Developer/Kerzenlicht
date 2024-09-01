@@ -121,3 +121,19 @@ string KL::Shader::f_compileShaders(const string & code) {
 	}
 	return hooked_code;
 }
+
+KL::SHADER_CMD::Shader_Code::Shader_Code(Shader* ptr, const string& cmd_new) :
+	ptr(ptr),
+	cmd_new(cmd_new),
+	cmd_old(ptr->shader_code)
+{
+	info = "Change Shader Code";
+}
+
+void KL::SHADER_CMD::Shader_Code::execute() {
+	ptr->shader_code = cmd_new;
+}
+
+unique_ptr<KL::History_Command>  KL::SHADER_CMD::Shader_Code::invert() const {
+	return make_unique<Shader_Code>(ptr, cmd_old);
+}
