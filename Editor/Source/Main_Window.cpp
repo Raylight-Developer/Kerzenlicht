@@ -30,12 +30,12 @@ GUI::WORKSPACE::Main_Window::Main_Window(GUI::Application* app) :
 	file->f_loadAsciiFile("./Resources/Assets/Save.krz");
 
 	Workspace_Manager* ws_1 = new Workspace_Manager(this, Workspace_Type::SHADER_EDITOR);
-	Workspace_Manager* ws_2 = new Workspace_Manager(this, Workspace_Type::SHELF);
-	Workspace_Manager* ws_3 = new Workspace_Manager(this, Workspace_Type::VIEWPORT);
+	Workspace_Manager* ws_2 = new Workspace_Manager(this, Workspace_Type::HISTORY_MANAGER);
+	//Workspace_Manager* ws_3 = new Workspace_Manager(this, Workspace_Type::VIEWPORT);
 
 	workspaces["1"] = ws_1;
 	workspaces["2"] = ws_2;
-	workspaces["3"] = ws_3;
+	//workspaces["3"] = ws_3;
 
 	Workspace_Header* Toolbar = new Workspace_Header(this);
 
@@ -43,7 +43,7 @@ GUI::WORKSPACE::Main_Window::Main_Window(GUI::Application* app) :
 
 	setCentralWidget(ws_2);
 	addDockWidget(Qt::DockWidgetArea::LeftDockWidgetArea, ws_1);
-	addDockWidget(Qt::DockWidgetArea::RightDockWidgetArea, ws_3);
+//	addDockWidget(Qt::DockWidgetArea::RightDockWidgetArea, ws_3);
 
 	showMaximized();
 

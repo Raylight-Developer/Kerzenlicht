@@ -381,8 +381,6 @@ QTreeWidget:branch:open:has-children:!has-siblings, QTreeWidget:branch:open:has-
 	max-width: 24px;
 }
 
-
-
 QPushButton#Icon {
 	color:rgb(250,250,250);
 	background:rgb(50,50,50);

@@ -16,9 +16,11 @@ GUI::WORKSPACE::Workspace_Object_Node_Editor::Workspace_Object_Node_Editor(Works
 	splitter->addWidget(shelf);
 	splitter->addWidget(viewport);
 
-	auto header = new GUI::Linear_Contents(this);
 	auto compile = new GUI::Button(this);
 	compile->setText("Compile");
+
+	auto header = new GUI::Linear_Contents(this);
+	header->setFixedHeight(30);
 	header->addWidget(compile);
 
 	auto load_in = new GUI::Button(this);

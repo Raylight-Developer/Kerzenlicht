@@ -352,7 +352,7 @@ void GUI::WORKSPACE::Viewport::paintGL() {
 	if (reset) reset = false;
 	if (recompile) {
 		#ifdef PATH_TRACING
-			gl_data["compute_program"] = computeShaderProgram("Compute");
+			gl_data["compute_program"] = computeShaderProgram ("Compute");
 			gl_data["display_program"] = fragmentShaderProgram("Display");
 		#endif
 		recompile = false;

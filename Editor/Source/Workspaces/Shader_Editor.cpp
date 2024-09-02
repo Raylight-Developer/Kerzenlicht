@@ -7,7 +7,6 @@ GUI::WORKSPACE::Workspace_Shader_Editor::Workspace_Shader_Editor(Workspace_Manag
 	parent(parent),
 	active_shader(nullptr)
 {
-	parent->setMaximumWidth(800);
 	shelf = new Shader_Shelf(this);
 
 	glsl_editor = new Shader_Code_Editor(this);
@@ -16,13 +15,17 @@ GUI::WORKSPACE::Workspace_Shader_Editor::Workspace_Shader_Editor(Workspace_Manag
 	auto save_button = new Button(this);
 	save_button->setText("Save");
 
+	auto header = new GUI::Linear_Contents(this);
+	header->setFixedHeight(30);
+	header->addWidget(save_button);
+
 	auto splitter = new GUI::Splitter(this);
 	splitter->addWidget(shelf);
 	splitter->addWidget(glsl_editor);
 	splitter->addWidget(shader_inputs);
 
 	auto header_splitter = new GUI::Splitter(this, true);
-	header_splitter->addWidget(save_button);
+	header_splitter->addWidget(header);
 	header_splitter->addWidget(splitter);
 
 	addWidget(header_splitter);
@@ -77,12 +80,13 @@ void GUI::WORKSPACE::Shader_Code_Editor::load(KL::Shader* shader) {
 
 void GUI::WORKSPACE::Shader_Code_Editor::save() {
 	if (parent->active_shader != nullptr) {
-		auto pointer = make_unique<KL::SHADER_CMD::Shader_Code>(parent->active_shader, toPlainText().toStdString());
+		if (parent->active_shader->shader_code != toPlainText().toStdString()) {
+			auto pointer = make_unique<KL::SHADER_CMD::Shader_Code>(parent->active_shader, toPlainText().toStdString());
 
-		KL::Session::getInstance().getHistory()->execute(
-			std::move(pointer)
-		);
-		//UNDO(0);
+			KL::Session::getInstance().getHistory()->execute(
+				std::move(pointer)
+			);
+		}
 	}
 }
 

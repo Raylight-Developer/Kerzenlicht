@@ -127,7 +127,8 @@ KL::SHADER_CMD::Shader_Code::Shader_Code(Shader* ptr, const string& cmd_new) :
 	cmd_new(cmd_new),
 	cmd_old(ptr->shader_code)
 {
-	info = "Change Shader Code";
+	info << "Shader Code for [" << ptr->name << "] changed";
+	details HTML_R << "From" HTML_RESET HTML_ENDL << ptr->shader_code HTML_ENDL HTML_G << "To" HTML_RESET HTML_ENDL << cmd_new;
 }
 
 void KL::SHADER_CMD::Shader_Code::execute() {

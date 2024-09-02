@@ -73,7 +73,6 @@ namespace KL {
 		uint64 f_ptrVal(const void* key) const;
 		uint64 f_ptrKey(const void* val) const;
 
-	//private:
 		virtual void              f_loadAscii           (const Token_Array& token_data, const Tokens& line_data);
 		virtual void              f_loadAsciiHeader     (const Token_Array& token_data, const Tokens& line_data);
 		virtual KL::Node_Tree*    f_loadAsciiNodeTree   (const Token_Array& token_data, const Tokens& line_data);
@@ -95,6 +94,7 @@ namespace KL {
 		virtual OBJECT::Data*     f_loadAsciiVfx        (const Token_Array& token_data, const Tokens& line_data);
 		virtual Object*           f_loadAsciiObject     (const Token_Array& token_data, const Tokens& line_data);
 		virtual Scene*            f_loadAsciiScene      (const Token_Array& token_data, const Tokens& line_data);
+		virtual void              f_loadAsciiHistory    (const Token_Array& token_data, const Tokens& line_Data); // TODO
 		virtual void              f_loadAsciiBuild      (const Token_Array& token_data, const Tokens& line_data);
 
 		virtual void              f_loadBinary          (const vector<Byte>& byte_data);
@@ -120,28 +120,30 @@ namespace KL {
 		virtual void f_saveAsciiVfx        (Lace& lace, const OBJECT::Data*     data, const uint64& i);
 		virtual void f_saveAsciiObject     (Lace& lace, const Object*           data, const uint64& i);
 		virtual void f_saveAsciiScene      (Lace& lace, const Scene*            data, const uint64& i);
+		virtual void f_saveAsciiHistory    (Lace& lace); //TODO
 		virtual void f_saveAsciiBuild      (Lace& lace);
 
 		virtual void f_saveBinary           (Bin_Lace& bin);
 		virtual void f_saveBinaryHeader     (Bin_Lace& bin);
-		virtual void f_saveBinaryNodeTree   (Bin_Lace& bin, Node_Tree*            data);
-		//virtual void f_saveBinaryMaterial   (Bin_Lace& bin, const KL::Shader*   data, const uint64& i);
-		//virtual void f_saveBinaryData       (Bin_Lace& bin);
-		//virtual void f_saveBinaryAtmosphere (Bin_Lace& bin, const OBJECT::Data*     data, const uint64& i);
-		//virtual void f_saveBinaryPrimitive  (Bin_Lace& bin, const OBJECT::Data*     data, const uint64& i);
-		//virtual void f_saveBinarySkeleton   (Bin_Lace& bin, const OBJECT::Data*     data, const uint64& i);
-		//virtual void f_saveBinaryCamera     (Bin_Lace& bin, const OBJECT::Data*     data, const uint64& i);
-		//virtual void f_saveBinaryVolume     (Bin_Lace& bin, const OBJECT::Data*     data, const uint64& i);
-		//virtual void f_saveBinaryCurve      (Bin_Lace& bin, const OBJECT::Data*     data, const uint64& i);
-		//virtual void f_saveBinaryEmpty      (Bin_Lace& bin, const OBJECT::Data*     data, const uint64& i);
-		//virtual void f_saveBinaryForce      (Bin_Lace& bin, const OBJECT::Data*     data, const uint64& i);
-		//virtual void f_saveBinaryGroup      (Bin_Lace& bin, const OBJECT::Data*     data, const uint64& i);
-		//virtual void f_saveBinaryLight      (Bin_Lace& bin, const OBJECT::Data*     data, const uint64& i);
-		//virtual void f_saveBinaryMesh       (Bin_Lace& bin, const OBJECT::Data*     data, const uint64& i);
-		//virtual void f_saveBinarySfx        (Bin_Lace& bin, const OBJECT::Data*     data, const uint64& i);
-		//virtual void f_saveBinaryVfx        (Bin_Lace& bin, const OBJECT::Data*     data, const uint64& i);
-		//virtual void f_saveBinaryObject     (Bin_Lace& bin, const Object*           data, const uint64& i);
-		//virtual void f_saveBinaryScene      (Bin_Lace& bin, const Scene*            data, const uint64& i);
-		//virtual void f_saveBinaryBuild      (Bin_Lace& bin);
+		virtual void f_saveBinaryNodeTree   (Bin_Lace& bin, Node_Tree*            data) {};
+		virtual void f_saveBinaryMaterial   (Bin_Lace& bin, const KL::Shader*   data, const uint64& i) {};
+		virtual void f_saveBinaryData       (Bin_Lace& bin) {};
+		virtual void f_saveBinaryAtmosphere (Bin_Lace& bin, const OBJECT::Data*     data, const uint64& i) {};
+		virtual void f_saveBinaryPrimitive  (Bin_Lace& bin, const OBJECT::Data*     data, const uint64& i) {};
+		virtual void f_saveBinarySkeleton   (Bin_Lace& bin, const OBJECT::Data*     data, const uint64& i) {};
+		virtual void f_saveBinaryCamera     (Bin_Lace& bin, const OBJECT::Data*     data, const uint64& i) {};
+		virtual void f_saveBinaryVolume     (Bin_Lace& bin, const OBJECT::Data*     data, const uint64& i) {};
+		virtual void f_saveBinaryCurve      (Bin_Lace& bin, const OBJECT::Data*     data, const uint64& i) {};
+		virtual void f_saveBinaryEmpty      (Bin_Lace& bin, const OBJECT::Data*     data, const uint64& i) {};
+		virtual void f_saveBinaryForce      (Bin_Lace& bin, const OBJECT::Data*     data, const uint64& i) {};
+		virtual void f_saveBinaryGroup      (Bin_Lace& bin, const OBJECT::Data*     data, const uint64& i) {};
+		virtual void f_saveBinaryLight      (Bin_Lace& bin, const OBJECT::Data*     data, const uint64& i) {};
+		virtual void f_saveBinaryMesh       (Bin_Lace& bin, const OBJECT::Data*     data, const uint64& i) {};
+		virtual void f_saveBinarySfx        (Bin_Lace& bin, const OBJECT::Data*     data, const uint64& i) {};
+		virtual void f_saveBinaryVfx        (Bin_Lace& bin, const OBJECT::Data*     data, const uint64& i) {};
+		virtual void f_saveBinaryObject     (Bin_Lace& bin, const Object*           data, const uint64& i) {};
+		virtual void f_saveBinaryScene      (Bin_Lace& bin, const Scene*            data, const uint64& i) {};
+		virtual void f_saveBinaryHistory    (Bin_Lace& bin) {};
+		virtual void f_saveBinaryBuild      (Bin_Lace& bin) {};
 	};
 }

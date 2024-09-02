@@ -202,6 +202,7 @@ GUI::Linear_Contents::Linear_Contents(QWidget* parent, const QBoxLayout::Directi
 	QWidget(parent),
 	layout(new GUI::Linear_Layout(this, direction))
 {
+	setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 	setAttribute(Qt::WidgetAttribute::WA_StyledBackground);
 	setContentsMargins(0, 0, 0, 0);
 }
@@ -280,6 +281,7 @@ GUI::Menu::Menu(QWidget* parent) :
 	QMenu(parent)
 {
 	setAttribute(Qt::WidgetAttribute::WA_StyledBackground);
+	setSizePolicy(QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Expanding);
 	setContentsMargins(0, 0, 0, 0);
 }
 

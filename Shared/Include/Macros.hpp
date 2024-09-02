@@ -5,6 +5,9 @@
 #undef min
 #undef max
 
+#undef LOG
+#undef FILE
+
 #define MIN_VEC1  numeric_limits<vec1 >::min()
 #define MAX_VEC1  numeric_limits<vec1 >::max()
 #define MIN_DVEC1 numeric_limits<dvec1>::min()
@@ -34,3 +37,48 @@
 #define FPS_60      0.016666666666667
 #define MAX_DIST    10000.0
 #define EPSILON     0.00001
+
+#define ENDL << KL::Lace_NL()
+
+#define ANSI_RESET  << "\033[0m"
+
+#define ANSI_BLACK  << "\033[90m"
+#define ANSI_R      << "\033[91m"
+#define ANSI_G      << "\033[92m"
+#define ANSI_YELLOW << "\033[93m"
+#define ANSI_B      << "\033[94m"
+#define ANSI_PURPLE << "\033[95m"
+#define ANSI_CYAN   << "\033[96m"
+#define ANSI_WHITE  << "\033[97m"
+
+#define HTML_RESET  << "</span>"
+#define HTML_ENDL  << "<br>"
+
+#define HTML_R      << "<span style='color: rgb(255,100,100);'>"
+#define HTML_G      << "<span style='color: rgb(100,255,100);'>"
+#define HTML_B      << "<span style='color: rgb(100,100,255);'>"
+
+#define NL  << KL::Lace_NL()
+#define SP  << KL::Lace_S()
+#define TAB << KL::Lace_TAB()
+#define PTR << "* "
+
+#define CMD(command) KL::Session::getInstance().getHistory()->execute(command);
+#define UNDO(count)  KL::Session::getInstance().getHistory()->undo(count);
+#define REDO(count)  KL::Session::getInstance().getHistory()->redo(count);
+
+#define NEW_UID KL::Session::getInstance().getUID()++
+
+#define RAM KL::Session::getInstance().ram
+#define RAM_A(type, count) KL::Session::getInstance().ram += (sizeof(type) * count)
+#define RAM_R(type, count) KL::Session::getInstance().ram -= (sizeof(type) * count)
+
+#define VRAM KL::Session::getInstance().vram
+#define VRAM_A(type, count) KL::Session::getInstance().vram += (sizeof(type) * count)
+#define VRAM_R(type, count) KL::Session::getInstance().vram -= (sizeof(type) * count)
+
+#define LOG *KL::Session::getInstance().getLog()
+#define FILE KL::Session::getInstance().getFile()
+#define FLUSH KL::Session::getInstance().flushLog()
+#define COUT_S KL::Lace lace; lace <<
+#define COUT_E ; cout << lace.str()
