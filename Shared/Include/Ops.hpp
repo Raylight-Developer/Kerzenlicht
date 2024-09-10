@@ -61,7 +61,7 @@ namespace KL {
 		void rotate(const dvec3& value);
 
 		dmat4 getMatrix() const;
-		string toString() const;
+		string serialize() const;
 	};
 
 	struct Observable {
@@ -158,8 +158,8 @@ namespace KL {
 }
 // Templates
 template<typename T>
-uint e_to_u(const T& enumerator) {
-	return static_cast<uint>(enumerator);
+uint16 e_to_us(const T& enumerator) {
+	return static_cast<uint16>(enumerator);
 };
 
 template<typename T>

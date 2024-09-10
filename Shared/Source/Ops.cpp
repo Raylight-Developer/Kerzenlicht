@@ -346,7 +346,7 @@ dmat4 KL::Transform::getMatrix() const {
 	return translation_matrix * rotation_matrix * scale_matrix;
 }
 
-string KL::Transform::toString() const {
+string KL::Transform::serialize() const {
 	Lace value;
 	value << position << " | " << euler_rotation << " | " << scale;
 	return value.str();

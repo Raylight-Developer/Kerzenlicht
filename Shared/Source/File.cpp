@@ -2,10 +2,6 @@
 
 #include "Session.hpp"
 
-#define NL << KL::Lace_NL()
-#define SP << KL::Lace_S()
-#define PTR << "* "
-
 KL::File::File() {
 	pointer_map = {};
 	object_data = {};
@@ -722,6 +718,12 @@ KL::Scene* KL::File::f_loadAsciiScene(const Token_Array& token_data, const Token
 	return scene;
 }
 
+void KL::File::f_loadAsciiHistory(const Token_Array& token_data, const Tokens& line_Data) {
+	for (const Tokens& tokens : token_data) {
+
+	}
+}
+
 void KL::File::f_loadAsciiBuild(const Token_Array& token_data, const Tokens& line_data) {
 	LOG ENDL ANSI_B << "    [Build]" ANSI_RESET; FLUSH;
 
@@ -905,7 +907,7 @@ void KL::File::f_saveAsciiNodeTree(Lace& lace, const KL::Node_Tree* data, const 
 					case NODE::LINK::Type::POINTER: {
 						lace NL << "Type LINK :: POINTER";
 						lace NL << "┌Pointer";
-						lace NL << Lace_S() << "Type " << toString(static_cast<NODE::LINK::Pointer*>(node)->pointer_type);
+						lace NL << Lace_S() << "Type " << serialize(static_cast<NODE::LINK::Pointer*>(node)->pointer_type);
 						lace NL << "└Pointer";
 						break;
 					}
@@ -1319,6 +1321,39 @@ void KL::File::f_saveAsciiScene(Lace& lace, const KL::Scene* data, const uint64&
 	lace NL << "└Scene";
 }
 
+void KL::File::f_saveAsciiHistory(Lace& lace) {
+	lace NL << "┌History( " << KL::Session::getInstance().getHistory()->history_stack.size() << " )";
+	lace++;
+	uint64 i = 0;
+	for (const auto& ptr : KL::Session::getInstance().getHistory()->history_stack) {
+		const History_Command* command = ptr.get();
+		lace NL << "┌Cmd[ " << i << " ]";
+		lace++;
+		switch (command->type) {
+			case HISTORY::Type::SHADER: {
+				auto pointer = static_cast<const SHADER_CMD::Shader_Code*>(command);
+				switch (static_cast<SHADER_CMD::Type>(pointer->sub_type)) {
+					case SHADER_CMD::Type::CODE: {
+						lace NL << "Type SHADER :: CODE";
+						lace NL PTR << uptr(pointer->ptr);
+						break;
+					}
+				}
+				break;
+			}
+		}
+		lace NL << "┌Serialized";
+		lace++;
+		command->serialize(lace);
+		lace--;
+		lace NL << "└Serialized";
+		lace--;
+		lace NL << "└Cmd";
+	}
+	lace--;
+	lace NL << "└History";
+}
+
 void KL::File::f_saveAsciiBuild(Lace& lace) {
 	lace NL << "┌Build-Steps";
 	lace++;
@@ -1357,7 +1392,7 @@ void KL::File::f_saveAsciiBuild(Lace& lace) {
 	for (auto object : objects) {
 		if (object->data->type != OBJECT::DATA::Type::NONE and object->node_tree) {
 			for (auto node : object->node_tree->nodes) {
-				if (node->type == KL::NODE::Type::LINK and node->sub_type == e_to_u(KL::NODE::LINK::Type::POINTER)) {
+				if (node->type == KL::NODE::Type::LINK and node->sub_type == e_to_us(KL::NODE::LINK::Type::POINTER)) {
 					lace NL PTR << uptr(node) SP PTR << uptr(static_cast<KL::NODE::LINK::Pointer*>(node)->pointer);
 				}
 			}

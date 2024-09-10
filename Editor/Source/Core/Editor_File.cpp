@@ -318,7 +318,7 @@ void KL::Editor_File::f_saveAsciiNodeTree(Lace& lace, const KL::Node_Tree* data,
 			case NODE::LINK::Type::POINTER: {
 				lace NL << "Type LINK :: POINTER";
 				lace NL << "┌Pointer";
-				lace NL SP << "Type " << toString(static_cast<NODE::LINK::Pointer*>(node)->pointer_type);
+				lace NL SP << "Type " << serialize(static_cast<NODE::LINK::Pointer*>(node)->pointer_type);
 				lace NL << "└Pointer";
 				break;
 			}

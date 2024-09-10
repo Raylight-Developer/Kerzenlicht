@@ -2,6 +2,7 @@
 
 #include "Include.hpp"
 #include "History.hpp"
+#include "Macros.hpp"
 #include "Lace.hpp"
 
 // FWD DECL OTHER

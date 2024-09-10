@@ -172,8 +172,8 @@ namespace KL {
 		BVH_Builder(const vector<GPU_Triangle>& triangles, const uint& depth);
 
 		void splitBvh(const uint& parentIndex, const uint& triGlobalStart, const uint& triNum, const uint& depth);
-		void splitAxis(const GPU_BVH& node, const uint& start, const uint& count, uint8& axis, float& pos, float& cost) const;
-		float splitEval(const uint8& splitAxis, const float& splitPos, const uint& start, const uint& count) const;
+		void splitAxis(const GPU_BVH& node, const uint& start, const uint& count, uint8& axis, vec1& pos, vec1& cost) const;
+		float splitEval(const uint8& splitAxis, const vec1& splitPos, const uint& start, const uint& count) const;
 		static float nodeCost(const vec3& size, const uint& numTriangles);
 	};
 }

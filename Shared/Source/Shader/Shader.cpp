@@ -1,4 +1,4 @@
-#include "Shader/Shader.hpp"
+﻿#include "Shader/Shader.hpp"
 
 #ifdef COMPILE_EDITOR
 	#include "Core/Editor_File.hpp"
@@ -17,30 +17,6 @@ KL::SHADER::Texture::Texture() :
 	file_path = "";
 	resolution = uvec2(0, 0);
 	data = {};
-}
-
-#undef FILE
-#undef NL
-#define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
-
-bool KL::SHADER::Texture::loadFromFile(const string & file_path) { // TODO handle different formats
-	this->file_path = file_path;
-	int width, height, channels;
-	unsigned char* tex_data = stbi_load(file_path.c_str(), &width, &height, &channels, STBI_rgb_alpha);
-	if (tex_data == nullptr) {
-		LOG ENDL ANSI_R << "[Texture]" ANSI_RESET << " Failed to load image: " << file_path << " " << stbi_failure_reason();
-		return false;
-	}
-	uint64 totalPixels = width * height * 4;
-	data = vector<uint>(totalPixels);
-	for (uint64 i = 0; i < totalPixels; ++i) {
-		data[i] = static_cast<uint>(tex_data[i]);
-	}
-
-	resolution = uvec2((i_to_u(width), (i_to_u(height))));
-	stbi_image_free(tex_data);
-	return true;
 }
 
 KL::SHADER::Texture KL::SHADER::Texture::fromFile(const string& file_path) {
@@ -127,6 +103,8 @@ KL::SHADER_CMD::Shader_Code::Shader_Code(Shader* ptr, const string& cmd_new) :
 	cmd_new(cmd_new),
 	cmd_old(ptr->shader_code)
 {
+	type = HISTORY::Type::SHADER;
+	sub_type = e_to_us(SHADER_CMD::Type::CODE);
 	info << "Shader Code for [" << ptr->name << "] changed";
 	details HTML_R << "From" HTML_RESET HTML_ENDL << ptr->shader_code HTML_ENDL HTML_G << "To" HTML_RESET HTML_ENDL << cmd_new;
 }
@@ -135,6 +113,46 @@ void KL::SHADER_CMD::Shader_Code::execute() {
 	ptr->shader_code = cmd_new;
 }
 
-unique_ptr<KL::History_Command>  KL::SHADER_CMD::Shader_Code::invert() const {
+unique_ptr<KL::History_Command>  KL::SHADER_CMD::Shader_Code::undo() const {
 	return make_unique<Shader_Code>(ptr, cmd_old);
+}
+
+void KL::SHADER_CMD::Shader_Code::serialize(Lace& lace) const {
+	lace NL << "┌Before";
+	lace++;
+	lace NL << cmd_old;
+	lace--;
+	lace NL << "└Before";
+	lace NL << "┌After";
+	lace++;
+	lace NL << cmd_new;
+	lace--;
+	lace NL << "└After";
+}
+
+void KL::SHADER_CMD::Shader_Code::deserialize(const string& value) {
+}
+
+#undef FILE
+#undef NL
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+
+bool KL::SHADER::Texture::loadFromFile(const string & file_path) { // TODO handle different formats
+	this->file_path = file_path;
+	int width, height, channels;
+	unsigned char* tex_data = stbi_load(file_path.c_str(), &width, &height, &channels, STBI_rgb_alpha);
+	if (tex_data == nullptr) {
+		LOG ENDL ANSI_R << "[Texture]" ANSI_RESET << " Failed to load image: " << file_path << " " << stbi_failure_reason();
+		return false;
+	}
+	uint64 totalPixels = width * height * 4;
+	data = vector<uint>(totalPixels);
+	for (uint64 i = 0; i < totalPixels; ++i) {
+		data[i] = static_cast<uint>(tex_data[i]);
+	}
+
+	resolution = uvec2((i_to_u(width), (i_to_u(height))));
+	stbi_image_free(tex_data);
+	return true;
 }

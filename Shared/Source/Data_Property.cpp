@@ -117,7 +117,7 @@ KL::SHADER::Texture* KL::Data::getTexture() const {
 
 string KL::Data::to_string() const {
 	switch (type) {
-	case DATA::Type::TRANSFORM: return any_cast<Transform>(data).toString();
+	case DATA::Type::TRANSFORM: return any_cast<Transform>(data).serialize();
 	case DATA::Type::DOUBLE:    return std::to_string(any_cast<dvec1>(data));
 	case DATA::Type::UINT:      return std::to_string(static_cast<dvec1>(any_cast<uint64>(data)));
 	case DATA::Type::INT:       return std::to_string(static_cast<dvec1>(any_cast<int64>(data)));
@@ -164,7 +164,7 @@ uvec3 typeColor(const KL::DATA::Type& type) {
 	return uvec3(0, 0, 0);
 }
 
-string KL::DATA::toString(const Type& type) {
+string KL::DATA::serialize(const Type& type) {
 	switch (type) {
 		case Type::NONE:      return "NONE";
 		case Type::ANY:       return "ANY";

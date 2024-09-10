@@ -39,7 +39,7 @@ namespace KL {
 			MAP,
 			POINTER
 		};
-		string toString(const Type& type);
+		string serialize(const Type& type);
 		Type fromString(const string& type);
 	}
 	struct Data {

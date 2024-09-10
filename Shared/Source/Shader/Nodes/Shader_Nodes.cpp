@@ -4,7 +4,7 @@ using namespace SHADER::NODE;
 
 EXEC::Tick::Tick() {
 	type = KL::NODE::Type::EXEC;
-	sub_type = e_to_u(Type::TICK);
+	sub_type = e_to_us(Type::TICK);
 
 	delta = new dvec1(FPS_60);
 

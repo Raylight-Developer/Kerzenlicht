@@ -5,7 +5,7 @@
 GUI::NODE::EXEC::Counter::Counter(const ivec2& pos) {
 	label = "Tick Counter";
 	type = KL::NODE::Type::EXEC;
-	sub_type = e_to_u(KL::NODE::EXEC::Type::COUNTER);
+	sub_type = e_to_us(KL::NODE::EXEC::Type::COUNTER);
 
 	rect = QRectF(-100, -20, 200, 40);
 
@@ -25,7 +25,7 @@ GUI::NODE::EXEC::Counter::Counter(const ivec2& pos) {
 GUI::NODE::EXEC::Script::Script(const ivec2& pos, const string& script_id) {
 	label = "Script";
 	type = KL::NODE::Type::EXEC;
-	sub_type = e_to_u(KL::NODE::EXEC::Type::SCRIPT);
+	sub_type = e_to_us(KL::NODE::EXEC::Type::SCRIPT);
 
 	wrapper = new Script_Node(this);
 	buildGuiFunc = nullptr;
@@ -188,7 +188,7 @@ QString GUI::NODE::EXEC::Script_Node::label() const {
 GUI::NODE::EXEC::Tick::Tick(const ivec2& pos) {
 	label = "Tick Update";
 	type = KL::NODE::Type::EXEC;
-	sub_type = e_to_u(KL::NODE::EXEC::Type::TICK);
+	sub_type = e_to_us(KL::NODE::EXEC::Type::TICK);
 
 	rect = QRectF(-100, -20, 200, 40);
 
@@ -202,7 +202,7 @@ GUI::NODE::EXEC::Tick::Tick(const ivec2& pos) {
 GUI::NODE::LINK::Pointer::Pointer(const ivec2& pos, const KL::DATA::Type& pointer_type) {
 	label = "Pointer";
 	type = KL::NODE::Type::LINK;
-	sub_type = e_to_u(KL::NODE::LINK::Type::POINTER);
+	sub_type = e_to_us(KL::NODE::LINK::Type::POINTER);
 
 	this->pointer_type = pointer_type;
 	pointer = nullptr;
@@ -240,7 +240,7 @@ void GUI::NODE::LINK::Pointer::paint(QPainter* painter, const QStyleOptionGraphi
 GUI::NODE::LINK::Get::Get(const ivec2& pos) {
 	label = "Get";
 	type = KL::NODE::Type::LINK;
-	sub_type = e_to_u(KL::NODE::LINK::Type::GET);
+	sub_type = e_to_us(KL::NODE::LINK::Type::GET);
 	mini_type = KL::NODE::LINK::GET::Type::NONE;
 
 	i_pointer = nullptr;
@@ -255,7 +255,7 @@ GUI::NODE::LINK::GET::Field::Field(const ivec2& pos) :
 {
 	label = "Get Field";
 	type = KL::NODE::Type::LINK;
-	sub_type = e_to_u(KL::NODE::LINK::Type::GET);
+	sub_type = e_to_us(KL::NODE::LINK::Type::GET);
 	mini_type = KL::NODE::LINK::GET::Type::FIELD;
 
 	QGraphicsProxyWidget* proxyWidget_id = new QGraphicsProxyWidget(this);
@@ -280,7 +280,7 @@ GUI::NODE::LINK::GET::Field::Field(const ivec2& pos) :
 GUI::NODE::LINK::Set::Set(const ivec2& pos) {
 	label = "Set";
 	type = KL::NODE::Type::LINK;
-	sub_type = e_to_u(KL::NODE::LINK::Type::SET);
+	sub_type = e_to_us(KL::NODE::LINK::Type::SET);
 	mini_type = KL::NODE::LINK::SET::Type::NONE;
 
 	i_exec    = nullptr;
@@ -318,7 +318,7 @@ GUI::NODE::LINK::SET::Euler_Rotation_X::Euler_Rotation_X(const ivec2& pos) :
 
 GUI::NODE::MATH::Math::Math(const ivec2& pos) {
 	type = KL::NODE::Type::MATH;
-	sub_type = e_to_u(KL::NODE::MATH::Type::NONE);
+	sub_type = e_to_us(KL::NODE::MATH::Type::NONE);
 
 	rect = QRectF(-100, -20, 200, 40);
 
@@ -339,7 +339,7 @@ GUI::NODE::MATH::Add::Add(const ivec2& pos) :
 	Math(pos)
 {
 	label = "Add";
-	sub_type = e_to_u(KL::NODE::MATH::Type::ADD);
+	sub_type = e_to_us(KL::NODE::MATH::Type::ADD);
 	in_a->setDataType(KL::DATA::Type::DOUBLE);
 	in_b->setDataType(KL::DATA::Type::DOUBLE);
 	out_a->setDataType(KL::DATA::Type::DOUBLE);
@@ -349,7 +349,7 @@ GUI::NODE::MATH::Sub::Sub(const ivec2& pos) :
 	Math(pos)
 {
 	label = "Subtract";
-	sub_type = e_to_u(KL::NODE::MATH::Type::SUB);
+	sub_type = e_to_us(KL::NODE::MATH::Type::SUB);
 	in_a->setDataType(KL::DATA::Type::DOUBLE);
 	in_b->setDataType(KL::DATA::Type::DOUBLE);
 	out_a->setDataType(KL::DATA::Type::DOUBLE);
@@ -359,7 +359,7 @@ GUI::NODE::MATH::Mul::Mul(const ivec2& pos) :
 	Math(pos)
 {
 	label = "Multiply";
-	sub_type = e_to_u(KL::NODE::MATH::Type::MUL);
+	sub_type = e_to_us(KL::NODE::MATH::Type::MUL);
 	in_a->setDataType(KL::DATA::Type::DOUBLE);
 	in_b->setDataType(KL::DATA::Type::DOUBLE);
 	out_a->setDataType(KL::DATA::Type::DOUBLE);
@@ -369,8 +369,8 @@ GUI::NODE::MATH::Div::Div(const ivec2& pos) :
 	Math(pos)
 {
 	label = "Divide";
-	sub_type = e_to_u(KL::NODE::Type::MATH);
-	sub_type = e_to_u(KL::NODE::MATH::Type::DIV);
+	sub_type = e_to_us(KL::NODE::Type::MATH);
+	sub_type = e_to_us(KL::NODE::MATH::Type::DIV);
 	in_a->setDataType(KL::DATA::Type::DOUBLE);
 	in_b->setDataType(KL::DATA::Type::DOUBLE);
 	out_a->setDataType(KL::DATA::Type::DOUBLE);
@@ -379,7 +379,7 @@ GUI::NODE::MATH::Div::Div(const ivec2& pos) :
 GUI::NODE::UTIL::Print::Print(const ivec2& pos) {
 	label = "Print";
 	type = KL::NODE::Type::UTIL;
-	sub_type = e_to_u(KL::NODE::UTIL::Type::PRINT);
+	sub_type = e_to_us(KL::NODE::UTIL::Type::PRINT);
 
 	rect = QRectF(-100, -20, 200, 40);
 
@@ -400,7 +400,7 @@ GUI::NODE::UTIL::Print::Print(const ivec2& pos) {
 GUI::NODE::UTIL::Cast::Cast(const ivec2& pos) {
 	label = "Cast";
 	type = KL::NODE::Type::UTIL;
-	sub_type = e_to_u(KL::NODE::UTIL::Type::CAST);
+	sub_type = e_to_us(KL::NODE::UTIL::Type::CAST);
 	mini_type = KL::NODE::UTIL::CAST::Type::NONE;
 
 	rect = QRectF(-100, -20, 200, 40);

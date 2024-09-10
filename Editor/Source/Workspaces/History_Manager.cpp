@@ -10,7 +10,7 @@ GUI::WORKSPACE::Workspace_History_Manager::Workspace_History_Manager(Workspace_M
 	addWidget(list);
 
 	for (const auto& ptr : KL::Session::getInstance().getHistory()->history_stack) {
-		auto command = ptr.get();
+		const auto command = ptr.get();
 
 		QListWidgetItem* item = new QListWidgetItem();
 		item->setData(500, uptr(command));

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Include.hpp"
+#include "Ops.hpp"
 
 #include "Shader/Shader.hpp"
 
@@ -29,5 +30,7 @@ namespace KL::OBJECT::DATA {
 
 		Mesh();
 		~Mesh();
+
+		static vector<vec1> faceToArray(MESH::Face* face, const Mesh* mesh, const mat4& matrix);
 	};
 }

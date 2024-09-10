@@ -45,12 +45,12 @@ GUI::WORKSPACE::Workspace_Object_Node_Editor::Workspace_Object_Node_Editor(Works
 			recompileDLL(dynlib);
 
 			for (auto node : node_tree->nodes) {
-				if (node->type == KL::NODE::Type::EXEC and node->sub_type == e_to_u(KL::NODE::EXEC::Type::SCRIPT)) {
+				if (node->type == KL::NODE::Type::EXEC and node->sub_type == e_to_us(KL::NODE::EXEC::Type::SCRIPT)) {
 					static_cast<KL::NODE::EXEC::Script*>(node)->recompile(dynlib);
 				}
 			}
 			for (auto node : gui_node_tree->nodes) {
-				if (node->type == KL::NODE::Type::EXEC and node->sub_type == e_to_u(KL::NODE::EXEC::Type::SCRIPT)) {
+				if (node->type == KL::NODE::Type::EXEC and node->sub_type == e_to_us(KL::NODE::EXEC::Type::SCRIPT)) {
 					static_cast<GUI::NODE::EXEC::Script*>(node)->recompile(dynlib);
 				}
 			}

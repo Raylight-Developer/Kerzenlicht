@@ -30,7 +30,7 @@ GUI::WORKSPACE::Main_Window::Main_Window(GUI::Application* app) :
 	file->f_loadAsciiFile("./Resources/Assets/Save.krz");
 
 	Workspace_Manager* ws_1 = new Workspace_Manager(this, Workspace_Type::SHADER_EDITOR);
-	Workspace_Manager* ws_2 = new Workspace_Manager(this, Workspace_Type::HISTORY_MANAGER);
+	Workspace_Manager* ws_2 = new Workspace_Manager(this, Workspace_Type::VIEWPORT);
 	//Workspace_Manager* ws_3 = new Workspace_Manager(this, Workspace_Type::VIEWPORT);
 
 	workspaces["1"] = ws_1;

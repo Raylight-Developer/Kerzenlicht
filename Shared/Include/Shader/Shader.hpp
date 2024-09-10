@@ -1,10 +1,11 @@
 #pragma once
 
 #include "Include.hpp"
-#include "Ops.hpp"
-#include "Data_Property.hpp"
 
+#include "Ops.hpp"
+#include "Lace.hpp"
 #include "History.hpp"
+#include "Data_Property.hpp"
 
 #include "Nodes/Shader_Nodes.hpp"
 
@@ -69,16 +70,21 @@ namespace KL {
 		static string f_compileShaders(const string& code);
 	};
 	namespace SHADER_CMD {
+		enum struct Type {
+			NONE,
+			CODE
+		};
 		struct Shader_Code : History_Command {
+			Shader* ptr;
+			string cmd_new, cmd_old;
+
 			Shader_Code(Shader* ptr, const string& cmd_new);
 
 			~Shader_Code() {};
 			void execute() override;
-			unique_ptr<History_Command> invert() const override;
-
-		private:
-			Shader* ptr;
-			string cmd_new, cmd_old;
+			unique_ptr<History_Command> undo() const override;
+			void serialize(Lace& lace) const override;
+			void deserialize(const string& value) override;
 		};
 	}
 }

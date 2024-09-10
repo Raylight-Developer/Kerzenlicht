@@ -6,7 +6,7 @@ using namespace KL::NODE;
 
 EXEC::Timer::Timer() {
 	type = NODE::Type::EXEC;
-	sub_type = e_to_u(Type::TIMER);
+	sub_type = e_to_us(Type::TIMER);
 	
 //timer.setInterval(50);
 //QObject::connect(&timer, &QTimer::timeout, [this]() {exec(0); });
@@ -22,7 +22,7 @@ void EXEC::Timer::exec(const uint16& slot_id) {
 
 EXEC::Counter::Counter() {
 	type = NODE::Type::EXEC;
-	sub_type = e_to_u(Type::COUNTER);
+	sub_type = e_to_us(Type::COUNTER);
 
 	count = 0;
 
@@ -42,7 +42,7 @@ void EXEC::Counter::exec(const uint16& slot_id) {
 
 EXEC::Sequence::Sequence() {
 	type = NODE::Type::EXEC;
-	sub_type = e_to_u(Type::SEQUENCE);
+	sub_type = e_to_us(Type::SEQUENCE);
 
 	count = 0;
 
@@ -63,7 +63,7 @@ EXEC::Script::Script(const string& script_id) :
 	script_id(script_id)
 {
 	type = NODE::Type::EXEC;
-	sub_type = e_to_u(Type::SCRIPT);
+	sub_type = e_to_us(Type::SCRIPT);
 
 	wrapper = new Script_Node(this);
 	getDataFunc = nullptr;
@@ -225,7 +225,7 @@ PORT::Exec_O_Port* KL::NODE::EXEC::Script_Node::getExecOutput(const string& map_
 
 EXEC::Tick::Tick() {
 	type = NODE::Type::EXEC;
-	sub_type = e_to_u(Type::TICK);
+	sub_type = e_to_us(Type::TICK);
 
 	delta = new dvec1(FPS_60);
 
@@ -246,7 +246,7 @@ KL::Data EXEC::Tick::getData(const uint16& slot_id) const {
 
 LINK::Get::Get() {
 	type = NODE::Type::LINK;
-	sub_type = e_to_u(Type::GET);
+	sub_type = e_to_us(Type::GET);
 	mini_type = GET::Type::NONE;
 
 	i_pointer = new PORT::Data_I_Port(this, 0, DATA::Type::ANY);
@@ -259,7 +259,7 @@ LINK::Get::Get() {
 
 LINK::Set::Set() {
 	type = NODE::Type::LINK;
-	sub_type = e_to_u(Type::SET);
+	sub_type = e_to_us(Type::SET);
 	mini_type = SET::Type::NONE;
 
 	i_exec    = new PORT::Exec_I_Port(this, 0);
@@ -282,7 +282,7 @@ LINK::GET::Field::Field(const string& field) :
 	field(field)
 {
 	type = NODE::Type::LINK;
-	sub_type = e_to_u(LINK::Type::GET);
+	sub_type = e_to_us(LINK::Type::GET);
 	mini_type = GET::Type::FIELD;
 }
 
@@ -328,7 +328,7 @@ LINK::SET::Field::Field() :
 	Set()
 {
 	type = NODE::Type::LINK;
-	sub_type = e_to_u(LINK::Type::SET);
+	sub_type = e_to_us(LINK::Type::SET);
 	mini_type = SET::Type::FIELD;
 
 	field = "";
@@ -385,7 +385,7 @@ void LINK::SET::Field::exec(const uint16& slot_id) {
 
 LINK::Pointer::Pointer() {
 	type = NODE::Type::LINK;
-	sub_type = e_to_u(Type::POINTER);
+	sub_type = e_to_us(Type::POINTER);
 	pointer_type = DATA::Type::NONE;
 	pointer = nullptr;
 
@@ -406,7 +406,7 @@ KL::Data LINK::Pointer::getData(const uint16& slot_id) const {
 
 MATH::Math::Math() {
 	type = NODE::Type::MATH;
-	sub_type = e_to_u(Type::NONE);
+	sub_type = e_to_us(Type::NONE);
 
 	i_value_a   = new PORT::Data_I_Port(this, 0, DATA::Type::ANY);
 	i_value_b   = new PORT::Data_I_Port(this, 1, DATA::Type::ANY);
@@ -419,7 +419,7 @@ MATH::Math::Math() {
 }
 
 KL::NODE::MATH::Add::Add() {
-	sub_type = e_to_u(Type::ADD);
+	sub_type = e_to_us(Type::ADD);
 }
 
 KL::Data MATH::Add::getData(const uint16& slot_id) const {
@@ -427,21 +427,21 @@ KL::Data MATH::Add::getData(const uint16& slot_id) const {
 }
 
 KL::NODE::MATH::Sub::Sub() {
-	sub_type = e_to_u(Type::SUB);
+	sub_type = e_to_us(Type::SUB);
 }
 KL::Data MATH::Sub::getData(const uint16& slot_id) const {
 	return i_value_a->getData() - i_value_b->getData();
 }
 
 KL::NODE::MATH::Mul::Mul() {
-	sub_type = e_to_u(Type::MUL);
+	sub_type = e_to_us(Type::MUL);
 }
 KL::Data MATH::Mul::getData(const uint16& slot_id) const {
 	return i_value_a->getData() * i_value_b->getData();
 }
 
 KL::NODE::MATH::Div::Div() {
-	sub_type = e_to_u(Type::DIV);
+	sub_type = e_to_us(Type::DIV);
 }
 KL::Data MATH::Div::getData(const uint16& slot_id) const {
 	return i_value_a->getData() / i_value_b->getData();
@@ -449,7 +449,7 @@ KL::Data MATH::Div::getData(const uint16& slot_id) const {
 
 KL::NODE::UTIL::Print::Print() {
 	type = NODE::Type::UTIL;
-	sub_type = e_to_u(Type::PRINT);
+	sub_type = e_to_us(Type::PRINT);
 
 	i_exec  = new PORT::Exec_I_Port(this, 0);
 	i_value = new PORT::Data_I_Port(this, 1, DATA::Type::ANY);
@@ -469,7 +469,7 @@ void KL::NODE::UTIL::Print::exec(const uint16& slot_id) {
 
 UTIL::Cast::Cast() {
 	type = NODE::Type::UTIL;
-	sub_type = e_to_u(Type::CAST);
+	sub_type = e_to_us(Type::CAST);
 	mini_type = CAST::Type::NONE;
 
 	i_value = new PORT::Data_I_Port(this, 0, DATA::Type::ANY);
@@ -510,7 +510,7 @@ KL::Data KL::NODE::UTIL::CAST::Int_To_Double::getData(const uint16& slot_id) con
 
 UTIL::View::View() {
 	type = NODE::Type::UTIL;
-	sub_type = e_to_u(Type::VIEW);
+	sub_type = e_to_us(Type::VIEW);
 
 	port = new PORT::Data_I_Port(this, 0, DATA::Type::ANY);
 

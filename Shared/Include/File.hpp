@@ -125,7 +125,7 @@ namespace KL {
 
 		virtual void f_saveBinary           (Bin_Lace& bin);
 		virtual void f_saveBinaryHeader     (Bin_Lace& bin);
-		virtual void f_saveBinaryNodeTree   (Bin_Lace& bin, Node_Tree*            data) {};
+		virtual void f_saveBinaryNodeTree   (Bin_Lace& bin, Node_Tree*            data);
 		virtual void f_saveBinaryMaterial   (Bin_Lace& bin, const KL::Shader*   data, const uint64& i) {};
 		virtual void f_saveBinaryData       (Bin_Lace& bin) {};
 		virtual void f_saveBinaryAtmosphere (Bin_Lace& bin, const OBJECT::Data*     data, const uint64& i) {};
