@@ -17,9 +17,9 @@ vector<vec1> KL::OBJECT::DATA::Mesh::faceToArray(MESH::Face* face, const Mesh* m
 	const vec4 vert4_a = matrix * vec4(d_to_f(face->vertices[0]->position), 1.0);
 	const vec4 vert4_b = matrix * vec4(d_to_f(face->vertices[1]->position), 1.0);
 	const vec4 vert4_c = matrix * vec4(d_to_f(face->vertices[2]->position), 1.0);
-	const vec3 vert_a = vec3(vert4_a) / vert4_a.w;
-	const vec3 vert_b = vec3(vert4_b) / vert4_b.w;
-	const vec3 vert_c = vec3(vert4_c) / vert4_c.w;
+	const vec3 vert_a = vec3(vert4_a.x, vert4_a.y, vert4_a.z) / vert4_a.w;
+	const vec3 vert_b = vec3(vert4_b.x, vert4_b.y, vert4_b.z) / vert4_b.w;
+	const vec3 vert_c = vec3(vert4_c.x, vert4_c.y, vert4_c.z) / vert4_c.w;
 
 	// Initialize normals and UVs
 	vec3 nor_a = vec3(0.0f);

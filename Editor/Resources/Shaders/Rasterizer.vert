@@ -1,5 +1,5 @@
 #version 460
-/*
+
 layout(location = 0) in vec3 aPos;
 layout(location = 1) in vec3 aNormal;
 layout(location = 2) in vec2 aUV;
@@ -14,9 +14,8 @@ void main() {
 	fragUV = aUV;
 	gl_Position = view * vec4(aPos, 1.0);
 }
-*/
-
-layout(location = 0) in vec2 aPos;
+/*
+layout(location = 0) in vec3 aPos;
 
 out vec2 TexCoord;
 
@@ -24,6 +23,7 @@ uniform mat4 view;
 
 void main()
 {
-	TexCoord = (aPos + vec2(1.0, 1.0)) / 2.0; // Map to [0, 1] range
-	gl_Position = view * vec4(aPos, 0.0, 1.0);
+	TexCoord = (aPos.xy + vec2(1.0, 1.0)) / 2.0; // Map to [0, 1] range
+	gl_Position = view * vec4(aPos, 1.0);
 }
+*/

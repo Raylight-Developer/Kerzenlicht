@@ -162,6 +162,8 @@ void GUI::WORKSPACE::Viewport::f_pipeline() {
 		gpu_data->updateTextures();
 		gpu_data->printInfo();
 	#else
+		glEnable(GL_DEPTH_TEST);
+		FILE->default_camera->data->getCamera()->updateFocalAngle();
 		gl_data["raster_program"] = fragmentShaderProgram("Rasterizer");
 	#endif
 }
@@ -243,13 +245,14 @@ void GUI::WORKSPACE::Viewport::f_tickUpdate() {
 		gl_data["ssbo 7"] = ssboBinding(7, ul_to_u(gpu_data->texturesSize()   ), gpu_data->textures.data());
 		gl_data["ssbo 8"] = ssboBinding(8, ul_to_u(gpu_data->textureDataSize()), gpu_data->texture_data.data());
 	#else
-		vector<float> triangles;
+		gl_triangles.clear();
 		for (KL::Object* object : FILE->active_scene->pointer->objects) {
+			object->f_compileMatrix();
 			if (object->data->type == KL::OBJECT::DATA::Type::MESH) {
 				KL::OBJECT::DATA::Mesh* mesh = object->data->getMesh();
 				for (KL::OBJECT::DATA::MESH::Face* face : mesh->faces) {
 					auto tri = KL::OBJECT::DATA::Mesh::faceToArray(face, mesh, object->transform_matrix);
-					triangles.insert(triangles.end(), tri.begin(), tri.end());
+					gl_triangles.insert(gl_triangles.end(), tri.begin(), tri.end());
 				}
 			}
 			else if (object->data->type == KL::OBJECT::DATA::Type::GROUP) {
@@ -260,20 +263,13 @@ void GUI::WORKSPACE::Viewport::f_tickUpdate() {
 					if (sub_object->data->type == KL::OBJECT::DATA::Type::MESH) {
 						KL::OBJECT::DATA::Mesh* mesh = sub_object->data->getMesh();
 						for (KL::OBJECT::DATA::MESH::Face* face : mesh->faces) {
-							auto tri = KL::OBJECT::DATA::Mesh::faceToArray(face, mesh, object->transform_matrix);
-							triangles.insert(triangles.end(), tri.begin(), tri.end());
+							auto tri = KL::OBJECT::DATA::Mesh::faceToArray(face, mesh, sub_object->transform_matrix);
+							gl_triangles.insert(gl_triangles.end(), tri.begin(), tri.end());
 						}
 					}
 				}
 			}
 		}
-
-		float vertices[] = {
-			-1.0f, -1.0f, // Bottom-left
-			 1.0f, -1.0f, // Bottom-right
-			-1.0f,  1.0f, // Top-left
-			 1.0f,  1.0f  // Top-right
-		};
 
 		glDeleteVertexArrays(1, &gl_data["vao"]);
 		glDeleteBuffers(1, &gl_data["vbo"]);
@@ -287,19 +283,19 @@ void GUI::WORKSPACE::Viewport::f_tickUpdate() {
 		glBindVertexArray(gl_data["vao"]);
 		glBindBuffer(GL_ARRAY_BUFFER, gl_data["vbo"]);
 
-		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, gl_triangles.size() * sizeof(vec1), gl_triangles.data(), GL_STATIC_DRAW);
 
 		// Vertex Positions
-		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(vec1), (void*)0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(vec1), (void*)0);
 		glEnableVertexAttribArray(0);
 
 		// Vertex Normals
-		//glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(vec1), (void*)(3 * sizeof(vec1)));
-		//glEnableVertexAttribArray(1);
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(vec1), (void*)(3 * sizeof(vec1)));
+		glEnableVertexAttribArray(1);
 		//
 		//// Vertex UVs
-		//glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-		//glEnableVertexAttribArray(2);
+		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(vec1), (void*)(6 * sizeof(vec1)));
+		glEnableVertexAttribArray(2);
 	#endif
 }
 
@@ -412,7 +408,7 @@ void GUI::WORKSPACE::Viewport::paintGL() {
 		glUniformMatrix4fv(glGetUniformLocation(raster_program, "view"), 1, GL_FALSE, value_ptr(camera->glViewMatrix(FILE->default_camera, render_aspect_ratio)));
 
 		glBindVertexArray(vao);
-		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+		glDrawArrays(GL_TRIANGLES, 0, 42);
 	}
 	#endif
 

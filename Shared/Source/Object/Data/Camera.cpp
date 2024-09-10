@@ -6,6 +6,10 @@ KL::OBJECT::DATA::Camera::Camera() {
 	focal_angle  = 50.0;
 	focal_length = 0.05;
 	sensor_size  = 0.036;
+
+	projection_uv = dvec3(0.0);
+	projection_u  = dvec3(0.0);
+	projection_v  = dvec3(0.0);
 }
 
 void KL::OBJECT::DATA::Camera::compile(KL::Scene* scene, KL::Object* object) {
@@ -14,9 +18,15 @@ void KL::OBJECT::DATA::Camera::compile(KL::Scene* scene, KL::Object* object) {
 	const dvec3 y_vector = matrix[1];
 	const dvec3 z_vector = -matrix[2];
 	
-	projection_center = object->transform.position + focal_length * z_vector;
-	projection_u = normalize(cross(z_vector, y_vector)) * sensor_size ;
-	projection_v = normalize(cross(projection_u, z_vector)) * sensor_size;
+	projection_uv = object->transform.position + focal_length * z_vector;
+	projection_u  = normalize(cross(z_vector, y_vector)) * sensor_size ;
+	projection_v  = normalize(cross(projection_u, z_vector)) * sensor_size;
+}
+
+void KL::OBJECT::DATA::Camera::updateFocalAngle() {
+	const dvec1 argument = sensor_size / (2.0 * focal_length);
+	const dvec1 fovRadians = 2.0 * std::atan(argument);
+	focal_angle = fovRadians * RAD_DEG;
 }
 
 mat4 KL::OBJECT::DATA::Camera::glViewMatrix(const KL::Object* object, const dvec1& aspect_ratio) const {
