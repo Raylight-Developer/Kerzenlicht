@@ -408,7 +408,7 @@ void GUI::WORKSPACE::Viewport::paintGL() {
 		glUniformMatrix4fv(glGetUniformLocation(raster_program, "view"), 1, GL_FALSE, value_ptr(camera->glViewMatrix(FILE->default_camera, render_aspect_ratio)));
 
 		glBindVertexArray(vao);
-		glDrawArrays(GL_TRIANGLES, 0, 42);
+		glDrawArrays(GL_TRIANGLES, 0, gl_triangles.size() / 8);
 	}
 	#endif
 
