@@ -4,6 +4,11 @@ KL::Editor_File::Editor_File() :
 	File()
 {}
 
+void KL::Editor_File::f_loadAscii(const Token_Array& token_data, const Tokens& line_data) {
+	File::f_loadAscii(token_data, line_data);
+
+}
+
 KL::Node_Tree* KL::Editor_File::f_loadAsciiNodeTree(const Token_Array&token_data, const Tokens& line_data) {
 	auto node_tree = new KL::Node_Tree();
 	auto gui_node_tree = new GUI::NODE::Node_Tree();

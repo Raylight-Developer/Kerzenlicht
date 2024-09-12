@@ -23,11 +23,15 @@ namespace KL {
 // DECL
 namespace KL {
 	struct Editor_File : File {
-		unordered_map<KL::Node_Tree*, GUI::NODE::Node_Tree*> nodetree_map;
-		unordered_map<KL::Node*, GUI::NODE::Node*> node_map;
+		unordered_map<Node_Tree*, GUI::NODE::Node_Tree*> nodetree_map;
+		unordered_map<Node*, GUI::NODE::Node*> node_map;
+
+		unordered_map<string, Object*> editor_objects;
+		unordered_map<string, OBJECT::Data*> editor_object_data;
 
 		Editor_File();
 
+		void       f_loadAscii         (const Token_Array& token_data, const Tokens& line_data) override;
 		Node_Tree* f_loadAsciiNodeTree (const Token_Array& token_data, const Tokens& line_data) override;
 		void       f_loadAsciiBuild    (const Token_Array& token_data, const Tokens& line_data) override;
 

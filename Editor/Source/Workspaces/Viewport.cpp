@@ -338,7 +338,7 @@ void GUI::WORKSPACE::Viewport::f_selectObject(const dvec2& uv) { // TODO fix sli
 
 void GUI::WORKSPACE::Viewport::initializeGL() {
 	initializeOpenGLFunctions();
-	glClearColor(1.0f, 0.0f, 1.0f, 1.0f);
+	glClearColor(0.25f, 0.25f, 0.25f, 1.0f);
 	glViewport(0, 0, render_resolution.x, render_resolution.y);
 
 	f_pipeline();
@@ -405,10 +405,11 @@ void GUI::WORKSPACE::Viewport::paintGL() {
 		glUseProgram(raster_program);
 
 		KL::OBJECT::DATA::Camera* camera = FILE->default_camera->data->getCamera();
-		glUniformMatrix4fv(glGetUniformLocation(raster_program, "view"), 1, GL_FALSE, value_ptr(camera->glViewMatrix(FILE->default_camera, render_aspect_ratio)));
+		glUniform3fv(glGetUniformLocation(raster_program, "camera_pos" ), 1, value_ptr(d_to_f(FILE->default_camera->transform.position)));
+		glUniformMatrix4fv(glGetUniformLocation(raster_program, "view_mat"), 1, GL_FALSE, value_ptr(camera->glViewMatrix(FILE->default_camera, render_aspect_ratio)));
 
 		glBindVertexArray(vao);
-		glDrawArrays(GL_TRIANGLES, 0, gl_triangles.size() / 8);
+		glDrawArrays(GL_TRIANGLES, 0, ul_to_u(gl_triangles.size() / 8));
 	}
 	#endif
 
