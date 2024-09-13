@@ -20,6 +20,8 @@ bool   f_contains(const string& input, const string& substring);
 string loadFromFile(const string& file_path);
 void writeToFile(const string& filename, const string& content);
 
+Tokens loadFileLines(const string& file_path);
+Token_Array loadFileTokens(const string& file_path);
 
 // Opengl
 string processSubShader(const string& file_path);
@@ -320,4 +322,14 @@ void f_removeMapItem(unordered_map<K, V>& map, const K& key) {
 template<typename T>
 void f_removeVectorItem(vector<T>& vec, const T& value) {
 	vec.erase(find(vec.begin(), vec.end(), value));
+}
+
+template<typename T, typename U>
+vector<T> f_flattenMap(const unordered_map<U, vector<T>>& map) {
+	vector<T> flattened;
+	for (const auto& pair : map) {
+		const std::vector<T>& vec = pair.second;
+		flattened.insert(flattened.end(), vec.begin(), vec.end());
+	}
+	return flattened;
 }

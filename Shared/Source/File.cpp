@@ -22,9 +22,8 @@ KL::File::File() {
 }
 
 void KL::File::f_loadAsciiFile(const string& file_path) {
-	LOG ENDL ANSI_B << "[ASCII File]" ANSI_RESET  << " Filepath " << file_path; FLUSH;
+	LOG ENDL ANSI_B << "[Load ASCII File]" ANSI_RESET  << " Filepath " << file_path; FLUSH;
 	ifstream file(file_path, ios::binary);
-	map<uint64, void*> pointer_map;
 
 	if (file.is_open()) {
 		Token_Array token_data = Token_Array();
@@ -55,7 +54,7 @@ void KL::File::f_saveAsciiFile(const string& file_path) {
 }
 
 void KL::File::f_loadBinaryFile(const string& file_path) {
-	LOG ENDL ANSI_B << "[Binary File]" ANSI_RESET  << " Filepath " << file_path; FLUSH;
+	LOG ENDL ANSI_B << "[Load Binary File]" ANSI_RESET  << " Filepath " << file_path; FLUSH;
 	ifstream file(file_path, ios::binary | ios::ate);
 
 	std::ifstream::pos_type fileSize = file.tellg();
@@ -78,6 +77,33 @@ void KL::File::f_saveBinaryFile(const string& file_path) {
 		file.write(reinterpret_cast<const char*>(bin.data.data()), bin.data.size());
 		file.close();
 	}
+}
+
+void KL::File::f_importAsciiFile(const string& file_path) {
+	LOG ENDL ANSI_B << "[Import ASCII File]" ANSI_RESET  << " Filepath " << file_path; FLUSH;
+	ifstream file(file_path, ios::binary);
+	map<uint64, void*> pointer_map;
+
+	if (file.is_open()) {
+		Token_Array token_data = Token_Array();
+		Tokens line_data = Tokens();
+		string line;
+		while (getline(file, line)) {
+			Tokens tokens = f_split(line);
+			if (!tokens.empty()) {
+				token_data.push_back(tokens);
+				line_data.push_back(line);
+			}
+		}
+		f_importAscii(token_data, line_data);
+	}
+	else {
+		LOG ENDL ANSI_R << "  [File]" ANSI_RESET << " Error Opening File"; FLUSH;
+	}
+	LOG ENDL ANSI_G << "  [File]" ANSI_RESET << " Imported"; FLUSH;
+}
+
+void KL::File::f_importBinaryFile(const string& file_path) {
 }
 
 KL::File KL::File::f_getAsciiFile(const string& file_path) {
@@ -592,6 +618,8 @@ KL::OBJECT::Data* KL::File::f_loadAsciiMesh(const Token_Array& token_data, const
 		else if (tokens[0] == "└Vertex-Group") {
 			is_processing = false;
 			LOG ENDL << "        Vertex-Group"; FLUSH;
+			read_data[1].erase(read_data[1].begin());
+			read_data[1].erase(read_data[1].end()-1);
 			for (const string& index : read_data[1]) {
 				mesh->vertex_groups[f_join(read_data[0], 4)].push_back(mesh->vertices[str_to_ul(index)]);
 			}
@@ -797,6 +825,10 @@ void KL::File::f_loadBinary(const vector<Byte>& byte_data) {
 	//const uint64 end_object_data = f_readBinary<uint64>(byte_data, 67);
 	//const uint64 end_objects     = f_readBinary<uint64>(byte_data, 75);
 	//const uint64 end_scenes      = f_readBinary<uint64>(byte_data, 83);
+}
+
+void KL::File::f_importAscii(const Token_Array& token_data, const Tokens& line_data) {
+
 }
 
 void KL::File::f_saveAscii(Lace & lace) {

@@ -159,6 +159,39 @@ string loadFromFile(const string& file_path) {
 	throw runtime_error(to_string(errno));
 }
 
+Tokens loadFileLines(const string& file_path) {
+	ifstream file(file_path, ios::binary);
+	if (file.is_open()) {
+		Tokens line_data = Tokens();
+		string line;
+		while (getline(file, line)) {
+			Tokens tokens = f_split(line);
+			if (!tokens.empty()) {
+				line_data.push_back(line);
+			}
+		}
+		return line_data;
+	}
+	throw runtime_error(to_string(errno));
+}
+
+Token_Array loadFileTokens(const string& file_path) {
+	ifstream file(file_path, ios::binary);
+
+	if (file.is_open()) {
+		Token_Array token_data = Token_Array();
+		string line;
+		while (getline(file, line)) {
+			Tokens tokens = f_split(line);
+			if (!tokens.empty()) {
+				token_data.push_back(tokens);
+			}
+		}
+		return token_data;
+	}
+	throw runtime_error(to_string(errno));
+}
+
 void writeToFile(const string& filename, const string& content) {
 	ofstream file(filename, ios::binary);
 

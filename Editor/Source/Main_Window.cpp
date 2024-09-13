@@ -9,15 +9,19 @@ GUI::WORKSPACE::App::App(int argc, char* argv[]) :
 
 GUI::WORKSPACE::Main_Window::Main_Window(GUI::Application* app) :
 	GUI::Window(),
-	log(new KL::Lace()),
-	file(new KL::Editor_File()),
-	history(new KL::History_Manager()),
+	log(nullptr),
+	file(nullptr),
+	history(nullptr),
 	app(app),
 	key_pressed(false),
 	mouse_pressed(false)
 {
+
+	log = new KL::Lace();
 	KL::Session::getInstance().setLog(log);
+	file = new KL::Editor_File();
 	KL::Session::getInstance().setFile(file);
+	history = new KL::History_Manager();
 	KL::Session::getInstance().setHistory(history);
 
 	QFontDatabase::addApplicationFont("./Resources/Fonts/RobotoMono-Medium.ttf");
@@ -25,9 +29,9 @@ GUI::WORKSPACE::Main_Window::Main_Window(GUI::Application* app) :
 	setWindowTitle("Kerzenlicht");
 	setWindowIcon(QPixmap("./Resources/Icon.png"));
 
-	LOG << "Kerzenlicht 1.0.0 Initialized"; FLUSH;
+	LOG ENDL << "Kerzenlicht 1.0.0 Initialized"; FLUSH;
 
-	file->f_loadAsciiFile("./Resources/Assets/Save.krz");
+	file->f_loadAsciiFile("./Resources/Assets/Ganyu.krz");
 
 	Workspace_Manager* ws_1 = new Workspace_Manager(this, Workspace_Type::SHADER_EDITOR);
 	Workspace_Manager* ws_2 = new Workspace_Manager(this, Workspace_Type::VIEWPORT);

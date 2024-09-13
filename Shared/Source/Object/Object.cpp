@@ -14,6 +14,8 @@ KL::Object::Object() :
 
 	render_visibility = true;
 	viewport_visibility = true;
+
+	cpu_update = true;
 }
 
 void KL::Object::f_compileMatrix() {

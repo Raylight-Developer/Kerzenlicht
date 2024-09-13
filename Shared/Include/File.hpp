@@ -59,10 +59,14 @@ namespace KL {
 
 		File();
 
-		void f_loadAsciiFile(const string& file_path);
-		void f_saveAsciiFile(const string& file_path);
-		void f_loadBinaryFile(const string& file_path);
-		void f_saveBinaryFile(const string& file_path);
+		void f_loadAsciiFile   (const string& file_path);
+		void f_saveAsciiFile   (const string& file_path);
+
+		void f_loadBinaryFile  (const string& file_path);
+		void f_saveBinaryFile  (const string& file_path);
+
+		void f_importAsciiFile (const string& file_path);
+		void f_importBinaryFile(const string& file_path); // TODO
 
 		static File f_getAsciiFile(const string& file_path);
 		static File f_getBinaryFile(const string& file_path);
@@ -98,6 +102,8 @@ namespace KL {
 		virtual void              f_loadAsciiBuild      (const Token_Array& token_data, const Tokens& line_data);
 
 		virtual void              f_loadBinary          (const vector<Byte>& byte_data);
+
+		virtual void              f_importAscii         (const Token_Array& token_data, const Tokens& line_data);
 
 		virtual void f_saveAscii           (Lace& lace);
 		virtual void f_saveAsciiHeader     (Lace& lace);

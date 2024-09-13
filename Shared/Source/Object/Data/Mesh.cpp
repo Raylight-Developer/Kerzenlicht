@@ -10,7 +10,7 @@ KL::OBJECT::DATA::Mesh::~Mesh() {
 	for (MESH::Face* face : faces) delete face;
 }
 
-vector<vec1> KL::OBJECT::DATA::Mesh::faceToArray(MESH::Face* face, const Mesh* mesh, const mat4& matrix) {
+vector<vec1> KL::OBJECT::DATA::Mesh::faceToArray(MESH::Face* face, const Mesh* mesh, const mat4& matrix, const mat3& rotation_matrix) {
 	vector<vec1> result;
 
 	// Transform vertices
@@ -36,31 +36,21 @@ vector<vec1> KL::OBJECT::DATA::Mesh::faceToArray(MESH::Face* face, const Mesh* m
 		uv_c = d_to_f(mesh->uvs.at(face)[2]);
 	}
 
-	// Get normals if available
+	// Get Normals if available
 	if (mesh->normals.size() > 0) {
-		const vec4 nor4_a = matrix * vec4(d_to_f(mesh->normals.at(face)[0]), 1.0);
-		const vec4 nor4_b = matrix * vec4(d_to_f(mesh->normals.at(face)[1]), 1.0);
-		const vec4 nor4_c = matrix * vec4(d_to_f(mesh->normals.at(face)[2]), 1.0);
-		nor_a = vec3(nor4_a) / nor4_a.w;
-		nor_b = vec3(nor4_b) / nor4_b.w;
-		nor_c = vec3(nor4_c) / nor4_c.w;
+		nor_a = rotation_matrix * d_to_f(mesh->normals.at(face)[0]);
+		nor_b = rotation_matrix * d_to_f(mesh->normals.at(face)[1]);
+		nor_c = rotation_matrix * d_to_f(mesh->normals.at(face)[2]);
 	}
 	else {
 		const vec3 edge1 = vert_b - vert_a;
 		const vec3 edge2 = vert_c - vert_a;
-		const vec3 normal = glm::normalize(glm::cross(edge1, edge2));
+		const vec3 normal = rotation_matrix * glm::normalize(glm::cross(edge1, edge2));
 		nor_a = normal;
 		nor_b = normal;
 		nor_c = normal;
-		const vec4 nor4_a = matrix * vec4(nor_a, 1.0);
-		const vec4 nor4_b = matrix * vec4(nor_b, 1.0);
-		const vec4 nor4_c = matrix * vec4(nor_c, 1.0);
-		nor_a = vec3(nor4_a) / nor4_a.w;
-		nor_b = vec3(nor4_b) / nor4_b.w;
-		nor_c = vec3(nor4_c) / nor4_c.w;
 	}
 
-	// Pack the data into the vector in the desired format
 	auto packVertexData = [&](const vec3& vert, const vec3& nor, const vec2& uv) {
 		result.push_back(vert.x);
 		result.push_back(vert.y);

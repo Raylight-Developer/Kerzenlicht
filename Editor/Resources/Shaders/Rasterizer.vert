@@ -11,22 +11,10 @@ out vec2 fragUV;
 uniform mat4 view_mat;
 
 void main() {
-	fragNormal = aNormal;
 	fragUV = aUV;
+	fragNormal = normalize(mat3(view_mat) * aNormal);
+
 	vec4 global_pos = view_mat * vec4(aPos, 1.0);
-	gl_Position = global_pos;
 	fragPos = global_pos.xyz;
+	gl_Position = global_pos;
 }
-/*
-layout(location = 0) in vec3 aPos;
-
-out vec2 TexCoord;
-
-uniform mat4 view;
-
-void main()
-{
-	TexCoord = (aPos.xy + vec2(1.0, 1.0)) / 2.0; // Map to [0, 1] range
-	gl_Position = view * vec4(aPos, 1.0);
-}
-*/

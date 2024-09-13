@@ -250,8 +250,9 @@ void GUI::WORKSPACE::Viewport::f_tickUpdate() {
 			object->f_compileMatrix();
 			if (object->data->type == KL::OBJECT::DATA::Type::MESH) {
 				KL::OBJECT::DATA::Mesh* mesh = object->data->getMesh();
+				mat3 normal_matrix = mat3(glm::transpose(glm::inverse(object->transform_matrix)));
 				for (KL::OBJECT::DATA::MESH::Face* face : mesh->faces) {
-					auto tri = KL::OBJECT::DATA::Mesh::faceToArray(face, mesh, object->transform_matrix);
+					auto tri = KL::OBJECT::DATA::Mesh::faceToArray(face, mesh, object->transform_matrix, normal_matrix);
 					gl_triangles.insert(gl_triangles.end(), tri.begin(), tri.end());
 				}
 			}
@@ -260,10 +261,11 @@ void GUI::WORKSPACE::Viewport::f_tickUpdate() {
 				for (KL::Object* sub_object : group->objects) {
 					sub_object->f_compileMatrix();
 					sub_object->transform_matrix *= object->transform_matrix;
+					mat3 normal_matrix = mat3(glm::transpose(glm::inverse(sub_object->transform_matrix)));
 					if (sub_object->data->type == KL::OBJECT::DATA::Type::MESH) {
 						KL::OBJECT::DATA::Mesh* mesh = sub_object->data->getMesh();
 						for (KL::OBJECT::DATA::MESH::Face* face : mesh->faces) {
-							auto tri = KL::OBJECT::DATA::Mesh::faceToArray(face, mesh, sub_object->transform_matrix);
+							auto tri = KL::OBJECT::DATA::Mesh::faceToArray(face, mesh, sub_object->transform_matrix, normal_matrix);
 							gl_triangles.insert(gl_triangles.end(), tri.begin(), tri.end());
 						}
 					}

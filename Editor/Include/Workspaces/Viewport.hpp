@@ -76,7 +76,7 @@ namespace GUI {
 
 			unordered_map<KL::Object*, vector<VIEWPORT_REALTIME::Triangle>> triangle_map;
 			vector<VIEWPORT_REALTIME::GPU_Triangle> triangles;
-			vector<vec1> gl_triangles;
+			/*unordered_map<uint64, vector<vec1>>*/vector<vec1> gl_triangles;
 			unordered_map<string, GLuint> gl_data;
 
 			uint   frame_counter;

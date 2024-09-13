@@ -31,7 +31,8 @@ namespace KL {
 
 		Editor_File();
 
-		void       f_loadAscii         (const Token_Array& token_data, const Tokens& line_data) override;
+		void f_loadEditorTools();
+
 		Node_Tree* f_loadAsciiNodeTree (const Token_Array& token_data, const Tokens& line_data) override;
 		void       f_loadAsciiBuild    (const Token_Array& token_data, const Tokens& line_data) override;
 

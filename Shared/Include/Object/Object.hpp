@@ -34,6 +34,8 @@ namespace KL {
 		bool viewport_visibility;
 		bool render_visibility;
 
+		bool cpu_update;
+
 		KL::Node_Tree* node_tree;
 
 		dmat4 transform_matrix;

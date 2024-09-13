@@ -2,11 +2,93 @@
 
 KL::Editor_File::Editor_File() :
 	File()
-{}
+{
+	f_loadEditorTools();
+}
 
-void KL::Editor_File::f_loadAscii(const Token_Array& token_data, const Tokens& line_data) {
-	File::f_loadAscii(token_data, line_data);
+void KL::Editor_File::f_loadEditorTools() {
+	const auto base_pointer_map = pointer_map;
+	pointer_map.clear();
 
+	ifstream file("./Resources/Assets/Gizmo.krz", ios::binary);
+
+	Token_Array token_data = Token_Array();
+	Tokens line_data = Tokens();
+	string line;
+	while (getline(file, line)) {
+		Tokens tokens = f_split(line);
+		if (!tokens.empty()) {
+			token_data.push_back(tokens);
+			line_data.push_back(line);
+		}
+	}
+	
+	Token_Array t_data = Token_Array();
+	Tokens l_data = Tokens();
+
+	Parse_Type is_processing = Parse_Type::NONE;
+	for (uint64 i = 0; i < token_data.size(); i++) {
+		const Tokens tokens = token_data[i];
+		const string line = line_data[i];
+		if (is_processing == Parse_Type::NONE) {
+			if      (tokens[0] == "┌Build-Steps")
+				is_processing = Parse_Type::BUILD_STEPS;
+			else if (tokens[0] == "┌Node-Tree")
+				is_processing = Parse_Type::NODE_TREE;
+			else if (tokens[0] == "┌Shader")
+				is_processing = Parse_Type::SHADER;
+			else if (tokens[0] == "┌Texture")
+				is_processing = Parse_Type::TEXTURE;
+			else if (tokens[0] == "┌Header")
+				is_processing = Parse_Type::HEADER;
+			else if (tokens[0] == "┌Object")
+				is_processing = Parse_Type::OBJECT;
+			else if (tokens[0] == "┌Scene")
+				is_processing = Parse_Type::SCENE;
+			else if (tokens[0] == "┌Data")
+				is_processing = Parse_Type::DATA;
+			t_data.clear();
+			t_data.push_back(tokens);
+			l_data.clear();
+			l_data.push_back(line);
+		}
+		else {
+			if      (is_processing == Parse_Type::BUILD_STEPS and tokens[0] == "└Build-Steps") {
+				is_processing = Parse_Type::NONE;
+				f_loadAsciiBuild(t_data, l_data);
+			}
+			else if (is_processing == Parse_Type::NODE_TREE and tokens[0] == "└Node-Tree") {
+				is_processing = Parse_Type::NONE;
+			}
+			else if (is_processing == Parse_Type::SHADER and tokens[0] == "└Shader") {
+				is_processing = Parse_Type::NONE;
+			}
+			else if (is_processing == Parse_Type::TEXTURE and tokens[0] == "└Texture") {
+				is_processing = Parse_Type::NONE;
+			}
+			else if (is_processing == Parse_Type::HEADER and tokens[0] == "└Header") {
+				is_processing = Parse_Type::NONE;
+			}
+			else if (is_processing == Parse_Type::OBJECT and tokens[0] == "└Object") {
+				is_processing = Parse_Type::NONE;
+				auto data = f_loadAsciiObject(t_data, l_data);
+				editor_objects[data->name] = data;
+			}
+			else if (is_processing == Parse_Type::SCENE and tokens[0] == "└Scene") {
+				is_processing = Parse_Type::NONE;
+			}
+			else if (is_processing == Parse_Type::DATA and tokens[0] == "└Data") {
+				is_processing = Parse_Type::NONE;
+				auto data = f_loadAsciiData(t_data, l_data);
+				editor_object_data[data->name] = data;
+			}
+			else {
+				t_data.push_back(tokens);
+				l_data.push_back(line);
+			}
+		}
+	}
+	pointer_map = base_pointer_map;
 }
 
 KL::Node_Tree* KL::Editor_File::f_loadAsciiNodeTree(const Token_Array&token_data, const Tokens& line_data) {
