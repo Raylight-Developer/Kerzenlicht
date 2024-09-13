@@ -222,9 +222,10 @@ void GUI::WORKSPACE::Viewport::f_uploadData() {
 
 void GUI::WORKSPACE::Viewport::f_tickUpdate() {
 	if (FILE->active_scene->pointer) {
-		for (const KL::Object* object : FILE->active_scene->pointer->objects) {
+		for (KL::Object* object : FILE->active_scene->pointer->objects) {
 			if (object and object->node_tree) {
 				object->node_tree->exec(&frame_time);
+				object->cpu_update = true;
 			}
 		}
 	}
@@ -245,28 +246,33 @@ void GUI::WORKSPACE::Viewport::f_tickUpdate() {
 		gl_data["ssbo 7"] = ssboBinding(7, ul_to_u(gpu_data->texturesSize()   ), gpu_data->textures.data());
 		gl_data["ssbo 8"] = ssboBinding(8, ul_to_u(gpu_data->textureDataSize()), gpu_data->texture_data.data());
 	#else
-		gl_triangles.clear();
 		for (KL::Object* object : FILE->active_scene->pointer->objects) {
-			object->f_compileMatrix();
-			if (object->data->type == KL::OBJECT::DATA::Type::MESH) {
-				KL::OBJECT::DATA::Mesh* mesh = object->data->getMesh();
-				mat3 normal_matrix = mat3(glm::transpose(glm::inverse(object->transform_matrix)));
-				for (KL::OBJECT::DATA::MESH::Face* face : mesh->faces) {
-					auto tri = KL::OBJECT::DATA::Mesh::faceToArray(face, mesh, object->transform_matrix, normal_matrix);
-					gl_triangles.insert(gl_triangles.end(), tri.begin(), tri.end());
+			if (object->cpu_update) {
+				object->cpu_update = false;
+				object->f_compileMatrix();
+				vector<vec1>* location = &gl_triangle_cache[uptr(object)];
+				location->clear();
+
+				if (object->data->type == KL::OBJECT::DATA::Type::MESH) {
+					KL::OBJECT::DATA::Mesh* mesh = object->data->getMesh();
+					mat3 normal_matrix = mat3(glm::transpose(glm::inverse(object->transform_matrix)));
+					for (KL::OBJECT::DATA::MESH::Face* face : mesh->faces) {
+						auto tri = KL::OBJECT::DATA::Mesh::faceToArray(face, mesh, object->transform_matrix, normal_matrix);
+						location->insert(location->end(), tri.begin(), tri.end());
+					}
 				}
-			}
-			else if (object->data->type == KL::OBJECT::DATA::Type::GROUP) {
-				const KL::OBJECT::DATA::Group* group = object->data->getGroup();
-				for (KL::Object* sub_object : group->objects) {
-					sub_object->f_compileMatrix();
-					sub_object->transform_matrix *= object->transform_matrix;
-					mat3 normal_matrix = mat3(glm::transpose(glm::inverse(sub_object->transform_matrix)));
-					if (sub_object->data->type == KL::OBJECT::DATA::Type::MESH) {
-						KL::OBJECT::DATA::Mesh* mesh = sub_object->data->getMesh();
-						for (KL::OBJECT::DATA::MESH::Face* face : mesh->faces) {
-							auto tri = KL::OBJECT::DATA::Mesh::faceToArray(face, mesh, sub_object->transform_matrix, normal_matrix);
-							gl_triangles.insert(gl_triangles.end(), tri.begin(), tri.end());
+				else if (object->data->type == KL::OBJECT::DATA::Type::GROUP) {
+					const KL::OBJECT::DATA::Group* group = object->data->getGroup();
+					for (KL::Object* sub_object : group->objects) {
+						sub_object->f_compileMatrix();
+						sub_object->transform_matrix *= object->transform_matrix;
+						mat3 normal_matrix = mat3(glm::transpose(glm::inverse(sub_object->transform_matrix)));
+						if (sub_object->data->type == KL::OBJECT::DATA::Type::MESH) {
+							KL::OBJECT::DATA::Mesh* mesh = sub_object->data->getMesh();
+							for (KL::OBJECT::DATA::MESH::Face* face : mesh->faces) {
+								auto tri = KL::OBJECT::DATA::Mesh::faceToArray(face, mesh, sub_object->transform_matrix, normal_matrix);
+								location->insert(location->end(), tri.begin(), tri.end());
+							}
 						}
 					}
 				}
@@ -285,7 +291,8 @@ void GUI::WORKSPACE::Viewport::f_tickUpdate() {
 		glBindVertexArray(gl_data["vao"]);
 		glBindBuffer(GL_ARRAY_BUFFER, gl_data["vbo"]);
 
-		glBufferData(GL_ARRAY_BUFFER, gl_triangles.size() * sizeof(vec1), gl_triangles.data(), GL_STATIC_DRAW);
+		gl_triangles = f_flattenMap(gl_triangle_cache);
+		glBufferData(GL_ARRAY_BUFFER, gl_triangles.size() * sizeof(vec1), gl_triangles.data(), GL_DYNAMIC_DRAW);
 
 		// Vertex Positions
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(vec1), (void*)0);

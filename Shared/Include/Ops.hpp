@@ -328,7 +328,7 @@ template<typename T, typename U>
 vector<T> f_flattenMap(const unordered_map<U, vector<T>>& map) {
 	vector<T> flattened;
 	for (const auto& pair : map) {
-		const std::vector<T>& vec = pair.second;
+		const vector<T>& vec = pair.second;
 		flattened.insert(flattened.end(), vec.begin(), vec.end());
 	}
 	return flattened;
