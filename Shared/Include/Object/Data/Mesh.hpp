@@ -32,5 +32,6 @@ namespace KL::OBJECT::DATA {
 		~Mesh();
 
 		static vector<vec1> faceToArray(MESH::Face* face, const Mesh* mesh, const mat4& matrix, const mat3& rotation_matrix);
+		static void packVertexData(vector<vec1>& array, const vec3& vert, const vec3& nor, const vec2& uv);
 	};
 }

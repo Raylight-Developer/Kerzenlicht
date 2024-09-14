@@ -27,7 +27,3 @@ void KL::Object::f_compileMatrix() {
 		transform_matrix = transform.getMatrix() * node_transform.getMatrix();
 	}
 }
-
-void KL::Object::f_render() {
-	
-}

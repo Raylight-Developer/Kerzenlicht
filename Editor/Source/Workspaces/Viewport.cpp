@@ -98,7 +98,7 @@ GUI::WORKSPACE::Viewport::Viewport(Workspace_Viewport* parent) :
 	reset(false),
 	debug(false),
 
-	gl_data({}),
+	renderer_data({}),
 
 	window_time(0.0),
 	frame_time(FPS_60),
@@ -170,7 +170,7 @@ void GUI::WORKSPACE::Viewport::f_pipeline() {
 		glEnable(GL_DEPTH_TEST);
 		FILE->default_camera->data->getCamera()->updateFocalAngle();
 		auto [compiled, id] = fragmentShaderProgram("Rasterizer");
-		gl_data["raster_program"] = id;
+		renderer_data["raster_program"] = id;
 	#endif
 }
 
@@ -252,87 +252,6 @@ void GUI::WORKSPACE::Viewport::f_tickUpdate() {
 		gl_data["ssbo 7"] = ssboBinding(7, ul_to_u(gpu_data->texturesSize()   ), gpu_data->textures.data());
 		gl_data["ssbo 8"] = ssboBinding(8, ul_to_u(gpu_data->textureDataSize()), gpu_data->texture_data.data());
 	#else
-	{
-		triangle_map.clear();
-		for (KL::Object* object : FILE->active_scene->pointer->objects) {
-			if (object->cpu_update) {
-				object->cpu_update = false;
-				object->f_compileMatrix();
-				vector<vec1>* location = &gl_triangle_cache[uptr(object)];
-				location->clear();
-
-				vector <VIEWPORT_REALTIME::Triangle>  temp;
-
-				if (object->data->type == KL::OBJECT::DATA::Type::MESH) {
-					KL::OBJECT::DATA::Mesh* mesh = object->data->getMesh();
-					mat3 normal_matrix = mat3(glm::transpose(glm::inverse(object->transform_matrix)));
-					for (KL::OBJECT::DATA::MESH::Face* face : mesh->faces) {
-						auto tri = KL::OBJECT::DATA::Mesh::faceToArray(face, mesh, object->transform_matrix, normal_matrix);
-						location->insert(location->end(), tri.begin(), tri.end());
-
-						const dvec4 vert4_a = object->transform_matrix * dvec4(face->vertices[0]->position, 1.0);
-						const dvec4 vert4_b = object->transform_matrix * dvec4(face->vertices[1]->position, 1.0);
-						const dvec4 vert4_c = object->transform_matrix * dvec4(face->vertices[2]->position, 1.0);
-						const dvec3 vert_a = dvec3(vert4_a.x, vert4_a.y, vert4_a.z) / vert4_a.w;
-						const dvec3 vert_b = dvec3(vert4_b.x, vert4_b.y, vert4_b.z) / vert4_b.w;
-						const dvec3 vert_c = dvec3(vert4_c.x, vert4_c.y, vert4_c.z) / vert4_c.w;
-						temp.push_back(VIEWPORT_REALTIME::Triangle(vert_a, vert_b, vert_c));
-					}
-				}
-				else if (object->data->type == KL::OBJECT::DATA::Type::GROUP) {
-					const KL::OBJECT::DATA::Group* group = object->data->getGroup();
-					for (KL::Object* sub_object : group->objects) {
-						sub_object->f_compileMatrix();
-						sub_object->transform_matrix *= object->transform_matrix;
-						mat3 normal_matrix = mat3(glm::transpose(glm::inverse(sub_object->transform_matrix)));
-						if (sub_object->data->type == KL::OBJECT::DATA::Type::MESH) {
-							KL::OBJECT::DATA::Mesh* mesh = sub_object->data->getMesh();
-							for (KL::OBJECT::DATA::MESH::Face* face : mesh->faces) {
-								auto tri = KL::OBJECT::DATA::Mesh::faceToArray(face, mesh, sub_object->transform_matrix, normal_matrix);
-								location->insert(location->end(), tri.begin(), tri.end());
-
-								const dvec4 vert4_a = sub_object->transform_matrix * dvec4(face->vertices[0]->position, 1.0);
-								const dvec4 vert4_b = sub_object->transform_matrix * dvec4(face->vertices[1]->position, 1.0);
-								const dvec4 vert4_c = sub_object->transform_matrix * dvec4(face->vertices[2]->position, 1.0);
-								const dvec3 vert_a = dvec3(vert4_a.x, vert4_a.y, vert4_a.z) / vert4_a.w;
-								const dvec3 vert_b = dvec3(vert4_b.x, vert4_b.y, vert4_b.z) / vert4_b.w;
-								const dvec3 vert_c = dvec3(vert4_c.x, vert4_c.y, vert4_c.z) / vert4_c.w;
-								temp.push_back(VIEWPORT_REALTIME::Triangle(vert_a, vert_b, vert_c));
-							}
-						}
-					}
-				}
-				triangle_map[object] = temp;
-			}
-		}
-		gl_triangles = f_flattenMap(gl_triangle_cache);
-
-		glDeleteVertexArrays(1, &gl_data["vao"]);
-		glDeleteBuffers(1, &gl_data["vbo"]);
-
-		gl_data["vao"] = 0;
-		gl_data["vbo"] = 0;
-
-		glGenVertexArrays(1, &gl_data["vao"]);
-		glGenBuffers(1, &gl_data["vbo"]);
-
-		glBindVertexArray(gl_data["vao"]);
-		glBindBuffer(GL_ARRAY_BUFFER, gl_data["vbo"]);
-
-		glBufferData(GL_ARRAY_BUFFER, gl_triangles.size() * sizeof(vec1), gl_triangles.data(), GL_DYNAMIC_DRAW);
-
-		// Vertex Positions
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(vec1), (void*)0);
-		glEnableVertexAttribArray(0);
-
-		// Vertex Normals
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(vec1), (void*)(3 * sizeof(vec1)));
-		glEnableVertexAttribArray(1);
-		//
-		//// Vertex UVs
-		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(vec1), (void*)(6 * sizeof(vec1)));
-		glEnableVertexAttribArray(2);
-	}
 	#endif
 }
 
@@ -395,8 +314,8 @@ void GUI::WORKSPACE::Viewport::f_recompileShaders() {
 	{
 		auto [compiled, id] = fragmentShaderProgram("Rasterizer");
 		if (compiled) {
-			glDeleteProgram(gl_data["raster_program"]);
-			gl_data["raster_program"] = id;
+			glDeleteProgram(renderer_data["raster_program"]);
+			renderer_data["raster_program"] = id;
 		}
 	}
 	#endif
@@ -466,18 +385,27 @@ void GUI::WORKSPACE::Viewport::paintGL() {
 	{
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		const GLuint raster_program = gl_data["raster_program"];
-		const GLuint vao = gl_data["vao"];
+		if (false)
+			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		else
+			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+		const GLuint raster_program = renderer_data["raster_program"];
 		glUseProgram(raster_program);
 
 		KL::OBJECT::DATA::Camera* camera = FILE->default_camera->data->getCamera();
 		glUniform3fv(glGetUniformLocation(raster_program, "camera_pos" ), 1, value_ptr(d_to_f(FILE->default_camera->transform.position)));
 		glUniformMatrix4fv(glGetUniformLocation(raster_program, "view_matrix"), 1, GL_FALSE, value_ptr(camera->glViewMatrix(FILE->default_camera)));
-		glUniformMatrix4fv(glGetUniformLocation(raster_program, "model_matrix"), 1, GL_FALSE, value_ptr(d_to_f(FILE->objects[0]->transform_matrix)));
 		glUniformMatrix4fv(glGetUniformLocation(raster_program, "projection_matrix"), 1, GL_FALSE, value_ptr(camera->glProjectionMatrix(render_aspect_ratio)));
 
-		glBindVertexArray(vao);
-		glDrawArrays(GL_TRIANGLES, 0, ul_to_u(gl_triangles.size() / 8));
+		for (KL::Object* object : FILE->active_scene->pointer->objects) {
+			if (object->data->type == KL::OBJECT::DATA::Type::MESH) {
+				f_renderMesh(raster_program, object);
+			}
+			else if (object->data->type == KL::OBJECT::DATA::Type::GROUP) {
+				f_renderGroup(raster_program, object);
+			}
+		}
 	}
 	#endif
 
@@ -526,6 +454,64 @@ void GUI::WORKSPACE::Viewport::resizeGL(int w, int h) {
 
 	}
 	#endif
+}
+
+void GUI::WORKSPACE::Viewport::f_renderMesh(const GLuint raster_program, KL::Object* object) {
+	auto vao = &gl_data[object]["vao"];
+	auto vbo = &gl_data[object]["vbo"];
+	vector<vec1>* cached_triangles = &gl_triangle_cache[uptr(object)];
+
+	if (object->cpu_update) {
+		object->cpu_update = false;
+		object->f_compileMatrix();
+		cached_triangles->clear();
+
+		KL::OBJECT::DATA::Mesh* mesh = object->data->getMesh();
+		mat3 normal_matrix = mat3(glm::transpose(glm::inverse(object->transform_matrix)));
+		for (KL::OBJECT::DATA::MESH::Face* face : mesh->faces) {
+			auto tri = KL::OBJECT::DATA::Mesh::faceToArray(face, mesh, object->transform_matrix, normal_matrix);
+			cached_triangles->insert(cached_triangles->end(), tri.begin(), tri.end());
+		}
+
+		glDeleteVertexArrays(1, vao);
+		glDeleteBuffers(1, vbo);
+
+		glGenVertexArrays(1, vao);
+		glGenBuffers(1, vbo);
+
+		glBindVertexArray(*vao);
+		glBindBuffer(GL_ARRAY_BUFFER, *vbo);
+
+		glBufferData(GL_ARRAY_BUFFER, cached_triangles->size() * sizeof(vec1), cached_triangles->data(), GL_DYNAMIC_DRAW);
+
+		// Vertex Positions
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(vec1), (void*)0);
+		glEnableVertexAttribArray(0);
+
+		// Vertex Normals
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(vec1), (void*)(3 * sizeof(vec1)));
+		glEnableVertexAttribArray(1);
+
+		// Vertex UVs
+		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(vec1), (void*)(6 * sizeof(vec1)));
+		glEnableVertexAttribArray(2);
+	}
+
+	glUniformMatrix4fv(glGetUniformLocation(raster_program, "model_matrix"), 1, GL_FALSE, value_ptr(d_to_f(object->transform_matrix)));
+
+	glBindVertexArray(*vao);
+	glDrawArrays(GL_TRIANGLES, 0, ul_to_u(cached_triangles->size() / 8));
+
+	glBindVertexArray(0);
+}
+
+void GUI::WORKSPACE::Viewport::f_renderGroup(const GLuint raster_program, KL::Object* object) {
+	for (KL::Object* sub_object : object->data->getGroup()->objects) {
+		sub_object->f_compileMatrix();
+		sub_object->transform_matrix *= object->transform_matrix;
+
+		f_renderMesh(raster_program, sub_object);
+	}
 }
 
 bool GUI::WORKSPACE::VIEWPORT_REALTIME::f_rayTriangleIntersection(const Ray& ray, const Triangle& tri, dvec1& ray_length) {

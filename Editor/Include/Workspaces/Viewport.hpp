@@ -79,7 +79,8 @@ namespace GUI {
 			unordered_map<uint64, vector<vec1>> gl_triangle_cache;
 			vector<vec1> gl_triangles;
 
-			unordered_map<string, GLuint> gl_data;
+			unordered_map<string, GLuint> renderer_data;
+			unordered_map<KL::Object*, unordered_map<string, GLuint>> gl_data;
 
 			uint   frame_counter;
 			uint   frame_count;
@@ -109,6 +110,9 @@ namespace GUI {
 			void initializeGL() override;
 			void paintGL() override;
 			void resizeGL(int w, int h) override;
+
+			void f_renderMesh(const GLuint raster_program, KL::Object* object);
+			void f_renderGroup(const GLuint raster_program, KL::Object* object);
 
 			GLuint renderLayer(const uvec2& resolution);
 			tuple<bool, GLuint> fragmentShaderProgram(const string& file_path);
