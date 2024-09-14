@@ -239,6 +239,16 @@ namespace KL {
 
 					void exec(const uint16& slot_id = 0) override;
 				};
+				struct Euler_Rotation_Y : Set {
+					Euler_Rotation_Y();
+
+					void exec(const uint16& slot_id = 0) override;
+				};
+				struct Euler_Rotation_Z : Set {
+					Euler_Rotation_Z();
+
+					void exec(const uint16& slot_id = 0) override;
+				};
 				struct Field : Set {
 					string field;
 

@@ -36,7 +36,7 @@ namespace GUI {
 
 			KL::Node_Tree* toExecTree();
 		};
-		struct Node : QGraphicsItem {
+		struct Node : QGraphicsObject {
 			QString label;
 			QRectF rect;
 			KL::NODE::Type type;

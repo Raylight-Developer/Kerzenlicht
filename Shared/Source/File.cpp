@@ -310,6 +310,16 @@ KL::Node_Tree* KL::File::f_loadAsciiNodeTree(const Token_Array& token_data, cons
 								LOG ENDL << "        " ANSI_PURPLE << name ANSI_RESET; FLUSH;
 								node = new NODE::LINK::SET::Euler_Rotation_X();
 							}
+							if      (read_data[3][9] == "Y") {
+								LOG ENDL ANSI_B << "      [Node]" ANSI_RESET; FLUSH;
+								LOG ENDL << "        " ANSI_PURPLE << name ANSI_RESET; FLUSH;
+								node = new NODE::LINK::SET::Euler_Rotation_Y();
+							}
+							if      (read_data[3][9] == "Z") {
+								LOG ENDL ANSI_B << "      [Node]" ANSI_RESET; FLUSH;
+								LOG ENDL << "        " ANSI_PURPLE << name ANSI_RESET; FLUSH;
+								node = new NODE::LINK::SET::Euler_Rotation_Z();
+							}
 						}
 					}
 				}
@@ -761,6 +771,9 @@ void KL::File::f_loadAsciiBuild(const Token_Array& token_data, const Tokens& lin
 		if (tokens[0] == "Active-Scene") {
 			active_scene->set(ptr<KL::Scene*>(pointer_map.getVal(str_to_ul(tokens[2]))));
 		}
+		else if (tokens[0] == "Active-Object") {
+			active_object->set(ptr<KL::Object*>(pointer_map.getVal(str_to_ul(tokens[2]))));
+		}
 		else if (tokens[0] == "┌Data-Group") {
 			is_processing = true;
 			read_data.clear();
@@ -959,6 +972,14 @@ void KL::File::f_saveAsciiNodeTree(Lace& lace, const KL::Node_Tree* data, const 
 						switch (static_cast<KL::NODE::LINK::Set*>(node)->mini_type) {
 							case NODE::LINK::SET::Type::EULER_ROTATION_X: {
 								lace NL << "Type LINK :: SET :: TRANSFORM :: EULER_ROTATION :: X";
+								break;
+							}
+							case NODE::LINK::SET::Type::EULER_ROTATION_Y: {
+								lace NL << "Type LINK :: SET :: TRANSFORM :: EULER_ROTATION :: Y";
+								break;
+							}
+							case NODE::LINK::SET::Type::EULER_ROTATION_Z: {
+								lace NL << "Type LINK :: SET :: TRANSFORM :: EULER_ROTATION :: Z";
 								break;
 							}
 						}
@@ -1390,6 +1411,7 @@ void KL::File::f_saveAsciiBuild(Lace& lace) {
 	lace NL << "┌Build-Steps";
 	lace++;
 	lace NL << "Active-Scene " PTR << uptr(active_scene->pointer);
+	lace NL << "Active-Object " PTR << uptr(active_object->pointer);
 	lace NL << "┌Data-Group";
 	lace++;
 	for (auto object : objects) {

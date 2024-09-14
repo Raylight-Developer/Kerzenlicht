@@ -125,11 +125,18 @@ namespace GUI {
 					Value_Input* field;
 
 					Field(const ivec2& pos);
+					bool eventFilter(QObject* obj, QEvent* event) override;
 				};
 			}
 			namespace SET {
 				struct Euler_Rotation_X : Set {
 					Euler_Rotation_X(const ivec2& pos);
+				};
+				struct Euler_Rotation_Y : Set {
+					Euler_Rotation_Y(const ivec2& pos);
+				};
+				struct Euler_Rotation_Z : Set {
+					Euler_Rotation_Z(const ivec2& pos);
 				};
 			}
 		}

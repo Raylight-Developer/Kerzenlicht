@@ -9,7 +9,7 @@ GUI::WORKSPACE::Timeline::Timeline(Workspace_Viewport* parent) :
 	parent(parent)
 {
 	slider = new GUI::Slider(this);
-	slider->setRange(0, 240);
+	slider->setRange(0, 360);
 
 	info = new GUI::Label(this);
 	info->setText("FPS: 0 | Frame: 0 | Delta: 0.016ms");
@@ -95,7 +95,6 @@ GUI::WORKSPACE::Viewport::Viewport(Workspace_Viewport* parent) :
 	render_resolution(d_to_u(u_to_d(display_resolution)* render_scale)),
 	render_aspect_ratio(u_to_d(render_resolution.x) / u_to_d(render_resolution.y)),
 
-	recompile(false),
 	reset(false),
 	debug(false),
 
@@ -151,8 +150,14 @@ void GUI::WORKSPACE::Viewport::f_pipeline() {
 		gl_data["bvh_render_layer"]          = renderLayer(render_resolution);
 		gl_data["raw_render_layer"]          = renderLayer(render_resolution);
 
-		gl_data["compute_program"] = computeShaderProgram ("Compute");
-		gl_data["display_program"] = fragmentShaderProgram("Display");
+		{
+			auto [compiled, id] = computeShaderProgram("Compute");
+			gl_data["compute_program"] = id;
+		}
+		{
+			auto [compiled, id] = fragmentShaderProgram("Display");
+			gl_data["display_program"] = id;
+		}
 
 		gl_data["compute_layout_x"] = d_to_u(ceil(u_to_d(render_resolution.x) / 32.0));
 		gl_data["compute_layout_y"] = d_to_u(ceil(u_to_d(render_resolution.y) / 32.0));
@@ -164,7 +169,8 @@ void GUI::WORKSPACE::Viewport::f_pipeline() {
 	#else
 		glEnable(GL_DEPTH_TEST);
 		FILE->default_camera->data->getCamera()->updateFocalAngle();
-		gl_data["raster_program"] = fragmentShaderProgram("Rasterizer");
+		auto [compiled, id] = fragmentShaderProgram("Rasterizer");
+		gl_data["raster_program"] = id;
 	#endif
 }
 
@@ -246,6 +252,8 @@ void GUI::WORKSPACE::Viewport::f_tickUpdate() {
 		gl_data["ssbo 7"] = ssboBinding(7, ul_to_u(gpu_data->texturesSize()   ), gpu_data->textures.data());
 		gl_data["ssbo 8"] = ssboBinding(8, ul_to_u(gpu_data->textureDataSize()), gpu_data->texture_data.data());
 	#else
+	{
+		triangle_map.clear();
 		for (KL::Object* object : FILE->active_scene->pointer->objects) {
 			if (object->cpu_update) {
 				object->cpu_update = false;
@@ -253,12 +261,22 @@ void GUI::WORKSPACE::Viewport::f_tickUpdate() {
 				vector<vec1>* location = &gl_triangle_cache[uptr(object)];
 				location->clear();
 
+				vector <VIEWPORT_REALTIME::Triangle>  temp;
+
 				if (object->data->type == KL::OBJECT::DATA::Type::MESH) {
 					KL::OBJECT::DATA::Mesh* mesh = object->data->getMesh();
 					mat3 normal_matrix = mat3(glm::transpose(glm::inverse(object->transform_matrix)));
 					for (KL::OBJECT::DATA::MESH::Face* face : mesh->faces) {
 						auto tri = KL::OBJECT::DATA::Mesh::faceToArray(face, mesh, object->transform_matrix, normal_matrix);
 						location->insert(location->end(), tri.begin(), tri.end());
+
+						const dvec4 vert4_a = object->transform_matrix * dvec4(face->vertices[0]->position, 1.0);
+						const dvec4 vert4_b = object->transform_matrix * dvec4(face->vertices[1]->position, 1.0);
+						const dvec4 vert4_c = object->transform_matrix * dvec4(face->vertices[2]->position, 1.0);
+						const dvec3 vert_a = dvec3(vert4_a.x, vert4_a.y, vert4_a.z) / vert4_a.w;
+						const dvec3 vert_b = dvec3(vert4_b.x, vert4_b.y, vert4_b.z) / vert4_b.w;
+						const dvec3 vert_c = dvec3(vert4_c.x, vert4_c.y, vert4_c.z) / vert4_c.w;
+						temp.push_back(VIEWPORT_REALTIME::Triangle(vert_a, vert_b, vert_c));
 					}
 				}
 				else if (object->data->type == KL::OBJECT::DATA::Type::GROUP) {
@@ -272,12 +290,22 @@ void GUI::WORKSPACE::Viewport::f_tickUpdate() {
 							for (KL::OBJECT::DATA::MESH::Face* face : mesh->faces) {
 								auto tri = KL::OBJECT::DATA::Mesh::faceToArray(face, mesh, sub_object->transform_matrix, normal_matrix);
 								location->insert(location->end(), tri.begin(), tri.end());
+
+								const dvec4 vert4_a = sub_object->transform_matrix * dvec4(face->vertices[0]->position, 1.0);
+								const dvec4 vert4_b = sub_object->transform_matrix * dvec4(face->vertices[1]->position, 1.0);
+								const dvec4 vert4_c = sub_object->transform_matrix * dvec4(face->vertices[2]->position, 1.0);
+								const dvec3 vert_a = dvec3(vert4_a.x, vert4_a.y, vert4_a.z) / vert4_a.w;
+								const dvec3 vert_b = dvec3(vert4_b.x, vert4_b.y, vert4_b.z) / vert4_b.w;
+								const dvec3 vert_c = dvec3(vert4_c.x, vert4_c.y, vert4_c.z) / vert4_c.w;
+								temp.push_back(VIEWPORT_REALTIME::Triangle(vert_a, vert_b, vert_c));
 							}
 						}
 					}
 				}
+				triangle_map[object] = temp;
 			}
 		}
+		gl_triangles = f_flattenMap(gl_triangle_cache);
 
 		glDeleteVertexArrays(1, &gl_data["vao"]);
 		glDeleteBuffers(1, &gl_data["vbo"]);
@@ -291,7 +319,6 @@ void GUI::WORKSPACE::Viewport::f_tickUpdate() {
 		glBindVertexArray(gl_data["vao"]);
 		glBindBuffer(GL_ARRAY_BUFFER, gl_data["vbo"]);
 
-		gl_triangles = f_flattenMap(gl_triangle_cache);
 		glBufferData(GL_ARRAY_BUFFER, gl_triangles.size() * sizeof(vec1), gl_triangles.data(), GL_DYNAMIC_DRAW);
 
 		// Vertex Positions
@@ -305,6 +332,7 @@ void GUI::WORKSPACE::Viewport::f_tickUpdate() {
 		//// Vertex UVs
 		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(vec1), (void*)(6 * sizeof(vec1)));
 		glEnableVertexAttribArray(2);
+	}
 	#endif
 }
 
@@ -315,7 +343,7 @@ void GUI::WORKSPACE::Viewport::f_selectObject(const dvec2& uv) { // TODO fix sli
 		const VIEWPORT_REALTIME::Ray ray = VIEWPORT_REALTIME::Ray(
 			d_to_f(FILE->default_camera->transform.position),
 			d_to_f(normalize(
-				camera->projection_center
+				camera->projection_uv
 				+ (camera->projection_u * uv.x)
 				+ (camera->projection_v * uv.y)
 				- FILE->default_camera->transform.position
@@ -342,6 +370,35 @@ void GUI::WORKSPACE::Viewport::f_selectObject(const dvec2& uv) { // TODO fix sli
 			FILE->active_object->set(nullptr);
 		}
 	#else
+	#endif
+}
+
+void GUI::WORKSPACE::Viewport::f_recompileShaders() {
+	#ifdef PATH_TRACING
+	{
+		{
+			auto [compiled, id] = computeShaderProgram("Compute");
+			if (compiled) {
+				glDeleteProgram(gl_data["compute_program"]);
+				gl_data["compute_program"] = id;
+			}
+		}
+		{
+			auto [compiled, id] = fragmentShaderProgram("Display");
+			if (compiled) {
+				glDeleteProgram(gl_data["display_program"]);
+				gl_data["display_program"] = id;
+			}
+		}
+	}
+	#else
+	{
+		auto [compiled, id] = fragmentShaderProgram("Rasterizer");
+		if (compiled) {
+			glDeleteProgram(gl_data["raster_program"]);
+			gl_data["raster_program"] = id;
+		}
+	}
 	#endif
 }
 
@@ -381,7 +438,7 @@ void GUI::WORKSPACE::Viewport::paintGL() {
 		KL::OBJECT::DATA::Camera* camera = FILE->default_camera->data->getCamera();
 		camera->compile(FILE->active_scene->pointer, FILE->default_camera);
 		glUniform3fv(glGetUniformLocation(compute_program, "camera_pos" ), 1, value_ptr(d_to_f(FILE->default_camera->transform.position)));
-		glUniform3fv(glGetUniformLocation(compute_program, "camera_p_uv"), 1, value_ptr(d_to_f(camera->projection_center)));
+		glUniform3fv(glGetUniformLocation(compute_program, "camera_p_uv"), 1, value_ptr(d_to_f(camera->projection_uv)));
 		glUniform3fv(glGetUniformLocation(compute_program, "camera_p_u" ), 1, value_ptr(d_to_f(camera->projection_u)));
 		glUniform3fv(glGetUniformLocation(compute_program, "camera_p_v" ), 1, value_ptr(d_to_f(camera->projection_v)));
 		glBindImageTexture(0, gl_data["accumulation_render_layer"], 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
@@ -425,19 +482,17 @@ void GUI::WORKSPACE::Viewport::paintGL() {
 	frame_counter++;
 	runframe++;
 	if (reset) reset = false;
-	if (recompile) {
-		#ifdef PATH_TRACING
-			gl_data["compute_program"] = computeShaderProgram ("Compute");
-			gl_data["display_program"] = fragmentShaderProgram("Display");
-		#endif
-		recompile = false;
-	}
 
 	if (window_time > 1.0) {
 		frame_count = frame_counter;
 		window_time = 0.0;
 		frame_counter = 0;
-		parent->timeline->info->setText("FPS: " + QString::number(frame_count) + " | Frame: 0 | Delta: " + QString::number(frame_time) + "ms");
+
+		string selected = "None";
+		if (FILE->active_object->pointer) {
+			selected = FILE->active_object->pointer->name;
+		}
+		parent->timeline->info->setText("FPS: " + QString::number(frame_count) + " | Frame: 0 | Delta: " + QString::number(frame_time) + "ms | Selected: " + QString::fromStdString(selected));
 	}
 	requestUpdate();
 }
@@ -499,7 +554,7 @@ GLuint GUI::WORKSPACE::Viewport::renderLayer(const uvec2& resolution) {
 	return ID;
 }
 
-GLuint GUI::WORKSPACE::Viewport::fragmentShaderProgram(const string& file_path) {
+tuple<bool, GLuint> GUI::WORKSPACE::Viewport::fragmentShaderProgram(const string& file_path) {
 	GLuint shader_program = glCreateShader(GL_VERTEX_SHADER);
 
 	GLuint vert_shader = glCreateShader(GL_VERTEX_SHADER);
@@ -508,7 +563,9 @@ GLuint GUI::WORKSPACE::Viewport::fragmentShaderProgram(const string& file_path) 
 	glShaderSource(vert_shader, 1, &vertex_code_cstr, NULL);
 	glCompileShader(vert_shader);
 
-	checkShaderCompilation(vert_shader, vertex_code);
+	if (!checkShaderCompilation(vert_shader, vertex_code)) {
+		return tuple(false, 0);
+	}
 
 	GLuint frag_shader = glCreateShader(GL_FRAGMENT_SHADER);
 	const string fragment_code = loadFromFile("./Resources/Shaders/" + file_path + ".frag");
@@ -516,7 +573,9 @@ GLuint GUI::WORKSPACE::Viewport::fragmentShaderProgram(const string& file_path) 
 	glShaderSource(frag_shader, 1, &fragment_code_cstr, NULL);
 	glCompileShader(frag_shader);
 
-	checkShaderCompilation(frag_shader, fragment_code);
+	if (!checkShaderCompilation(frag_shader, fragment_code)) {
+		return tuple(false, 0);
+	}
 
 	shader_program = glCreateProgram();
 	glAttachShader(shader_program, vert_shader);
@@ -528,10 +587,10 @@ GLuint GUI::WORKSPACE::Viewport::fragmentShaderProgram(const string& file_path) 
 	glDeleteShader(vert_shader);
 	glDeleteShader(frag_shader);
 
-	return shader_program;
+	return tuple(true, shader_program);
 }
 
-GLuint GUI::WORKSPACE::Viewport::computeShaderProgram(const string& file_path) {
+tuple<bool, GLuint> GUI::WORKSPACE::Viewport::computeShaderProgram(const string& file_path) {
 	GLuint shader_program;
 	string compute_code = preprocessShader("./Resources/Shaders/" + file_path + ".comp");
 	compute_code = KL::Shader::f_compileShaders(compute_code);
@@ -541,7 +600,9 @@ GLuint GUI::WORKSPACE::Viewport::computeShaderProgram(const string& file_path) {
 	glShaderSource(comp_shader, 1, &compute_code_cstr, NULL);
 	glCompileShader(comp_shader);
 
-	checkShaderCompilation(comp_shader, compute_code);
+	if (!checkShaderCompilation(comp_shader, compute_code)) {
+		return tuple(false, 0);
+	}
 
 	shader_program = glCreateProgram();
 	glAttachShader(shader_program, comp_shader);
@@ -551,7 +612,7 @@ GLuint GUI::WORKSPACE::Viewport::computeShaderProgram(const string& file_path) {
 
 	glDeleteShader(comp_shader);
 
-	return shader_program;
+	return tuple(true, shader_program);
 }
 
 void GUI::WORKSPACE::Viewport::bindRenderLayer(const GLuint& program_id, const GLuint& unit, const GLuint& id, const string& name) {
@@ -559,7 +620,7 @@ void GUI::WORKSPACE::Viewport::bindRenderLayer(const GLuint& program_id, const G
 	glBindTextureUnit(unit, id);
 }
 
-void GUI::WORKSPACE::Viewport::checkShaderCompilation(const GLuint& shader, const string& shader_code) {
+bool GUI::WORKSPACE::Viewport::checkShaderCompilation(const GLuint& shader, const string& shader_code) {
 	GLint success;
 	glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
 	if (!success) {
@@ -567,19 +628,21 @@ void GUI::WORKSPACE::Viewport::checkShaderCompilation(const GLuint& shader, cons
 		glGetShaderInfoLog(shader, sizeof(infoLog), nullptr, infoLog);
 		LOG ENDL ENDL ANSI_R << "[OpenGL]" ANSI_RESET << " Shader Compilation Failed: "; FLUSH;
 		printShaderErrorWithContext(shader_code, infoLog);
-		exit(1);
+		return false;
 	}
+	return true;
 }
 
-void GUI::WORKSPACE::Viewport::checkProgramLinking(const GLuint& program) {
+bool GUI::WORKSPACE::Viewport::checkProgramLinking(const GLuint& program) {
 	GLint success;
 	glGetProgramiv(program, GL_LINK_STATUS, &success);
 	if (!success) {
 		GLchar infoLog[512];
 		glGetProgramInfoLog(program, sizeof(infoLog), nullptr, infoLog);
 		LOG ENDL ENDL ANSI_R << "[OpenGL]" ANSI_RESET << " Program Linking Failed: " << infoLog; FLUSH;
-		exit(1);
+		return false;
 	}
+	return true;
 }
 
 void GUI::WORKSPACE::Viewport::printShaderErrorWithContext(const string& shaderSource, const string& errorLog) {

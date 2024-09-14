@@ -85,7 +85,6 @@ namespace GUI {
 			uint   frame_count;
 			uint64 runframe;
 
-			bool recompile;
 			bool reset;
 			bool debug;
 
@@ -105,16 +104,18 @@ namespace GUI {
 
 			void f_selectObject(const dvec2& uv);
 
+			void f_recompileShaders();
+
 			void initializeGL() override;
 			void paintGL() override;
 			void resizeGL(int w, int h) override;
 
 			GLuint renderLayer(const uvec2& resolution);
-			GLuint fragmentShaderProgram(const string& file_path);
-			GLuint computeShaderProgram(const string& file_path);
+			tuple<bool, GLuint> fragmentShaderProgram(const string& file_path);
+			tuple<bool, GLuint> computeShaderProgram(const string& file_path);
 			void bindRenderLayer(const GLuint& program_id, const GLuint& unit, const GLuint& id, const string& name);
-			void checkShaderCompilation(const GLuint& shader, const string& shader_code);
-			void checkProgramLinking(const GLuint& program);
+			bool checkShaderCompilation(const GLuint& shader, const string& shader_code);
+			bool checkProgramLinking(const GLuint& program);
 			void printShaderErrorWithContext(const string& shaderSource, const string& errorLog);
 
 			template <typename T>

@@ -176,6 +176,18 @@ KL::Node_Tree* KL::Editor_File::f_loadAsciiNodeTree(const Token_Array&token_data
 								node = new NODE::LINK::SET::Euler_Rotation_X();
 								gui_node = new GUI::NODE::LINK::SET::Euler_Rotation_X(pos);
 							}
+							if      (read_data[3][9] == "Y") {
+								LOG ENDL ANSI_B << "      [Node]" ANSI_RESET; FLUSH;
+								LOG ENDL << "        " ANSI_PURPLE << name ANSI_RESET; FLUSH;
+								node = new NODE::LINK::SET::Euler_Rotation_Y();
+								gui_node = new GUI::NODE::LINK::SET::Euler_Rotation_Y(pos);
+							}
+							if      (read_data[3][9] == "Z") {
+								LOG ENDL ANSI_B << "      [Node]" ANSI_RESET; FLUSH;
+								LOG ENDL << "        " ANSI_PURPLE << name ANSI_RESET; FLUSH;
+								node = new NODE::LINK::SET::Euler_Rotation_Z();
+								gui_node = new GUI::NODE::LINK::SET::Euler_Rotation_Z(pos);
+							}
 						}
 					}
 				}
@@ -308,6 +320,9 @@ void KL::Editor_File::f_loadAsciiBuild(const Token_Array& token_data, const Toke
 		if (tokens[0] == "Active-Scene") {
 			active_scene->set(ptr<KL::Scene*>(pointer_map.getVal(str_to_ul(tokens[2]))));
 		}
+		else if (tokens[0] == "Active-Object") {
+			active_object->set(ptr<KL::Object*>(pointer_map.getVal(str_to_ul(tokens[2]))));
+		}
 		else if (tokens[0] == "┌Data-Group") {
 			is_processing = true;
 			read_data.clear();
@@ -371,115 +386,123 @@ void KL::Editor_File::f_saveAsciiNodeTree(Lace& lace, const KL::Node_Tree* data,
 		lace NL PTR << uptr(node);
 		lace NL << "( " << node_map[node]->node_pos << " )";
 		switch (node->type) {
-		case NODE::Type::CONSTRAINT: {
-			switch (static_cast<NODE::CONSTRAINT::Type>(node->sub_type)) {
-			case NODE::CONSTRAINT::Type::PARENT: {
-				lace NL << "Type CONSTRAINT :: PARENT";
-				break;
-			}
-			}
-			break;
-		}
-		case NODE::Type::EXEC: {
-			switch (static_cast<NODE::EXEC::Type>(node->sub_type)) {
-			case NODE::EXEC::Type::COUNTER: {
-				lace NL << "Type EXEC :: COUNTER";
-				break;
-			}
-			case NODE::EXEC::Type::SCRIPT: {
-				lace NL << "Type EXEC :: SCRIPT";
-				lace NL << "┌Script";
-				lace NL SP << static_cast<KL::NODE::EXEC::Script*>(node)->script_id;
-				lace NL << "└Script";
-				break;
-			}
-			case NODE::EXEC::Type::TICK: {
-				lace NL << "Type EXEC :: TICK";
-				break;
-			}
-			}
-			break;
-		}
-		case NODE::Type::LINK: {
-			switch (static_cast<NODE::LINK::Type>(node->sub_type)) {
-			case NODE::LINK::Type::POINTER: {
-				lace NL << "Type LINK :: POINTER";
-				lace NL << "┌Pointer";
-				lace NL SP << "Type " << serialize(static_cast<NODE::LINK::Pointer*>(node)->pointer_type);
-				lace NL << "└Pointer";
-				break;
-			}
-			case NODE::LINK::Type::GET: {
-				switch (static_cast<KL::NODE::LINK::Get*>(node)->mini_type) {
-				case NODE::LINK::GET::Type::FIELD: {
-					lace NL << "Type LINK :: GET :: FIELD";
-					lace NL << "┌Field";
-					lace NL SP << static_cast<NODE::LINK::GET::Field*>(node)->field;
-					lace NL << "└Field";
+			case NODE::Type::CONSTRAINT: {
+				switch (static_cast<NODE::CONSTRAINT::Type>(node->sub_type)) {
+				case NODE::CONSTRAINT::Type::PARENT: {
+					lace NL << "Type CONSTRAINT :: PARENT";
 					break;
 				}
 				}
 				break;
 			}
-			case NODE::LINK::Type::SET: {
-				switch (static_cast<KL::NODE::LINK::Set*>(node)->mini_type) {
-				case NODE::LINK::SET::Type::EULER_ROTATION_X: {
-					lace NL << "Type LINK :: SET :: TRANSFORM :: EULER_ROTATION :: X";
+			case NODE::Type::EXEC: {
+				switch (static_cast<NODE::EXEC::Type>(node->sub_type)) {
+				case NODE::EXEC::Type::COUNTER: {
+					lace NL << "Type EXEC :: COUNTER";
+					break;
+				}
+				case NODE::EXEC::Type::SCRIPT: {
+					lace NL << "Type EXEC :: SCRIPT";
+					lace NL << "┌Script";
+					lace NL SP << static_cast<KL::NODE::EXEC::Script*>(node)->script_id;
+					lace NL << "└Script";
+					break;
+				}
+				case NODE::EXEC::Type::TICK: {
+					lace NL << "Type EXEC :: TICK";
 					break;
 				}
 				}
 				break;
 			}
-			}
-			break;
-		}
-		case NODE::Type::MATH: {
-			switch (static_cast<NODE::MATH::Type>(node->sub_type)) {
-			case NODE::MATH::Type::ADD: {
-				lace NL << "Type MATH :: ADD";
-				break;
-			}
-			case NODE::MATH::Type::SUB: {
-				lace NL << "Type MATH :: SUB";
-				break;
-			}
-			case NODE::MATH::Type::MUL: {
-				lace NL << "Type MATH :: MUL";
-				break;
-			}
-			case NODE::MATH::Type::DIV: {
-				lace NL << "Type MATH :: DIV";
-				break;
-			}
-			}
-			break;
-		}
-		case NODE::Type::UTIL: {
-			switch (static_cast<NODE::UTIL::Type>(node->sub_type)) {
-			case NODE::UTIL::Type::PRINT: {
-				break;
-			}
-			case NODE::UTIL::Type::CAST: {
-				switch (static_cast<NODE::UTIL::Cast*>(node)->mini_type) {
-					case NODE::UTIL::CAST::Type::UINT_TO_DOUBLE: {
-						lace NL << "Type UTIL :: CAST :: UINT_TO_DOUBLE";
+			case NODE::Type::LINK: {
+				switch (static_cast<NODE::LINK::Type>(node->sub_type)) {
+					case NODE::LINK::Type::POINTER: {
+						lace NL << "Type LINK :: POINTER";
+						lace NL << "┌Pointer";
+						lace NL SP << "Type " << serialize(static_cast<NODE::LINK::Pointer*>(node)->pointer_type);
+						lace NL << "└Pointer";
 						break;
 					}
-					case NODE::UTIL::CAST::Type::INT_TO_DOUBLE: {
-						lace NL << "Type UTIL :: CAST :: INT_TO_DOUBLE";
+					case NODE::LINK::Type::GET: {
+						switch (static_cast<KL::NODE::LINK::Get*>(node)->mini_type) {
+							case NODE::LINK::GET::Type::FIELD: {
+								lace NL << "Type LINK :: GET :: FIELD";
+								lace NL << "┌Field";
+								lace NL SP << static_cast<NODE::LINK::GET::Field*>(node)->field;
+								lace NL << "└Field";
+								break;
+							}
+						}
 						break;
 					}
-					break;
+					case NODE::LINK::Type::SET: {
+						switch (static_cast<KL::NODE::LINK::Set*>(node)->mini_type) {
+							case NODE::LINK::SET::Type::EULER_ROTATION_X: {
+								lace NL << "Type LINK :: SET :: TRANSFORM :: EULER_ROTATION :: X";
+								break;
+							}
+							case NODE::LINK::SET::Type::EULER_ROTATION_Y: {
+								lace NL << "Type LINK :: SET :: TRANSFORM :: EULER_ROTATION :: Y";
+								break;
+							}
+							case NODE::LINK::SET::Type::EULER_ROTATION_Z: {
+								lace NL << "Type LINK :: SET :: TRANSFORM :: EULER_ROTATION :: Z";
+								break;
+							}
+						}
+						break;
+					}
 				}
 				break;
 			}
-			case NODE::UTIL::Type::VIEW: {
-				lace NL << "Type UTIL :: VIEW";
+			case NODE::Type::MATH: {
+				switch (static_cast<NODE::MATH::Type>(node->sub_type)) {
+					case NODE::MATH::Type::ADD: {
+						lace NL << "Type MATH :: ADD";
+						break;
+					}
+					case NODE::MATH::Type::SUB: {
+						lace NL << "Type MATH :: SUB";
+						break;
+					}
+					case NODE::MATH::Type::MUL: {
+						lace NL << "Type MATH :: MUL";
+						break;
+					}
+					case NODE::MATH::Type::DIV: {
+						lace NL << "Type MATH :: DIV";
+						break;
+					}
+				}
 				break;
 			}
+			case NODE::Type::UTIL: {
+				switch (static_cast<NODE::UTIL::Type>(node->sub_type)) {
+					case NODE::UTIL::Type::PRINT: {
+						break;
+					}
+					case NODE::UTIL::Type::CAST: {
+						switch (static_cast<NODE::UTIL::Cast*>(node)->mini_type) {
+							case NODE::UTIL::CAST::Type::UINT_TO_DOUBLE: {
+								lace NL << "Type UTIL :: CAST :: UINT_TO_DOUBLE";
+								break;
+							}
+							case NODE::UTIL::CAST::Type::INT_TO_DOUBLE: {
+								lace NL << "Type UTIL :: CAST :: INT_TO_DOUBLE";
+								break;
+							}
+							break;
+						}
+						break;
+					}
+					case NODE::UTIL::Type::VIEW: {
+						lace NL << "Type UTIL :: VIEW";
+						break;
+					}
+				}
+				break;
 			}
-			break;
-		}
 		}
 		lace--;
 		lace NL << "└Node";

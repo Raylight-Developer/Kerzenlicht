@@ -264,6 +264,7 @@ GUI::NODE::LINK::GET::Field::Field(const ivec2& pos) :
 	field = new GUI::Value_Input();
 	field->setFixedSize(180, 20);
 	field->setPlaceholderText("Field");
+	field->installEventFilter(this);
 	proxyWidget_id->setWidget(field);
 	proxyWidget_id->setPos(boundingRect().topLeft() + QPointF(10, 50));
 
@@ -275,6 +276,13 @@ GUI::NODE::LINK::GET::Field::Field(const ivec2& pos) :
 	outputs.push_back(o_value);
 
 	rect.setHeight(60 + max(inputs.size(), outputs.size()) * 20);
+}
+
+bool GUI::NODE::LINK::GET::Field::eventFilter(QObject* obj, QEvent* event) {
+	//if (event->type() == QEvent::KeyPress) {
+	//	return true;
+	//}
+	return QObject::eventFilter(obj, event);
 }
 
 GUI::NODE::LINK::Set::Set(const ivec2& pos) {
@@ -298,6 +306,52 @@ GUI::NODE::LINK::SET::Euler_Rotation_X::Euler_Rotation_X(const ivec2& pos) :
 {
 	label = "Set Euler Rotation X";
 	mini_type = KL::NODE::LINK::SET::Type::EULER_ROTATION_X;
+
+	i_exec    = new PORT::Exec_I_Port(this, 0, "Exec");
+	i_pointer = new PORT::Data_I_Port(this, 1, "Pointer", KL::DATA::Type::OBJECT);
+	i_value   = new PORT::Data_I_Port(this, 2, "Input Value", KL::DATA::Type::DOUBLE);
+
+	o_exec    = new PORT::Exec_O_Port(this, 0, "Exec");
+	o_value   = new PORT::Data_O_Port(this, 1, "Output Value", KL::DATA::Type::DOUBLE);
+
+	inputs.push_back(i_exec);
+	inputs.push_back(i_pointer);
+	inputs.push_back(i_value);
+
+	outputs.push_back(o_exec);
+	outputs.push_back(o_value);
+
+	rect.setHeight(40 + max(inputs.size(), outputs.size()) * 20);
+}
+
+GUI::NODE::LINK::SET::Euler_Rotation_Y::Euler_Rotation_Y(const ivec2& pos) :
+	Set(pos)
+{
+	label = "Set Euler Rotation Y";
+	mini_type = KL::NODE::LINK::SET::Type::EULER_ROTATION_Y;
+
+	i_exec    = new PORT::Exec_I_Port(this, 0, "Exec");
+	i_pointer = new PORT::Data_I_Port(this, 1, "Pointer", KL::DATA::Type::OBJECT);
+	i_value   = new PORT::Data_I_Port(this, 2, "Input Value", KL::DATA::Type::DOUBLE);
+
+	o_exec    = new PORT::Exec_O_Port(this, 0, "Exec");
+	o_value   = new PORT::Data_O_Port(this, 1, "Output Value", KL::DATA::Type::DOUBLE);
+
+	inputs.push_back(i_exec);
+	inputs.push_back(i_pointer);
+	inputs.push_back(i_value);
+
+	outputs.push_back(o_exec);
+	outputs.push_back(o_value);
+
+	rect.setHeight(40 + max(inputs.size(), outputs.size()) * 20);
+}
+
+GUI::NODE::LINK::SET::Euler_Rotation_Z::Euler_Rotation_Z(const ivec2& pos) :
+	Set(pos)
+{
+	label = "Set Euler Rotation Z";
+	mini_type = KL::NODE::LINK::SET::Type::EULER_ROTATION_Z;
 
 	i_exec    = new PORT::Exec_I_Port(this, 0, "Exec");
 	i_pointer = new PORT::Data_I_Port(this, 1, "Pointer", KL::DATA::Type::OBJECT);
@@ -487,6 +541,19 @@ KL::Node_Tree* GUI::NODE::Node_Tree::toExecTree() {
 						switch (static_cast<GUI::NODE::LINK::Set*>(gui_node)->mini_type) {
 							case KL::NODE::LINK::SET::Type::EULER_ROTATION_X: {
 								auto t_node = new KL::NODE::LINK::SET::Euler_Rotation_X();
+								t_node->i_pointer->default_value = KL::Data(FILE->active_object->pointer);
+								node = t_node;
+								break;
+							}
+							case KL::NODE::LINK::SET::Type::EULER_ROTATION_Y: {
+								auto t_node = new KL::NODE::LINK::SET::Euler_Rotation_Y();
+								t_node->i_pointer->default_value = KL::Data(FILE->active_object->pointer);
+								node = t_node;
+								break;
+							}
+							case KL::NODE::LINK::SET::Type::EULER_ROTATION_Z: {
+								auto t_node = new KL::NODE::LINK::SET::Euler_Rotation_Z();
+								t_node->i_pointer->default_value = KL::Data(FILE->active_object->pointer);
 								node = t_node;
 								break;
 							}

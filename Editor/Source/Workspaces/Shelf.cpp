@@ -13,7 +13,7 @@ GUI::WORKSPACE::Workspace_Shelf::Workspace_Shelf(Workspace_Manager* parent) :
 
 	for (const KL::Object* object : parent->parent->file->objects) {
 		auto item = new Tree_Item(objects, QString::fromStdString(object->name), 1);
-		item->setData(0, 1000, reinterpret_cast<uint64>(object));
+		item->setData(0, 1000, uptr(object));
 	}
 	//for (pair<string, Object_Data*> Mesh : parent->parent->file->data_array[Data_Type::MESH]) {
 	//	GUI::Tree_Item* Item = new GUI::Tree_Item(object_data, Mesh.first);
@@ -30,7 +30,7 @@ GUI::WORKSPACE::Shelf::Shelf(Workspace_Shelf* parent) :
 
 void GUI::WORKSPACE::Shelf::startDrag(Qt::DropActions actions) {
 	QTreeWidgetItem* temp = currentItem();
-	if (temp and temp->data(0, 500).toInt() > 0) {
+	if (temp) {
 		QByteArray byteArray;
 		QDataStream stream(&byteArray, QIODevice::WriteOnly);
 		stream << temp->data(0, 1000).toULongLong();

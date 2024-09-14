@@ -79,6 +79,7 @@ GUI::WORKSPACE::Object_Node_Viewport::Object_Node_Viewport(Workspace_Object_Node
 
 	setScene(scene);
 	scene->addItem(selection_rect);
+	f_objectChanged(FILE->active_object->pointer);
 }
 
 GUI::WORKSPACE::Object_Node_Viewport::~Object_Node_Viewport() {
@@ -412,6 +413,14 @@ void GUI::WORKSPACE::Object_Node_Viewport::keyPressEvent(QKeyEvent* event) {
 //}
 
 void GUI::WORKSPACE::Object_Node_Viewport::dropEvent(QDropEvent* event) {
+	if (active_node_tree == nullptr and FILE->active_object->pointer) {
+		if (FILE->active_object->pointer->node_tree == nullptr) {
+			FILE->active_object->pointer->node_tree = new KL::Node_Tree();
+			active_node_tree = new GUI::NODE::Node_Tree();
+			FILE->nodetree_map[FILE->active_object->pointer->node_tree] = active_node_tree;
+			FILE->node_trees.push_back(FILE->active_object->pointer->node_tree);
+		}
+	}
 	const ivec2 drop_pos = d_to_i(f_roundToNearest(p_to_d(mapToScene(event->position().toPoint())), 10.0));
 	if (event->mimeData()->hasText() and active_node_tree) {
 		GUI::NODE::Node* node = nullptr;
@@ -464,6 +473,12 @@ void GUI::WORKSPACE::Object_Node_Viewport::dropEvent(QDropEvent* event) {
 				else if (sub_type == "SET_Transform_Euler_Rot_X") {
 					node = new GUI::NODE::LINK::SET::Euler_Rotation_X(drop_pos);
 				}
+				else if (sub_type == "SET_Transform_Euler_Rot_Y") {
+					node = new GUI::NODE::LINK::SET::Euler_Rotation_Y(drop_pos);
+				}
+				else if (sub_type == "SET_Transform_Euler_Rot_Z") {
+					node = new GUI::NODE::LINK::SET::Euler_Rotation_Z(drop_pos);
+				}
 			}
 			else if (type == "UTIL") {
 				if (sub_type == "Print") {
@@ -485,12 +500,11 @@ void GUI::WORKSPACE::Object_Node_Viewport::dropEvent(QDropEvent* event) {
 			qulonglong pointer;
 			stream >> pointer;
 			
-			auto object = reinterpret_cast<KL::Object*>(pointer);
+			auto object = ptr<KL::Object*>(pointer);
 
 			auto t_node = new GUI::NODE::LINK::Pointer(drop_pos, KL::DATA::Type::OBJECT);
 			t_node->pointer = object;
 			node = t_node;
-			return;
 		}
 		if (node) {
 			active_node_tree->nodes.push_back(node);

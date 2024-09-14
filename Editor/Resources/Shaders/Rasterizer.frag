@@ -11,23 +11,41 @@ float LambertianShading(vec3 normal, vec3 lightDir) {
 	return max(dot(normal, lightDir), 0.0);
 }
 
-float FresnelSchlick(float IOR, float power, vec3 viewDir, vec3 normal) {
-	float cosTheta = dot(viewDir, abs(normal));
-	float R0 = (1.0 - IOR) / (1.0 + IOR);
-	R0 = R0 * R0;
-	return 1.0 - (R0 + (1.0 - R0) * pow(1.0 - cosTheta, power));
+float fresnel_dielectric_cos(float cosi, float eta) {
+	float c = abs(cosi);
+	float g = eta * eta - 1 + c * c;
+	float result;
+
+	if (g > 0) {
+		g = sqrt(g);
+		float A = (g - c) / (g + c);
+		float B = (c * (g + c) - 1) / (c * (g - c) + 1);
+		result = 0.5 * A * A * (1 + B * B);
+	}
+	else {
+		result = 1.0;
+	}
+	return result;
+}
+
+float F0_from_ior(float eta) {
+	float f0 = (eta - 1.0) / (eta + 1.0);
+	return f0 * f0;
+}
+
+float ior_from_F0(float f0) {
+	float sqrt_f0 = sqrt(clamp(f0, 0.0, 0.99));
+	return (1.0 + sqrt_f0) / (1.0 - sqrt_f0);
 }
 
 void main() {
-	vec3 normal = fragNormal;
 	vec3 lightDir = normalize(vec3(1.0, -1.0, 1.0));
 	vec3 viewDir = normalize(camera_pos - fragPos);
 
-	float diffuse = LambertianShading(normal, lightDir);
-	float fresnel = FresnelSchlick(0.5, 1.0, viewDir, normal);
+	float cosi = dot(viewDir, fragNormal);
+	float fresnel = fresnel_dielectric_cos(cosi, 1.5);
 
-	float diff = max(dot(normal, lightDir), 0.0);
-	vec3 color = vec3((fresnel * 0.2 + 0.8) * (diffuse * 0.5 + 0.5) * (1.0 - length(camera_pos - fragPos) * 0.05));
-	color = vec3(fresnel);
+	vec3 color = vec3(fresnel);
+	//color = fragNormal;
 	fragColor = vec4(color, 1.0);
 }

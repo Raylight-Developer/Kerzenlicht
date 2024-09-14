@@ -12,7 +12,7 @@ GUI::NODE::Node_Tree::~Node_Tree() {
 }
 
 GUI::NODE::Node::Node(QGraphicsItem* parent) :
-	QGraphicsItem(parent)
+	QGraphicsObject(parent)
 {
 	setZValue(1);
 	setFlag(QGraphicsItem::GraphicsItemFlag::ItemIsSelectable);

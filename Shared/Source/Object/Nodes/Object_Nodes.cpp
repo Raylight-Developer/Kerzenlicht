@@ -294,6 +294,10 @@ KL::Data LINK::GET::Field::getData(const uint16& slot_id) const {
 				return KL::Data(pointer_ref.getObject()->transform.euler_rotation.x, DATA::Type::DOUBLE);
 			if (field == "node_transform.euler.x")
 				return KL::Data(pointer_ref.getObject()->node_transform.euler_rotation.x, DATA::Type::DOUBLE);
+			if (field == "node_transform.euler.y")
+				return KL::Data(pointer_ref.getObject()->node_transform.euler_rotation.y, DATA::Type::DOUBLE);
+			if (field == "node_transform.euler.z")
+				return KL::Data(pointer_ref.getObject()->node_transform.euler_rotation.z, DATA::Type::DOUBLE);
 			break;
 		}
 		case DATA::Type::SCENE: {
@@ -319,6 +323,44 @@ void LINK::SET::Euler_Rotation_X::exec(const uint16& slot_id) {
 	switch (pointer_ref.type) {
 		case DATA::Type::OBJECT: {
 			pointer_ref.getObject()->node_transform.euler_rotation.x = value_ref.getDouble();
+			break;
+		}
+	}
+}
+
+LINK::SET::Euler_Rotation_Y::Euler_Rotation_Y() {
+	mini_type = SET::Type::EULER_ROTATION_Y;
+
+	i_pointer->data_type = DATA::Type::OBJECT;
+	i_value->data_type = DATA::Type::DOUBLE;
+	o_value->data_type = DATA::Type::DOUBLE;
+}
+
+void LINK::SET::Euler_Rotation_Y::exec(const uint16& slot_id) {
+	KL::Data pointer_ref = i_pointer->getData();
+	KL::Data value_ref = i_value->getData();
+	switch (pointer_ref.type) {
+		case DATA::Type::OBJECT: {
+			pointer_ref.getObject()->node_transform.euler_rotation.y = value_ref.getDouble();
+			break;
+		}
+	}
+}
+
+LINK::SET::Euler_Rotation_Z::Euler_Rotation_Z() {
+	mini_type = SET::Type::EULER_ROTATION_Z;
+
+	i_pointer->data_type = DATA::Type::OBJECT;
+	i_value->data_type = DATA::Type::DOUBLE;
+	o_value->data_type = DATA::Type::DOUBLE;
+}
+
+void LINK::SET::Euler_Rotation_Z::exec(const uint16& slot_id) {
+	KL::Data pointer_ref = i_pointer->getData();
+	KL::Data value_ref = i_value->getData();
+	switch (pointer_ref.type) {
+		case DATA::Type::OBJECT: {
+			pointer_ref.getObject()->node_transform.euler_rotation.z = value_ref.getDouble();
 			break;
 		}
 	}

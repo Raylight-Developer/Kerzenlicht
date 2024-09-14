@@ -8,6 +8,9 @@ pip.main(["install", "tabulate"])
 
 RAD_DEG = 57.29577951308232
 MATRIX = mu.Euler((radians(-90), radians(0), radians(0))).to_matrix().to_4x4()
+matrix_3x3 = MATRIX.to_3x3()
+inverse_3x3 = matrix_3x3.inverted()
+NORMAL_MATRIX = inverse_3x3.transposed()
 
 def to_ptr(data: str) -> int:
 	hash_value = hash(data)
@@ -137,7 +140,7 @@ class Kerzenlicht_Bridge(bpy.types.Operator):
 
 		for j, poly in enumerate(data.polygons):
 			poly: bpy.types.MeshPolygon = poly
-			normals = " ".join([f"( {nor.x} {nor.y} {nor.z} )" for nor in [MATRIX @ normal for normal in [data.vertices[index].normal for index in poly.vertices]]])
+			normals = " ".join([f"( {nor.x} {nor.y} {nor.z} )" for nor in [NORMAL_MATRIX @ normal for normal in [data.vertices[index].normal for index in poly.vertices]]])
 			self.KL.append(f"    {j} {len(poly.vertices)} {normals}")
 
 		self.KL.append("   └Normals")
