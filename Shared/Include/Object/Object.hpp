@@ -43,5 +43,6 @@ namespace KL {
 		Object();
 
 		void f_compileMatrix();
+		void f_render();
 	};
 }

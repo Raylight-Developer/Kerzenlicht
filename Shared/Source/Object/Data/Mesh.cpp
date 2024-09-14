@@ -14,12 +14,12 @@ vector<vec1> KL::OBJECT::DATA::Mesh::faceToArray(MESH::Face* face, const Mesh* m
 	vector<vec1> result;
 
 	// Transform vertices
-	const vec4 vert4_a = matrix * vec4(d_to_f(face->vertices[0]->position), 1.0);
-	const vec4 vert4_b = matrix * vec4(d_to_f(face->vertices[1]->position), 1.0);
-	const vec4 vert4_c = matrix * vec4(d_to_f(face->vertices[2]->position), 1.0);
-	const vec3 vert_a = vec3(vert4_a.x, vert4_a.y, vert4_a.z) / vert4_a.w;
-	const vec3 vert_b = vec3(vert4_b.x, vert4_b.y, vert4_b.z) / vert4_b.w;
-	const vec3 vert_c = vec3(vert4_c.x, vert4_c.y, vert4_c.z) / vert4_c.w;
+	const vec3 vert_a = /*matrix */ d_to_f(face->vertices[0]->position);
+	const vec3 vert_b = /*matrix */ d_to_f(face->vertices[1]->position);
+	const vec3 vert_c = /*matrix */ d_to_f(face->vertices[2]->position);
+	//const vec3 vert_a = vec3(vert4_a.x, vert4_a.y, vert4_a.z) / vert4_a.w;
+	//const vec3 vert_b = vec3(vert4_b.x, vert4_b.y, vert4_b.z) / vert4_b.w;
+	//const vec3 vert_c = vec3(vert4_c.x, vert4_c.y, vert4_c.z) / vert4_c.w;
 
 	// Initialize normals and UVs
 	vec3 nor_a = vec3(0.0f);
@@ -38,14 +38,14 @@ vector<vec1> KL::OBJECT::DATA::Mesh::faceToArray(MESH::Face* face, const Mesh* m
 
 	// Get Normals if available
 	if (mesh->normals.size() > 0) {
-		nor_a = rotation_matrix * d_to_f(mesh->normals.at(face)[0]);
-		nor_b = rotation_matrix * d_to_f(mesh->normals.at(face)[1]);
-		nor_c = rotation_matrix * d_to_f(mesh->normals.at(face)[2]);
+		nor_a = /*rotation_matrix */ d_to_f(mesh->normals.at(face)[0]);
+		nor_b = /*rotation_matrix */ d_to_f(mesh->normals.at(face)[1]);
+		nor_c = /*rotation_matrix */ d_to_f(mesh->normals.at(face)[2]);
 	}
 	else {
 		const vec3 edge1 = vert_b - vert_a;
 		const vec3 edge2 = vert_c - vert_a;
-		const vec3 normal = rotation_matrix * glm::normalize(glm::cross(edge1, edge2));
+		const vec3 normal = /*rotation_matrix */ glm::normalize(glm::cross(edge1, edge2));
 		nor_a = normal;
 		nor_b = normal;
 		nor_c = normal;

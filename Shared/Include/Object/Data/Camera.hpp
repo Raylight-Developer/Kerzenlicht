@@ -21,6 +21,7 @@ namespace KL::OBJECT::DATA {
 
 		void compile(KL::Scene* scene, KL::Object* object);
 		void updateFocalAngle();
-		mat4 glViewMatrix(const KL::Object* object, const dvec1& aspect_ratio) const;
+		mat4 glViewMatrix(const KL::Object* object) const;
+		mat4 glProjectionMatrix(const dvec1& aspect_ratio) const;
 	};
 }

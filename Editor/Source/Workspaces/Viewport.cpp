@@ -472,7 +472,9 @@ void GUI::WORKSPACE::Viewport::paintGL() {
 
 		KL::OBJECT::DATA::Camera* camera = FILE->default_camera->data->getCamera();
 		glUniform3fv(glGetUniformLocation(raster_program, "camera_pos" ), 1, value_ptr(d_to_f(FILE->default_camera->transform.position)));
-		glUniformMatrix4fv(glGetUniformLocation(raster_program, "view_mat"), 1, GL_FALSE, value_ptr(camera->glViewMatrix(FILE->default_camera, render_aspect_ratio)));
+		glUniformMatrix4fv(glGetUniformLocation(raster_program, "view_matrix"), 1, GL_FALSE, value_ptr(camera->glViewMatrix(FILE->default_camera)));
+		glUniformMatrix4fv(glGetUniformLocation(raster_program, "model_matrix"), 1, GL_FALSE, value_ptr(d_to_f(FILE->objects[0]->transform_matrix)));
+		glUniformMatrix4fv(glGetUniformLocation(raster_program, "projection_matrix"), 1, GL_FALSE, value_ptr(camera->glProjectionMatrix(render_aspect_ratio)));
 
 		glBindVertexArray(vao);
 		glDrawArrays(GL_TRIANGLES, 0, ul_to_u(gl_triangles.size() / 8));

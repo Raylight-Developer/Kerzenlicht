@@ -29,7 +29,7 @@ void KL::OBJECT::DATA::Camera::updateFocalAngle() {
 	focal_angle = fovRadians * RAD_DEG;
 }
 
-mat4 KL::OBJECT::DATA::Camera::glViewMatrix(const KL::Object* object, const dvec1& aspect_ratio) const {
+mat4 KL::OBJECT::DATA::Camera::glViewMatrix(const KL::Object* object) const {
 	const mat4 rotation_matrix = glm::yawPitchRoll(object->transform.euler_rotation.y * DEG_RAD, object->transform.euler_rotation.x * DEG_RAD, object->transform.euler_rotation.z * DEG_RAD);
 	
 	const vec3 x_vector = rotation_matrix[0];
@@ -39,6 +39,9 @@ mat4 KL::OBJECT::DATA::Camera::glViewMatrix(const KL::Object* object, const dvec
 	const vec3 camera_position = object->transform.position;
 	const mat4 view_matrix = glm::lookAt(camera_position, camera_position + z_vector, y_vector);
 
-	const mat4 projection_matrix = glm::perspective(d_to_f(focal_angle * DEG_RAD), d_to_f(aspect_ratio), 0.01f, 1000.0f);
-	return projection_matrix * view_matrix;
+	return view_matrix;
+}
+
+mat4 KL::OBJECT::DATA::Camera::glProjectionMatrix(const dvec1& aspect_ratio) const {
+	return glm::perspective(d_to_f(focal_angle * DEG_RAD), d_to_f(aspect_ratio), 0.01f, 1000.0f);
 }
