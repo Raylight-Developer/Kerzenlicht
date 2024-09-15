@@ -19,6 +19,8 @@ namespace KL::OBJECT::DATA {
 		};
 	}
 	struct Mesh {
+		bool cpu_update;
+
 		vector<MESH::Vertex*> vertices;
 		vector<MESH::Face*> faces;
 		vector<KL::Shader*> shader_slots;

@@ -12,11 +12,22 @@
 #include "Gpu_Scene.hpp"
 #include "Core/Render_File.hpp"
 
+#include "Rendering/Rasterizer.hpp"
+#include "Rendering/PathTracer.hpp"
+
 namespace KL {
+	enum struct Mode {
+		PATHTRACING,
+		RASTERIZATION
+	};
 	struct Renderer {
 		GLFWwindow* window;
+
 		Render_File* file;
-		GPU_Scene* gpu_data;
+		KL::Object default_camera;
+
+		Rasterizer rasterizer;
+		PathTracer pathtracer;
 
 		dvec1 display_aspect_ratio;
 		dvec1 render_aspect_ratio;
@@ -27,9 +38,7 @@ namespace KL {
 		uint   frame_count;
 		uint64 runframe;
 
-		bool recompile;
-		bool reset;
-		bool debug;
+		Mode render_mode;
 
 		dvec1 camera_move_sensitivity;
 		dvec1 camera_view_sensitivity;
@@ -43,8 +52,6 @@ namespace KL {
 		dvec1 frame_time;
 		dvec1 last_time;
 
-		uint view_layer;
-
 		Renderer();
 
 		void init();
@@ -55,16 +62,22 @@ namespace KL {
 		void systemInfo();
 
 		void f_pipeline();
+		void f_recompile();
+
 		void f_tickUpdate();
 
-		void guiLoop();
-		void gameLoop();
-		void displayLoop();
+		void f_timings();
+		void f_guiLoop();
+		void f_gameLoop();
+		void f_displayLoop();
+		void f_frameUpdate();
 
-		static void framebufferSize(GLFWwindow* window, int width, int height);
-		static void cursorPos(GLFWwindow* window, dvec1 xpos, dvec1 ypos);
-		static void mouseButton(GLFWwindow* window, int button, int action, int mods);
-		static void scroll(GLFWwindow* window, dvec1 xoffset, dvec1 yoffset);
-		static void key(GLFWwindow* window, int key, int scancode, int action, int mods);
+		void f_renderPathTracing();
+
+		static void glfwFramebufferSize(GLFWwindow* window, int width, int height);
+		static void glfwMouseButton    (GLFWwindow* window, int button, int action, int mods);
+		static void glfwCursorPos      (GLFWwindow* window, dvec1 xpos, dvec1 ypos);
+		static void glfwScroll         (GLFWwindow* window, dvec1 xoffset, dvec1 yoffset);
+		static void glfwKey            (GLFWwindow* window, int key, int scancode, int action, int mods);
 	};
 }

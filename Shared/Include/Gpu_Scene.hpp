@@ -29,6 +29,8 @@ namespace KL {
 
 		GPU_Scene();
 
+		void f_init();
+
 		void updateTextures();
 		void f_tickUpdate();
 

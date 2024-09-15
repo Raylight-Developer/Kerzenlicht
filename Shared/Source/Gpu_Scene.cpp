@@ -17,6 +17,13 @@ KL::GPU_Scene::GPU_Scene() {
 	texture_data = {};
 }
 
+void KL::GPU_Scene::f_init() {
+	triangles.clear();
+	bvh_nodes.clear();
+	textures.clear();
+	texture_data.clear();
+}
+
 void KL::GPU_Scene::print() const {
 	Lace data;
 	data << "Triangles " << triangles.size() NL;
@@ -36,7 +43,7 @@ void KL::GPU_Scene::print() const {
 }
 
 void KL::GPU_Scene::printInfo() const {
-	cout << "GPU Data:" << endl;
+	cout << endl << "GPU Data:" << endl;
 	printSize("  Triangles    ", triangles);
 	printSize("  BVHs         ", bvh_nodes);
 	printSize("  Textures     ", textures);
@@ -83,7 +90,7 @@ void KL::GPU_Scene::f_tickUpdate() {
 		BVH_Builder bvh_build = BVH_Builder(mesh_triangles, bvh_depth);
 		bvh_nodes.insert(bvh_nodes.end(), bvh_build.node_list.begin(), bvh_build.node_list.end());
 		triangles.insert(triangles.end(), bvh_build.triangles.begin(), bvh_build.triangles.end());
-		//LOG ENDL << "Triangle Count: " << mesh_triangles.size() << "  BVH Depth: " << bvh_depth << "  BVH Nodes: " << bvh_nodes.size();
+		LOG ENDL << "Triangle Count: " << mesh_triangles.size() << "  BVH Depth: " << bvh_depth << "  BVH Nodes: " << bvh_nodes.size();
 	}
 }
 

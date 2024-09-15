@@ -148,6 +148,12 @@
     <ClCompile Include="..\Shared\Source\Gpu_Scene.cpp">
       <Filter>Shared\Source</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Rendering\Rasterizer.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Rendering\PathTracer.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\Rendering\Renderer.hpp">
@@ -275,6 +281,12 @@
     </ClInclude>
     <ClInclude Include="..\Shared\Include\Gpu_Scene.hpp">
       <Filter>Shared\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Rendering\Rasterizer.hpp">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Rendering\PathTracer.hpp">
+      <Filter>Include</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

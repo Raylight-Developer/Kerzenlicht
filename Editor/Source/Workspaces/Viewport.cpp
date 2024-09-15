@@ -323,7 +323,7 @@ void GUI::WORKSPACE::Viewport::f_recompileShaders() {
 
 void GUI::WORKSPACE::Viewport::initializeGL() {
 	initializeOpenGLFunctions();
-	glClearColor(0.25f, 0.25f, 0.25f, 1.0f);
+	glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
 	glViewport(0, 0, render_resolution.x, render_resolution.y);
 
 	f_pipeline();
@@ -384,11 +384,6 @@ void GUI::WORKSPACE::Viewport::paintGL() {
 	#else
 	{
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		if (false)
-			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-		else
-			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 		const GLuint raster_program = renderer_data["raster_program"];
 		glUseProgram(raster_program);
@@ -460,13 +455,16 @@ void GUI::WORKSPACE::Viewport::f_renderMesh(const GLuint raster_program, KL::Obj
 	auto vao = &gl_data[object]["vao"];
 	auto vbo = &gl_data[object]["vbo"];
 	vector<vec1>* cached_triangles = &gl_triangle_cache[uptr(object)];
+	auto mesh = object->data->getMesh();
 
 	if (object->cpu_update) {
 		object->cpu_update = false;
 		object->f_compileMatrix();
+	}
+	if (mesh->cpu_update) {
+		mesh->cpu_update = false;
 		cached_triangles->clear();
 
-		KL::OBJECT::DATA::Mesh* mesh = object->data->getMesh();
 		mat3 normal_matrix = mat3(glm::transpose(glm::inverse(object->transform_matrix)));
 		for (KL::OBJECT::DATA::MESH::Face* face : mesh->faces) {
 			auto tri = KL::OBJECT::DATA::Mesh::faceToArray(face, mesh, object->transform_matrix, normal_matrix);
@@ -496,11 +494,22 @@ void GUI::WORKSPACE::Viewport::f_renderMesh(const GLuint raster_program, KL::Obj
 		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(vec1), (void*)(6 * sizeof(vec1)));
 		glEnableVertexAttribArray(2);
 	}
-
-	glUniformMatrix4fv(glGetUniformLocation(raster_program, "model_matrix"), 1, GL_FALSE, value_ptr(d_to_f(object->transform_matrix)));
+	const GLuint vertex_count = ul_to_u(cached_triangles->size() / 8);
 
 	glBindVertexArray(*vao);
-	glDrawArrays(GL_TRIANGLES, 0, ul_to_u(cached_triangles->size() / 8));
+	// Mesh
+	glUniformMatrix4fv(glGetUniformLocation(raster_program, "model_matrix"), 1, GL_FALSE, value_ptr(d_to_f(object->transform_matrix)));
+	glUniform1ui(glGetUniformLocation(raster_program, "wireframe"), 0);
+	glDisable(GL_POLYGON_OFFSET_LINE);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	glDrawArrays(GL_TRIANGLES, 0, vertex_count);
+	// Wireframe
+
+	glUniform1ui(glGetUniformLocation(raster_program, "wireframe"), 1);
+	glEnable(GL_POLYGON_OFFSET_LINE);
+	glPolygonOffset(-1.0, -1.0);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	glDrawArrays(GL_TRIANGLES, 0, vertex_count);
 
 	glBindVertexArray(0);
 }

@@ -6,19 +6,18 @@ namespace KL::OBJECT::DATA {
 	namespace CURVE {
 		namespace SPLINE {
 			enum struct Type {
+				NONE,
 				CATMULL,
 				BEZIER,
 				NURBS,
 				POLY
 			};
-
-			struct Handle {
-				dvec3 position;
-			};
 		}
 		struct Spline {
-			vector<SPLINE::Handle> handles;
+			vector<dvec3> points;
 			SPLINE::Type type;
+
+			Spline();
 		};
 	}
 

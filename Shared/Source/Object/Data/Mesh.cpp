@@ -1,8 +1,7 @@
 #include "Object/Data/Mesh.hpp"
 
 KL::OBJECT::DATA::Mesh::Mesh() {
-	vertices = vector<MESH::Vertex*>();
-	faces = vector<MESH::Face*>();
+	cpu_update = true;
 }
 
 KL::OBJECT::DATA::Mesh::~Mesh() {
