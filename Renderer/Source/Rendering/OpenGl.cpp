@@ -7,7 +7,7 @@ KL::Confirm<GLuint> fragmentShaderProgram(const string& file_path) {
 	GLuint shader_program = glCreateShader(GL_VERTEX_SHADER);
 
 	GLuint vert_shader = glCreateShader(GL_VERTEX_SHADER);
-	const string vertex_code = loadFromFile("./Resources/Shaders/" + file_path + ".vert");
+	const string vertex_code = loadFromFile("../Shared/Resources/Shaders/" + file_path + ".vert");
 	const char* vertex_code_cstr = vertex_code.c_str();
 	glShaderSource(vert_shader, 1, &vertex_code_cstr, NULL);
 	glCompileShader(vert_shader);
@@ -17,7 +17,7 @@ KL::Confirm<GLuint> fragmentShaderProgram(const string& file_path) {
 	}
 
 	GLuint frag_shader = glCreateShader(GL_FRAGMENT_SHADER);
-	const string fragment_code = loadFromFile("./Resources/Shaders/" + file_path + ".frag");
+	const string fragment_code = loadFromFile("../Shared/Resources/Shaders/" + file_path + ".frag");
 	const char* fragment_code_cstr = fragment_code.c_str();
 	glShaderSource(frag_shader, 1, &fragment_code_cstr, NULL);
 	glCompileShader(frag_shader);
@@ -41,9 +41,9 @@ KL::Confirm<GLuint> fragmentShaderProgram(const string& file_path) {
 
 KL::Confirm<GLuint> computeShaderProgram(const string& file_path) {
 	GLuint shader_program;
-	string compute_code = preprocessShader("./Resources/Shaders/" + file_path + ".comp");
+	string compute_code = preprocessShader("../Shared/Resources/Shaders/" + file_path + ".comp");
 	compute_code = KL::Shader::f_compileShaders(compute_code);
-	writeToFile("./Resources/Shaders/" + file_path + "_Compiled.comp", compute_code);
+	writeToFile("../Shared/Resources/Shaders/" + file_path + "_Compiled.comp", compute_code);
 	const char* compute_code_cstr = compute_code.c_str();
 	GLuint comp_shader = glCreateShader(GL_COMPUTE_SHADER);
 	glShaderSource(comp_shader, 1, &compute_code_cstr, NULL);

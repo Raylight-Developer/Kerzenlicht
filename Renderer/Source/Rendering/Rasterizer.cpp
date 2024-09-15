@@ -26,8 +26,6 @@ void KL::Rasterizer::f_initialize() {
 	glEnable(GL_DEPTH_TEST);
 	glPolygonOffset(-1.0, -1.0);
 
-	FILE->default_camera->data->getCamera()->updateFocalAngle();
-
 	cout << endl << endl << r_aspect_ratio << endl << d_aspect_ratio << endl << endl;
 
 	{
@@ -206,8 +204,8 @@ void KL::Rasterizer::f_render() {
 
 	KL::OBJECT::DATA::Camera* camera = FILE->default_camera->data->getCamera();
 	glUniform3fv(glGetUniformLocation(raster_program, "camera_pos" ), 1, value_ptr(d_to_f(FILE->default_camera->transform.position)));
-	glUniformMatrix4fv(glGetUniformLocation(raster_program, "view_matrix"), 1, GL_FALSE, value_ptr(camera->glViewMatrix(FILE->default_camera)));
-	glUniformMatrix4fv(glGetUniformLocation(raster_program, "projection_matrix"), 1, GL_FALSE, value_ptr(camera->glProjectionMatrix(r_aspect_ratio)));
+	glUniformMatrix4fv(glGetUniformLocation(raster_program, "view_matrix"), 1, GL_FALSE, value_ptr(d_to_f(camera->glViewMatrix(FILE->default_camera))));
+	glUniformMatrix4fv(glGetUniformLocation(raster_program, "projection_matrix"), 1, GL_FALSE, value_ptr(d_to_f(camera->glProjectionMatrix(r_aspect_ratio))));
 
 	for (KL::Object* object : FILE->active_scene->pointer->objects) {
 		if (object->data->type == KL::OBJECT::DATA::Type::MESH) {

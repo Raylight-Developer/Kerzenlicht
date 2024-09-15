@@ -9,9 +9,7 @@ namespace KL {
 
 namespace KL::OBJECT::DATA {
 	struct Camera {
-		dvec1 focal_length;
-		dvec1 focal_angle;
-		dvec1 sensor_size;
+		dvec1 view_angle;
 
 		dvec3 projection_uv;
 		dvec3 projection_u;
@@ -19,9 +17,8 @@ namespace KL::OBJECT::DATA {
 
 		Camera();
 
-		void compile(KL::Scene* scene, KL::Object* object);
-		void updateFocalAngle(); // TODO Make it Accurate
-		mat4 glViewMatrix(const KL::Object* object) const;
-		mat4 glProjectionMatrix(const dvec1& aspect_ratio) const;
+		void compile(KL::Scene* scene, KL::Object* object, const dvec1& aspect_ratio);
+		dmat4 glViewMatrix(const KL::Object* object) const;
+		dmat4 glProjectionMatrix(const dvec1& aspect_ratio) const;
 	};
 }

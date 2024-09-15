@@ -219,7 +219,7 @@ void KL::PathTracer::f_render() {
 	glUniform1ui(glGetUniformLocation(compute_program, "samples_per_pixel"), 1);
 
 	KL::OBJECT::DATA::Camera* camera = FILE->default_camera->data->getCamera();
-	camera->compile(FILE->active_scene->pointer, FILE->default_camera);
+	camera->compile(FILE->active_scene->pointer, FILE->default_camera, r_aspect_ratio);
 	glUniform3fv(glGetUniformLocation(compute_program, "camera_pos"),  1, value_ptr(d_to_f(FILE->default_camera->transform.position)));
 	glUniform3fv(glGetUniformLocation(compute_program, "camera_p_uv"), 1, value_ptr(d_to_f(camera->projection_uv)));
 	glUniform3fv(glGetUniformLocation(compute_program, "camera_p_u"),  1, value_ptr(d_to_f(camera->projection_u)));

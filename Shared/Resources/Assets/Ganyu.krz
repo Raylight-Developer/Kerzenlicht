@@ -61,7 +61,7 @@
 ┌Textures( 1 )
  ┌Texture [ 0 ] Ganyu
   * 2078896178480
-  ./Resources/Textures/Ganyu.jpg
+  ../Shared/Resources/Textures/Ganyu.jpg
  └Texture
 └Textures
 ┌Shaders( 1 )

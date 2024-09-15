@@ -24,7 +24,7 @@ GUI::WORKSPACE::Main_Window::Main_Window(GUI::Application* app) :
 	history = new KL::History_Manager();
 	KL::Session::getInstance().setHistory(history);
 
-	QFontDatabase::addApplicationFont("./Resources/Fonts/RobotoMono-Medium.ttf");
+	QFontDatabase::addApplicationFont("../Shared/Resources/Fonts/RobotoMono-Medium.ttf");
 
 	setWindowTitle("Kerzenlicht");
 	setWindowIcon(QPixmap("./Resources/Icon.png"));

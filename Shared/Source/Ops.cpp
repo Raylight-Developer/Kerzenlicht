@@ -250,7 +250,7 @@ string preprocessShader(const string& file_path) {
 						size_t endQuotePos = line.find("\"", quotePos + 1);
 						if (endQuotePos != string::npos) {
 							string includeFilename = line.substr(quotePos + 1, endQuotePos - quotePos - 1);
-							output << processSubShader("./Resources/Shaders/" + includeFilename);
+							output << processSubShader("../Shared/Resources/Shaders/" + includeFilename);
 							continue;
 						}
 					}
