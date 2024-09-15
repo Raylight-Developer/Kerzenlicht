@@ -22,7 +22,7 @@ KL::Renderer::Renderer() {
 	render_aspect_ratio = u_to_d(render_resolution.x) / u_to_d(render_resolution.y);
 
 	camera_move_sensitivity = 0.75;
-	camera_view_sensitivity = 2.5;
+	camera_view_sensitivity = 15.0;
 	keys = vector(348, false);
 	current_mouse = dvec2(display_resolution) / 2.0;
 	last_mouse = dvec2(display_resolution) / 2.0;
@@ -33,6 +33,8 @@ KL::Renderer::Renderer() {
 	last_time = 0.0;
 
 	render_mode = Mode::PATHTRACING;
+	direct_render = true;
+	display_filter = GL_NEAREST; // GL_LINEAR for no filtering
 }
 
 void KL::Renderer::f_pipeline() {
@@ -103,6 +105,20 @@ void KL::Renderer::f_frameUpdate() {
 		window_time -= 1.0;
 		frame_counter = 0;
 	}
+}
+
+uvec2 KL::Renderer::f_res() const {
+	if (direct_render) {
+		return display_resolution;
+	}
+	return render_resolution;
+}
+
+dvec1 KL::Renderer::f_aspectRatio() const {
+	if (direct_render) {
+		return display_aspect_ratio;
+	}
+	return render_aspect_ratio;
 }
 
 void KL::Renderer::f_guiLoop() {
@@ -191,6 +207,7 @@ void KL::Renderer::exit() {
 void KL::Renderer::initGlfw() {
 	glfwInit();
 
+	glfwWindowHint(GLFW_MAXIMIZED, GLFW_TRUE);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
@@ -293,6 +310,12 @@ void KL::Renderer::glfwFramebufferSize(GLFWwindow* window, int width, int height
 	instance->current_mouse = dvec2(instance->display_resolution) / 2.0;
 	instance->last_mouse = instance->current_mouse;
 	instance->runframe = 0;
+	if (instance->render_mode == Mode::PATHTRACING) {
+		instance->pathtracer.f_resize();
+	}
+	else if (instance->render_mode == Mode::RASTERIZATION) {
+		instance->rasterizer.f_resize();
+	}
 }
 
 void KL::Renderer::glfwMouseButton(GLFWwindow* window, int button, int action, int mods) {
@@ -343,9 +366,6 @@ void KL::Renderer::glfwKey(GLFWwindow* window, int key, int scancode, int action
 		instance->pathtracer.f_recompile();
 		instance->rasterizer.f_recompile();
 	}
-	if (key == GLFW_KEY_V  && action == GLFW_PRESS) {
-		instance->pathtracer.debug = !instance->pathtracer.debug;
-	}
 	if (key == GLFW_KEY_RIGHT  && action == GLFW_PRESS) {
 		if (instance->pathtracer.data["view_layer"] < 3)
 			instance->pathtracer.data["view_layer"]++;
@@ -357,6 +377,29 @@ void KL::Renderer::glfwKey(GLFWwindow* window, int key, int scancode, int action
 			instance->pathtracer.data["view_layer"]--;
 		else
 			instance->pathtracer.data["view_layer"] = 3;
+	}
+	if (key == GLFW_KEY_V && action == GLFW_PRESS) {
+		instance->direct_render = !instance->direct_render;
+		if (instance->render_mode == Mode::PATHTRACING) {
+			instance->pathtracer.f_resize();
+		}
+		else if (instance->render_mode == Mode::RASTERIZATION) {
+			instance->rasterizer.f_resize();
+		}
+	}
+	if (key == GLFW_KEY_B && action == GLFW_PRESS) {
+		instance->pathtracer.debug = !instance->pathtracer.debug;
+		if (instance->pathtracer.data["view_layer"] == 0) {
+			instance->pathtracer.data["view_layer"] = 1;
+		}
+	}
+	if (key == GLFW_KEY_N && action == GLFW_PRESS) {
+		if (instance->display_filter == GL_LINEAR) {
+			instance->display_filter = GL_NEAREST;
+		}
+		else {
+			instance->display_filter = GL_LINEAR;
+		}
 	}
 	if (key == GLFW_KEY_M && action == GLFW_PRESS) {
 		if (instance->render_mode == Mode::PATHTRACING) {

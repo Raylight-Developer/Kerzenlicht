@@ -19,6 +19,12 @@ namespace KL {
 
 		bool reset;
 		bool debug;
+		uint sample;
+
+		uvec2 d_resolution;
+		uvec2 r_resolution;
+		vec1 d_aspect_ratio;
+		vec1 r_aspect_ratio;
 
 		unordered_map<string, GLuint> data;
 
@@ -29,6 +35,7 @@ namespace KL {
 
 		void f_recompile();
 		void f_cleanup();
+		void f_resize();
 
 		void f_render();
 	};

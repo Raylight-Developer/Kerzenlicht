@@ -26,6 +26,7 @@ uniform float current_time;
 uniform uvec2 resolution;
 uniform bool  reset;
 uniform bool  debug;
+uniform uint  current_sample;
 
 uniform uint  ray_bounces;
 uniform uint  samples_per_pixel;

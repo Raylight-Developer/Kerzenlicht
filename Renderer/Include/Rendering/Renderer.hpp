@@ -39,6 +39,8 @@ namespace KL {
 		uint64 runframe;
 
 		Mode render_mode;
+		bool direct_render;
+		GLuint display_filter;
 
 		dvec1 camera_move_sensitivity;
 		dvec1 camera_view_sensitivity;
@@ -72,7 +74,8 @@ namespace KL {
 		void f_displayLoop();
 		void f_frameUpdate();
 
-		void f_renderPathTracing();
+		uvec2 f_res() const;
+		dvec1 f_aspectRatio() const;
 
 		static void glfwFramebufferSize(GLFWwindow* window, int width, int height);
 		static void glfwMouseButton    (GLFWwindow* window, int button, int action, int mods);

@@ -5,7 +5,7 @@
 
 KL::Confirm<GLuint> fragmentShaderProgram(const string& file_path);
 KL::Confirm<GLuint> computeShaderProgram (const string& file_path);
-GLuint renderLayer(const uvec2& resolution);
+GLuint renderLayer(const uvec2& resolution, const GLuint& filter = GL_NEAREST);
 void   bindRenderLayer(const GLuint& program_id, const GLuint& unit, const GLuint& id, const string& name);
 
 bool checkShaderCompilation(const GLuint& shader, const string& shader_code);
