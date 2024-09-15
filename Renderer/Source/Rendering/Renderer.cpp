@@ -36,7 +36,6 @@ KL::Renderer::Renderer() {
 }
 
 void KL::Renderer::f_pipeline() {
-	glViewport(0, 0, display_resolution.x, display_resolution.y);
 	if (render_mode == Mode::PATHTRACING) {
 		pathtracer.f_initialize();
 	}
@@ -288,7 +287,6 @@ void KL::Renderer::systemInfo() {
 
 void KL::Renderer::glfwFramebufferSize(GLFWwindow* window, int width, int height) {
 	Renderer* instance = static_cast<Renderer*>(glfwGetWindowUserPointer(window));
-	glViewport(0, 0, width, height);
 	instance->display_resolution.x = width;
 	instance->display_resolution.y = height;
 	instance->display_aspect_ratio = u_to_d(instance->display_resolution.x) / u_to_d(instance->display_resolution.y);

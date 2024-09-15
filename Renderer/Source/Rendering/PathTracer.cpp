@@ -33,6 +33,8 @@ void KL::PathTracer::f_initialize() {
 	data["ssbo 7"] = 0;
 	data["ssbo 8"] = 0;
 
+	glViewport(0, 0, renderer->display_resolution.x, renderer->display_resolution.y);
+	glDisable(GL_DEPTH_TEST);
 	glDisable(GL_POLYGON_OFFSET_LINE);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 

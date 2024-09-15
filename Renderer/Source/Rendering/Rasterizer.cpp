@@ -7,7 +7,9 @@ KL::Rasterizer::Rasterizer(Renderer* renderer) :
 {}
 
 void KL::Rasterizer::f_initialize() {
+	glViewport(0, (renderer->display_resolution.y - renderer->render_resolution.y) / 2, renderer->render_resolution.x, renderer->render_resolution.y);
 	glEnable(GL_DEPTH_TEST);
+
 	FILE->default_camera->data->getCamera()->updateFocalAngle();
 	auto confirmation = fragmentShaderProgram("Rasterizer");
 	if (confirmation) {
