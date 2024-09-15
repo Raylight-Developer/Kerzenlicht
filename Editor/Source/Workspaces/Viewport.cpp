@@ -168,7 +168,6 @@ void GUI::WORKSPACE::Viewport::f_pipeline() {
 		gpu_data->printInfo();
 	#else
 		glEnable(GL_DEPTH_TEST);
-		FILE->default_camera->data->getCamera()->updateFocalAngle();
 		auto [compiled, id] = fragmentShaderProgram("Rasterizer");
 		renderer_data["raster_program"] = id;
 	#endif
@@ -390,8 +389,8 @@ void GUI::WORKSPACE::Viewport::paintGL() {
 
 		KL::OBJECT::DATA::Camera* camera = FILE->default_camera->data->getCamera();
 		glUniform3fv(glGetUniformLocation(raster_program, "camera_pos" ), 1, value_ptr(d_to_f(FILE->default_camera->transform.position)));
-		glUniformMatrix4fv(glGetUniformLocation(raster_program, "view_matrix"), 1, GL_FALSE, value_ptr(camera->glViewMatrix(FILE->default_camera)));
-		glUniformMatrix4fv(glGetUniformLocation(raster_program, "projection_matrix"), 1, GL_FALSE, value_ptr(camera->glProjectionMatrix(render_aspect_ratio)));
+		glUniformMatrix4fv(glGetUniformLocation(raster_program, "view_matrix"), 1, GL_FALSE, value_ptr(d_to_f(camera->glViewMatrix(FILE->default_camera))));
+		glUniformMatrix4fv(glGetUniformLocation(raster_program, "projection_matrix"), 1, GL_FALSE, value_ptr(d_to_f(camera->glProjectionMatrix(render_aspect_ratio))));
 
 		for (KL::Object* object : FILE->active_scene->pointer->objects) {
 			if (object->data->type == KL::OBJECT::DATA::Type::MESH) {
