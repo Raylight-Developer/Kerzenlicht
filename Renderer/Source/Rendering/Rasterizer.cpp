@@ -9,9 +9,9 @@ KL::Rasterizer::Rasterizer(Renderer* renderer) :
 void KL::Rasterizer::f_initialize() {
 	glEnable(GL_DEPTH_TEST);
 	FILE->default_camera->data->getCamera()->updateFocalAngle();
-	auto [compiled, id] = fragmentShaderProgram("Rasterizer");
-	if (compiled) {
-		data["raster_program"] = id;
+	auto confirmation = fragmentShaderProgram("Rasterizer");
+	if (confirmation) {
+		data["raster_program"] = confirmation.data;
 	}
 }
 
@@ -19,10 +19,10 @@ void KL::Rasterizer::f_tickUpdate() {
 }
 
 void KL::Rasterizer::f_recompile() {
-	auto [compiled, id] = fragmentShaderProgram("Rasterizer");
-	if (compiled) {
+	auto confirmation = fragmentShaderProgram("Rasterizer");
+	if (confirmation) {
 		glDeleteProgram(data["raster_program"]);
-		data["raster_program"] = id;
+		data["raster_program"] = confirmation.data;
 	}
 }
 

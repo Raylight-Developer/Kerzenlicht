@@ -157,6 +157,23 @@ namespace KL {
 			return key_to_val.size();
 		}
 	};
+
+	template <typename T>
+	struct Confirm {
+		bool confirmed;
+		T data;
+
+		Confirm() {
+			confirmed = false;
+		}
+		Confirm(const T& data) {
+			confirmed = true;
+			this->data = data;
+		}
+		explicit operator bool() const {
+			return confirmed;
+		}
+	};
 }
 // Templates
 template<typename T>

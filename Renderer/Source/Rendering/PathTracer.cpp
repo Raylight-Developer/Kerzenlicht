@@ -70,15 +70,15 @@ void KL::PathTracer::f_initialize() {
 	glVertexArrayElementBuffer(Array_Object, EBO);
 
 	{
-		auto [compiled, id] = computeShaderProgram("Compute");
-		if (compiled) {
-			data["compute_program"] = id;
+		auto confirmation = computeShaderProgram("Compute");
+		if (confirmation) {
+			data["compute_program"] =  confirmation.data;
 		}
 	}
 	{
-		auto [compiled, id] = fragmentShaderProgram("Display");
-		if (compiled) {
-			data["display_program"] = id;
+		auto confirmation = fragmentShaderProgram("Display");
+		if (confirmation) {
+			data["display_program"] =  confirmation.data;
 		}
 	}
 
@@ -116,17 +116,17 @@ void KL::PathTracer::f_tickUpdate() {
 
 void KL::PathTracer::f_recompile() {
 	{
-		auto [compiled, id] = computeShaderProgram("Compute");
-		if (compiled) {
+		auto confirmation = computeShaderProgram("Compute");
+		if (confirmation) {
 			glDeleteProgram(data["compute_program"]);
-			data["compute_program"] = id;
+			data["compute_program"] =  confirmation.data;
 		}
 	}
 	{
-		auto [compiled, id] = fragmentShaderProgram("Display");
-		if (compiled) {
+		auto confirmation = fragmentShaderProgram("Display");
+		if (confirmation) {
 			glDeleteProgram(data["display_program"]);
-			data["display_program"] = id;
+			data["display_program"] = confirmation.data;
 		}
 	}
 }

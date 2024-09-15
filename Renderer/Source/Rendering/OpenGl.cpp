@@ -3,7 +3,7 @@
 #include "Session.hpp"
 #include "Shader/Shader.hpp"
 
-tuple<bool, GLuint> fragmentShaderProgram(const string& file_path) {
+KL::Confirm<GLuint> fragmentShaderProgram(const string& file_path) {
 	GLuint shader_program = glCreateShader(GL_VERTEX_SHADER);
 
 	GLuint vert_shader = glCreateShader(GL_VERTEX_SHADER);
@@ -13,7 +13,7 @@ tuple<bool, GLuint> fragmentShaderProgram(const string& file_path) {
 	glCompileShader(vert_shader);
 
 	if (!checkShaderCompilation(vert_shader, vertex_code)) {
-		return tuple(false, 0);
+		return KL::Confirm<GLuint>();
 	}
 
 	GLuint frag_shader = glCreateShader(GL_FRAGMENT_SHADER);
@@ -23,7 +23,7 @@ tuple<bool, GLuint> fragmentShaderProgram(const string& file_path) {
 	glCompileShader(frag_shader);
 
 	if (!checkShaderCompilation(frag_shader, fragment_code)) {
-		return tuple(false, 0);
+		return  KL::Confirm<GLuint>();
 	}
 
 	shader_program = glCreateProgram();
@@ -36,10 +36,10 @@ tuple<bool, GLuint> fragmentShaderProgram(const string& file_path) {
 	glDeleteShader(vert_shader);
 	glDeleteShader(frag_shader);
 
-	return tuple(true, shader_program);
+	return KL::Confirm(shader_program);
 }
 
-tuple<bool, GLuint> computeShaderProgram(const string& file_path) {
+KL::Confirm<GLuint> computeShaderProgram(const string& file_path) {
 	GLuint shader_program;
 	string compute_code = preprocessShader("./Resources/Shaders/" + file_path + ".comp");
 	compute_code = KL::Shader::f_compileShaders(compute_code);
@@ -50,7 +50,7 @@ tuple<bool, GLuint> computeShaderProgram(const string& file_path) {
 	glCompileShader(comp_shader);
 
 	if (!checkShaderCompilation(comp_shader, compute_code)) {
-		return tuple(false, 0);
+		return KL::Confirm<GLuint>();
 	}
 
 	shader_program = glCreateProgram();
@@ -61,7 +61,7 @@ tuple<bool, GLuint> computeShaderProgram(const string& file_path) {
 
 	glDeleteShader(comp_shader);
 
-	return tuple(true, shader_program);
+	return KL::Confirm(shader_program);
 }
 
 GLuint renderLayer(const uvec2& resolution) {
@@ -137,84 +137,4 @@ void printShaderErrorWithContext(const string& shaderSource, const string& error
 	LOG -= 1;
 	LOG ENDL ENDL;
 	FLUSH;
-}
-
-GL::Array_Object::Array_Object() {
-	glGenVertexArrays(1, &ID);
-}
-
-void GL::Array_Object::f_linkAttribute(Buffer_Object& Buffer_Object, GLuint layout, GLuint numComponents, GLenum type, GLsizeiptr stride, void* offset) {
-	Buffer_Object.f_bind();
-	glVertexAttribPointer(layout, numComponents, type, GL_FALSE, stride, offset);
-	glEnableVertexAttribArray(layout);
-	Buffer_Object.f_unbind();
-}
-
-void GL::Array_Object::f_bind() {
-	glBindVertexArray(ID);
-}
-
-void GL::Array_Object::f_unbind() {
-	glBindVertexArray(0);
-}
-
-void GL::Array_Object::f_clean() {
-	glDeleteVertexArrays(1, &ID);
-}
-
-GL::Buffer_Object::Buffer_Object() {
-}
-
-void GL::Buffer_Object::f_clean() {
-	glDeleteBuffers(1, &ID);
-}
-
-void GL::Buffer_Object::f_bind() {
-	glBindBuffer(GL_ARRAY_BUFFER, ID);
-}
-
-void GL::Buffer_Object::f_unbind() {
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-}
-
-GL::SSBO::SSBO() {
-	glGenBuffers(1, &ID);
-}
-
-void GL::SSBO::f_clean() {
-	glDeleteBuffers(1, &ID);
-}
-
-void GL::SSBO::f_bind() {
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, binding_index, ID);
-}
-
-void GL::SSBO::f_unbind() {
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
-}
-
-GL::Render_Layer::Render_Layer() {
-}
-
-void GL::Render_Layer::f_clean() {
-	glDeleteTextures(1, &ID);
-}
-
-void GL::Render_Layer::f_init(const uvec2& resolution, const GLuint& format) {
-	glCreateTextures(GL_TEXTURE_2D, 1, &ID);
-	glTextureParameteri(ID, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTextureParameteri(ID, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTextureParameteri(ID, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTextureParameteri(ID, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glTextureStorage2D(ID, 1, format, resolution.x, resolution.y);
-}
-
-void GL::Render_Layer::f_bind(const GLuint& program_id, const GLuint& binding_index, const string& sampler_name) {
-	this->binding_index = binding_index;
-	glUniform1i(glGetUniformLocation(program_id, sampler_name.c_str()), binding_index);
-	glBindTextureUnit(binding_index, ID);
-}
-
-void GL::Render_Layer::f_unbind() {
-	glBindTextureUnit(binding_index, 0);
 }

@@ -33,9 +33,6 @@
     <ClCompile Include="Source\Rendering\Renderer.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Operators.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Rendering\OpenGl.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
@@ -157,9 +154,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\Rendering\Renderer.hpp">
-      <Filter>Include</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Operators.hpp">
       <Filter>Include</Filter>
     </ClInclude>
     <ClInclude Include="Include\Rendering\OpenGl.hpp">

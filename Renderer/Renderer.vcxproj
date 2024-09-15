@@ -130,7 +130,6 @@
     <ClCompile Include="Include\External\imgui-1.90\imgui_widgets.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Source\Rendering\OpenGl.cpp" />
-    <ClCompile Include="Source\Operators.cpp" />
     <ClCompile Include="Resources\glad.c" />
     <ClCompile Include="Source\Rendering\Renderer.cpp" />
   </ItemGroup>
@@ -173,7 +172,6 @@
     <ClInclude Include="Include\External\imgui-1.90\imstb_rectpack.h" />
     <ClInclude Include="Include\External\imgui-1.90\imstb_textedit.h" />
     <ClInclude Include="Include\External\imgui-1.90\imstb_truetype.h" />
-    <ClInclude Include="Include\Operators.hpp" />
     <ClInclude Include="Include\Rendering\Renderer.hpp" />
     <ClInclude Include="Include\Rendering\OpenGl.hpp" />
     <ClInclude Include="Include\Core\Render_File.hpp" />
