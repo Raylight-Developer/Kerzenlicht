@@ -78,7 +78,14 @@
 #define VRAM_R(type, count) KL::Session::getInstance().vram -= (sizeof(type) * count)
 
 #define LOG *KL::Session::getInstance().getLog()
-#define FILE KL::Session::getInstance().getFile()
 #define FLUSH KL::Session::getInstance().flushLog()
 #define COUT_S KL::Lace lace; lace <<
 #define COUT_E ; cout << lace.str()
+
+#if defined(COMPILE_EDITOR) || defined(COMPILE_GUI_SCRIPTING)
+	#define FILE static_cast<KL::Editor_File*>(KL::Session::getInstance().getFile())
+#elif defined(COMPILE_RENDERER)
+	#define FILE static_cast<KL::Render_File*>(KL::Session::getInstance().getFile())
+#else
+	#define FILE KL::Session::getInstance().getFile()
+#endif

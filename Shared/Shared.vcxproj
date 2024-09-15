@@ -49,9 +49,11 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>$(ProjectDir)\Include;$(ProjectDir)\External;$(IncludePath)</IncludePath>
+    <OutDir>$(OutDir)</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>$(ProjectDir)\Include;$(ProjectDir)\External;$(IncludePath)</IncludePath>
+    <OutDir>$(OutDir)</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -71,7 +73,8 @@
       </AdditionalLibraryDirectories>
     </Link>
     <PreLinkEvent>
-      <Command>"$(VC_ExecutablePath_x64)\lib.exe" /out:"$(OutDir)\Shared.lib" "$(IntermediateOutputPath)*.obj"</Command>
+      <Command>
+      </Command>
     </PreLinkEvent>
     <Lib />
   </ItemDefinitionGroup>
@@ -97,7 +100,8 @@
       </AdditionalLibraryDirectories>
     </Link>
     <PreLinkEvent>
-      <Command>"$(VC_ExecutablePath_x64)\lib.exe" /out:"$(OutDir)\Shared.lib" "$(IntermediateOutputPath)*.obj"</Command>
+      <Command>
+      </Command>
     </PreLinkEvent>
     <Lib />
   </ItemDefinitionGroup>

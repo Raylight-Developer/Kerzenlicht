@@ -1,18 +1,5 @@
 #include "Lace.hpp"
 
-#if defined(COMPILE_EDITOR) || defined(COMPILE_GUI_SCRIPTING)
-	#include "../../Editor/Include/Qt.hpp"
-	KL::Lace&  KL::Lace::operator<<(const QPointF& value) {
-		data << value.x() << " " << value.y();
-		return *this;
-	}
-	
-	KL::Lace&  KL::Lace::operator<<(const QString& value) {
-		data << " " << value.toStdString();
-		return *this;
-	}
-#endif
-
 KL::Lace::Lace() :
 	character(" ")
 {

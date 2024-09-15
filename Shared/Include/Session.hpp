@@ -7,13 +7,7 @@
 
 // FWD DECL OTHER
 namespace KL {
-	#ifdef COMPILE_EDITOR
-		struct Editor_File;
-	#elif COMPILE_RENDERER
-		struct Render_File;
-	#else
-		struct File;
-	#endif
+	struct File;
 	struct Lace;
 }
 
@@ -46,18 +40,8 @@ namespace KL {
 
 		void flushLog();
 
-		#ifdef COMPILE_EDITOR
-			void setFile(KL::Editor_File* pointer);
-			Editor_File* getFile();
-			Editor_File* file;
-		#elif COMPILE_RENDERER
-			void setFile(KL::Render_File* ptr);
-			Render_File* getFile();
-			Render_File* file;
-		#else
-			void setFile(KL::File* ptr);
-			File* getFile();
-			File* file;
-		#endif
+		void setFile(KL::File* ptr);
+		File* getFile();
+		File* file;
 	};
 }

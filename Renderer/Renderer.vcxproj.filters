@@ -1,10 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Include">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
-    </Filter>
     <Filter Include="Resources">
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
@@ -13,20 +9,8 @@
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
-    <Filter Include="Shared">
-      <UniqueIdentifier>{35fd0440-611e-4eb6-9790-6d628c4ae2ef}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Shared\Include">
-      <UniqueIdentifier>{1e9d1de0-685a-4980-bc42-7b56c656b3f2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Shared\Source">
-      <UniqueIdentifier>{0d7f41ec-191b-49c8-ad8e-2b0824657e02}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="External">
-      <UniqueIdentifier>{d9c973ae-b5b9-4894-87c6-d4385b82f04e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Shared\External">
-      <UniqueIdentifier>{6f28cc8d-ff25-4f73-923f-d19b764a2ea3}</UniqueIdentifier>
+    <Filter Include="Include">
+      <UniqueIdentifier>{40ebf479-bdd5-42ce-a61f-ccd9ce3574c7}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -40,110 +24,8 @@
     <ClCompile Include="Resources\glad.c">
       <Filter>Resources</Filter>
     </ClCompile>
-    <ClCompile Include="..\Shared\Source\Data_Property.cpp">
-      <Filter>Shared\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Shared\Source\Lace.cpp">
-      <Filter>Shared\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Shared\Source\Nodes.cpp">
-      <Filter>Shared\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Shared\Source\Object\Data.cpp">
-      <Filter>Shared\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Shared\Source\Object\Data\Atmosphere.cpp">
-      <Filter>Shared\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Shared\Source\Object\Data\Camera.cpp">
-      <Filter>Shared\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Shared\Source\Object\Data\Curve.cpp">
-      <Filter>Shared\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Shared\Source\Object\Data\Empty.cpp">
-      <Filter>Shared\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Shared\Source\Object\Data\Force.cpp">
-      <Filter>Shared\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Shared\Source\Object\Data\Group.cpp">
-      <Filter>Shared\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Shared\Source\Object\Data\Light.cpp">
-      <Filter>Shared\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Shared\Source\Object\Data\Mesh.cpp">
-      <Filter>Shared\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Shared\Source\Object\Data\Primitive.cpp">
-      <Filter>Shared\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Shared\Source\Object\Data\Sfx.cpp">
-      <Filter>Shared\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Shared\Source\Object\Data\Skeleton.cpp">
-      <Filter>Shared\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Shared\Source\Object\Data\Vfx.cpp">
-      <Filter>Shared\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Shared\Source\Object\Data\Volume.cpp">
-      <Filter>Shared\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Shared\Source\Object\Nodes\Compiler.cpp">
-      <Filter>Shared\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Shared\Source\Object\Nodes\Object_Nodes.cpp">
-      <Filter>Shared\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Shared\Source\Object\Object.cpp">
-      <Filter>Shared\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Shared\Source\Ops.cpp">
-      <Filter>Shared\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Shared\Source\Scene.cpp">
-      <Filter>Shared\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Shared\Source\Shader\Nodes\Shader_Nodes.cpp">
-      <Filter>Shared\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Shared\Source\Shader\Shader.cpp">
-      <Filter>Shared\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Shared\Source\File.cpp">
-      <Filter>Shared\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Shared\Source\Session.cpp">
-      <Filter>Shared\Source</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Core\Render_File.cpp">
       <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="Include\External\imgui-1.90\imgui_widgets.cpp">
-      <Filter>External</Filter>
-    </ClCompile>
-    <ClCompile Include="Include\External\imgui-1.90\imgui.cpp">
-      <Filter>External</Filter>
-    </ClCompile>
-    <ClCompile Include="Include\External\imgui-1.90\imgui_demo.cpp">
-      <Filter>External</Filter>
-    </ClCompile>
-    <ClCompile Include="Include\External\imgui-1.90\imgui_draw.cpp">
-      <Filter>External</Filter>
-    </ClCompile>
-    <ClCompile Include="Include\External\imgui-1.90\backends\imgui_impl_glfw.cpp">
-      <Filter>External</Filter>
-    </ClCompile>
-    <ClCompile Include="Include\External\imgui-1.90\backends\imgui_impl_opengl3.cpp">
-      <Filter>External</Filter>
-    </ClCompile>
-    <ClCompile Include="Include\External\imgui-1.90\imgui_tables.cpp">
-      <Filter>External</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Shared\Source\Gpu_Scene.cpp">
-      <Filter>Shared\Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\Rendering\Rasterizer.cpp">
       <Filter>Sources</Filter>
@@ -159,127 +41,13 @@
     <ClInclude Include="Include\Rendering\OpenGl.hpp">
       <Filter>Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\Shared\Include\Data_Property.hpp">
-      <Filter>Shared\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Shared\Include\Include.hpp">
-      <Filter>Shared\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Shared\Include\Lace.hpp">
-      <Filter>Shared\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Shared\Include\Nodes.hpp">
-      <Filter>Shared\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Shared\Include\Object\Data.hpp">
-      <Filter>Shared\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Shared\Include\Object\Data\Atmosphere.hpp">
-      <Filter>Shared\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Shared\Include\Object\Data\Camera.hpp">
-      <Filter>Shared\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Shared\Include\Object\Data\Curve.hpp">
-      <Filter>Shared\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Shared\Include\Object\Data\Empty.hpp">
-      <Filter>Shared\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Shared\Include\Object\Data\Force.hpp">
-      <Filter>Shared\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Shared\Include\Object\Data\Group.hpp">
-      <Filter>Shared\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Shared\Include\Object\Data\Light.hpp">
-      <Filter>Shared\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Shared\Include\Object\Data\Mesh.hpp">
-      <Filter>Shared\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Shared\Include\Object\Data\Primitive.hpp">
-      <Filter>Shared\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Shared\Include\Object\Data\Sfx.hpp">
-      <Filter>Shared\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Shared\Include\Object\Data\Skeleton.hpp">
-      <Filter>Shared\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Shared\Include\Object\Data\Vfx.hpp">
-      <Filter>Shared\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Shared\Include\Object\Data\Volume.hpp">
-      <Filter>Shared\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Shared\Include\Object\Nodes\Compiler.hpp">
-      <Filter>Shared\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Shared\Include\Object\Nodes\Object_Nodes.hpp">
-      <Filter>Shared\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Shared\Include\Object\Object.hpp">
-      <Filter>Shared\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Shared\Include\Ops.hpp">
-      <Filter>Shared\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Shared\Include\Scene.hpp">
-      <Filter>Shared\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Shared\Include\Shader\Nodes\Shader_Nodes.hpp">
-      <Filter>Shared\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Shared\Include\Shader\Shader.hpp">
-      <Filter>Shared\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Shared\Include\Shared.hpp">
-      <Filter>Shared\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Shared\Include\Session.hpp">
-      <Filter>Shared\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Shared\Include\File.hpp">
-      <Filter>Shared\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\Core\Render_File.hpp">
+    <ClInclude Include="Include\Rendering\PathTracer.hpp">
       <Filter>Include</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\External\imgui-1.90\imstb_truetype.h">
-      <Filter>External</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\External\imgui-1.90\imconfig.h">
-      <Filter>External</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\External\imgui-1.90\imgui.h">
-      <Filter>External</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\External\imgui-1.90\backends\imgui_impl_glfw.h">
-      <Filter>External</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\External\imgui-1.90\backends\imgui_impl_opengl3.h">
-      <Filter>External</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\External\imgui-1.90\imgui_internal.h">
-      <Filter>External</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\External\imgui-1.90\imstb_rectpack.h">
-      <Filter>External</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\External\imgui-1.90\imstb_textedit.h">
-      <Filter>External</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Shared\External\stb_image.h">
-      <Filter>Shared\External</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Shared\Include\Gpu_Scene.hpp">
-      <Filter>Shared\Include</Filter>
     </ClInclude>
     <ClInclude Include="Include\Rendering\Rasterizer.hpp">
       <Filter>Include</Filter>
     </ClInclude>
-    <ClInclude Include="Include\Rendering\PathTracer.hpp">
+    <ClInclude Include="Include\Core\Render_File.hpp">
       <Filter>Include</Filter>
     </ClInclude>
   </ItemGroup>

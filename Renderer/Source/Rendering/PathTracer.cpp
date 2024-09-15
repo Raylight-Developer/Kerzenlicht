@@ -42,6 +42,7 @@ void KL::PathTracer::f_initialize() {
 	data["ssbo 8"] = 0;
 
 	glViewport(0, 0, d_resolution.x, d_resolution.y);
+	glClearColor(0, 0, 0, 0);
 
 	const GLfloat vertices[16] = {
 		-1.0f, -1.0f, 0.0f, 0.0f,

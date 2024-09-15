@@ -3,10 +3,6 @@
 #include "Include.hpp"
 
 // FWD DECL OTHER
-#if defined(COMPILE_EDITOR) || defined(COMPILE_GUI_SCRIPTING)
-	class QPointF;
-	class QString;
-#endif
 
 // FWD DECL THIS
 namespace KL {
@@ -74,12 +70,6 @@ namespace KL {
 		string str() const;
 
 		// Feed directly
-
-#if defined(COMPILE_EDITOR) || defined(COMPILE_GUI_SCRIPTING)
-		Lace& operator<< (const QPointF& value);
-		Lace& operator<< (const QString& value);
-#endif
-
 		Lace& operator<< (const bool& value);
 		Lace& operator<< (const char* value);
 		Lace& operator<< (const string& value);

@@ -384,14 +384,14 @@ void KL::Editor_File::f_saveAsciiNodeTree(Lace& lace, const KL::Node_Tree* data,
 		lace NL << "┌Node [ " << j++ << " ] " << node->name;
 		lace++;
 		lace NL PTR << uptr(node);
-		lace NL << "( " << node_map[node]->node_pos << " )";
+		lace NL << "( " << p_to_d(node_map[node]->node_pos) << " )";
 		switch (node->type) {
 			case NODE::Type::CONSTRAINT: {
 				switch (static_cast<NODE::CONSTRAINT::Type>(node->sub_type)) {
-				case NODE::CONSTRAINT::Type::PARENT: {
-					lace NL << "Type CONSTRAINT :: PARENT";
-					break;
-				}
+					case NODE::CONSTRAINT::Type::PARENT: {
+						lace NL << "Type CONSTRAINT :: PARENT";
+						break;
+					}
 				}
 				break;
 			}

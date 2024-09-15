@@ -24,9 +24,8 @@ void KL::Rasterizer::f_initialize() {
 	data["EBO"] = 0;
 
 	glEnable(GL_DEPTH_TEST);
-	glPolygonOffset(-1.0, -1.0);
-
-	cout << endl << endl << r_aspect_ratio << endl << d_aspect_ratio << endl << endl;
+	glPolygonOffset(-1.0f, -1.0f);
+	glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
 
 	{
 		auto confirmation = fragmentShaderProgram("Rasterizer");

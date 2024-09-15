@@ -33,7 +33,7 @@ float f_fresnel(float cosi, float ior) {
 
 void main() {
 	if (wireframe == 1) {
-		fragColor = vec4(1.0, 0.8, 0.7, 1.0);
+		fragColor = vec4(1.0, 0.625, 0.175, 0.5);
 	}
 	else {
 		vec3 normal = normalize(fragNormal);

@@ -3,9 +3,9 @@
 #include "Shared.hpp"
 
 #include "GLFW/glfw3.h"
-#include "External/imgui-1.90/imgui.h"
-#include "External/imgui-1.90/backends/imgui_impl_glfw.h"
-#include "External/imgui-1.90/backends/imgui_impl_opengl3.h"
+#include "imgui-1.90/imgui.h"
+#include "imgui-1.90/imgui_impl_glfw.h"
+#include "imgui-1.90/imgui_impl_opengl3.h"
 
 #include "OpenGL.hpp"
 
