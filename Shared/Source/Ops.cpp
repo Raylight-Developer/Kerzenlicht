@@ -156,6 +156,7 @@ string loadFromFile(const string& file_path) {
 		in.close();
 		return contents;
 	}
+	cout << endl << endl << "ERROR" << endl << file_path;
 	throw runtime_error(to_string(errno));
 }
 
@@ -172,6 +173,7 @@ Tokens loadFileLines(const string& file_path) {
 		}
 		return line_data;
 	}
+	cout << endl << endl << "ERROR" << endl << file_path;
 	throw runtime_error(to_string(errno));
 }
 

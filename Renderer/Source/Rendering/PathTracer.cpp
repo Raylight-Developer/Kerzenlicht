@@ -90,18 +90,7 @@ void KL::PathTracer::f_initialize() {
 
 	glBindVertexArray(data["VAO"]);
 
-	{
-		auto confirmation = computeShaderProgram("Compute");
-		if (confirmation) {
-			data["compute_program"] =  confirmation.data;
-		}
-	}
-	{
-		auto confirmation = fragmentShaderProgram("Display");
-		if (confirmation) {
-			data["display_program"] =  confirmation.data;
-		}
-	}
+	f_recompile();
 
 	data["compute_layout.x"] = d_to_u(ceil(u_to_d(r_resolution.x) / 32.0));
 	data["compute_layout.y"] = d_to_u(ceil(u_to_d(r_resolution.y) / 32.0));
@@ -144,7 +133,7 @@ void KL::PathTracer::f_recompile() {
 		}
 	}
 	{
-		auto confirmation = fragmentShaderProgram("Display");
+		auto confirmation = fragmentShaderProgram("Display", "Display");
 		if (confirmation) {
 			glDeleteProgram(data["display_program"]);
 			data["display_program"] = confirmation.data;

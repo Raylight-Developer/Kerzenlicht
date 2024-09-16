@@ -93,7 +93,7 @@ GUI::WORKSPACE::Viewport::Viewport(Workspace_Viewport* parent) :
 
 	render_resolution(d_to_u(u_to_d(display_resolution)* render_scale)),
 
-	renderer_data({}),
+	data({}),
 
 	window_time(0.0),
 	frame_time(FPS_60),
@@ -109,22 +109,24 @@ GUI::WORKSPACE::Viewport::Viewport(Workspace_Viewport* parent) :
 
 void GUI::WORKSPACE::Viewport::f_displayLoop() {
 	glEnable(GL_DEPTH_TEST);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	const GLuint raster_program = renderer_data["raster_program"];
-	glUseProgram(raster_program);
+	const GLuint mesh_program = data["mesh_program"];
+	const GLuint curve_program = data["curve_program"];
+
+	glUseProgram(mesh_program);
 
 	KL::OBJECT::DATA::Camera* camera = FILE->default_camera->data->getCamera();
-	glUniform3fv(glGetUniformLocation(raster_program, "camera_pos" ), 1, value_ptr(d_to_f(FILE->default_camera->transform.position)));
-	glUniformMatrix4fv(glGetUniformLocation(raster_program, "view_matrix"), 1, GL_FALSE, value_ptr(d_to_f(camera->glViewMatrix(FILE->default_camera))));
-	glUniformMatrix4fv(glGetUniformLocation(raster_program, "projection_matrix"), 1, GL_FALSE, value_ptr(d_to_f(camera->glProjectionMatrix(display_aspect_ratio))));
+	glUniform3fv(glGetUniformLocation(mesh_program, "camera_pos" ), 1, value_ptr(d_to_f(FILE->default_camera->transform.position)));
+	glUniformMatrix4fv(glGetUniformLocation(mesh_program, "view_matrix"), 1, GL_FALSE, value_ptr(d_to_f(camera->glViewMatrix(FILE->default_camera))));
+	glUniformMatrix4fv(glGetUniformLocation(mesh_program, "projection_matrix"), 1, GL_FALSE, value_ptr(d_to_f(camera->glProjectionMatrix(display_aspect_ratio))));
 
 	for (KL::Object* object : FILE->active_scene->pointer->objects) {
 		if (object->data->type == KL::OBJECT::DATA::Type::MESH) {
-			f_renderMesh(raster_program, object);
+			f_renderMesh(mesh_program, object);
 		}
 		else if (object->data->type == KL::OBJECT::DATA::Type::GROUP) {
-			f_renderGroup(raster_program, object);
+			f_renderGroup(mesh_program, object);
 		}
 	}
 
@@ -210,15 +212,21 @@ void GUI::WORKSPACE::Viewport::f_selectObject(const dvec2& uv) { // TODO
 }
 
 void GUI::WORKSPACE::Viewport::f_pipeline() {
-	auto [compiled, id] = fragmentShaderProgram("Rasterizer");
-	renderer_data["raster_program"] = id;
+	f_recompile();
 }
 
 void GUI::WORKSPACE::Viewport::f_recompile() {
-	auto [compiled, id] = fragmentShaderProgram("Rasterizer");
-	if (compiled) {
-		glDeleteProgram(renderer_data["raster_program"]);
-		renderer_data["raster_program"] = id;
+	{
+		auto confirmation = fragmentShaderProgram("Curve", "Curve");
+		if (confirmation) {
+			data["curve_program"] = confirmation.data;
+		}
+	}
+	{
+		auto confirmation = fragmentShaderProgram("Mesh", "Mesh");
+		if (confirmation) {
+			data["mesh_program"] = confirmation.data;
+		}
 	}
 }
 
@@ -283,14 +291,14 @@ void GUI::WORKSPACE::Viewport::keyPressEvent(QKeyEvent* event) {
 void GUI::WORKSPACE::Viewport::wheelEvent(QWheelEvent* event) {
 	const QPoint scrollAmount = event->angleDelta();
 	if (scrollAmount.y() > 0) {
-		FILE->default_camera->transform.moveLocal(dvec3(0.0, 0.0, -50.0) * camera_move_sensitivity * frame_time);
+		FILE->default_camera->transform.moveLocal(dvec3(0.0, 0.0, -25.0) * camera_move_sensitivity * frame_time);
 	}
 	else {
-		FILE->default_camera->transform.moveLocal(dvec3(0.0, 0.0, 50.0) * camera_move_sensitivity * frame_time);
+		FILE->default_camera->transform.moveLocal(dvec3(0.0, 0.0,  25.0) * camera_move_sensitivity * frame_time);
 	}
 }
 
-void GUI::WORKSPACE::Viewport::f_renderMesh(const GLuint raster_program, KL::Object* object) {
+void GUI::WORKSPACE::Viewport::f_renderMesh(const GLuint& raster_program, KL::Object* object) {
 	auto vao = &gl_data[object]["vao"];
 	auto vbo = &gl_data[object]["vbo"];
 	vector<vec1>* cached_triangles = &gl_triangle_cache[uptr(object)];
@@ -338,10 +346,12 @@ void GUI::WORKSPACE::Viewport::f_renderMesh(const GLuint raster_program, KL::Obj
 	glBindVertexArray(*vao);
 
 	// Outline
+	//if (object != FILE->active_object->pointer) {
 	glEnable(GL_STENCIL_TEST);
 	glStencilFunc(GL_ALWAYS, 1, 255);
 	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 	glClear(GL_STENCIL_BUFFER_BIT);
+	//}
 
 	// Mesh
 	glEnable(GL_POLYGON_OFFSET_FILL);
@@ -356,6 +366,7 @@ void GUI::WORKSPACE::Viewport::f_renderMesh(const GLuint raster_program, KL::Obj
 	glDisable(GL_POLYGON_OFFSET_FILL);
 
 	// Stencil
+	//if (object != FILE->active_object->pointer) {
 	glStencilFunc(GL_NOTEQUAL, 1, 255);
 	glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -366,6 +377,10 @@ void GUI::WORKSPACE::Viewport::f_renderMesh(const GLuint raster_program, KL::Obj
 	glDrawArrays(GL_TRIANGLES, 0, vertex_count);
 
 	glDisable(GL_STENCIL_TEST);
+	//}
+	//else {
+	//	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	//}
 
 	// Wireframe
 	glEnable(GL_BLEND);
@@ -381,13 +396,63 @@ void GUI::WORKSPACE::Viewport::f_renderMesh(const GLuint raster_program, KL::Obj
 	glBindVertexArray(0);
 }
 
-void GUI::WORKSPACE::Viewport::f_renderGroup(const GLuint raster_program, KL::Object* object) {
+void GUI::WORKSPACE::Viewport::f_renderGroup(const GLuint& raster_program, KL::Object* object) {
 	for (KL::Object* sub_object : object->data->getGroup()->objects) {
 		sub_object->f_compileMatrix();
 		sub_object->transform_matrix *= object->transform_matrix;
 
 		f_renderMesh(raster_program, sub_object);
 	}
+}
+
+void GUI::WORKSPACE::Viewport::f_renderCurve(const GLuint& raster_program, KL::Object* object) {
+	auto vao = &gl_data[object]["VAO"];
+	auto vbo = &gl_data[object]["VBO"];
+	vector<vec1>* cached_data = &gl_triangle_cache[uptr(object)];
+	auto curve = object->data->getCurve();
+
+	if (object->cpu_update) {
+		object->cpu_update = false;
+		object->f_compileMatrix();
+	}
+	if (curve->cpu_update) {
+		curve->cpu_update = false;
+		cached_data->clear();
+
+		for (KL::OBJECT::DATA::CURVE::Spline* spline : curve->splines) {
+			for (const dvec3& handle : spline->points) {
+				cached_data->push_back(d_to_f(handle.x));
+				cached_data->push_back(d_to_f(handle.y));
+				cached_data->push_back(d_to_f(handle.z));
+			}
+		}
+
+		glDeleteVertexArrays(1, vao);
+		glDeleteBuffers(1, vbo);
+
+		glGenVertexArrays(1, vao);
+		glGenBuffers(1, vbo);
+
+		glBindVertexArray(*vao);
+		glBindBuffer(GL_ARRAY_BUFFER, *vbo);
+
+		glBufferData(GL_ARRAY_BUFFER, cached_data->size() * sizeof(vec1), cached_data->data(), GL_DYNAMIC_DRAW);
+
+		// Vertex Positions
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(vec1), (void*)0);
+		glEnableVertexAttribArray(0);
+	}
+	const GLuint point_count = ul_to_u(cached_data->size() / 8);
+
+	glUseProgram(raster_program);
+
+	glBindVertexArray(*vao);
+
+	glUniformMatrix4fv(glGetUniformLocation(raster_program, "model_matrix"), 1, GL_FALSE, value_ptr(d_to_f(object->transform_matrix)));
+
+	glDrawArrays(GL_LINE_STRIP, 0, point_count);
+
+	glBindVertexArray(0);
 }
 
 bool GUI::WORKSPACE::VIEWPORT_REALTIME::f_rayTriangleIntersection(const Ray& ray, const Triangle& tri, dvec1& ray_length) {
@@ -418,27 +483,27 @@ GLuint GUI::WORKSPACE::Viewport::renderLayer(const uvec2& resolution) {
 	return ID;
 }
 
-tuple<bool, GLuint> GUI::WORKSPACE::Viewport::fragmentShaderProgram(const string& file_path) {
+KL::Confirm<GLuint> GUI::WORKSPACE::Viewport::fragmentShaderProgram(const string& vert_file_path, const string& frag_file_path) {
 	GLuint shader_program = glCreateShader(GL_VERTEX_SHADER);
 
 	GLuint vert_shader = glCreateShader(GL_VERTEX_SHADER);
-	const string vertex_code = loadFromFile("./Resources/Shaders/" + file_path + ".vert");
+	const string vertex_code = loadFromFile("./Resources/Shaders/" + vert_file_path + ".vert");
 	const char* vertex_code_cstr = vertex_code.c_str();
 	glShaderSource(vert_shader, 1, &vertex_code_cstr, NULL);
 	glCompileShader(vert_shader);
 
 	if (!checkShaderCompilation(vert_shader, vertex_code)) {
-		return tuple(false, 0);
+		return KL::Confirm<GLuint>();
 	}
 
 	GLuint frag_shader = glCreateShader(GL_FRAGMENT_SHADER);
-	const string fragment_code = loadFromFile("./Resources/Shaders/" + file_path + ".frag");
+	const string fragment_code = loadFromFile("./Resources/Shaders/" + frag_file_path + ".frag");
 	const char* fragment_code_cstr = fragment_code.c_str();
 	glShaderSource(frag_shader, 1, &fragment_code_cstr, NULL);
 	glCompileShader(frag_shader);
 
 	if (!checkShaderCompilation(frag_shader, fragment_code)) {
-		return tuple(false, 0);
+		return  KL::Confirm<GLuint>();
 	}
 
 	shader_program = glCreateProgram();
@@ -451,10 +516,10 @@ tuple<bool, GLuint> GUI::WORKSPACE::Viewport::fragmentShaderProgram(const string
 	glDeleteShader(vert_shader);
 	glDeleteShader(frag_shader);
 
-	return tuple(true, shader_program);
+	return KL::Confirm(shader_program);
 }
 
-tuple<bool, GLuint> GUI::WORKSPACE::Viewport::computeShaderProgram(const string& file_path) {
+KL::Confirm<GLuint> GUI::WORKSPACE::Viewport::computeShaderProgram(const string& file_path) {
 	GLuint shader_program;
 	string compute_code = preprocessShader("./Resources/Shaders/" + file_path + ".comp");
 	compute_code = KL::Shader::f_compileShaders(compute_code);
@@ -465,7 +530,7 @@ tuple<bool, GLuint> GUI::WORKSPACE::Viewport::computeShaderProgram(const string&
 	glCompileShader(comp_shader);
 
 	if (!checkShaderCompilation(comp_shader, compute_code)) {
-		return tuple(false, 0);
+		return KL::Confirm<GLuint>();
 	}
 
 	shader_program = glCreateProgram();
@@ -476,7 +541,7 @@ tuple<bool, GLuint> GUI::WORKSPACE::Viewport::computeShaderProgram(const string&
 
 	glDeleteShader(comp_shader);
 
-	return tuple(true, shader_program);
+	return KL::Confirm(shader_program);
 }
 
 void GUI::WORKSPACE::Viewport::bindRenderLayer(const GLuint& program_id, const GLuint& unit, const GLuint& id, const string& name) {

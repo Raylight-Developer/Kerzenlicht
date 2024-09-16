@@ -6,5 +6,6 @@ KL::OBJECT::DATA::CURVE::Spline::Spline() {
 }
 
 KL::OBJECT::DATA::Curve::Curve() {
-	splines = vector<CURVE::Spline>();
+	splines = vector<CURVE::Spline*>();
+	cpu_update = true;
 }

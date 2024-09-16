@@ -22,7 +22,8 @@ namespace KL::OBJECT::DATA {
 	}
 
 	struct Curve {
-		vector<CURVE::Spline> splines;
+		vector<CURVE::Spline*> splines;
+		bool cpu_update;
 
 		Curve();
 	};

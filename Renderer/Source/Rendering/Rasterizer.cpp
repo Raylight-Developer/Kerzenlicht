@@ -33,13 +33,13 @@ void KL::Rasterizer::f_initialize() {
 	glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
 
 	{
-		auto confirmation = fragmentShaderProgram("Rasterizer");
+		auto confirmation = fragmentShaderProgram("Mesh", "Mesh");
 		if (confirmation) {
 			data["raster_program"] = confirmation.data;
 		}
 	}
 	{
-		auto confirmation = fragmentShaderProgram("Raster_Display");
+		auto confirmation = fragmentShaderProgram("Raster_Display", "Raster_Display");
 		if (confirmation) {
 			data["display_program"] = confirmation.data;
 		}
@@ -109,13 +109,13 @@ void KL::Rasterizer::f_tickUpdate() {
 
 void KL::Rasterizer::f_recompile() {
 	{
-		auto confirmation = fragmentShaderProgram("Rasterizer");
+		auto confirmation = fragmentShaderProgram("Mesh", "Mesh");
 		if (confirmation) {
 			data["raster_program"] = confirmation.data;
 		}
 	}
 	{
-		auto confirmation = fragmentShaderProgram("Raster_Display");
+		auto confirmation = fragmentShaderProgram("Raster_Display", "Raster_Display");
 		if (confirmation) {
 			data["display_program"] = confirmation.data;
 		}
@@ -284,12 +284,12 @@ void KL::Rasterizer::f_renderMesh(const GLuint raster_program, KL::Object* objec
 	glBindVertexArray(*vao);
 
 	// Outline
-	if (object != FILE->active_object->pointer) {
+	//if (object != FILE->active_object->pointer) {
 		glEnable(GL_STENCIL_TEST);
 		glStencilFunc(GL_ALWAYS, 1, 255);
 		glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 		glClear(GL_STENCIL_BUFFER_BIT);
-	}
+	//}
 
 	// Mesh
 	glEnable(GL_POLYGON_OFFSET_FILL);
@@ -304,7 +304,7 @@ void KL::Rasterizer::f_renderMesh(const GLuint raster_program, KL::Object* objec
 	glDisable(GL_POLYGON_OFFSET_FILL);
 
 	// Stencil
-	if (object != FILE->active_object->pointer) {
+	//if (object != FILE->active_object->pointer) {
 		glStencilFunc(GL_NOTEQUAL, 1, 255);
 		glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -315,7 +315,10 @@ void KL::Rasterizer::f_renderMesh(const GLuint raster_program, KL::Object* objec
 		glDrawArrays(GL_TRIANGLES, 0, vertex_count);
 
 		glDisable(GL_STENCIL_TEST);
-	}
+	//}
+	//else {
+	//	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	//}
 
 	// Wireframe
 	glEnable(GL_BLEND);

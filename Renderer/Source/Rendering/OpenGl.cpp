@@ -3,11 +3,11 @@
 #include "Session.hpp"
 #include "Shader/Shader.hpp"
 
-KL::Confirm<GLuint> fragmentShaderProgram(const string& file_path) {
+KL::Confirm<GLuint> fragmentShaderProgram(const string& vert_file_path, const string& frag_file_path) {
 	GLuint shader_program = glCreateShader(GL_VERTEX_SHADER);
 
 	GLuint vert_shader = glCreateShader(GL_VERTEX_SHADER);
-	const string vertex_code = loadFromFile("./Resources/Shaders/" + file_path + ".vert");
+	const string vertex_code = loadFromFile("./Resources/Shaders/" + vert_file_path + ".vert");
 	const char* vertex_code_cstr = vertex_code.c_str();
 	glShaderSource(vert_shader, 1, &vertex_code_cstr, NULL);
 	glCompileShader(vert_shader);
@@ -17,7 +17,7 @@ KL::Confirm<GLuint> fragmentShaderProgram(const string& file_path) {
 	}
 
 	GLuint frag_shader = glCreateShader(GL_FRAGMENT_SHADER);
-	const string fragment_code = loadFromFile("./Resources/Shaders/" + file_path + ".frag");
+	const string fragment_code = loadFromFile("./Resources/Shaders/" + frag_file_path + ".frag");
 	const char* fragment_code_cstr = fragment_code.c_str();
 	glShaderSource(frag_shader, 1, &fragment_code_cstr, NULL);
 	glCompileShader(frag_shader);

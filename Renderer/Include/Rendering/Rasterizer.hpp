@@ -36,5 +36,6 @@ namespace KL {
 		void f_render();
 		void f_renderMesh(const GLuint raster_program, KL::Object* object);
 		void f_renderGroup(const GLuint raster_program, KL::Object* object);
+		void f_renderCurve(const GLuint raster_program, KL::Object* object);
 	};
 }

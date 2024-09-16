@@ -1,9 +1,10 @@
 #version 460
-out vec4 fragColor;
 
 in vec2 fragUV;
 in vec3 fragPos;
 in vec3 fragNormal;
+
+out vec4 fragColor;
 
 uniform vec3 camera_pos;
 uniform uint wireframe;
@@ -37,7 +38,7 @@ void main() {
 		fragColor = vec4(1.0, 0.625, 0.175, 0.5);
 	}
 	else if (stencil == 1) {
-		fragColor = vec4(0.175, 1.0, 0.625, 1.0);
+		fragColor = vec4(0.625, 1.0, 0.175, 1.0);
 	}
 	else {
 		vec3 normal = normalize(fragNormal);
@@ -48,7 +49,7 @@ void main() {
 		float fresnel = f_fresnel(cosi, 1.5);
 		vec3  fresnel_color = vec3(1.0 - pow(fresnel, 0.6));
 
-		vec3 lambert = (f_lambert(normalize(vec3(1,1,1)), vec3(1), vec3(1)) * 0.8 + 0.2);
+		vec3 lambert = (f_lambert(vec3(0.577350269), vec3(1), vec3(1)) * 0.8 + 0.2);
 
 		vec3 color = fresnel_color * lambert;
 		fragColor = vec4(color, 1.0);

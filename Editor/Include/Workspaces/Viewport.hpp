@@ -82,7 +82,7 @@ namespace GUI {
 			unordered_map<uint64, vector<vec1>> gl_triangle_cache;
 			vector<vec1> gl_triangles;
 
-			unordered_map<string, GLuint> renderer_data;
+			unordered_map<string, GLuint> data;
 			unordered_map<KL::Object*, unordered_map<string, GLuint>> gl_data;
 
 			uint   frame_counter;
@@ -130,12 +130,13 @@ namespace GUI {
 			void keyPressEvent(QKeyEvent* event) override;
 			void wheelEvent(QWheelEvent* event) override;
 
-			void f_renderMesh(const GLuint raster_program, KL::Object* object);
-			void f_renderGroup(const GLuint raster_program, KL::Object* object);
+			void f_renderMesh(const GLuint& raster_program, KL::Object* object);
+			void f_renderGroup(const GLuint& raster_program, KL::Object* object);
+			void f_renderCurve(const GLuint& raster_program, KL::Object* object);
 
 			GLuint renderLayer(const uvec2& resolution);
-			tuple<bool, GLuint> fragmentShaderProgram(const string& file_path);
-			tuple<bool, GLuint> computeShaderProgram(const string& file_path);
+			KL::Confirm<GLuint> fragmentShaderProgram(const string& vert_file_path, const string& frag_file_path);
+			KL::Confirm<GLuint> computeShaderProgram(const string& file_path);
 			void bindRenderLayer(const GLuint& program_id, const GLuint& unit, const GLuint& id, const string& name);
 			bool checkShaderCompilation(const GLuint& shader, const string& shader_code);
 			bool checkProgramLinking(const GLuint& program);
