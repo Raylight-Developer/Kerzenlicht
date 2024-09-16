@@ -138,3 +138,18 @@ void printShaderErrorWithContext(const string& shaderSource, const string& error
 	LOG ENDL ENDL;
 	FLUSH;
 }
+
+template <typename T>
+GLuint ssboBinding(const GLuint& binding, const GLuint& size, const vector<T>& data) {
+	GLuint buffer;
+	glGenBuffers(1, &buffer);
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, buffer);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, size, data.data(), GL_STATIC_DRAW);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, binding, buffer);
+	return buffer;
+}
+
+template GLuint ssboBinding<KL::GPU_Triangle>(const GLuint&, const GLuint&, const vector<KL::GPU_Triangle>&);
+template GLuint ssboBinding<KL::GPU_Texture>(const GLuint&, const GLuint&, const vector<KL::GPU_Texture>&);
+template GLuint ssboBinding<KL::GPU_BVH>(const GLuint&, const GLuint&, const vector<KL::GPU_BVH>&);
+template GLuint ssboBinding<uint>(const GLuint&, const GLuint&, const vector<uint>&);

@@ -99,10 +99,10 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(SolutionDir)\Shared\External;$(SolutionDir)\Shared\Include;$(ProjectDir)\Include;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)\Include;$(SolutionDir)\Shared\Include;$(SolutionDir)\Renderer\Include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(SolutionDir)\Shared\External;$(SolutionDir)\Shared\Include;$(ProjectDir)\Include;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)\Include;$(SolutionDir)\Shared\Include;$(SolutionDir)\Renderer\Include;$(IncludePath)</IncludePath>
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Label="Vcpkg" />
@@ -148,7 +148,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;COMPILE_EDITOR;LOG0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Programs\Coding\Lib\python 3.11\include;C:\Programs\Coding\Lib\pybind 2.11.1\include;C:\Programs\Coding\Lib\glm 0.9.9.8;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Programs\Coding\Lib\pybind 2.11.1\include;C:\Programs\Coding\Lib\python 3.11\include;C:\Programs\Coding\Lib\imgui-1.90\include;C:\Programs\Coding\Lib\glfw-3.3.8\include;C:\Programs\Coding\Lib\glm 0.9.9.8;C:\Programs\Coding\Lib\glad</AdditionalIncludeDirectories>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <OpenMPSupport>true</OpenMPSupport>
@@ -174,7 +174,7 @@
       <SDLCheck>false</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;COMPILE_EDITOR;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Programs\Coding\Lib\python 3.11\include;C:\Programs\Coding\Lib\pybind 2.11.1\include;C:\Programs\Coding\Lib\glm 0.9.9.8;C:\Programs\Coding\Lib\glfw-3.3.8;C:\Programs\Coding\Lib\glad;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Programs\Coding\Lib\pybind 2.11.1\include;C:\Programs\Coding\Lib\python 3.11\include;C:\Programs\Coding\Lib\imgui-1.90\include;C:\Programs\Coding\Lib\glfw-3.3.8\include;C:\Programs\Coding\Lib\glm 0.9.9.8;C:\Programs\Coding\Lib\glad</AdditionalIncludeDirectories>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <OpenMPSupport>true</OpenMPSupport>

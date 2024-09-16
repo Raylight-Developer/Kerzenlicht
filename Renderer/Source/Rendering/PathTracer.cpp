@@ -118,10 +118,10 @@ void KL::PathTracer::f_tickUpdate() {
 	glDeleteBuffers(1, &data["ssbo 7"]);
 	glDeleteBuffers(1, &data["ssbo 8"]);
 
-	data["ssbo 5"] = ssboBinding(5, ul_to_u(gpu_data->trianglesSize())  , gpu_data->triangles.data());
-	data["ssbo 6"] = ssboBinding(6, ul_to_u(gpu_data->bvhNodesSize())   , gpu_data->bvh_nodes.data());
-	data["ssbo 7"] = ssboBinding(7, ul_to_u(gpu_data->texturesSize())   , gpu_data->textures.data());
-	data["ssbo 8"] = ssboBinding(8, ul_to_u(gpu_data->textureDataSize()), gpu_data->texture_data.data());
+	data["ssbo 5"] = ssboBinding(5, ul_to_u(gpu_data->trianglesSize())  , gpu_data->triangles);
+	data["ssbo 6"] = ssboBinding(6, ul_to_u(gpu_data->bvhNodesSize())   , gpu_data->bvh_nodes);
+	data["ssbo 7"] = ssboBinding(7, ul_to_u(gpu_data->texturesSize())   , gpu_data->textures);
+	data["ssbo 8"] = ssboBinding(8, ul_to_u(gpu_data->textureDataSize()), gpu_data->texture_data);
 }
 
 void KL::PathTracer::f_recompile() {

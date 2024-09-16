@@ -164,6 +164,7 @@ namespace KL {
 		T data;
 
 		Confirm() {
+			data = T();
 			confirmed = false;
 		}
 		Confirm(const T& data) {

@@ -2,7 +2,7 @@
 
 #include "Workspaces/Manager.hpp"
 
-//#define PATH_TRACING true
+//#include "Rendering/Renderer.hpp"
 
 GUI::WORKSPACE::Timeline::Timeline(Workspace_Viewport* parent) :
 	GUI::Linear_Contents(parent, QBoxLayout::Direction::LeftToRight),
@@ -77,12 +77,31 @@ GUI::WORKSPACE::Viewport::Viewport(Workspace_Viewport* parent) :
 {
 	setSizePolicy(QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Expanding);
 	setContentsMargins(0, 0, 0, 0);
+
+	glfw_thread = new Render_Thread();
+	glfw_thread->start();
+	glfw_thread->wait();
+
+	glfw_window = QWindow::fromWinId(reinterpret_cast<WId>(glfw_thread->hwnd));
+	glfw_widget = QWidget::createWindowContainer(glfw_window, this);
+	glfw_window->setFlags(Qt::FramelessWindowHint);
+
+	addWidget(glfw_widget);
 }
 
-GUI::WORKSPACE::Render_Thread::Render_Thread() {
-
+GUI::WORKSPACE::Viewport::~Viewport() {
+	glfw_thread->requestInterruption();
+	glfw_thread->quit();
+	glfw_thread->wait();
+	delete glfw_thread;
+	delete glfw_widget;
+	delete glfw_window;
 }
+
+GUI::WORKSPACE::Render_Thread::Render_Thread() {}//:
+//	renderer(new KL::Renderer())
+//{}
 
 void GUI::WORKSPACE::Render_Thread::run() {
-
+	//renderer->init();
 }

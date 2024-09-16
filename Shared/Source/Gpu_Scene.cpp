@@ -1,12 +1,6 @@
 ﻿#include "Gpu_Scene.hpp"
 
-#ifdef COMPILE_EDITOR
-	#include "Core/Editor_File.hpp"
-#elif COMPILE_RENDERER
-	#include "Core/Render_File.hpp"
-#else
-	#include "File.hpp"
-#endif
+#include "File.hpp"
 
 #include "Session.hpp"
 

@@ -45,10 +45,10 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(SolutionDir)\Shared\External;$(SolutionDir)\Shared\Include;$(ProjectDir)\Include;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)\Include;$(SolutionDir)\Shared\Include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(SolutionDir)\Shared\External;$(SolutionDir)\Shared\Include;$(ProjectDir)\Include;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)\Include;$(SolutionDir)\Shared\Include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -56,7 +56,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;COMPILE_RENDERER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Programs\Coding\Lib\glad;C:\Programs\Coding\Lib\glm 0.9.9.8;$(ProjectDir)\Include\External\imgui-1.90;C:\Programs\Coding\Lib\glfw-3.3.8\include;C:\Programs\Coding\Lib\imgui-1.90\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Programs\Coding\Lib\imgui-1.90\include;C:\Programs\Coding\Lib\glfw-3.3.8\include;C:\Programs\Coding\Lib\glm 0.9.9.8;C:\Programs\Coding\Lib\glad;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
@@ -85,7 +85,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
-      <AdditionalIncludeDirectories>C:\Programs\Coding\Lib\glad;C:\Programs\Coding\Lib\glm 0.9.9.8;$(ProjectDir)\Include\External\imgui-1.90;C:\Programs\Coding\Lib\glfw-3.3.8\include;C:\Programs\Coding\Lib\imgui-1.90\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Programs\Coding\Lib\imgui-1.90\include;C:\Programs\Coding\Lib\glfw-3.3.8\include;C:\Programs\Coding\Lib\glm 0.9.9.8;C:\Programs\Coding\Lib\glad;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>

@@ -13,12 +13,16 @@ namespace GUI {
 		struct Workspace_Manager;
 	}
 }
+namespace KL {
+	//struct Renderer;
+}
 
 // FWD DECL THIS
 namespace GUI {
 	namespace WORKSPACE {
 		struct Workspace_Viewport;
 		struct Viewport;
+		class Render_Thread;
 	}
 }
 
@@ -46,16 +50,21 @@ namespace GUI {
 			~Workspace_Viewport();
 		};
 
-		struct Viewport : QWidget {
+		struct Viewport : Linear_Contents {
 			Workspace_Viewport* parent;
+			Render_Thread* glfw_thread;
+			QWindow* glfw_window;
+			QWidget* glfw_widget;
 
 			Viewport(Workspace_Viewport* parent);
+			~Viewport();
 		};
 
 		class Render_Thread : public QThread {
 			Q_OBJECT
 		public:
 			HWND hwnd;
+			//KL::Renderer* renderer;
 
 			Render_Thread();
 
