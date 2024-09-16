@@ -98,64 +98,17 @@ GUI::WORKSPACE::Viewport::Viewport(Workspace_Viewport* parent) :
 	window_time(0.0),
 	frame_time(FPS_60),
 
-	panning(false),
-
 	view_layer(0)
 {
-	setObjectName("Viewport_Realtime");
+	setObjectName("Viewport");
+
+	camera_move_sensitivity = 0.75;
+	camera_view_sensitivity = 100.0;
+	camera_orbit_sensitivity = 150.0;
 }
 
-void GUI::WORKSPACE::Viewport::f_pipeline() {
+void GUI::WORKSPACE::Viewport::f_displayLoop() {
 	glEnable(GL_DEPTH_TEST);
-	auto [compiled, id] = fragmentShaderProgram("Rasterizer");
-	renderer_data["raster_program"] = id;
-}
-
-void GUI::WORKSPACE::Viewport::f_uploadData() {
-
-}
-
-void GUI::WORKSPACE::Viewport::f_tickUpdate() {
-	if (FILE->active_scene->pointer) {
-		for (KL::Object* object : FILE->active_scene->pointer->objects) {
-			if (object and object->node_tree) {
-				object->node_tree->exec(&frame_time);
-				object->cpu_update = true;
-			}
-		}
-	}
-}
-
-void GUI::WORKSPACE::Viewport::f_selectObject(const dvec2& uv) { // TODO fix slight missalignment
-
-}
-
-void GUI::WORKSPACE::Viewport::f_recompileShaders() {
-	auto [compiled, id] = fragmentShaderProgram("Rasterizer");
-	if (compiled) {
-		glDeleteProgram(renderer_data["raster_program"]);
-		renderer_data["raster_program"] = id;
-	}
-}
-
-void GUI::WORKSPACE::Viewport::initializeGL() {
-	initializeOpenGLFunctions();
-	glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
-	glViewport(0, 0, render_resolution.x, render_resolution.y);
-
-	f_pipeline();
-	start_time = chrono::high_resolution_clock::now();
-}
-
-void GUI::WORKSPACE::Viewport::paintGL() {
-
-	current_time = chrono::high_resolution_clock::now();
-	frame_time = chrono::duration<double>(current_time - last_time).count();
-	last_time = current_time;
-	window_time += frame_time;
-
-	f_tickUpdate();
-
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
 	const GLuint raster_program = renderer_data["raster_program"];
@@ -175,9 +128,21 @@ void GUI::WORKSPACE::Viewport::paintGL() {
 		}
 	}
 
-	frame_counter++;
-	runframe++;
+	glDisable(GL_DEPTH_TEST);
+}
 
+void GUI::WORKSPACE::Viewport::f_tickUpdate() {
+	if (FILE->active_scene->pointer) {
+		for (KL::Object* object : FILE->active_scene->pointer->objects) {
+			if (object and object->node_tree) {
+				object->node_tree->exec(&frame_time);
+				object->cpu_update = true;
+			}
+		}
+	}
+}
+
+void GUI::WORKSPACE::Viewport::f_guiUpdate() {
 	if (window_time > 1.0) {
 		frame_count = frame_counter;
 		window_time = 0.0;
@@ -189,6 +154,93 @@ void GUI::WORKSPACE::Viewport::paintGL() {
 		}
 		parent->timeline->info->setText("FPS: " + QString::number(frame_count) + " | Frame: 0 | Delta: " + QString::number(frame_time) + "ms | Selected: " + QString::fromStdString(selected));
 	}
+}
+
+void GUI::WORKSPACE::Viewport::f_inputLoop() {
+	if (inputs[Qt::Key::Key_D]) {
+		FILE->default_camera->transform.moveLocal(dvec3(1.0, 0.0, 0.0)* camera_move_sensitivity * frame_time);
+	}
+	if (inputs[Qt::Key::Key_A]) {
+		FILE->default_camera->transform.moveLocal(dvec3(-1.0, 0.0, 0.0)* camera_move_sensitivity * frame_time);
+	}
+	if (inputs[Qt::Key::Key_E] || inputs[Qt::Key::Key_Space]) {
+		FILE->default_camera->transform.moveLocal(dvec3(0.0, 1.0, 0.0)* camera_move_sensitivity * frame_time);
+	}
+	if (inputs[Qt::Key::Key_Q] || inputs[Qt::Key::Key_Control]) {
+		FILE->default_camera->transform.moveLocal(dvec3(0.0, -1.0, 0.0)* camera_move_sensitivity * frame_time);
+	}
+	if (inputs[Qt::Key::Key_W]) {
+		FILE->default_camera->transform.moveLocal(dvec3(0.0, 0.0, -1.0)* camera_move_sensitivity * frame_time);
+	}
+	if (inputs[Qt::Key::Key_S]) {
+		FILE->default_camera->transform.moveLocal(dvec3(0.0, 0.0, 1.0)* camera_move_sensitivity * frame_time);
+	}
+	if (inputs[Qt::Key::Key_Alt] and inputs[Qt::MouseButton::LeftButton]) {
+		const dvec1 xoffset = (last_mouse.x - current_mouse.x) * frame_time * camera_orbit_sensitivity;
+		const dvec1 yoffset = (last_mouse.y - current_mouse.y) * frame_time * camera_orbit_sensitivity;
+
+		FILE->default_camera->transform.orbit(dvec3(0), dvec3(yoffset, xoffset, 0.0));
+
+		last_mouse = current_mouse;
+	}
+	else if (inputs[Qt::MouseButton::RightButton]) {
+		const dvec1 xoffset = (last_mouse.x - current_mouse.x) * frame_time * camera_view_sensitivity;
+		const dvec1 yoffset = (last_mouse.y - current_mouse.y) * frame_time * camera_view_sensitivity;
+
+		FILE->default_camera->transform.rotate(dvec3(yoffset, xoffset, 0.0));
+
+		last_mouse = current_mouse;
+	}
+}
+
+void GUI::WORKSPACE::Viewport::f_timings() {
+	current_time = chrono::high_resolution_clock::now();
+	frame_time = chrono::duration<double>(current_time - last_time).count();
+	last_time = current_time;
+	window_time += frame_time;
+}
+
+void GUI::WORKSPACE::Viewport::f_frameUpdate() {
+	frame_counter++;
+	runframe++;
+}
+
+void GUI::WORKSPACE::Viewport::f_selectObject(const dvec2& uv) { // TODO
+
+}
+
+void GUI::WORKSPACE::Viewport::f_pipeline() {
+	auto [compiled, id] = fragmentShaderProgram("Rasterizer");
+	renderer_data["raster_program"] = id;
+}
+
+void GUI::WORKSPACE::Viewport::f_recompile() {
+	auto [compiled, id] = fragmentShaderProgram("Rasterizer");
+	if (compiled) {
+		glDeleteProgram(renderer_data["raster_program"]);
+		renderer_data["raster_program"] = id;
+	}
+}
+
+void GUI::WORKSPACE::Viewport::initializeGL() {
+	initializeOpenGLFunctions();
+	glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
+	glViewport(0, 0, render_resolution.x, render_resolution.y);
+
+	f_pipeline();
+	start_time = chrono::high_resolution_clock::now();
+}
+
+void GUI::WORKSPACE::Viewport::paintGL() {
+	f_timings();
+	f_inputLoop();
+	f_tickUpdate();
+
+	f_displayLoop();
+
+	f_frameUpdate();
+	f_guiUpdate();
+
 	requestUpdate();
 }
 
@@ -201,35 +253,41 @@ void GUI::WORKSPACE::Viewport::resizeGL(int w, int h) {
 }
 
 void GUI::WORKSPACE::Viewport::mouseReleaseEvent(QMouseEvent* event) {
-	panning = false;
+	inputs[event->button()] = false;
 }
 
 void GUI::WORKSPACE::Viewport::mousePressEvent(QMouseEvent* event) {
-	if (event->modifiers() == Qt::KeyboardModifier::AltModifier) {
-		panning = true;
-		last_mouse = p_to_d(event->pos());
-	}
-	else {
+	inputs[event->button()] = true;
+	last_mouse = p_to_d(event->pos());
+
+	if (event->button() == Qt::MouseButton::LeftButton) {
 		f_selectObject(dvec2(1.0, -1.0) * (dvec2(event->pos().x(), event->pos().y()) - 1.0 - dvec2(width(), height()) / 2.0) / max(i_to_d(width()), i_to_d(height())));
 	}
 }
 
 void GUI::WORKSPACE::Viewport::mouseMoveEvent(QMouseEvent* event) {
-	if (panning) {
-		dvec2 delta = (p_to_d(event->pos()) - last_mouse) * 0.25;
+	current_mouse = p_to_d(event->pos());
+}
 
-		FILE->default_camera->transform.orbit(dvec3(0), dvec2(-delta.y, -delta.x));
-		last_mouse = p_to_d(event->pos());
-	}
+void GUI::WORKSPACE::Viewport::keyReleaseEvent(QKeyEvent* event) {
+	inputs[event->key()] = false;
 }
 
 void GUI::WORKSPACE::Viewport::keyPressEvent(QKeyEvent* event) {
+	inputs[event->key()] = true;
 	if (event->key() == Qt::Key::Key_R) {
-		f_recompileShaders();
+		f_recompile();
 	}
 }
 
-void GUI::WORKSPACE::Viewport::wheelEvent(QWheelEvent*) {
+void GUI::WORKSPACE::Viewport::wheelEvent(QWheelEvent* event) {
+	const QPoint scrollAmount = event->angleDelta();
+	if (scrollAmount.y() > 0) {
+		FILE->default_camera->transform.moveLocal(dvec3(0.0, 0.0, -50.0) * camera_move_sensitivity * frame_time);
+	}
+	else {
+		FILE->default_camera->transform.moveLocal(dvec3(0.0, 0.0, 50.0) * camera_move_sensitivity * frame_time);
+	}
 }
 
 void GUI::WORKSPACE::Viewport::f_renderMesh(const GLuint raster_program, KL::Object* object) {
@@ -279,40 +337,46 @@ void GUI::WORKSPACE::Viewport::f_renderMesh(const GLuint raster_program, KL::Obj
 
 	glBindVertexArray(*vao);
 
+	// Outline
 	glEnable(GL_STENCIL_TEST);
-	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 	glStencilFunc(GL_ALWAYS, 1, 255);
-	glStencilMask(255);
+	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+	glClear(GL_STENCIL_BUFFER_BIT);
 
 	// Mesh
+	glEnable(GL_POLYGON_OFFSET_FILL);
+	glPolygonOffset(1.0f, 1.0f);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
 	glUniformMatrix4fv(glGetUniformLocation(raster_program, "model_matrix"), 1, GL_FALSE, value_ptr(d_to_f(object->transform_matrix)));
 	glUniform1ui(glGetUniformLocation(raster_program, "wireframe"), 0);
 	glUniform1ui(glGetUniformLocation(raster_program, "stencil"), 0);
-	glDisable(GL_POLYGON_OFFSET_LINE);
-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	glDrawArrays(GL_TRIANGLES, 0, vertex_count);
+
+	glDisable(GL_POLYGON_OFFSET_FILL);
 
 	// Stencil
-	//glDisable(GL_POLYGON_OFFSET_LINE);
-	//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	//
-	//glStencilFunc(GL_NOTEQUAL, 1, 255);
-	//glStencilMask(255);
-	//
-	//glUniformMatrix4fv(glGetUniformLocation(raster_program, "model_matrix"), 1, GL_FALSE, value_ptr(glm::scale(d_to_f(object->transform_matrix), vec3(1.15f))));
-	//glUniform1ui(glGetUniformLocation(raster_program, "stencil"), 1);
-	//glDrawArrays(GL_TRIANGLES, 0, vertex_count);
-	//
-	//glDisable(GL_STENCIL_TEST);
-
-	// Wireframe
-	glUniform1ui(glGetUniformLocation(raster_program, "wireframe"), 1);
-	glUniform1ui(glGetUniformLocation(raster_program, "stencil"), 0);
-	glEnable(GL_POLYGON_OFFSET_LINE);
-	glPolygonOffset(-1.0, -1.0);
+	glStencilFunc(GL_NOTEQUAL, 1, 255);
+	glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	glLineWidth(4);
+
+	glUniform1ui(glGetUniformLocation(raster_program, "wireframe"), 0);
+	glUniform1ui(glGetUniformLocation(raster_program, "stencil"), 1);
 	glDrawArrays(GL_TRIANGLES, 0, vertex_count);
 
+	glDisable(GL_STENCIL_TEST);
+
+	// Wireframe
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glLineWidth(1);
+
+	glUniform1ui(glGetUniformLocation(raster_program, "wireframe"), 1);
+	glUniform1ui(glGetUniformLocation(raster_program, "stencil"), 0);
+	glDrawArrays(GL_TRIANGLES, 0, vertex_count);
+
+	glDisable(GL_BLEND);
 
 	glBindVertexArray(0);
 }

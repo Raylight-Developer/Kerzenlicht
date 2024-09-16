@@ -7,6 +7,7 @@ in vec3 fragNormal;
 
 uniform vec3 camera_pos;
 uniform uint wireframe;
+uniform uint stencil;
 
 vec3 f_lambert(vec3 lightDir, vec3 lightColor, vec3 objectColor) {
 	float diff = max(dot(fragNormal, lightDir), 0.0);
@@ -34,6 +35,9 @@ float f_fresnel(float cosi, float ior) {
 void main() {
 	if (wireframe == 1) {
 		fragColor = vec4(1.0, 0.625, 0.175, 0.5);
+	}
+	else if (stencil == 1) {
+		fragColor = vec4(0.175, 1.0, 0.625, 1.0);
 	}
 	else {
 		vec3 normal = normalize(fragNormal);

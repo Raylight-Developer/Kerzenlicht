@@ -24,7 +24,7 @@ KL::Renderer::Renderer() {
 	camera_move_sensitivity = 0.75;
 	camera_view_sensitivity = 100.0;
 	camera_orbit_sensitivity = 150.0;
-	keys = vector(348, false);
+	inputs = vector(348, false);
 	current_mouse = dvec2(display_resolution) / 2.0;
 	last_mouse = dvec2(display_resolution) / 2.0;
 
@@ -38,21 +38,10 @@ KL::Renderer::Renderer() {
 	display_filter = GL_NEAREST; // GL_LINEAR for no filtering
 }
 
-void KL::Renderer::f_pipeline() {
-	if (render_mode == Mode::PATHTRACING) {
-		pathtracer.f_initialize();
-	}
-	else if (render_mode == Mode::RASTERIZATION) {
-		rasterizer.f_initialize();
-	}
-
-	f_displayLoop();
-}
-
 void KL::Renderer::f_displayLoop() {
 	while (!glfwWindowShouldClose(window)) {
 		f_timings();
-		f_gameLoop();
+		f_inputLoop();
 		f_tickUpdate();
 
 		if (render_mode == Mode::PATHTRACING) {
@@ -87,6 +76,77 @@ void KL::Renderer::f_tickUpdate() {
 	}
 }
 
+void KL::Renderer::f_guiLoop() {
+	ImGui_ImplOpenGL3_NewFrame();
+	ImGui_ImplGlfw_NewFrame();
+
+	ImGui::NewFrame();
+
+	ImGuiIO& io = ImGui::GetIO(); (void)io;
+
+	ImGui::Begin("Info");
+	ImGui::Text((to_string(1.0 / u_to_d(frame_count)) + "ms").c_str());
+	ImGui::Text((to_string(frame_count) + "fps").c_str());
+	ImGui::Text((to_string(runframe) + "frames").c_str());
+	ImGui::End();
+
+	ImGui::Render();
+	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+}
+
+void KL::Renderer::f_inputLoop() {
+	if (inputs[GLFW_KEY_D]) {
+		FILE->default_camera->transform.moveLocal(dvec3(1.0, 0.0, 0.0)* camera_move_sensitivity * frame_time);
+		pathtracer.reset = true;
+		runframe = 0;
+	}
+	if (inputs[GLFW_KEY_A]) {
+		FILE->default_camera->transform.moveLocal(dvec3(-1.0, 0.0, 0.0)* camera_move_sensitivity * frame_time);
+		pathtracer.reset = true;
+		runframe = 0;
+	}
+	if (inputs[GLFW_KEY_E] || inputs[GLFW_KEY_SPACE]) {
+		FILE->default_camera->transform.moveLocal(dvec3(0.0, 1.0, 0.0)* camera_move_sensitivity * frame_time);
+		pathtracer.reset = true;
+		runframe = 0;
+	}
+	if (inputs[GLFW_KEY_Q] || inputs[GLFW_KEY_LEFT_CONTROL]) {
+		FILE->default_camera->transform.moveLocal(dvec3(0.0, -1.0, 0.0)* camera_move_sensitivity * frame_time);
+		pathtracer.reset = true;
+		runframe = 0;
+	}
+	if (inputs[GLFW_KEY_W]) {
+		FILE->default_camera->transform.moveLocal(dvec3(0.0, 0.0, -1.0)* camera_move_sensitivity * frame_time);
+		pathtracer.reset = true;
+		runframe = 0;
+	}
+	if (inputs[GLFW_KEY_S]) {
+		FILE->default_camera->transform.moveLocal(dvec3(0.0, 0.0, 1.0)* camera_move_sensitivity * frame_time);
+		pathtracer.reset = true;
+		runframe = 0;
+	}
+	if (inputs[GLFW_KEY_LEFT_ALT] and inputs[GLFW_MOUSE_BUTTON_LEFT]) {
+		const dvec1 xoffset = (last_mouse.x - current_mouse.x) * frame_time * camera_orbit_sensitivity;
+		const dvec1 yoffset = (last_mouse.y - current_mouse.y) * frame_time * camera_orbit_sensitivity;
+
+		FILE->default_camera->transform.orbit(dvec3(0), dvec3(yoffset, xoffset, 0.0));
+		pathtracer.reset = true;
+		runframe = 0;
+
+		last_mouse = current_mouse;
+	}
+	else if (inputs[GLFW_MOUSE_BUTTON_RIGHT]) {
+		const dvec1 xoffset = (last_mouse.x - current_mouse.x) * frame_time * camera_view_sensitivity;
+		const dvec1 yoffset = (last_mouse.y - current_mouse.y) * frame_time * camera_view_sensitivity;
+
+		FILE->default_camera->transform.rotate(dvec3(yoffset, xoffset, 0.0));
+		pathtracer.reset = true;
+		runframe = 0;
+
+		last_mouse = current_mouse;
+	}
+}
+
 void KL::Renderer::f_timings() {
 	current_time = glfwGetTime();
 	frame_time = current_time - last_time;
@@ -108,6 +168,22 @@ void KL::Renderer::f_frameUpdate() {
 	}
 }
 
+void KL::Renderer::f_pipeline() {
+	if (render_mode == Mode::PATHTRACING) {
+		pathtracer.f_initialize();
+	}
+	else if (render_mode == Mode::RASTERIZATION) {
+		rasterizer.f_initialize();
+	}
+
+	f_displayLoop();
+}
+
+void KL::Renderer::f_recompile() {
+	pathtracer.f_recompile();
+	rasterizer.f_recompile();
+}
+
 uvec2 KL::Renderer::f_res() const {
 	if (direct_render) {
 		return display_resolution;
@@ -120,82 +196,6 @@ dvec1 KL::Renderer::f_aspectRatio() const {
 		return display_aspect_ratio;
 	}
 	return render_aspect_ratio;
-}
-
-void KL::Renderer::f_guiLoop() {
-	ImGui_ImplOpenGL3_NewFrame();
-	ImGui_ImplGlfw_NewFrame();
-
-	ImGui::NewFrame();
-
-	ImGuiIO& io = ImGui::GetIO(); (void)io;
-
-	ImGui::Begin("Info");
-	ImGui::Text((to_string(1.0 / u_to_d(frame_count)) + "ms").c_str());
-	ImGui::Text((to_string(frame_count) + "fps").c_str());
-	ImGui::Text((to_string(runframe) + "frames").c_str());
-	ImGui::End();
-
-	ImGui::Render();
-	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-}
-
-void KL::Renderer::f_gameLoop() {
-	if (keys[GLFW_KEY_D]) {
-		FILE->default_camera->transform.moveLocal(dvec3(1.0, 0.0, 0.0)* camera_move_sensitivity * frame_time);
-		pathtracer.reset = true;
-		runframe = 0;
-	}
-	if (keys[GLFW_KEY_A]) {
-		FILE->default_camera->transform.moveLocal(dvec3(-1.0, 0.0, 0.0)* camera_move_sensitivity * frame_time);
-		pathtracer.reset = true;
-		runframe = 0;
-	}
-	if (keys[GLFW_KEY_E] || keys[GLFW_KEY_SPACE]) {
-		FILE->default_camera->transform.moveLocal(dvec3(0.0, 1.0, 0.0)* camera_move_sensitivity * frame_time);
-		pathtracer.reset = true;
-		runframe = 0;
-	}
-	if (keys[GLFW_KEY_Q] || keys[GLFW_KEY_LEFT_CONTROL]) {
-		FILE->default_camera->transform.moveLocal(dvec3(0.0, -1.0, 0.0)* camera_move_sensitivity * frame_time);
-		pathtracer.reset = true;
-		runframe = 0;
-	}
-	if (keys[GLFW_KEY_W]) {
-		FILE->default_camera->transform.moveLocal(dvec3(0.0, 0.0, -1.0)* camera_move_sensitivity * frame_time);
-		pathtracer.reset = true;
-		runframe = 0;
-	}
-	if (keys[GLFW_KEY_S]) {
-		FILE->default_camera->transform.moveLocal(dvec3(0.0, 0.0, 1.0)* camera_move_sensitivity * frame_time);
-		pathtracer.reset = true;
-		runframe = 0;
-	}
-	if (keys[GLFW_KEY_LEFT_ALT] and keys[GLFW_MOUSE_BUTTON_LEFT]) {
-		const dvec1 xoffset = (last_mouse.x - current_mouse.x) * frame_time * camera_orbit_sensitivity;
-		const dvec1 yoffset = (last_mouse.y - current_mouse.y) * frame_time * camera_orbit_sensitivity;
-
-		FILE->default_camera->transform.orbit(dvec3(0), dvec3(yoffset, xoffset, 0.0));
-		pathtracer.reset = true;
-		runframe = 0;
-
-		last_mouse = current_mouse;
-	}
-	else if (keys[GLFW_MOUSE_BUTTON_RIGHT]) {
-		const dvec1 xoffset = (last_mouse.x - current_mouse.x) * frame_time * camera_view_sensitivity;
-		const dvec1 yoffset = (last_mouse.y - current_mouse.y) * frame_time * camera_view_sensitivity;
-
-		FILE->default_camera->transform.rotate(dvec3(yoffset, xoffset, 0.0));
-		pathtracer.reset = true;
-		runframe = 0;
-
-		last_mouse = current_mouse;
-	}
-}
-
-void KL::Renderer::f_recompile() {
-	pathtracer.f_recompile();
-	rasterizer.f_recompile();
 }
 
 void KL::Renderer::init() {
@@ -333,20 +333,22 @@ void KL::Renderer::glfwFramebufferSize(GLFWwindow* window, int width, int height
 void KL::Renderer::glfwMouseButton(GLFWwindow* window, int button, int action, int mods) {
 	Renderer* instance = static_cast<Renderer*>(glfwGetWindowUserPointer(window));
 	if (action == GLFW_PRESS) {
-		instance->keys[button] = true;
+		instance->inputs[button] = true;
+		double xpos, ypos;
+		glfwGetCursorPos(window, &xpos, &ypos);
+		instance->last_mouse = dvec2(xpos, ypos);
+
 		if (button == GLFW_MOUSE_BUTTON_RIGHT) {
-			double xpos, ypos;
-			glfwGetCursorPos(window, &xpos, &ypos);
-			instance->last_mouse = dvec2(xpos, ypos);
 			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 		}
 	}
 	else if (action == GLFW_RELEASE) {
-		instance->keys[button] = false;
+		instance->inputs[button] = false;
+		double xpos, ypos;
+		glfwGetCursorPos(window, &xpos, &ypos);
+		instance->last_mouse = dvec2(xpos, ypos);
+
 		if (button == GLFW_MOUSE_BUTTON_RIGHT) {
-			double xpos, ypos;
-			glfwGetCursorPos(window, &xpos, &ypos);
-			instance->last_mouse = dvec2(xpos, ypos);
 			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 		}
 	}
@@ -429,9 +431,9 @@ void KL::Renderer::glfwKey(GLFWwindow* window, int key, int scancode, int action
 		glfwSetWindowShouldClose(window, GLFW_TRUE);
 	}
 	if (action == GLFW_PRESS) {
-		instance->keys[key] = true;
+		instance->inputs[key] = true;
 	}
 	else if (action == GLFW_RELEASE) {
-		instance->keys[key] = false;
+		instance->inputs[key] = false;
 	}
 }

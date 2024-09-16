@@ -4,7 +4,13 @@
 
 KL::Rasterizer::Rasterizer(Renderer* renderer) :
 	renderer(renderer)
-{}
+{
+	d_resolution = uvec2(0);
+	d_aspect_ratio = 1.0;
+
+	r_resolution = uvec2(0);
+	r_aspect_ratio = 1.0;
+}
 
 void KL::Rasterizer::f_initialize() {
 	d_resolution = renderer->display_resolution;
@@ -24,7 +30,6 @@ void KL::Rasterizer::f_initialize() {
 	data["EBO"] = 0;
 
 	glEnable(GL_DEPTH_TEST);
-	glPolygonOffset(-1.0f, -1.0f);
 	glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
 
 	{
@@ -130,7 +135,6 @@ void KL::Rasterizer::f_cleanup() {
 	glDeleteTextures(1, &data["FBT"]);
 
 	glDisable(GL_DEPTH_TEST);
-	glDisable(GL_POLYGON_OFFSET_LINE);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 	for (KL::Object* object : FILE->active_scene->pointer->objects) {
@@ -226,7 +230,6 @@ void KL::Rasterizer::f_render() {
 	bindRenderLayer(display_program, 0, data["FBT"], "render");
 
 	glBindVertexArray(data["VAO"]);
-	glDisable(GL_POLYGON_OFFSET_LINE);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
@@ -279,18 +282,51 @@ void KL::Rasterizer::f_renderMesh(const GLuint raster_program, KL::Object* objec
 	const GLuint vertex_count = ul_to_u(cached_triangles->size() / 8);
 
 	glBindVertexArray(*vao);
+
+	// Outline
+	if (object != FILE->active_object->pointer) {
+		glEnable(GL_STENCIL_TEST);
+		glStencilFunc(GL_ALWAYS, 1, 255);
+		glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+		glClear(GL_STENCIL_BUFFER_BIT);
+	}
+
 	// Mesh
-	glDisable(GL_POLYGON_OFFSET_LINE);
+	glEnable(GL_POLYGON_OFFSET_FILL);
+	glPolygonOffset(1.0f, 1.0f);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
 	glUniformMatrix4fv(glGetUniformLocation(raster_program, "model_matrix"), 1, GL_FALSE, value_ptr(d_to_f(object->transform_matrix)));
 	glUniform1ui(glGetUniformLocation(raster_program, "wireframe"), 0);
+	glUniform1ui(glGetUniformLocation(raster_program, "stencil"), 0);
 	glDrawArrays(GL_TRIANGLES, 0, vertex_count);
+
+	glDisable(GL_POLYGON_OFFSET_FILL);
+
+	// Stencil
+	if (object != FILE->active_object->pointer) {
+		glStencilFunc(GL_NOTEQUAL, 1, 255);
+		glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		glLineWidth(4);
+
+		glUniform1ui(glGetUniformLocation(raster_program, "wireframe"), 0);
+		glUniform1ui(glGetUniformLocation(raster_program, "stencil"), 1);
+		glDrawArrays(GL_TRIANGLES, 0, vertex_count);
+
+		glDisable(GL_STENCIL_TEST);
+	}
+
 	// Wireframe
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glLineWidth(1);
 
 	glUniform1ui(glGetUniformLocation(raster_program, "wireframe"), 1);
-	glEnable(GL_POLYGON_OFFSET_LINE);
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	glUniform1ui(glGetUniformLocation(raster_program, "stencil"), 0);
 	glDrawArrays(GL_TRIANGLES, 0, vertex_count);
+
+	glDisable(GL_BLEND);
 
 	glBindVertexArray(0);
 }

@@ -10,24 +10,43 @@ KL::OBJECT::DATA::Camera::Camera() {
 	projection_v  = dvec3(0.0);
 }
 
-void KL::OBJECT::DATA::Camera::compile(KL::Scene* scene, KL::Object* object, const dvec1& aspect_ratio) {
-	const dmat4 matrix = glm::yawPitchRoll(object->transform.euler_rotation.y * DEG_RAD, object->transform.euler_rotation.x * DEG_RAD, object->transform.euler_rotation.z * DEG_RAD);
-	const dvec3 x_vector = matrix[0];
-	const dvec3 y_vector = matrix[1];
-	const dvec3 z_vector = -matrix[2];
+void KL::OBJECT::DATA::Camera::f_updateRayVectors(KL::Scene* scene, KL::Object* object) {
+	dmat4 rotation_matrix;
+	switch (object->transform.rotation_type) {
+		case KL::Rotation_Type::QUATERNION: {
+			rotation_matrix = glm::mat4_cast(object->transform.quat_rotation);
+			break;
+		}
+		case KL::Rotation_Type::XYZ: {
+			rotation_matrix = glm::yawPitchRoll(object->transform.euler_rotation.y * DEG_RAD, object->transform.euler_rotation.x * DEG_RAD, object->transform.euler_rotation.z * DEG_RAD);
+			break;
+		}
+	}
+	const dvec3 x_vector =  rotation_matrix[0];
+	const dvec3 y_vector =  rotation_matrix[1];
+	const dvec3 z_vector = -rotation_matrix[2];
 
 	const dvec1 projectionPlaneHalfWidth = tan((view_angle * DEG_RAD) / 2.0);
-	
+
 	projection_uv = object->transform.position + z_vector;
 	projection_u = normalize(cross(z_vector, y_vector)) * projectionPlaneHalfWidth * 2.0;
 	projection_v = normalize(cross(projection_u, z_vector)) * projectionPlaneHalfWidth * 2.0;
 }
 
 dmat4 KL::OBJECT::DATA::Camera::glViewMatrix(const KL::Object* object) const {
-	const dmat4 rotation_matrix = glm::yawPitchRoll(object->transform.euler_rotation.y * DEG_RAD, object->transform.euler_rotation.x * DEG_RAD, object->transform.euler_rotation.z * DEG_RAD);
-	
-	const dvec3 x_vector = rotation_matrix[0];
-	const dvec3 y_vector = rotation_matrix[1];
+	dmat4 rotation_matrix;
+	switch (object->transform.rotation_type) {
+		case KL::Rotation_Type::QUATERNION: {
+			rotation_matrix = glm::mat4_cast(object->transform.quat_rotation);
+			break;
+		}
+		case KL::Rotation_Type::XYZ: {
+			rotation_matrix = glm::yawPitchRoll(object->transform.euler_rotation.y * DEG_RAD, object->transform.euler_rotation.x * DEG_RAD, object->transform.euler_rotation.z * DEG_RAD);
+			break;
+		}
+	}
+	const dvec3 x_vector =  rotation_matrix[0];
+	const dvec3 y_vector =  rotation_matrix[1];
 	const dvec3 z_vector = -rotation_matrix[2];
 
 	const dvec3 camera_position = object->transform.position;

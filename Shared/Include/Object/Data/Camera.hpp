@@ -17,7 +17,7 @@ namespace KL::OBJECT::DATA {
 
 		Camera();
 
-		void compile(KL::Scene* scene, KL::Object* object, const dvec1& aspect_ratio);
+		void f_updateRayVectors(KL::Scene* scene, KL::Object* object);
 		dmat4 glViewMatrix(const KL::Object* object) const;
 		dmat4 glProjectionMatrix(const dvec1& aspect_ratio) const;
 	};

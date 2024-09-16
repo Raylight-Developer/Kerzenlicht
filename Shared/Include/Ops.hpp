@@ -63,7 +63,6 @@ namespace KL {
 		void moveLocal(const dvec3& value);
 		void rotate(const dvec3& value);
 		void orbit(const dvec3& pivot, const dvec2& py_rotation);
-		void lookAt(const dvec3 & pos);
 
 		dmat4 getMatrix() const;
 		string serialize() const;

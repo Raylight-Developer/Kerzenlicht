@@ -97,18 +97,27 @@ namespace GUI {
 
 			uint view_layer;
 
-			bool panning;
+			dvec1 camera_move_sensitivity;
+			dvec1 camera_view_sensitivity;
+			dvec1 camera_orbit_sensitivity;
+			unordered_map<uint, bool> inputs;
+			dvec2 current_mouse;
 			dvec2 last_mouse;
 
 			Viewport(Workspace_Viewport* parent);
 
 			void f_pipeline();
-			void f_uploadData();
+			void f_recompile();
+
 			void f_tickUpdate();
 
-			void f_selectObject(const dvec2& uv);
+			void f_timings();
+			void f_guiUpdate();
+			void f_inputLoop();
+			void f_displayLoop();
+			void f_frameUpdate();
 
-			void f_recompileShaders();
+			void f_selectObject(const dvec2& uv);
 
 			void initializeGL() override;
 			void paintGL() override;
@@ -117,8 +126,9 @@ namespace GUI {
 			void mouseReleaseEvent(QMouseEvent* event) override;
 			void mousePressEvent(QMouseEvent* event) override;
 			void mouseMoveEvent(QMouseEvent* event) override;
+			void keyReleaseEvent(QKeyEvent* event) override;
 			void keyPressEvent(QKeyEvent* event) override;
-			void wheelEvent(QWheelEvent*) override;
+			void wheelEvent(QWheelEvent* event) override;
 
 			void f_renderMesh(const GLuint raster_program, KL::Object* object);
 			void f_renderGroup(const GLuint raster_program, KL::Object* object);

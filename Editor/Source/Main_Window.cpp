@@ -71,7 +71,7 @@ bool GUI::WORKSPACE::Main_Window::eventFilter(QObject* object, QEvent* event) {
 			Viewport* viewport = dynamic_cast<Viewport*>(object);
 			QKeyEvent* d_event =static_cast<QKeyEvent*>(event);
 			if (d_event->key() == Qt::Key::Key_R) {
-				viewport->f_recompileShaders();
+				viewport->f_recompile();
 			}
 		}
 	}

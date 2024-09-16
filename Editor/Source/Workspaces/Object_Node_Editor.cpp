@@ -16,12 +16,12 @@ GUI::WORKSPACE::Workspace_Object_Node_Editor::Workspace_Object_Node_Editor(Works
 	splitter->addWidget(shelf);
 	splitter->addWidget(viewport);
 
-	auto compile = new GUI::Button(this);
-	compile->setText("Compile");
+	auto f_updateRayVectors = new GUI::Button(this);
+	f_updateRayVectors->setText("Compile");
 
 	auto header = new GUI::Linear_Contents(this);
 	header->setFixedHeight(30);
-	header->addWidget(compile);
+	header->addWidget(f_updateRayVectors);
 
 	auto load_in = new GUI::Button(this);
 	load_in->setText("Load To View");
@@ -34,7 +34,7 @@ GUI::WORKSPACE::Workspace_Object_Node_Editor::Workspace_Object_Node_Editor(Works
 	connect(load_in, &GUI::Button::pressed, [this]() {
 		viewport->loadNodes();
 	});
-	connect(compile, &GUI::Button::pressed, [this]() { // CAN CRASH. [xmemory 1335 and exec()] STOP Executing nodes before
+	connect(f_updateRayVectors, &GUI::Button::pressed, [this]() { // CAN CRASH. [xmemory 1335 and exec()] STOP Executing nodes before
 		if (viewport->active_node_tree and FILE->active_object->pointer) {
 			LOG ENDL ANSI_B << "[DLL Compilation]" ANSI_RESET << " Compiling Solution..."; FLUSH;
 

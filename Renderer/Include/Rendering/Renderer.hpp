@@ -49,7 +49,7 @@ namespace KL {
 		dvec1 camera_move_sensitivity;
 		dvec1 camera_view_sensitivity;
 		dvec1 camera_orbit_sensitivity;
-		vector<bool> keys;
+		vector<bool> inputs;
 
 		dvec2 current_mouse;
 		dvec2 last_mouse;
@@ -75,7 +75,7 @@ namespace KL {
 
 		void f_timings();
 		void f_guiLoop();
-		void f_gameLoop();
+		void f_inputLoop();
 		void f_displayLoop();
 		void f_frameUpdate();
 
