@@ -118,6 +118,9 @@
     <ClInclude Include="Include\Workspaces\Shader_Editor.hpp">
       <Filter>Include\Workspaces</Filter>
     </ClInclude>
+    <ClInclude Include="Include\Workspaces\Viewport.hpp">
+      <Filter>Include\Workspaces</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Include">
@@ -142,9 +145,6 @@
   <ItemGroup>
     <QtMoc Include="Include\GUI.hpp">
       <Filter>Include\Core</Filter>
-    </QtMoc>
-    <QtMoc Include="Include\Workspaces\Viewport.hpp">
-      <Filter>Include\Workspaces</Filter>
     </QtMoc>
   </ItemGroup>
 </Project>

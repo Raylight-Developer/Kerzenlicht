@@ -240,6 +240,7 @@ void KL::Renderer::initGlfw() {
 	gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
 
 	glfwSetWindowUserPointer(window, this);
+	hwnd = glfwGetWin32Window(window);
 
 	glfwSetFramebufferSizeCallback(window, glfwFramebufferSize);
 	glfwSetMouseButtonCallback(window, glfwMouseButton);
