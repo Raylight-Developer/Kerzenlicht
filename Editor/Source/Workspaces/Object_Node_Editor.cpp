@@ -463,7 +463,7 @@ void GUI::WORKSPACE::Object_Node_Viewport::dropEvent(QDropEvent* event) {
 			}
 			else if (type == "LINK") {
 				if (sub_type == "LINK_POINTER_SCENE") {
-					auto t_node = new GUI::NODE::LINK::Pointer(drop_pos, KL::DATA::Type::SCENE);
+					auto t_node = new GUI::NODE::LINK::Pointer(drop_pos, KL::PROP::Type::SCENE);
 					t_node->pointer = FILE->active_scene->pointer;
 					node = t_node;
 				}
@@ -502,7 +502,7 @@ void GUI::WORKSPACE::Object_Node_Viewport::dropEvent(QDropEvent* event) {
 			
 			auto object = ptr<KL::Object*>(pointer);
 
-			auto t_node = new GUI::NODE::LINK::Pointer(drop_pos, KL::DATA::Type::OBJECT);
+			auto t_node = new GUI::NODE::LINK::Pointer(drop_pos, KL::PROP::Type::OBJECT);
 			t_node->pointer = object;
 			node = t_node;
 		}

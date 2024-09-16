@@ -60,18 +60,18 @@ void KL::GPU_Scene::f_tickUpdate() {
 		object->f_compileMatrix();
 		vector<GPU_Triangle> mesh_triangles;
 		if (object->data->type == KL::OBJECT::DATA::Type::MESH) {
-			KL::OBJECT::DATA::Mesh* mesh = object->data->getMesh();
+			KL::OBJECT::DATA::Mesh* mesh = object->getMesh();
 			for (KL::OBJECT::DATA::MESH::Face* face : mesh->faces) {
 				mesh_triangles.push_back(faceToGpuTri(object->transform_matrix, mesh, face));
 			}
 		}
 		else if (object->data->type == KL::OBJECT::DATA::Type::GROUP) {
-			const KL::OBJECT::DATA::Group* group = object->data->getGroup();
+			const KL::OBJECT::DATA::Group* group = object->getGroup();
 			for (KL::Object* sub_object : group->objects) {
 				sub_object->f_compileMatrix();
 				sub_object->transform_matrix *= object->transform_matrix;
 				if (sub_object->data->type == KL::OBJECT::DATA::Type::MESH) {
-					KL::OBJECT::DATA::Mesh* mesh = sub_object->data->getMesh();
+					KL::OBJECT::DATA::Mesh* mesh = sub_object->getMesh();
 					for (KL::OBJECT::DATA::MESH::Face* face : mesh->faces) {
 						mesh_triangles.push_back(faceToGpuTri(sub_object->transform_matrix, mesh, face));
 					}

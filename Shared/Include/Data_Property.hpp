@@ -15,23 +15,23 @@ namespace KL {
 
 // FWD DECL THIS
 namespace KL {
-	namespace DATA {
+	namespace PROP {
 		enum struct Type;
 		enum struct Modifier;
 	}
-	struct Data;
+	struct Prop;
 }
 
 // DECL
 namespace KL {
-	namespace DATA {
+	namespace PROP {
 		enum struct Type {
 			NONE,
 			ANY,
 			STRING, DOUBLE, BOOL, UINT, INT,
 			UMAT2, UMAT3, UMAT4, IMAT2, IMAT3, IMAT4, MAT2, MAT3, MAT4,
 			UVEC2, UVEC3, UVEC4, IVEC2, IVEC3, IVEC4, VEC2, VEC3, VEC4,
-			TRANSFORM, TEXTURE, OBJECT, SCENE, DATA
+			TRANSFORM, TEXTURE, OBJECT, SCENE, PROP
 		};
 		enum struct Modifier {
 			SINGLE,
@@ -42,25 +42,25 @@ namespace KL {
 		string serialize(const Type& type);
 		Type fromString(const string& type);
 	}
-	struct Data {
+	struct Prop {
 		any data;
-		DATA::Type type;
-		DATA::Modifier modifier;
+		PROP::Type type;
+		PROP::Modifier modifier;
 
-		Data();
-		Data(const any& data, const DATA::Type& type, const DATA::Modifier& modifier = DATA::Modifier::SINGLE);
-		Data(const string& data);
-		Data(const dvec1& data);
-		Data(const bool& data);
-		Data(const uint64& data);
-		Data(const int64& data);
-		Data(Object* data);
-		Data(SHADER::Texture* data);
+		Prop();
+		Prop(const any& data, const PROP::Type& type, const PROP::Modifier& modifier = PROP::Modifier::SINGLE);
+		Prop(const string& data);
+		Prop(const dvec1& data);
+		Prop(const bool& data);
+		Prop(const uint64& data);
+		Prop(const int64& data);
+		Prop(Object* data);
+		Prop(SHADER::Texture* data);
 
-		Data operator+(const Data& other);
-		Data operator-(const Data& other);
-		Data operator*(const Data& other);
-		Data operator/(const Data& other);
+		Prop operator+(const Prop& other);
+		Prop operator-(const Prop& other);
+		Prop operator*(const Prop& other);
+		Prop operator/(const Prop& other);
 
 		int64  getInt()    const;
 		uint64 getUint()   const;
@@ -73,4 +73,4 @@ namespace KL {
 	};
 }
 
-uvec3 typeColor(const KL::DATA::Type& type);
+uvec3 typeColor(const KL::PROP::Type& type);

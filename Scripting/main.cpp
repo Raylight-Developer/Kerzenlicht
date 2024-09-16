@@ -20,22 +20,22 @@ extern "C" {
 		node->clearIO();
 		
 		node->addExecInput("I Exec");
-		node->addDataInput("I Value", Data_Type::DOUBLE);
+		node->addDataInput("I Value", Prop_Type::DOUBLE);
 		
 		node->addExecOutput("O Exec");
-		node->addDataOutput("O Value", Data_Type::DOUBLE);
+		node->addDataOutput("O Value", Prop_Type::DOUBLE);
 		
-		node->getDataInput("I Value")->default_value = Data(2.5, Data_Type::DOUBLE);
+		node->getDataInput("I Value")->default_value = Prop(2.5, Prop_Type::DOUBLE);
 	}
 
 	EXPORT void Script_ID_exec(Script* node) {
 		node->getExecOutput("O Exec")->exec();
 	}
 
-	EXPORT Data Script_ID_getData(Script* node, const uint16& port_request) {
+	EXPORT Prop Script_ID_getData(Script* node, const uint16& port_request) {
 		if (port_request == 1) {
-			return node->getData("I Value") * Data(5.0);
+			return node->getData("I Value") * Prop(5.0);
 		}
-		return Data();
+		return Prop();
 	}
 }

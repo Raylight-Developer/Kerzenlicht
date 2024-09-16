@@ -2,6 +2,8 @@
 
 #include "Include.hpp"
 
+#include "Object/Data.hpp"
+
 namespace KL::OBJECT::DATA {
 	namespace PRIMITIVE {
 		enum struct Type {
@@ -40,7 +42,7 @@ namespace KL::OBJECT::DATA {
 		};
 	}
 
-	struct Primitive {
+	struct Primitive : Data {
 		PRIMITIVE::Type type;
 		void* primitive;
 	};

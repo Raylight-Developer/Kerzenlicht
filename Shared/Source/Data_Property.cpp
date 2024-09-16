@@ -3,168 +3,168 @@
 #include "Object/Object.hpp"
 #include "Shader/Shader.hpp"
 
-KL::Data::Data() :
+KL::Prop::Prop() :
 	data(nullptr),
-	type(DATA::Type::NONE),
-	modifier(DATA::Modifier::SINGLE)
+	type(PROP::Type::NONE),
+	modifier(PROP::Modifier::SINGLE)
 {}
 
-KL::Data::Data(const any& data, const DATA::Type& type, const DATA::Modifier& modifier) :
+KL::Prop::Prop(const any& data, const PROP::Type& type, const PROP::Modifier& modifier) :
 	data(data),
 	type(type),
 	modifier(modifier)
 {}
 
-KL::Data::Data(const string& data) : data(data) {
-	modifier = DATA::Modifier::SINGLE; type = DATA::Type::STRING;
+KL::Prop::Prop(const string& data) : data(data) {
+	modifier = PROP::Modifier::SINGLE; type = PROP::Type::STRING;
 }
-KL::Data::Data(const dvec1& data) : data(data) {
-	modifier = DATA::Modifier::SINGLE; type = DATA::Type::DOUBLE;
+KL::Prop::Prop(const dvec1& data) : data(data) {
+	modifier = PROP::Modifier::SINGLE; type = PROP::Type::DOUBLE;
 }
-KL::Data::Data(const bool& data) : data(data) {
-	modifier = DATA::Modifier::SINGLE; type = DATA::Type::BOOL;
+KL::Prop::Prop(const bool& data) : data(data) {
+	modifier = PROP::Modifier::SINGLE; type = PROP::Type::BOOL;
 }
-KL::Data::Data(const uint64& data) : data(data) {
-	modifier = DATA::Modifier::SINGLE; type = DATA::Type::UINT;
+KL::Prop::Prop(const uint64& data) : data(data) {
+	modifier = PROP::Modifier::SINGLE; type = PROP::Type::UINT;
 }
-KL::Data::Data(const int64& data) : data(data) {
-	modifier = DATA::Modifier::SINGLE; type = DATA::Type::INT;
-}
-
-KL::Data::Data(Object* data) : data(data) {
-	modifier = DATA::Modifier::SINGLE; type = DATA::Type::OBJECT;
+KL::Prop::Prop(const int64& data) : data(data) {
+	modifier = PROP::Modifier::SINGLE; type = PROP::Type::INT;
 }
 
-KL::Data::Data(SHADER::Texture* data) : data(data) {
-	modifier = DATA::Modifier::SINGLE; type = DATA::Type::TEXTURE;
+KL::Prop::Prop(Object* data) : data(data) {
+	modifier = PROP::Modifier::SINGLE; type = PROP::Type::OBJECT;
 }
 
-KL::Data KL::Data::operator+(const KL::Data & other) {
+KL::Prop::Prop(SHADER::Texture* data) : data(data) {
+	modifier = PROP::Modifier::SINGLE; type = PROP::Type::TEXTURE;
+}
+
+KL::Prop KL::Prop::operator+(const KL::Prop & other) {
 	if (type == other.type) {
 		switch (type) {
-			case DATA::Type::DOUBLE: return KL::Data(getDouble() + other.getDouble(), type);
+			case PROP::Type::DOUBLE: return KL::Prop(getDouble() + other.getDouble(), type);
 		}
 	}
 	switch (type) {
-		case DATA::Type::DOUBLE: {
+		case PROP::Type::DOUBLE: {
 			switch (other.type) {
-				case DATA::Type::INT: {
-					return KL::Data(getDouble() + other.getInt(), type);
+				case PROP::Type::INT: {
+					return KL::Prop(getDouble() + other.getInt(), type);
 				}
-				case DATA::Type::UINT: {
-					return KL::Data(getDouble() + other.getUint(), type);
+				case PROP::Type::UINT: {
+					return KL::Prop(getDouble() + other.getUint(), type);
 				}
 			}
 		}
 	}
-	return KL::Data();
+	return KL::Prop();
 }
-KL::Data KL::Data::operator-(const KL::Data& other) {
+KL::Prop KL::Prop::operator-(const KL::Prop& other) {
 	if (type == other.type) {
 		switch (type) {
-		case DATA::Type::DOUBLE: return KL::Data(getDouble() - other.getDouble(), type);
+		case PROP::Type::DOUBLE: return KL::Prop(getDouble() - other.getDouble(), type);
 		}
 	}
-	return KL::Data();
+	return KL::Prop();
 }
 
-KL::Data KL::Data::operator*(const KL::Data& other) {
+KL::Prop KL::Prop::operator*(const KL::Prop& other) {
 	if (type == other.type) {
 		switch (type) {
-		case DATA::Type::DOUBLE: return KL::Data(getDouble() * other.getDouble(), type);
+		case PROP::Type::DOUBLE: return KL::Prop(getDouble() * other.getDouble(), type);
 		}
 	}
-	return KL::Data();
+	return KL::Prop();
 }
 
-KL::Data KL::Data::operator/(const KL::Data& other) {
+KL::Prop KL::Prop::operator/(const KL::Prop& other) {
 	if (type == other.type) {
 		switch (type) {
-		case DATA::Type::DOUBLE: return KL::Data(getDouble() / other.getDouble(), type);
+		case PROP::Type::DOUBLE: return KL::Prop(getDouble() / other.getDouble(), type);
 		}
 	}
-	return KL::Data();
+	return KL::Prop();
 }
 
-int64 KL::Data::getInt() const {
+int64 KL::Prop::getInt() const {
 	return any_cast<int64>(data);
 }
 
-uint64 KL::Data::getUint() const {
+uint64 KL::Prop::getUint() const {
 	return any_cast<uint64>(data);
 }
 
-dvec1 KL::Data::getDouble() const {
+dvec1 KL::Prop::getDouble() const {
 	switch (type) {
-	case DATA::Type::DOUBLE: return any_cast<dvec1>(data);
-	case DATA::Type::UINT: return static_cast<dvec1>(any_cast<uint64>(data));
-	case DATA::Type::INT: return static_cast<dvec1>(any_cast<int64>(data));
+	case PROP::Type::DOUBLE: return any_cast<dvec1>(data);
+	case PROP::Type::UINT: return static_cast<dvec1>(any_cast<uint64>(data));
+	case PROP::Type::INT: return static_cast<dvec1>(any_cast<int64>(data));
 	}
 	return 0.0;
 }
 
-KL::Scene* KL::Data::getScene() const {
+KL::Scene* KL::Prop::getScene() const {
 	return any_cast<KL::Scene*>(data);
 }
 
-KL::Object* KL::Data::getObject() const {
+KL::Object* KL::Prop::getObject() const {
 	return any_cast<KL::Object*>(data);
 }
 
-KL::SHADER::Texture* KL::Data::getTexture() const {
+KL::SHADER::Texture* KL::Prop::getTexture() const {
 	return any_cast<KL::SHADER::Texture*>(data);
 }
 
-string KL::Data::to_string() const {
+string KL::Prop::to_string() const {
 	switch (type) {
-	case DATA::Type::TRANSFORM: return any_cast<Transform>(data).serialize();
-	case DATA::Type::DOUBLE:    return std::to_string(any_cast<dvec1>(data));
-	case DATA::Type::UINT:      return std::to_string(static_cast<dvec1>(any_cast<uint64>(data)));
-	case DATA::Type::INT:       return std::to_string(static_cast<dvec1>(any_cast<int64>(data)));
+	case PROP::Type::TRANSFORM: return any_cast<Transform>(data).serialize();
+	case PROP::Type::DOUBLE:    return std::to_string(any_cast<dvec1>(data));
+	case PROP::Type::UINT:      return std::to_string(static_cast<dvec1>(any_cast<uint64>(data)));
+	case PROP::Type::INT:       return std::to_string(static_cast<dvec1>(any_cast<int64>(data)));
 	}
 	return "";
 }
 
-uvec3 typeColor(const KL::DATA::Type& type) {
+uvec3 typeColor(const KL::PROP::Type& type) {
 	switch (type) {
-	case KL::DATA::Type::NONE:   return uvec3(  0,   0,   0);
-	case KL::DATA::Type::ANY:    return uvec3(150, 150, 150);
-	case KL::DATA::Type::STRING: return uvec3(215, 155, 135);
-	case KL::DATA::Type::DOUBLE: return uvec3( 95, 230,  95);
-	case KL::DATA::Type::BOOL:   return uvec3(240, 100, 175);
-	case KL::DATA::Type::UINT:   return uvec3(105, 125,  60);
-	case KL::DATA::Type::INT:    return uvec3( 40, 130,  40);
+	case KL::PROP::Type::NONE:   return uvec3(  0,   0,   0);
+	case KL::PROP::Type::ANY:    return uvec3(150, 150, 150);
+	case KL::PROP::Type::STRING: return uvec3(215, 155, 135);
+	case KL::PROP::Type::DOUBLE: return uvec3( 95, 230,  95);
+	case KL::PROP::Type::BOOL:   return uvec3(240, 100, 175);
+	case KL::PROP::Type::UINT:   return uvec3(105, 125,  60);
+	case KL::PROP::Type::INT:    return uvec3( 40, 130,  40);
 
-	case KL::DATA::Type::TRANSFORM: return uvec3( 85,  85, 240);
-	case KL::DATA::Type::TEXTURE:   return uvec3(240,  85,  85);
-	case KL::DATA::Type::OBJECT:    return uvec3(250, 175, 100);
-	case KL::DATA::Type::SCENE:     return uvec3( 85, 195, 240);
-	case KL::DATA::Type::DATA:      return uvec3(210, 240,  85);
+	case KL::PROP::Type::TRANSFORM: return uvec3( 85,  85, 240);
+	case KL::PROP::Type::TEXTURE:   return uvec3(240,  85,  85);
+	case KL::PROP::Type::OBJECT:    return uvec3(250, 175, 100);
+	case KL::PROP::Type::SCENE:     return uvec3( 85, 195, 240);
+	case KL::PROP::Type::PROP:      return uvec3(210, 240,  85);
 
-	case KL::DATA::Type::VEC2:
-	case KL::DATA::Type::VEC3:
-	case KL::DATA::Type::VEC4:
-	case KL::DATA::Type::IVEC2:
-	case KL::DATA::Type::IVEC3:
-	case KL::DATA::Type::IVEC4:
-	case KL::DATA::Type::UVEC2:
-	case KL::DATA::Type::UVEC3:
-	case KL::DATA::Type::UVEC4: return uvec3(165, 110, 230);
+	case KL::PROP::Type::VEC2:
+	case KL::PROP::Type::VEC3:
+	case KL::PROP::Type::VEC4:
+	case KL::PROP::Type::IVEC2:
+	case KL::PROP::Type::IVEC3:
+	case KL::PROP::Type::IVEC4:
+	case KL::PROP::Type::UVEC2:
+	case KL::PROP::Type::UVEC3:
+	case KL::PROP::Type::UVEC4: return uvec3(165, 110, 230);
 
-	case KL::DATA::Type::MAT2:
-	case KL::DATA::Type::MAT3:
-	case KL::DATA::Type::MAT4:
-	case KL::DATA::Type::IMAT2:
-	case KL::DATA::Type::IMAT3:
-	case KL::DATA::Type::IMAT4:
-	case KL::DATA::Type::UMAT2:
-	case KL::DATA::Type::UMAT3:
-	case KL::DATA::Type::UMAT4: return uvec3(230, 180, 240);
+	case KL::PROP::Type::MAT2:
+	case KL::PROP::Type::MAT3:
+	case KL::PROP::Type::MAT4:
+	case KL::PROP::Type::IMAT2:
+	case KL::PROP::Type::IMAT3:
+	case KL::PROP::Type::IMAT4:
+	case KL::PROP::Type::UMAT2:
+	case KL::PROP::Type::UMAT3:
+	case KL::PROP::Type::UMAT4: return uvec3(230, 180, 240);
 	}
 	return uvec3(0, 0, 0);
 }
 
-string KL::DATA::serialize(const Type& type) {
+string KL::PROP::serialize(const Type& type) {
 	switch (type) {
 		case Type::NONE:      return "NONE";
 		case Type::ANY:       return "ANY";
@@ -199,12 +199,12 @@ string KL::DATA::serialize(const Type& type) {
 		case Type::TEXTURE:   return "TEXTURE";
 		case Type::OBJECT:    return "OBJECT";
 		case Type::SCENE:     return "SCENE";
-		case Type::DATA:      return "DATA";
+		case Type::PROP:      return "DATA";
 	}
 	return "";
 }
 
-KL::DATA::Type KL::DATA::fromString(const string& type) {
+KL::PROP::Type KL::PROP::fromString(const string& type) {
 	if      (type == "NONE")      return Type::NONE;
 	else if (type == "ANY")       return Type::ANY;
 
@@ -238,6 +238,6 @@ KL::DATA::Type KL::DATA::fromString(const string& type) {
 	else if (type == "TEXTURE")   return Type::TEXTURE;
 	else if (type == "OBJECT")    return Type::OBJECT;
 	else if (type == "SCENE")     return Type::SCENE;
-	else if (type == "DATA")      return Type::DATA;
+	else if (type == "DATA")      return Type::PROP;
 	return Type::NONE;
 }

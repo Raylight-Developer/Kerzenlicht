@@ -91,15 +91,15 @@ namespace KL {
 				unordered_map<string, PORT::Exec_I_Port*> exec_inputs;
 				unordered_map<string, PORT::Exec_O_Port*> exec_outputs;
 
-				map<string, Data> internal_data;
+				map<string, Prop> internal_data;
 
 				Script(const string& script_id = "");
 				~Script();
 
 				// VIRTUAL required for functions used/called from DLL
-				Data getPortData (const string& map_name) const;
-				void addDataInput (const uint16& slot_id, const string& map_name, const DATA::Type& type, const DATA::Modifier& modifier = DATA::Modifier::SINGLE);
-				void addDataOutput(const uint16& slot_id, const string& map_name, const DATA::Type& type, const DATA::Modifier& modifier = DATA::Modifier::SINGLE);
+				Prop getPortData (const string& map_name) const;
+				void addDataInput (const uint16& slot_id, const string& map_name, const PROP::Type& type, const PROP::Modifier& modifier = PROP::Modifier::SINGLE);
+				void addDataOutput(const uint16& slot_id, const string& map_name, const PROP::Type& type, const PROP::Modifier& modifier = PROP::Modifier::SINGLE);
 				void addExecInput (const uint16& slot_id, const string& map_name);
 				void addExecOutput(const uint16& slot_id, const string& map_name);
 				void clearIO();
@@ -109,12 +109,12 @@ namespace KL {
 				HINSTANCE dynlib;
 				Script_Node* wrapper;
 
-				Data (*getDataFunc)(const Script_Node*, const uint16&);
+				Prop (*getDataFunc)(const Script_Node*, const uint16&);
 				void (*buildFunc)(Script_Node*);
 				void (*execFunc)(Script_Node*);
 
 				void exec(const uint16& slot_id = 0) override;
-				Data getData(const uint16& slot_id) const override;
+				Prop getData(const uint16& slot_id) const override;
 
 				void reloadFunctions();
 				void reloadDll();
@@ -125,9 +125,9 @@ namespace KL {
 			public:
 				Script_Node(Script* node);
 				// Create a new port
-				virtual void addDataInput (const string& map_name, const DATA::Type& type, const DATA::Modifier& modifier = DATA::Modifier::SINGLE) const;
+				virtual void addDataInput (const string& map_name, const PROP::Type& type, const PROP::Modifier& modifier = PROP::Modifier::SINGLE) const;
 				// Create a new port
-				virtual void addDataOutput(const string& map_name, const DATA::Type& type, const DATA::Modifier& modifier = DATA::Modifier::SINGLE) const;
+				virtual void addDataOutput(const string& map_name, const PROP::Type& type, const PROP::Modifier& modifier = PROP::Modifier::SINGLE) const;
 				// Create a new port
 				virtual void addExecInput (const string& map_name) const;
 				// Create a new port
@@ -144,7 +144,7 @@ namespace KL {
 				// Get pointer to the specified Port
 				virtual PORT::Exec_O_Port* getExecOutput(const string& map_name) const;
 				// Fetch the data from a Port
-				virtual Data getData(const string& map_name) const;
+				virtual Prop getData(const string& map_name) const;
 			};
 			struct Timer : Node {
 				PORT::Exec_O_Port* port;
@@ -162,7 +162,7 @@ namespace KL {
 				Tick();
 
 				void exec(const uint16& slot_id = 0) override;
-				Data getData(const uint16& slot_id) const override;
+				Prop getData(const uint16& slot_id) const override;
 			};
 		}
 		namespace MATH {
@@ -176,19 +176,19 @@ namespace KL {
 			};
 			struct Add : Math {
 				Add();
-				Data getData(const uint16& slot_id) const override;
+				Prop getData(const uint16& slot_id) const override;
 			};
 			struct Sub : Math {
 				Sub();
-				Data getData(const uint16& slot_id) const override;
+				Prop getData(const uint16& slot_id) const override;
 			};
 			struct Mul : Math {
 				Mul();
-				Data getData(const uint16& slot_id) const override;
+				Prop getData(const uint16& slot_id) const override;
 			};
 			struct Div : Math {
 				Div();
-				Data getData(const uint16& slot_id) const override;
+				Prop getData(const uint16& slot_id) const override;
 			};
 		}
 		namespace LINK {
@@ -196,12 +196,12 @@ namespace KL {
 			struct Pointer : Node {
 				PORT::Data_O_Port* o_pointer;
 
-				DATA::Type pointer_type;
+				PROP::Type pointer_type;
 				void* pointer;
 
 				Pointer();
 
-				Data getData(const uint16& slot_id) const override;
+				Prop getData(const uint16& slot_id) const override;
 			};
 			struct Get : Node {
 				PORT::Data_I_Port* i_pointer;
@@ -229,7 +229,7 @@ namespace KL {
 					string field;
 					Field(const string& field = "");
 
-					Data getData(const uint16& slot_id) const override;
+					Prop getData(const uint16& slot_id) const override;
 				};
 			}
 			namespace SET {
@@ -271,11 +271,11 @@ namespace KL {
 				enum struct Type { NONE, UINT_TO_DOUBLE, INT_TO_DOUBLE };
 				struct Uint_To_Double : Cast {
 					Uint_To_Double();
-					Data getData(const uint16& slot_id) const override;
+					Prop getData(const uint16& slot_id) const override;
 				};
 				struct Int_To_Double : Cast {
 					Int_To_Double();
-					Data getData(const uint16& slot_id) const override;
+					Prop getData(const uint16& slot_id) const override;
 				};
 			}
 			struct Expand : Node {
@@ -283,7 +283,7 @@ namespace KL {
 
 				Expand();
 
-				Data getData(const uint16& slot_id) const override;
+				Prop getData(const uint16& slot_id) const override;
 			};
 			namespace EXPAND {
 				enum struct Type { };
@@ -294,7 +294,7 @@ namespace KL {
 
 				Collapse();
 
-				Data getData(const uint16& slot_id) const override;
+				Prop getData(const uint16& slot_id) const override;
 			};
 			namespace COLLAPSE {
 				enum struct Type { };
@@ -314,7 +314,7 @@ namespace KL {
 
 				View();
 
-				Data getData(const uint16& slot_id) const override;
+				Prop getData(const uint16& slot_id) const override;
 			};
 			namespace VIEW {
 				enum struct Type {  };

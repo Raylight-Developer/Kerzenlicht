@@ -73,30 +73,30 @@ namespace GUI {
 			struct Data_I_Port : Port {
 				Connection* connection; // src
 
-				KL::DATA::Modifier modifier;
-				KL::DATA::Type data_type;
+				KL::PROP::Modifier modifier;
+				KL::PROP::Type data_type;
 
-				KL::DATA::Type any_data_type;
+				KL::PROP::Type any_data_type;
 
-				Data_I_Port(Node* parent, const uint16& slot_id, const QString& label, const KL::DATA::Type& type, const KL::DATA::Modifier& modifier = KL::DATA::Modifier::SINGLE);
+				Data_I_Port(Node* parent, const uint16& slot_id, const QString& label, const KL::PROP::Type& type, const KL::PROP::Modifier& modifier = KL::PROP::Modifier::SINGLE);
 				~Data_I_Port();
 
-				void setDataType(const KL::DATA::Type& type);
+				void setDataType(const KL::PROP::Type& type);
 				void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget = nullptr) override;
 			};
 
 			struct Data_O_Port : Port {
 				vector<Connection*> outgoing_connections; // ref
 
-				KL::DATA::Modifier modifier;
-				KL::DATA::Type data_type;
+				KL::PROP::Modifier modifier;
+				KL::PROP::Type data_type;
 
-				KL::DATA::Type any_data_type;
+				KL::PROP::Type any_data_type;
 
-				Data_O_Port(Node* parent, const uint16& slot_id, const QString& label, const KL::DATA::Type& type, const KL::DATA::Modifier& modifier = KL::DATA::Modifier::SINGLE);
+				Data_O_Port(Node* parent, const uint16& slot_id, const QString& label, const KL::PROP::Type& type, const KL::PROP::Modifier& modifier = KL::PROP::Modifier::SINGLE);
 				~Data_O_Port();
 
-				void setDataType(const KL::DATA::Type& type);
+				void setDataType(const KL::PROP::Type& type);
 				void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget = nullptr) override;
 			};
 
@@ -124,7 +124,7 @@ namespace GUI {
 			QPointF pos_l;
 			QPointF pos_r;
 
-			KL::DATA::Type data_type;
+			KL::PROP::Type data_type;
 			QColor color;
 
 			Connection(Port* port_l, Port* port_r);

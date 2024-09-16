@@ -2,13 +2,15 @@
 
 #include "Include.hpp"
 
+#include "Object/Data.hpp"
+
 namespace KL {
 	struct Object;
 	struct Scene;
 }
 
 namespace KL::OBJECT::DATA {
-	struct Camera {
+	struct Camera : Data {
 		dvec1 view_angle;
 
 		dvec3 projection_uv;

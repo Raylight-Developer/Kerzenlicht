@@ -29,7 +29,7 @@ EXEC::Counter::Counter() {
 	i_exec = new PORT::Exec_I_Port(this, 0);
 
 	o_exec = new PORT::Exec_O_Port(this, 0);
-	o_count = new PORT::Data_O_Port(this, 1, KL::DATA::Type::UINT);
+	o_count = new PORT::Data_O_Port(this, 1, KL::PROP::Type::UINT);
 
 	inputs.push_back(i_exec);
 	outputs.push_back(o_exec);
@@ -79,7 +79,7 @@ EXEC::Script::Script(const string& script_id) :
 		FARPROC buildAddress = GetProcAddress(dynlib, (script_id + "_build").c_str());
 		if (execAddress and dataAddress and buildAddress) {
 			execFunc = (void(*)(Script_Node*))execAddress;
-			getDataFunc = (KL::Data(*)(const Script_Node*, const uint16&))dataAddress;
+			getDataFunc = (KL::Prop(*)(const Script_Node*, const uint16&))dataAddress;
 			buildFunc = (void(*)(Script_Node*))buildAddress;
 			buildFunc(wrapper);
 		}
@@ -93,13 +93,13 @@ KL::NODE::EXEC::Script::~Script() {
 	delete wrapper;
 }
 
-void EXEC::Script::addDataInput(const uint16& slot_id, const string& map_name, const DATA::Type& type, const DATA::Modifier& modifier) {
+void EXEC::Script::addDataInput(const uint16& slot_id, const string& map_name, const PROP::Type& type, const PROP::Modifier& modifier) {
 	PORT::Data_I_Port* value = new PORT::Data_I_Port(this, slot_id, type, modifier);
 	data_inputs[map_name] = value;
 	inputs.push_back(value);
 };
 
-void EXEC::Script::addDataOutput(const uint16& slot_id, const string& map_name, const DATA::Type& type, const DATA::Modifier& modifier) {
+void EXEC::Script::addDataOutput(const uint16& slot_id, const string& map_name, const PROP::Type& type, const PROP::Modifier& modifier) {
 	PORT::Data_O_Port* value = new PORT::Data_O_Port(this, slot_id, type, modifier);
 	data_outputs[map_name] = value;
 	outputs.push_back(value);
@@ -123,7 +123,7 @@ void EXEC::Script::reloadFunctions() {
 	FARPROC buildAddress = GetProcAddress(dynlib, (script_id + "_build").c_str());
 	if (execAddress and dataAddress and buildAddress) {
 		execFunc = (void(*)(Script_Node*))execAddress;
-		getDataFunc = (KL::Data(*)(const Script_Node*, const uint16&))dataAddress;
+		getDataFunc = (KL::Prop(*)(const Script_Node*, const uint16&))dataAddress;
 		buildFunc = (void(*)(Script_Node*))buildAddress;
 		buildFunc(wrapper);
 	}
@@ -160,19 +160,19 @@ void EXEC::Script::exec(const uint16& slot_id) {
 	}
 }
 
-KL::Data EXEC::Script::getData(const uint16& slot_id) const {
+KL::Prop EXEC::Script::getData(const uint16& slot_id) const {
 	if (getDataFunc) {
 		return getDataFunc(wrapper, slot_id);
 	}
-	return KL::Data();
+	return KL::Prop();
 }
 
-KL::Data EXEC::Script::getPortData(const string& map_name) const {
+KL::Prop EXEC::Script::getPortData(const string& map_name) const {
 	auto it = data_inputs.find(map_name);
 	if (it != data_inputs.end()) {
 		return data_inputs.at(map_name)->getData();
 	}
-	return KL::Data();
+	return KL::Prop();
 }
 
 void KL::NODE::EXEC::Script::recompile(const HINSTANCE& library) {
@@ -183,13 +183,13 @@ void KL::NODE::EXEC::Script::recompile(const HINSTANCE& library) {
 KL::NODE::EXEC::Script_Node::Script_Node(Script* node) :
 	node(node)
 {}
-KL::Data KL::NODE::EXEC::Script_Node::getData(const string& map_name) const {
+KL::Prop KL::NODE::EXEC::Script_Node::getData(const string& map_name) const {
 	return node->getPortData(map_name);
 }
-void KL::NODE::EXEC::Script_Node::addDataInput (const string& map_name, const DATA::Type& type, const DATA::Modifier& modifier) const {
+void KL::NODE::EXEC::Script_Node::addDataInput (const string& map_name, const PROP::Type& type, const PROP::Modifier& modifier) const {
 	node->addDataInput (static_cast<uint16>(node->inputs .size()), map_name, type, modifier);
 }
-void KL::NODE::EXEC::Script_Node::addDataOutput(const string& map_name, const DATA::Type& type, const DATA::Modifier& modifier) const {
+void KL::NODE::EXEC::Script_Node::addDataOutput(const string& map_name, const PROP::Type& type, const PROP::Modifier& modifier) const {
 	node->addDataOutput(static_cast<uint16>(node->outputs.size()), map_name, type, modifier);
 }
 void KL::NODE::EXEC::Script_Node::addExecInput (const string& map_name) const {
@@ -230,7 +230,7 @@ EXEC::Tick::Tick() {
 	delta = new dvec1(FPS_60);
 
 	port_tick  = new PORT::Exec_O_Port(this, 0);
-	port_delta = new PORT::Data_O_Port(this, 1, DATA::Type::DOUBLE);
+	port_delta = new PORT::Data_O_Port(this, 1, PROP::Type::DOUBLE);
 
 	outputs.push_back(port_tick);
 	outputs.push_back(port_delta);
@@ -240,8 +240,8 @@ void EXEC::Tick::exec(const uint16& slot_id) {
 	port_tick->exec();
 }
 
-KL::Data EXEC::Tick::getData(const uint16& slot_id) const {
-	return KL::Data(*delta, DATA::Type::DOUBLE);
+KL::Prop EXEC::Tick::getData(const uint16& slot_id) const {
+	return KL::Prop(*delta, PROP::Type::DOUBLE);
 }
 
 LINK::Get::Get() {
@@ -249,9 +249,9 @@ LINK::Get::Get() {
 	sub_type = e_to_us(Type::GET);
 	mini_type = GET::Type::NONE;
 
-	i_pointer = new PORT::Data_I_Port(this, 0, DATA::Type::ANY);
+	i_pointer = new PORT::Data_I_Port(this, 0, PROP::Type::ANY);
 	
-	o_value   = new PORT::Data_O_Port(this, 0, DATA::Type::ANY);
+	o_value   = new PORT::Data_O_Port(this, 0, PROP::Type::ANY);
 
 	inputs.push_back(i_pointer);
 	outputs.push_back(o_value);
@@ -263,11 +263,11 @@ LINK::Set::Set() {
 	mini_type = SET::Type::NONE;
 
 	i_exec    = new PORT::Exec_I_Port(this, 0);
-	i_pointer = new PORT::Data_I_Port(this, 1, DATA::Type::ANY);
-	i_value   = new PORT::Data_I_Port(this, 2, DATA::Type::ANY);
+	i_pointer = new PORT::Data_I_Port(this, 1, PROP::Type::ANY);
+	i_value   = new PORT::Data_I_Port(this, 2, PROP::Type::ANY);
 
 	o_exec    = new PORT::Exec_O_Port(this, 0);
-	o_value   = new PORT::Data_O_Port(this, 1, DATA::Type::ANY);
+	o_value   = new PORT::Data_O_Port(this, 1, PROP::Type::ANY);
 
 	inputs.push_back(i_exec);
 	inputs.push_back(i_pointer);
@@ -286,42 +286,42 @@ LINK::GET::Field::Field(const string& field) :
 	mini_type = GET::Type::FIELD;
 }
 
-KL::Data LINK::GET::Field::getData(const uint16& slot_id) const {
-	KL::Data pointer_ref = i_pointer->getData();
+KL::Prop LINK::GET::Field::getData(const uint16& slot_id) const {
+	KL::Prop pointer_ref = i_pointer->getData();
 	switch (pointer_ref.type) {
-		case DATA::Type::OBJECT: {
+		case PROP::Type::OBJECT: {
 			if (field == "transform.euler.x")
-				return KL::Data(pointer_ref.getObject()->transform.euler_rotation.x, DATA::Type::DOUBLE);
+				return KL::Prop(pointer_ref.getObject()->transform.euler_rotation.x, PROP::Type::DOUBLE);
 			if (field == "node_transform.euler.x")
-				return KL::Data(pointer_ref.getObject()->node_transform.euler_rotation.x, DATA::Type::DOUBLE);
+				return KL::Prop(pointer_ref.getObject()->node_transform.euler_rotation.x, PROP::Type::DOUBLE);
 			if (field == "node_transform.euler.y")
-				return KL::Data(pointer_ref.getObject()->node_transform.euler_rotation.y, DATA::Type::DOUBLE);
+				return KL::Prop(pointer_ref.getObject()->node_transform.euler_rotation.y, PROP::Type::DOUBLE);
 			if (field == "node_transform.euler.z")
-				return KL::Data(pointer_ref.getObject()->node_transform.euler_rotation.z, DATA::Type::DOUBLE);
+				return KL::Prop(pointer_ref.getObject()->node_transform.euler_rotation.z, PROP::Type::DOUBLE);
 			break;
 		}
-		case DATA::Type::SCENE: {
+		case PROP::Type::SCENE: {
 			if (field == "current_frame")
-				return KL::Data(pointer_ref.getScene()->current_frame, DATA::Type::INT);
+				return KL::Prop(pointer_ref.getScene()->current_frame, PROP::Type::INT);
 			break;
 		}
 	}
-	return Data();
+	return Prop();
 }
 
 LINK::SET::Euler_Rotation_X::Euler_Rotation_X() {
 	mini_type = SET::Type::EULER_ROTATION_X;
 
-	i_pointer->data_type = DATA::Type::OBJECT;
-	i_value->data_type = DATA::Type::DOUBLE;
-	o_value->data_type = DATA::Type::DOUBLE;
+	i_pointer->data_type = PROP::Type::OBJECT;
+	i_value->data_type = PROP::Type::DOUBLE;
+	o_value->data_type = PROP::Type::DOUBLE;
 }
 
 void LINK::SET::Euler_Rotation_X::exec(const uint16& slot_id) {
-	KL::Data pointer_ref = i_pointer->getData();
-	KL::Data value_ref = i_value->getData();
+	KL::Prop pointer_ref = i_pointer->getData();
+	KL::Prop value_ref = i_value->getData();
 	switch (pointer_ref.type) {
-		case DATA::Type::OBJECT: {
+		case PROP::Type::OBJECT: {
 			pointer_ref.getObject()->node_transform.euler_rotation.x = value_ref.getDouble();
 			break;
 		}
@@ -331,16 +331,16 @@ void LINK::SET::Euler_Rotation_X::exec(const uint16& slot_id) {
 LINK::SET::Euler_Rotation_Y::Euler_Rotation_Y() {
 	mini_type = SET::Type::EULER_ROTATION_Y;
 
-	i_pointer->data_type = DATA::Type::OBJECT;
-	i_value->data_type = DATA::Type::DOUBLE;
-	o_value->data_type = DATA::Type::DOUBLE;
+	i_pointer->data_type = PROP::Type::OBJECT;
+	i_value->data_type = PROP::Type::DOUBLE;
+	o_value->data_type = PROP::Type::DOUBLE;
 }
 
 void LINK::SET::Euler_Rotation_Y::exec(const uint16& slot_id) {
-	KL::Data pointer_ref = i_pointer->getData();
-	KL::Data value_ref = i_value->getData();
+	KL::Prop pointer_ref = i_pointer->getData();
+	KL::Prop value_ref = i_value->getData();
 	switch (pointer_ref.type) {
-		case DATA::Type::OBJECT: {
+		case PROP::Type::OBJECT: {
 			pointer_ref.getObject()->node_transform.euler_rotation.y = value_ref.getDouble();
 			break;
 		}
@@ -350,16 +350,16 @@ void LINK::SET::Euler_Rotation_Y::exec(const uint16& slot_id) {
 LINK::SET::Euler_Rotation_Z::Euler_Rotation_Z() {
 	mini_type = SET::Type::EULER_ROTATION_Z;
 
-	i_pointer->data_type = DATA::Type::OBJECT;
-	i_value->data_type = DATA::Type::DOUBLE;
-	o_value->data_type = DATA::Type::DOUBLE;
+	i_pointer->data_type = PROP::Type::OBJECT;
+	i_value->data_type = PROP::Type::DOUBLE;
+	o_value->data_type = PROP::Type::DOUBLE;
 }
 
 void LINK::SET::Euler_Rotation_Z::exec(const uint16& slot_id) {
-	KL::Data pointer_ref = i_pointer->getData();
-	KL::Data value_ref = i_value->getData();
+	KL::Prop pointer_ref = i_pointer->getData();
+	KL::Prop value_ref = i_value->getData();
 	switch (pointer_ref.type) {
-		case DATA::Type::OBJECT: {
+		case PROP::Type::OBJECT: {
 			pointer_ref.getObject()->node_transform.euler_rotation.z = value_ref.getDouble();
 			break;
 		}
@@ -377,12 +377,12 @@ LINK::SET::Field::Field() :
 }
 
 void LINK::SET::Field::exec(const uint16& slot_id) {
-	KL::Data pointer_ref = i_pointer->getData();
-	KL::Data value_ref = i_value->getData();
+	KL::Prop pointer_ref = i_pointer->getData();
+	KL::Prop value_ref = i_value->getData();
 	switch (pointer_ref.type) {
-		case DATA::Type::OBJECT: {
+		case PROP::Type::OBJECT: {
 			switch (value_ref.type) {
-				case DATA::Type::TRANSFORM: {
+				case PROP::Type::TRANSFORM: {
 					auto object = any_cast<Object*>(pointer_ref.data);
 					auto transform = any_cast<Transform>(value_ref.data);
 
@@ -428,32 +428,32 @@ void LINK::SET::Field::exec(const uint16& slot_id) {
 LINK::Pointer::Pointer() {
 	type = NODE::Type::LINK;
 	sub_type = e_to_us(Type::POINTER);
-	pointer_type = DATA::Type::NONE;
+	pointer_type = PROP::Type::NONE;
 	pointer = nullptr;
 
-	o_pointer = new PORT::Data_O_Port(this, 0, DATA::Type::ANY);
+	o_pointer = new PORT::Data_O_Port(this, 0, PROP::Type::ANY);
 
 	outputs.push_back(o_pointer);
 }
 
-KL::Data LINK::Pointer::getData(const uint16& slot_id) const {
+KL::Prop LINK::Pointer::getData(const uint16& slot_id) const {
 	switch (pointer_type) {
-		case DATA::Type::SCENE:
-			return KL::Data(static_cast<Scene*>(pointer), DATA::Type::SCENE);
-		case DATA::Type::OBJECT:
-			return KL::Data(static_cast<Object*>(pointer), DATA::Type::OBJECT);
+		case PROP::Type::SCENE:
+			return KL::Prop(static_cast<Scene*>(pointer), PROP::Type::SCENE);
+		case PROP::Type::OBJECT:
+			return KL::Prop(static_cast<Object*>(pointer), PROP::Type::OBJECT);
 	}
-	return KL::Data();
+	return KL::Prop();
 }
 
 MATH::Math::Math() {
 	type = NODE::Type::MATH;
 	sub_type = e_to_us(Type::NONE);
 
-	i_value_a   = new PORT::Data_I_Port(this, 0, DATA::Type::ANY);
-	i_value_b   = new PORT::Data_I_Port(this, 1, DATA::Type::ANY);
+	i_value_a   = new PORT::Data_I_Port(this, 0, PROP::Type::ANY);
+	i_value_b   = new PORT::Data_I_Port(this, 1, PROP::Type::ANY);
 
-	o_value_res = new PORT::Data_O_Port(this, 0, DATA::Type::ANY);
+	o_value_res = new PORT::Data_O_Port(this, 0, PROP::Type::ANY);
 
 	inputs.push_back(i_value_a);
 	inputs.push_back(i_value_b);
@@ -464,28 +464,28 @@ KL::NODE::MATH::Add::Add() {
 	sub_type = e_to_us(Type::ADD);
 }
 
-KL::Data MATH::Add::getData(const uint16& slot_id) const {
+KL::Prop MATH::Add::getData(const uint16& slot_id) const {
 	return i_value_a->getData() + i_value_b->getData();
 }
 
 KL::NODE::MATH::Sub::Sub() {
 	sub_type = e_to_us(Type::SUB);
 }
-KL::Data MATH::Sub::getData(const uint16& slot_id) const {
+KL::Prop MATH::Sub::getData(const uint16& slot_id) const {
 	return i_value_a->getData() - i_value_b->getData();
 }
 
 KL::NODE::MATH::Mul::Mul() {
 	sub_type = e_to_us(Type::MUL);
 }
-KL::Data MATH::Mul::getData(const uint16& slot_id) const {
+KL::Prop MATH::Mul::getData(const uint16& slot_id) const {
 	return i_value_a->getData() * i_value_b->getData();
 }
 
 KL::NODE::MATH::Div::Div() {
 	sub_type = e_to_us(Type::DIV);
 }
-KL::Data MATH::Div::getData(const uint16& slot_id) const {
+KL::Prop MATH::Div::getData(const uint16& slot_id) const {
 	return i_value_a->getData() / i_value_b->getData();
 }
 
@@ -494,7 +494,7 @@ KL::NODE::UTIL::Print::Print() {
 	sub_type = e_to_us(Type::PRINT);
 
 	i_exec  = new PORT::Exec_I_Port(this, 0);
-	i_value = new PORT::Data_I_Port(this, 1, DATA::Type::ANY);
+	i_value = new PORT::Data_I_Port(this, 1, PROP::Type::ANY);
 
 	o_exec  = new PORT::Exec_O_Port(this, 0);
 
@@ -514,9 +514,9 @@ UTIL::Cast::Cast() {
 	sub_type = e_to_us(Type::CAST);
 	mini_type = CAST::Type::NONE;
 
-	i_value = new PORT::Data_I_Port(this, 0, DATA::Type::ANY);
+	i_value = new PORT::Data_I_Port(this, 0, PROP::Type::ANY);
 
-	o_value = new PORT::Data_O_Port(this, 0, DATA::Type::ANY);
+	o_value = new PORT::Data_O_Port(this, 0, PROP::Type::ANY);
 
 	inputs.push_back(i_value);
 	outputs.push_back(o_value);
@@ -527,13 +527,13 @@ KL::NODE::UTIL::CAST::Uint_To_Double::Uint_To_Double() :
 {
 	mini_type = CAST::Type::UINT_TO_DOUBLE;
 
-	i_value->data_type = DATA::Type::UINT;
-	i_value->default_value = Data(0ULL);
-	o_value->data_type = DATA::Type::DOUBLE;
+	i_value->data_type = PROP::Type::UINT;
+	i_value->default_value = Prop(0ULL);
+	o_value->data_type = PROP::Type::DOUBLE;
 }
 
-KL::Data KL::NODE::UTIL::CAST::Uint_To_Double::getData(const uint16& slot_id) const {
-	return KL::Data(static_cast<dvec1>(i_value->getData().getUint()));
+KL::Prop KL::NODE::UTIL::CAST::Uint_To_Double::getData(const uint16& slot_id) const {
+	return KL::Prop(static_cast<dvec1>(i_value->getData().getUint()));
 }
 
 KL::NODE::UTIL::CAST::Int_To_Double::Int_To_Double() :
@@ -541,24 +541,24 @@ KL::NODE::UTIL::CAST::Int_To_Double::Int_To_Double() :
 {
 	mini_type = CAST::Type::INT_TO_DOUBLE;
 
-	i_value->data_type = DATA::Type::INT;
-	i_value->default_value = Data(0LL);
-	o_value->data_type = DATA::Type::DOUBLE;
+	i_value->data_type = PROP::Type::INT;
+	i_value->default_value = Prop(0LL);
+	o_value->data_type = PROP::Type::DOUBLE;
 }
 
-KL::Data KL::NODE::UTIL::CAST::Int_To_Double::getData(const uint16& slot_id) const {
-	return KL::Data(static_cast<dvec1>(i_value->getData().getInt()));
+KL::Prop KL::NODE::UTIL::CAST::Int_To_Double::getData(const uint16& slot_id) const {
+	return KL::Prop(static_cast<dvec1>(i_value->getData().getInt()));
 }
 
 UTIL::View::View() {
 	type = NODE::Type::UTIL;
 	sub_type = e_to_us(Type::VIEW);
 
-	port = new PORT::Data_I_Port(this, 0, DATA::Type::ANY);
+	port = new PORT::Data_I_Port(this, 0, PROP::Type::ANY);
 
 	inputs.push_back(port);
 }
 
-KL::Data UTIL::View::getData(const uint16& slot_id) const {
+KL::Prop UTIL::View::getData(const uint16& slot_id) const {
 	return port->getData();
 }

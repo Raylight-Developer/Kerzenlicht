@@ -15,8 +15,8 @@ namespace KL {
 	}
 }
 namespace KL  {
-	struct Data;
-	namespace DATA {
+	struct Prop;
+	namespace PROP {
 		enum struct Type;
 		enum struct Modifier;
 	}
@@ -69,7 +69,7 @@ namespace KL {
 		~Node();
 
 		virtual void exec(const uint16& slot_id) {}
-		virtual Data getData(const uint16& slot_id) const;
+		virtual Prop getData(const uint16& slot_id) const;
 	};
 	namespace NODE {
 		enum struct Type {
@@ -92,7 +92,7 @@ namespace KL {
 			Port(Node* node);
 			virtual ~Port() = default;
 
-			virtual Data getData() const;
+			virtual Prop getData() const;
 			virtual void exec() const {}
 		};
 		namespace PORT {
@@ -106,27 +106,27 @@ namespace KL {
 			// TODO (maybe) for faster use typename T and make variants of for example Math nodes for each type e.g. float, vec3, etc. and discard std::any use
 			struct Data_I_Port : Port {
 				Data_O_Port* connection; // ref
-				Data default_value;
+				Prop default_value;
 
-				DATA::Type data_type;
-				DATA::Modifier modifier;
+				PROP::Type data_type;
+				PROP::Modifier modifier;
 
-				Data_I_Port(Node* parent, const uint16& slot_id, const DATA::Type& type, const DATA::Modifier& modifier = DATA::Modifier::SINGLE);
+				Data_I_Port(Node* parent, const uint16& slot_id, const PROP::Type& type, const PROP::Modifier& modifier = PROP::Modifier::SINGLE);
 				~Data_I_Port();
 
-				Data getData() const override;
+				Prop getData() const override;
 			};
 
 			struct Data_O_Port : Port {
 				vector<Data_I_Port*> outgoing_connections; // ref
 
-				DATA::Type data_type;
-				DATA::Modifier modifier;
+				PROP::Type data_type;
+				PROP::Modifier modifier;
 
-				Data_O_Port(Node* parent, const uint16& slot_id, const DATA::Type& type, const DATA::Modifier& modifier = DATA::Modifier::SINGLE);
+				Data_O_Port(Node* parent, const uint16& slot_id, const PROP::Type& type, const PROP::Modifier& modifier = PROP::Modifier::SINGLE);
 				~Data_O_Port();
 
-				Data getData() const override;
+				Prop getData() const override;
 			};
 
 			struct Exec_I_Port : Port {

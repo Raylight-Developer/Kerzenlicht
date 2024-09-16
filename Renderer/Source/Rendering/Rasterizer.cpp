@@ -153,7 +153,7 @@ void KL::Rasterizer::f_cleanup() {
 	for (KL::Object* object : FILE->active_scene->pointer->objects) {
 		object->cpu_update = true;
 		if (object->data->type == KL::OBJECT::DATA::Type::MESH) {
-			object->data->getMesh()->cpu_update = true;
+			object->getMesh()->cpu_update = true;
 		}
 	}
 }
@@ -205,7 +205,7 @@ void KL::Rasterizer::f_render() {
 
 	glUseProgram(raster_program);
 
-	KL::OBJECT::DATA::Camera* camera = FILE->active_camera->data->getCamera();
+	KL::OBJECT::DATA::Camera* camera = FILE->active_camera->getCamera();
 	glUniform3fv(glGetUniformLocation(raster_program, "camera_pos" ), 1, value_ptr(d_to_f(FILE->active_camera->transform.position)));
 	glUniformMatrix4fv(glGetUniformLocation(raster_program, "view_matrix"), 1, GL_FALSE, value_ptr(d_to_f(camera->glViewMatrix(FILE->active_camera))));
 	glUniformMatrix4fv(glGetUniformLocation(raster_program, "projection_matrix"), 1, GL_FALSE, value_ptr(d_to_f(camera->glProjectionMatrix(r_aspect_ratio))));
@@ -240,7 +240,7 @@ void KL::Rasterizer::f_renderMesh(const GLuint raster_program, KL::Object* objec
 	auto vao = &gl_data[object]["VAO"];
 	auto vbo = &gl_data[object]["VBO"];
 	vector<vec1>* cached_triangles = &gl_triangle_cache[uptr(object)];
-	auto mesh = object->data->getMesh();
+	auto mesh = object->getMesh();
 
 	if (object->cpu_update) {
 		object->cpu_update = false;
@@ -335,7 +335,7 @@ void KL::Rasterizer::f_renderMesh(const GLuint raster_program, KL::Object* objec
 }
 
 void KL::Rasterizer::f_renderGroup(const GLuint raster_program, KL::Object* object) {
-	for (KL::Object* sub_object : object->data->getGroup()->objects) {
+	for (KL::Object* sub_object : object->getGroup()->objects) {
 		sub_object->f_compileMatrix();
 		sub_object->transform_matrix *= object->transform_matrix;
 

@@ -65,7 +65,7 @@ string KL::Shader::f_compileShaders(const string & code) {
 			uint64 index = str_to_ul(index_str);
 
 			switch (shader->inputs[index].type) {
-				case (DATA::Type::TEXTURE) : {
+				case (PROP::Type::TEXTURE) : {
 					const string section = "textures[";
 					process_shader.replace(input_pos, section.length(), section);
 					auto [exists, result_index] = f_getVectorIndex(FILE->textures, shader->inputs[index].getTexture(), MAX_UINT64);

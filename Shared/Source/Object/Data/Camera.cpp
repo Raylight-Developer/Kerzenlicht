@@ -3,6 +3,8 @@
 #include "Object/Object.hpp"
 
 KL::OBJECT::DATA::Camera::Camera() {
+	type = Type::CAMERA;
+
 	view_angle  = 70.0;
 
 	projection_uv = dvec3(0.0);

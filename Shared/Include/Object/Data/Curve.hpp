@@ -2,6 +2,8 @@
 
 #include "Include.hpp"
 
+#include "Object/Data.hpp"
+
 namespace KL::OBJECT::DATA {
 	namespace CURVE {
 		namespace SPLINE {
@@ -21,7 +23,7 @@ namespace KL::OBJECT::DATA {
 		};
 	}
 
-	struct Curve {
+	struct Curve : Data  {
 		vector<CURVE::Spline*> splines;
 		bool cpu_update;
 

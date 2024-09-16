@@ -112,7 +112,7 @@ void GUI::WORKSPACE::Viewport::f_displayLoop() {
 
 	glUseProgram(mesh_program);
 
-	KL::OBJECT::DATA::Camera* camera = FILE->active_camera->data->getCamera();
+	KL::OBJECT::DATA::Camera* camera = FILE->active_camera->getCamera();
 	glUniform3fv(glGetUniformLocation(mesh_program, "camera_pos" ), 1, value_ptr(d_to_f(FILE->active_camera->transform.position)));
 	glUniformMatrix4fv(glGetUniformLocation(mesh_program, "view_matrix"), 1, GL_FALSE, value_ptr(d_to_f(camera->glViewMatrix(FILE->active_camera))));
 	glUniformMatrix4fv(glGetUniformLocation(mesh_program, "projection_matrix"), 1, GL_FALSE, value_ptr(d_to_f(camera->glProjectionMatrix(aspect_ratio))));
@@ -204,7 +204,7 @@ void GUI::WORKSPACE::Viewport::f_frameUpdate() {
 }
 
 void GUI::WORKSPACE::Viewport::f_selectObject(const dvec2& uv) {
-	KL::OBJECT::DATA::Camera* camera = FILE->active_camera->data->getCamera();
+	KL::OBJECT::DATA::Camera* camera = FILE->active_camera->getCamera();
 	const vec3 ray_origin = d_to_f(FILE->active_camera->transform.position);
 	const vec3 ray_direction = d_to_f(normalize(
 			camera->projection_uv
@@ -223,7 +223,7 @@ void GUI::WORKSPACE::Viewport::f_selectObject(const dvec2& uv) {
 	for (KL::Object* object : FILE->objects) {
 		object->f_compileMatrix();
 		if (object->data->type == KL::OBJECT::DATA::Type::MESH) {
-			for (const KL::OBJECT::DATA::MESH::Face* face : object->data->getMesh()->faces) {
+			for (const KL::OBJECT::DATA::MESH::Face* face : object->getMesh()->faces) {
 				if (face->vertices.size() == 3) {
 					if (KL::OBJECT::DATA::MESH::Face::f_rayTriangleIntersection(d_to_f(
 						object->transform_matrix),
@@ -344,7 +344,7 @@ void GUI::WORKSPACE::Viewport::f_renderMesh(const GLuint& raster_program, KL::Ob
 	auto vao = &gl_data[object]["vao"];
 	auto vbo = &gl_data[object]["vbo"];
 	vector<vec1>* cached_triangles = &gl_triangle_cache[uptr(object)];
-	auto mesh = object->data->getMesh();
+	auto mesh = object->getMesh();
 
 	if (object->cpu_update) {
 		object->cpu_update = false;
@@ -439,7 +439,7 @@ void GUI::WORKSPACE::Viewport::f_renderMesh(const GLuint& raster_program, KL::Ob
 }
 
 void GUI::WORKSPACE::Viewport::f_renderGroup(const GLuint& raster_program, KL::Object* object) {
-	for (KL::Object* sub_object : object->data->getGroup()->objects) {
+	for (KL::Object* sub_object : object->getGroup()->objects) {
 		sub_object->f_compileMatrix();
 		sub_object->transform_matrix *= object->transform_matrix;
 
@@ -451,7 +451,7 @@ void GUI::WORKSPACE::Viewport::f_renderCurve(const GLuint& raster_program, KL::O
 	auto vao = &gl_data[object]["VAO"];
 	auto vbo = &gl_data[object]["VBO"];
 	vector<vec1>* cached_data = &gl_triangle_cache[uptr(object)];
-	auto curve = object->data->getCurve();
+	auto curve = object->getCurve();
 
 	if (object->cpu_update) {
 		object->cpu_update = false;

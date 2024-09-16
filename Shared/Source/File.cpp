@@ -15,7 +15,7 @@ KL::File::File() {
 
 	active_camera = new Object();
 	active_camera->transform.position = dvec3(0, 0, 2.5);
-	active_camera->data = new OBJECT::Data(OBJECT::DATA::Type::CAMERA, new OBJECT::DATA::Camera());
+	active_camera->data = new OBJECT::DATA::Camera();
 
 	version = "ERROR";
 }
@@ -166,7 +166,7 @@ void KL::File::f_loadAscii(const Token_Array& token_data, const Tokens& line_dat
 			else if (tokens[0] == "┌Scene")
 				is_processing = Parse_Type::SCENE;
 			else if (tokens[0] == "┌Data")
-				is_processing = Parse_Type::DATA;
+				is_processing = Parse_Type::PROP;
 			t_data.clear();
 			t_data.push_back(tokens);
 			l_data.clear();
@@ -208,7 +208,7 @@ void KL::File::f_loadAscii(const Token_Array& token_data, const Tokens& line_dat
 				is_processing = Parse_Type::NONE;
 				scenes.push_back(f_loadAsciiScene(t_data, l_data));
 			}
-			else if (is_processing == Parse_Type::DATA and tokens[0] == "└Data") {
+			else if (is_processing == Parse_Type::PROP and tokens[0] == "└Data") {
 				LOG ENDL ANSI_B << "  [Data-Block]" ANSI_RESET; FLUSH;
 				is_processing = Parse_Type::NONE;
 				object_data.push_back(f_loadAsciiData(t_data, l_data));
@@ -289,7 +289,7 @@ KL::Node_Tree* KL::File::f_loadAsciiNodeTree(const Token_Array& token_data, cons
 					LOG ENDL ANSI_B << "      [Node]" ANSI_RESET; FLUSH;
 					LOG ENDL << "        " ANSI_PURPLE << name ANSI_RESET; FLUSH;
 					auto node_t = new NODE::LINK::Pointer();
-					node_t->pointer_type = DATA::fromString(read_data[5][1]);
+					node_t->pointer_type = PROP::fromString(read_data[5][1]);
 					node = node_t;
 				}
 				else if (read_data[3][3] == "GET") {
@@ -456,10 +456,10 @@ KL::Shader* KL::File::f_loadAsciiShader(const Token_Array& token_data, const Tok
 		else if (tokens[0] == "└Input") {
 			is_processing = false;
 			if (read_data[1][1] == "OBJECT") {
-				shader->inputs.push_back(Data(ptr<Object*>(pointer_map.getVal(str_to_ul(read_data[0][1])))));
+				shader->inputs.push_back(Prop(ptr<Object*>(pointer_map.getVal(str_to_ul(read_data[0][1])))));
 			}
 			else if (read_data[1][1] == "TEXTURE") {
-				shader->inputs.push_back(Data(ptr<SHADER::Texture*>(pointer_map.getVal(str_to_ul(read_data[0][1])))));
+				shader->inputs.push_back(Prop(ptr<SHADER::Texture*>(pointer_map.getVal(str_to_ul(read_data[0][1])))));
 			}
 		}
 		else if (is_processing) {
@@ -526,13 +526,11 @@ KL::OBJECT::Data* KL::File::f_loadAsciiSkeleton(const Token_Array& token_data, c
 }
 
 KL::OBJECT::Data* KL::File::f_loadAsciiCamera(const Token_Array& token_data, const Tokens& line_data) {
-	KL::OBJECT::Data* data = new KL::OBJECT::Data();
 	KL::OBJECT::DATA::Camera* camera = new KL::OBJECT::DATA::Camera();
-	data->name = f_join(token_data[0], 4);
-	data->type = KL::OBJECT::DATA::Type::CAMERA;
-	data->data = camera;
-	pointer_map.insert(str_to_ul(token_data[1][1]), uptr(data));
-	return data;
+	camera->name = f_join(token_data[0], 4);
+	camera->type = KL::OBJECT::DATA::Type::CAMERA;
+	pointer_map.insert(str_to_ul(token_data[1][1]), uptr(camera));
+	return camera;
 }
 
 KL::OBJECT::Data* KL::File::f_loadAsciiVolume(const Token_Array& token_data, const Tokens& line_data) {
@@ -568,14 +566,12 @@ KL::OBJECT::Data* KL::File::f_loadAsciiForce(const Token_Array& token_data, cons
 }
 
 KL::OBJECT::Data* KL::File::f_loadAsciiGroup(const Token_Array& token_data, const Tokens& line_data) {
-	KL::OBJECT::Data* data = new KL::OBJECT::Data();
 	KL::OBJECT::DATA::Group* group = new KL::OBJECT::DATA::Group();
-	data->name = f_join(token_data[0], 4);
-	data->type = KL::OBJECT::DATA::Type::GROUP;
-	data->data = group;
+	group->name = f_join(token_data[0], 4);
+	group->type = KL::OBJECT::DATA::Type::GROUP;
 
-	pointer_map.insert(str_to_ul(token_data[1][1]), uptr(data));
-	return data;
+	pointer_map.insert(str_to_ul(token_data[1][1]), uptr(group));
+	return group;
 }
 
 KL::OBJECT::Data* KL::File::f_loadAsciiLight(const Token_Array& token_data, const Tokens& line_data) {
@@ -587,14 +583,12 @@ KL::OBJECT::Data* KL::File::f_loadAsciiLight(const Token_Array& token_data, cons
 }
 
 KL::OBJECT::Data* KL::File::f_loadAsciiMesh(const Token_Array& token_data, const Tokens& line_data) {
-	KL::OBJECT::Data* data = new KL::OBJECT::Data();
 	KL::OBJECT::DATA::Mesh * mesh = new KL::OBJECT::DATA::Mesh();
-	data->name = f_join(token_data[0], 4);
-	data->type = KL::OBJECT::DATA::Type::MESH;
-	data->data = mesh;
+	mesh->name = f_join(token_data[0], 4);
+	mesh->type = KL::OBJECT::DATA::Type::MESH;
 
 	LOG ENDL ANSI_B << "    [Data] " ANSI_RESET; FLUSH;
-	LOG ENDL << "      " ANSI_PURPLE  << data->name ANSI_RESET; FLUSH;
+	LOG ENDL << "      " ANSI_PURPLE  << mesh->name ANSI_RESET; FLUSH;
 	LOG ENDL ANSI_B << "      [Mesh]" ANSI_RESET; FLUSH;
 
 	bool is_processing = false;
@@ -676,8 +670,8 @@ KL::OBJECT::Data* KL::File::f_loadAsciiMesh(const Token_Array& token_data, const
 			read_data.push_back(tokens);
 		}
 	}
-	pointer_map.insert(str_to_ul(token_data[1][1]), uptr(data));
-	return data;
+	pointer_map.insert(str_to_ul(token_data[1][1]), uptr(mesh));
+	return mesh;
 }
 
 KL::OBJECT::Data* KL::File::f_loadAsciiSfx(const Token_Array& token_data, const Tokens& line_data) {
@@ -780,7 +774,7 @@ void KL::File::f_loadAsciiBuild(const Token_Array& token_data, const Tokens& lin
 		else if (tokens[0] == "└Data-Group") {
 			is_processing = false;
 			for (const Tokens& sub_tokens : read_data) {
-				ptr<KL::OBJECT::Data*>(pointer_map.getVal(str_to_ul(sub_tokens[1])))->getGroup()->objects.push_back(ptr<KL::Object*>(pointer_map.getVal(str_to_ul(sub_tokens[3]))));
+				ptr<KL::OBJECT::DATA::Group*>(pointer_map.getVal(str_to_ul(sub_tokens[1])))->objects.push_back(ptr<KL::Object*>(pointer_map.getVal(str_to_ul(sub_tokens[3]))));
 			}
 		}
 		else if (tokens[0] == "┌Object-Data") {
@@ -1106,7 +1100,7 @@ void KL::File::f_saveAsciiShader(Lace& lace, const KL::Shader* data, const uint6
 			for (uint64 i = 0; i < data->inputs.size(); i++) {
 				lace NL << "┌Input [ " << i << " ]";
 				switch (data->inputs[i].type) {
-					case DATA::Type::TEXTURE: {
+					case PROP::Type::TEXTURE: {
 						lace NL SP PTR << uptr(data->inputs[i].getTexture());
 						lace NL SP << "Type TEXTURE";
 						break;
@@ -1241,7 +1235,7 @@ void KL::File::f_saveAsciiLight(Lace& lace, const KL::OBJECT::Data* data, const 
 }
 
 void KL::File::f_saveAsciiMesh(Lace& lace, const KL::OBJECT::Data* data, const uint64& i) {
-	const KL::OBJECT::DATA::Mesh* mesh = static_cast<KL::OBJECT::DATA::Mesh*>(data->data);
+	const KL::OBJECT::DATA::Mesh* mesh = static_cast<const KL::OBJECT::DATA::Mesh*>(data);
 	lace NL << "┌Data [ " << i << " ] " << data->name;
 	lace++;
 	lace NL PTR << uptr(data);
@@ -1415,7 +1409,7 @@ void KL::File::f_saveAsciiBuild(Lace& lace) {
 	lace++;
 	for (auto object : objects) {
 		if (object->data->type == OBJECT::DATA::Type::GROUP) {
-			for (auto child : object->data->getGroup()->objects) {
+			for (auto child : object->getGroup()->objects) {
 				lace NL PTR << uptr(object->data) SP PTR << uptr(child);
 			}
 		}

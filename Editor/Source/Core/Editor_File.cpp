@@ -46,7 +46,7 @@ void KL::Editor_File::f_loadEditorTools() {
 			else if (tokens[0] == "┌Scene")
 				is_processing = Parse_Type::SCENE;
 			else if (tokens[0] == "┌Data")
-				is_processing = Parse_Type::DATA;
+				is_processing = Parse_Type::PROP;
 			t_data.clear();
 			t_data.push_back(tokens);
 			l_data.clear();
@@ -77,7 +77,7 @@ void KL::Editor_File::f_loadEditorTools() {
 			else if (is_processing == Parse_Type::SCENE and tokens[0] == "└Scene") {
 				is_processing = Parse_Type::NONE;
 			}
-			else if (is_processing == Parse_Type::DATA and tokens[0] == "└Data") {
+			else if (is_processing == Parse_Type::PROP and tokens[0] == "└Data") {
 				is_processing = Parse_Type::NONE;
 				auto data = f_loadAsciiData(t_data, l_data);
 				editor_object_data[data->name] = data;
@@ -151,8 +151,8 @@ KL::Node_Tree* KL::Editor_File::f_loadAsciiNodeTree(const Token_Array&token_data
 					LOG ENDL ANSI_B << "      [Node]" ANSI_RESET; FLUSH;
 					LOG ENDL << "        " ANSI_PURPLE << name ANSI_RESET; FLUSH;
 					auto node_t = new NODE::LINK::Pointer();
-					node_t->pointer_type = DATA::fromString(read_data[5][1]);
-					gui_node = new GUI::NODE::LINK::Pointer(pos, DATA::fromString(read_data[5][1]));
+					node_t->pointer_type = PROP::fromString(read_data[5][1]);
+					gui_node = new GUI::NODE::LINK::Pointer(pos, PROP::fromString(read_data[5][1]));
 					node = node_t;
 				}
 				else if (read_data[3][3] == "GET") {
@@ -330,7 +330,7 @@ void KL::Editor_File::f_loadAsciiBuild(const Token_Array& token_data, const Toke
 		else if (tokens[0] == "└Data-Group") {
 			is_processing = false;
 			for (const Tokens& sub_tokens : read_data) {
-				ptr<KL::OBJECT::Data*>(pointer_map.getVal(str_to_ul(sub_tokens[1])))->getGroup()->objects.push_back(ptr<KL::Object*>(pointer_map.getVal(str_to_ul(sub_tokens[3]))));
+				ptr<KL::OBJECT::DATA::Group*>(pointer_map.getVal(str_to_ul(sub_tokens[1])))->objects.push_back(ptr<KL::Object*>(pointer_map.getVal(str_to_ul(sub_tokens[3]))));
 			}
 		}
 		else if (tokens[0] == "┌Object-Data") {

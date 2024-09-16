@@ -39,8 +39,8 @@ namespace KL {
 	}
 }
 
-using Data = KL::Data;
-namespace DATA = KL::DATA;
+using Prop = KL::Prop;
+namespace PROP = KL::PROP;
 
 // DECL
 namespace SHADER {
@@ -56,7 +56,7 @@ namespace SHADER {
 				Tick();
 
 				void exec(const uint16& slot_id = 0) override;
-				Data getData(const uint16& slot_id) const override;
+				Prop getData(const uint16& slot_id) const override;
 			};
 		}
 	}

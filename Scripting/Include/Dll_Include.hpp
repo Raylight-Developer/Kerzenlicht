@@ -12,6 +12,6 @@
 #include "Object/Object.hpp"
 #include "Object/Nodes/Object_Nodes.hpp"
 
-using Data      = KL::Data;
-using Data_Type = KL::DATA::Type;
+using Prop      = KL::Prop;
+using Prop_Type = KL::PROP::Type;
 using Script    = KL::NODE::EXEC::Script_Node;

@@ -31,7 +31,7 @@ namespace KL {
 		TEXTURE,
 		SHADER,
 		NODE_TREE,
-		DATA,
+		PROP,
 		OBJECT,
 		SCENE,
 		BUILD_STEPS

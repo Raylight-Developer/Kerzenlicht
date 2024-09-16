@@ -55,8 +55,8 @@ namespace GUI {
 				Script(const ivec2& pos, const string& script_id = "");
 				~Script();
 				void clearIO();
-				void addDataInput (const uint16& slot_id, const string& label, const KL::DATA::Type& type, const KL::DATA::Modifier& modifier = KL::DATA::Modifier::SINGLE);
-				void addDataOutput(const uint16& slot_id, const string& label, const KL::DATA::Type& type, const KL::DATA::Modifier& modifier = KL::DATA::Modifier::SINGLE);
+				void addDataInput (const uint16& slot_id, const string& label, const KL::PROP::Type& type, const KL::PROP::Modifier& modifier = KL::PROP::Modifier::SINGLE);
+				void addDataOutput(const uint16& slot_id, const string& label, const KL::PROP::Type& type, const KL::PROP::Modifier& modifier = KL::PROP::Modifier::SINGLE);
 				void addExecInput (const uint16& slot_id, const string& label);
 				void addExecOutput(const uint16& slot_id, const string& label);
 				void renderDefault(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget);
@@ -74,8 +74,8 @@ namespace GUI {
 				Script* node;
 			public:
 				Script_Node(Script* node);
-				virtual void addDataInput (const string& label, const KL::DATA::Type& type, const KL::DATA::Modifier& modifier = KL::DATA::Modifier::SINGLE) const;
-				virtual void addDataOutput(const string& label, const KL::DATA::Type& type, const KL::DATA::Modifier& modifier = KL::DATA::Modifier::SINGLE) const;
+				virtual void addDataInput (const string& label, const KL::PROP::Type& type, const KL::PROP::Modifier& modifier = KL::PROP::Modifier::SINGLE) const;
+				virtual void addDataOutput(const string& label, const KL::PROP::Type& type, const KL::PROP::Modifier& modifier = KL::PROP::Modifier::SINGLE) const;
 				virtual void addExecInput (const string& label) const;
 				virtual void addExecOutput(const string& label) const;
 				virtual void clearIO() const;
@@ -94,10 +94,10 @@ namespace GUI {
 			struct Pointer : Node {
 				PORT::Data_O_Port* o_pointer;
 
-				KL::DATA::Type pointer_type;
+				KL::PROP::Type pointer_type;
 				void* pointer;
 
-				Pointer(const ivec2& pos, const KL::DATA::Type& pointer_type);
+				Pointer(const ivec2& pos, const KL::PROP::Type& pointer_type);
 
 				void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget = nullptr) override;
 			};

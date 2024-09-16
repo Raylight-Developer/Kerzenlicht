@@ -90,7 +90,7 @@ void GUI::NODE::Port::paint(QPainter* painter, const QStyleOptionGraphicsItem* o
 	}
 }
 
-GUI::NODE::PORT::Data_I_Port::Data_I_Port(Node* parent, const uint16& slot_id, const QString& label, const KL::DATA::Type& type, const KL::DATA::Modifier& modifier) :
+GUI::NODE::PORT::Data_I_Port::Data_I_Port(Node* parent, const uint16& slot_id, const QString& label, const KL::PROP::Type& type, const KL::PROP::Modifier& modifier) :
 	Port(parent)
 {
 	this->type = KL::NODE::PORT::Type::DATA_I;
@@ -99,7 +99,7 @@ GUI::NODE::PORT::Data_I_Port::Data_I_Port(Node* parent, const uint16& slot_id, c
 	this->data_type = type;
 	this->label = label;
 
-	this->any_data_type = KL::DATA::Type::NONE;
+	this->any_data_type = KL::PROP::Type::NONE;
 	this->connection = nullptr;
 
 	rect = QRectF(node->rect.topLeft().x() - 5, node->rect.topLeft().y() + 30 + slot_id * 20, 25 + QFontMetrics(QApplication::font()).horizontalAdvance(label), 20);
@@ -117,7 +117,7 @@ GUI::NODE::PORT::Data_I_Port::~Data_I_Port() {
 	}
 }
 
-void GUI::NODE::PORT::Data_I_Port::setDataType(const KL::DATA::Type& type) {
+void GUI::NODE::PORT::Data_I_Port::setDataType(const KL::PROP::Type& type) {
 	data_type = type;
 	auto temp_color = typeColor(type);
 	color = QColor(temp_color.x, temp_color.y, temp_color.z);
@@ -131,7 +131,7 @@ void GUI::NODE::PORT::Data_I_Port::paint(QPainter* painter, const QStyleOptionGr
 	painter->drawText(rect.bottomLeft() + QPointF(20, -4), label);
 }
 
-GUI::NODE::PORT::Data_O_Port::Data_O_Port(Node* parent, const uint16& slot_id, const QString& label, const KL::DATA::Type& type, const KL::DATA::Modifier& modifier) :
+GUI::NODE::PORT::Data_O_Port::Data_O_Port(Node* parent, const uint16& slot_id, const QString& label, const KL::PROP::Type& type, const KL::PROP::Modifier& modifier) :
 	Port(parent)
 {
 	this->type = KL::NODE::PORT::Type::DATA_O;
@@ -140,7 +140,7 @@ GUI::NODE::PORT::Data_O_Port::Data_O_Port(Node* parent, const uint16& slot_id, c
 	this->data_type = type;
 	this->label = label;
 
-	this->any_data_type = KL::DATA::Type::NONE;
+	this->any_data_type = KL::PROP::Type::NONE;
 	this->outgoing_connections = {};
 
 	const qreal width = QFontMetrics(QApplication::font()).horizontalAdvance(label) + 25;
@@ -157,7 +157,7 @@ GUI::NODE::PORT::Data_O_Port::~Data_O_Port() {
 	outgoing_connections.clear();
 }
 
-void GUI::NODE::PORT::Data_O_Port::setDataType(const KL::DATA::Type& type) {
+void GUI::NODE::PORT::Data_O_Port::setDataType(const KL::PROP::Type& type) {
 	data_type = type;
 	auto temp_color = typeColor(type);
 	color = QColor(temp_color.x, temp_color.y, temp_color.z);
@@ -243,10 +243,10 @@ GUI::NODE::Connection::Connection(Port* port_l, Port* port_r) :
 	pos_l = mapFromItem(port_l, port_l->boundingRect().topRight());
 	pos_r = pos_l;
 
-	data_type = KL::DATA::Type::NONE;
+	data_type = KL::PROP::Type::NONE;
 	color = QColor(255, 255, 255);
 
-	auto temp_color = typeColor(KL::DATA::Type::ANY);
+	auto temp_color = typeColor(KL::PROP::Type::ANY);
 	auto any_color = QColor(temp_color.x, temp_color.y, temp_color.z);
 
 	if (port_l and !port_r) {
@@ -255,7 +255,7 @@ GUI::NODE::Connection::Connection(Port* port_l, Port* port_r) :
 				data_type = port_l_d->data_type;
 			}
 			else {
-				data_type = KL::DATA::Type::ANY;
+				data_type = KL::PROP::Type::ANY;
 			}
 			color = port_l->color;
 		}
@@ -266,7 +266,7 @@ GUI::NODE::Connection::Connection(Port* port_l, Port* port_r) :
 				data_type = port_l_d->data_type;
 			}
 			else {
-				data_type = KL::DATA::Type::ANY;
+				data_type = KL::PROP::Type::ANY;
 			}
 			color = port_l->color;
 		}
@@ -275,7 +275,7 @@ GUI::NODE::Connection::Connection(Port* port_l, Port* port_r) :
 				data_type = port_r_d->data_type;
 			}
 			else {
-				data_type = KL::DATA::Type::ANY;
+				data_type = KL::PROP::Type::ANY;
 			}
 			color = port_r->color;
 		}

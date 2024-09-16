@@ -36,8 +36,8 @@ KL::Node::~Node() {
 	for (KL::NODE::Port* port : outputs) delete port;
 }
 
-KL::Data KL::Node::getData(const uint16& slot_id) const {
-	return Data();
+KL::Prop KL::Node::getData(const uint16& slot_id) const {
+	return Prop();
 }
 
 KL::NODE::Port::Port(Node* node) :
@@ -47,11 +47,11 @@ KL::NODE::Port::Port(Node* node) :
 	slot_id = 0;
 }
 
-KL::Data KL::NODE::Port::getData() const {
-	return Data();
+KL::Prop KL::NODE::Port::getData() const {
+	return Prop();
 }
 
-KL::NODE::PORT::Data_I_Port::Data_I_Port(Node* node, const uint16& slot_id, const DATA::Type& type, const DATA::Modifier& modifier) :
+KL::NODE::PORT::Data_I_Port::Data_I_Port(Node* node, const uint16& slot_id, const PROP::Type& type, const PROP::Modifier& modifier) :
 	Port(node),
 	data_type(type),
 	modifier(modifier)
@@ -60,7 +60,7 @@ KL::NODE::PORT::Data_I_Port::Data_I_Port(Node* node, const uint16& slot_id, cons
 	this->slot_id = slot_id;
 	this->type = Type::DATA_I;
 	this->connection = nullptr;
-	this->default_value = Data();
+	this->default_value = Prop();
 }
 
 KL::NODE::PORT::Data_I_Port::~Data_I_Port() {
@@ -75,12 +75,12 @@ KL::NODE::PORT::Data_I_Port::~Data_I_Port() {
 	}
 }
 
-KL::Data KL::NODE::PORT::Data_I_Port::getData() const {
+KL::Prop KL::NODE::PORT::Data_I_Port::getData() const {
 	if (connection) return connection->getData();
 	return default_value;
 }
 
-KL::NODE::PORT::Data_O_Port::Data_O_Port(Node* node, const uint16& slot_id, const DATA::Type& type, const DATA::Modifier& modifier) :
+KL::NODE::PORT::Data_O_Port::Data_O_Port(Node* node, const uint16& slot_id, const PROP::Type& type, const PROP::Modifier& modifier) :
 	Port(node),
 	data_type(type),
 	modifier(modifier)
@@ -97,7 +97,7 @@ KL::NODE::PORT::Data_O_Port::~Data_O_Port() {
 	}
 }
 
-KL::Data KL::NODE::PORT::Data_O_Port::getData() const {
+KL::Prop KL::NODE::PORT::Data_O_Port::getData() const {
 	return node->getData(slot_id);
 }
 

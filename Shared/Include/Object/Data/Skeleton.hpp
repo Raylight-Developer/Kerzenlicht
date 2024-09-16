@@ -2,6 +2,8 @@
 
 #include "Include.hpp"
 
+#include "Object/Data.hpp"
+
 namespace KL::OBJECT::DATA {
 	namespace SKELETON {
 		struct Bone {
@@ -12,7 +14,7 @@ namespace KL::OBJECT::DATA {
 			Bone();
 		};
 	}
-	struct Skeleton {
+	struct Skeleton : Data {
 		SKELETON::Bone* root;
 
 		Skeleton();

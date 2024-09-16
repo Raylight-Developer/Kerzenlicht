@@ -193,11 +193,11 @@ GUI::WORKSPACE::Shader_Inputs::Shader_Inputs(Workspace_Shader_Editor* parent) :
 
 void GUI::WORKSPACE::Shader_Inputs::load(KL::Shader* shader) {
 	clear();
-	for (const Data& data : shader->inputs) {
+	for (const Prop& data : shader->inputs) {
 		QListWidgetItem* item = new QListWidgetItem(this);
 		item->setData(1000, uptr(shader));
 		switch (data.type) {
-			case DATA::Type::TEXTURE: {
+			case PROP::Type::TEXTURE: {
 				item->setText("TEXTURE | " + QString::fromStdString(data.getTexture()->name));
 				break;
 			}

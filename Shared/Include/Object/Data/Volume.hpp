@@ -2,6 +2,8 @@
 
 #include "Include.hpp"
 
+#include "Object/Data.hpp"
+
 namespace KL::OBJECT::DATA {
 	namespace VOLUME {
 		enum struct Type {
@@ -26,7 +28,7 @@ namespace KL::OBJECT::DATA {
 		};
 	}
 
-	struct Volume {
+	struct Volume : Data {
 		VOLUME::Type type;
 		void* data;
 

@@ -2,6 +2,8 @@
 
 #include "Include.hpp"
 
+#include "Object/Data.hpp"
+
 namespace KL::OBJECT::DATA {
 	namespace LIGHT {
 		enum struct Type {
@@ -20,7 +22,7 @@ namespace KL::OBJECT::DATA {
 		struct Spot {
 		};
 	}
-	struct Light {
+	struct Light : Data {
 		LIGHT::Type type;
 		void* light;
 

@@ -62,7 +62,7 @@ namespace KL {
 
 		SHADER::Type type;
 		string shader_code;
-		vector<Data> inputs;
+		vector<Prop> inputs;
 		KL::Node_Tree* node_tree;
 
 		Shader();

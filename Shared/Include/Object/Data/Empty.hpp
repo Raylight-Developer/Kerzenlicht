@@ -2,6 +2,8 @@
 
 #include "Include.hpp"
 
+#include "Object/Data.hpp"
+
 namespace KL::OBJECT::DATA {
 	namespace EMPTY {
 		enum struct Type {
@@ -9,7 +11,7 @@ namespace KL::OBJECT::DATA {
 			AXES
 		};
 	}
-	struct Empty {
+	struct Empty : Data {
 		Empty();
 	};
 }
