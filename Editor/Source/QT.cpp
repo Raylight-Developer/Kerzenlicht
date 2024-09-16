@@ -531,3 +531,7 @@ ivec2 p_to_i(const QPoint& val) {
 dvec2 p_to_d(const QPointF& val) {
 	return dvec2(val.x(), val.y());
 }
+
+dvec2 p_to_d(const QPoint& val) {
+	return dvec2(i_to_d(val.x()), i_to_d(val.y()));
+}

@@ -24823,8 +24823,8 @@ return sampleTextureRgba8u(<inputs>[0], vec2(uv.x, 1 - uv.y));
 ┌Objects( 1 )
  ┌Object [ 0 ] Ganyu
   * 2079009586528
-  Position ( 0.0 0.2 0.0 )
-  Rotation ( -30.0 45.0 0.0 )
+  Position ( 0.0 0.0 0.0 )
+  Rotation ( 0.0 0.0 0.0 )
   Scale    ( 1.0 1.0 1.0 )
   Type MESH
  └Object

@@ -14,8 +14,6 @@ KL::File::File() {
 	active_scene = new Observable_Ptr<Scene>();
 
 	default_camera = new Object();
-	default_camera->transform.position = dvec3(2.5, 1.5, 2.5);
-	default_camera->transform.euler_rotation = dvec3(-20, 45, 0);
 	default_camera->data = new OBJECT::Data(OBJECT::DATA::Type::CAMERA, new OBJECT::DATA::Camera());
 
 	version = "ERROR";

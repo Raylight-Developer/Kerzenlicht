@@ -32,7 +32,7 @@ KL::Renderer::Renderer() {
 	frame_time = FPS_60;
 	last_time = 0.0;
 
-	render_mode = Mode::PATHTRACING;
+	render_mode = Mode::RASTERIZATION;
 	direct_render = true;
 	display_filter = GL_NEAREST; // GL_LINEAR for no filtering
 }
@@ -170,7 +170,17 @@ void KL::Renderer::f_gameLoop() {
 		pathtracer.reset = true;
 		runframe = 0;
 	}
-	if (keys[GLFW_MOUSE_BUTTON_RIGHT]) {
+	if (keys[GLFW_KEY_LEFT_ALT] and keys[GLFW_MOUSE_BUTTON_RIGHT]) {
+		const dvec1 xoffset = (last_mouse.x - current_mouse.x) * frame_time * camera_view_sensitivity;
+		const dvec1 yoffset = (last_mouse.y - current_mouse.y) * frame_time * camera_view_sensitivity;
+
+		FILE->default_camera->transform.rotate(dvec3(yoffset, xoffset, 0.0));
+		pathtracer.reset = true;
+		runframe = 0;
+
+		last_mouse = current_mouse;
+	}
+	else if (keys[GLFW_MOUSE_BUTTON_RIGHT]) {
 		const dvec1 xoffset = (last_mouse.x - current_mouse.x) * frame_time * camera_view_sensitivity;
 		const dvec1 yoffset = (last_mouse.y - current_mouse.y) * frame_time * camera_view_sensitivity;
 

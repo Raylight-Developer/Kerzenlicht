@@ -2,8 +2,6 @@
 
 #include "Workspaces/Manager.hpp"
 
-//#define PATH_TRACING true
-
 GUI::WORKSPACE::Timeline::Timeline(Workspace_Viewport* parent) :
 	GUI::Linear_Contents(parent, QBoxLayout::Direction::LeftToRight),
 	parent(parent)
@@ -24,16 +22,16 @@ GUI::WORKSPACE::Timeline::Timeline(Workspace_Viewport* parent) :
 		FILE->active_scene->pointer->current_frame = value;
 
 		if (this->parent->viewport) this->parent->viewport->f_tickUpdate();
-		});
+	});
 	connect(current_frame, &GUI::Value_Input::returnPressed, [this, current_frame]() {
 		slider->setValue(current_frame->text().toInt());
-		});
+	});
 	connect(current_frame, &GUI::Value_Input::textChanged, [this, current_frame](const QString& text) {
 		if (text.toDouble() > slider->maximum())
 			current_frame->setText(QString::number(slider->maximum()));
 		else if (text.toDouble() < slider->minimum())
 			current_frame->setText(QString::number(slider->minimum()));
-		});
+	});
 
 	addWidget(info);
 	addWidget(current_frame);
@@ -49,6 +47,7 @@ GUI::WORKSPACE::Workspace_Viewport::Workspace_Viewport(Workspace_Manager* parent
 	viewport = new Viewport(this);
 	QWidget* container = QWidget::createWindowContainer(viewport);
 
+	container->setFocusPolicy(Qt::StrongFocus);
 	container->setSizePolicy(QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Expanding);
 	container->setContentsMargins(0, 0, 0, 0);
 
@@ -93,15 +92,13 @@ GUI::WORKSPACE::Viewport::Viewport(Workspace_Viewport* parent) :
 	render_scale(1.0),
 
 	render_resolution(d_to_u(u_to_d(display_resolution)* render_scale)),
-	render_aspect_ratio(u_to_d(render_resolution.x) / u_to_d(render_resolution.y)),
-
-	reset(false),
-	debug(false),
 
 	renderer_data({}),
 
 	window_time(0.0),
 	frame_time(FPS_60),
+
+	panning(false),
 
 	view_layer(0)
 {
@@ -109,120 +106,13 @@ GUI::WORKSPACE::Viewport::Viewport(Workspace_Viewport* parent) :
 }
 
 void GUI::WORKSPACE::Viewport::f_pipeline() {
-#ifdef PATH_TRACING
-	// Pipeline Setup
-	const GLfloat vertices[16] = {
-		-1.0f, -1.0f, 0.0f, 0.0f,
-		-1.0f,  1.0f, 0.0f, 1.0f,
-		1.0f,  1.0f, 1.0f, 1.0f,
-		1.0f, -1.0f, 1.0f, 0.0f,
-	};
-	const GLuint indices[6] = {
-		0, 1, 2,
-		2, 3, 0
-	};
-
-	// Display Quad
-	gl_data["vao"] = 0;
-	GLuint VBO, EBO;
-	glCreateVertexArrays(1, &gl_data["vao"]);
-	glCreateBuffers(1, &VBO);
-	glCreateBuffers(1, &EBO);
-
-	glNamedBufferData(VBO, sizeof(vertices), vertices, GL_STATIC_DRAW);
-	glNamedBufferData(EBO, sizeof(indices), indices, GL_STATIC_DRAW);
-
-	GLuint VAO = gl_data["vao"];
-	glEnableVertexArrayAttrib (VAO, 0);
-	glVertexArrayAttribBinding(VAO, 0, 0);
-	glVertexArrayAttribFormat (VAO, 0, 2, GL_FLOAT, GL_FALSE, 0);
-
-	glEnableVertexArrayAttrib (VAO, 1);
-	glVertexArrayAttribBinding(VAO, 1, 0);
-	glVertexArrayAttribFormat (VAO, 1, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GLfloat));
-
-	glVertexArrayVertexBuffer (VAO, 0, VBO, 0, 4 * sizeof(GLfloat));
-	glVertexArrayElementBuffer(VAO, EBO);
-
-	// Compute Output
-	gl_data["accumulation_render_layer"] = renderLayer(render_resolution);
-	gl_data["normal_render_layer"]       = renderLayer(render_resolution);
-	gl_data["bvh_render_layer"]          = renderLayer(render_resolution);
-	gl_data["raw_render_layer"]          = renderLayer(render_resolution);
-
-	{
-		auto [compiled, id] = computeShaderProgram("Compute");
-		gl_data["compute_program"] = id;
-	}
-	{
-		auto [compiled, id] = fragmentShaderProgram("Display");
-		gl_data["display_program"] = id;
-	}
-
-	gl_data["compute_layout_x"] = d_to_u(ceil(u_to_d(render_resolution.x) / 32.0));
-	gl_data["compute_layout_y"] = d_to_u(ceil(u_to_d(render_resolution.y) / 32.0));
-	gl_data["compute_layout_z"] = 1U;
-
-	glBindVertexArray(VAO);
-	gpu_data->updateTextures();
-	gpu_data->printInfo();
-#else
 	glEnable(GL_DEPTH_TEST);
 	auto [compiled, id] = fragmentShaderProgram("Rasterizer");
 	renderer_data["raster_program"] = id;
-#endif
 }
 
 void GUI::WORKSPACE::Viewport::f_uploadData() {
-#ifdef PATH_TRACING
-	triangles.clear();
-	triangle_map.clear();
-	for (KL::Object* object : FILE->active_scene->pointer->objects) {
-		object->f_compileMatrix();
-		vector <VIEWPORT_REALTIME::Triangle>  temp;
-		if (object->data->type == KL::OBJECT::DATA::Type::MESH) {
-			const KL::OBJECT::DATA::Mesh* mesh = object->data->getMesh();
-			for (const KL::OBJECT::DATA::MESH::Face* face : mesh->faces) {
-				const dvec4 vert4_a = object->transform_matrix * dvec4(face->vertices[0]->position, 1.0);
-				const dvec4 vert4_b = object->transform_matrix * dvec4(face->vertices[1]->position, 1.0);
-				const dvec4 vert4_c = object->transform_matrix * dvec4(face->vertices[2]->position, 1.0);
-				const dvec3 vert_a = dvec3(vert4_a.x, vert4_a.y, vert4_a.z) / vert4_a.w;
-				const dvec3 vert_b = dvec3(vert4_b.x, vert4_b.y, vert4_b.z) / vert4_b.w;
-				const dvec3 vert_c = dvec3(vert4_c.x, vert4_c.y, vert4_c.z) / vert4_c.w;
-				triangles.push_back(VIEWPORT_REALTIME::GPU_Triangle(vert_a, vert_b, vert_c));
-				temp.push_back(VIEWPORT_REALTIME::Triangle(vert_a, vert_b, vert_c));
-			}
-		}
-		else if (object->data->type == KL::OBJECT::DATA::Type::GROUP) {
-			const KL::OBJECT::DATA::Group* group = object->data->getGroup();
-			for (KL::Object* sub_object : group->objects) {
-				sub_object->f_compileMatrix();
-				sub_object->transform_matrix *= object->transform_matrix;
-				if (sub_object->data->type == KL::OBJECT::DATA::Type::MESH) {
-					const KL::OBJECT::DATA::Mesh* mesh = sub_object->data->getMesh();
-					for (const KL::OBJECT::DATA::MESH::Face* face : mesh->faces) {
-						const dvec4 vert4_a = sub_object->transform_matrix * dvec4(face->vertices[0]->position, 1.0);
-						const dvec4 vert4_b = sub_object->transform_matrix * dvec4(face->vertices[1]->position, 1.0);
-						const dvec4 vert4_c = sub_object->transform_matrix * dvec4(face->vertices[2]->position, 1.0);
-						const dvec3 vert_a = dvec3(vert4_a.x, vert4_a.y, vert4_a.z) / vert4_a.w;
-						const dvec3 vert_b = dvec3(vert4_b.x, vert4_b.y, vert4_b.z) / vert4_b.w;
-						const dvec3 vert_c = dvec3(vert4_c.x, vert4_c.y, vert4_c.z) / vert4_c.w;
-						triangles.push_back(VIEWPORT_REALTIME::GPU_Triangle(vert_a, vert_b, vert_c));
-						temp.push_back(VIEWPORT_REALTIME::Triangle(vert_a, vert_b, vert_c));
-					}
-				}
-			}
-		}
-		triangle_map[object] = temp;
-	}
 
-	GLuint triangle_buffer;
-	glGenBuffers(1, &triangle_buffer);
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, triangle_buffer);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(VIEWPORT_REALTIME::GPU_Triangle) * triangles.size(), triangles.data(), GL_DYNAMIC_DRAW);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, triangle_buffer);
-#else
-#endif
 }
 
 void GUI::WORKSPACE::Viewport::f_tickUpdate() {
@@ -234,90 +124,18 @@ void GUI::WORKSPACE::Viewport::f_tickUpdate() {
 			}
 		}
 	}
-
-#ifdef PATH_TRACING
-	gpu_data->f_tickUpdate();
-
-	GLint ssboMaxSize;
-	glGetIntegerv(GL_MAX_SHADER_STORAGE_BLOCK_SIZE, &ssboMaxSize);
-
-	glDeleteBuffers(1, &gl_data["ssbo 5"]);
-	glDeleteBuffers(1, &gl_data["ssbo 6"]);
-	glDeleteBuffers(1, &gl_data["ssbo 7"]);
-	glDeleteBuffers(1, &gl_data["ssbo 8"]);
-
-	gl_data["ssbo 5"] = ssboBinding(5, ul_to_u(gpu_data->trianglesSize()  ), gpu_data->triangles.data());
-	gl_data["ssbo 6"] = ssboBinding(6, ul_to_u(gpu_data->bvhNodesSize()   ), gpu_data->bvh_nodes.data());
-	gl_data["ssbo 7"] = ssboBinding(7, ul_to_u(gpu_data->texturesSize()   ), gpu_data->textures.data());
-	gl_data["ssbo 8"] = ssboBinding(8, ul_to_u(gpu_data->textureDataSize()), gpu_data->texture_data.data());
-#else
-#endif
 }
 
 void GUI::WORKSPACE::Viewport::f_selectObject(const dvec2& uv) { // TODO fix slight missalignment
-#ifdef PATH_TRACING
-	KL::OBJECT::DATA::Camera* camera = FILE->default_camera->data->getCamera();
-	camera->compile(FILE->active_scene->pointer, FILE->default_camera);
-	const VIEWPORT_REALTIME::Ray ray = VIEWPORT_REALTIME::Ray(
-		d_to_f(FILE->default_camera->transform.position),
-		d_to_f(normalize(
-			camera->projection_uv
-			+ (camera->projection_u * uv.x)
-			+ (camera->projection_v * uv.y)
-			- FILE->default_camera->transform.position
-		))
-	);
 
-	dvec1 t_dist = MAX_DIST;
-	dvec1 closest_dist = MAX_DIST;
-	KL::Object* closest = nullptr;
-	for (const auto& [object, triangles] : triangle_map) {
-		for (const VIEWPORT_REALTIME::Triangle& tri : triangles) {
-			if (VIEWPORT_REALTIME::f_rayTriangleIntersection(ray, tri, t_dist)) {
-				if (t_dist < closest_dist && t_dist > EPSILON) {
-					closest_dist = t_dist;
-					closest = object;
-				}
-			}
-		}
-	}
-	if (closest) {
-		FILE->active_object->set(closest);
-	}
-	else {
-		FILE->active_object->set(nullptr);
-	}
-#else
-#endif
 }
 
 void GUI::WORKSPACE::Viewport::f_recompileShaders() {
-#ifdef PATH_TRACING
-	{
-		{
-			auto [compiled, id] = computeShaderProgram("Compute");
-			if (compiled) {
-				glDeleteProgram(gl_data["compute_program"]);
-				gl_data["compute_program"] = id;
-			}
-		}
-		{
-			auto [compiled, id] = fragmentShaderProgram("Display");
-			if (compiled) {
-				glDeleteProgram(gl_data["display_program"]);
-				gl_data["display_program"] = id;
-			}
-		}
+	auto [compiled, id] = fragmentShaderProgram("Rasterizer");
+	if (compiled) {
+		glDeleteProgram(renderer_data["raster_program"]);
+		renderer_data["raster_program"] = id;
 	}
-#else
-	{
-		auto [compiled, id] = fragmentShaderProgram("Rasterizer");
-		if (compiled) {
-			glDeleteProgram(renderer_data["raster_program"]);
-			renderer_data["raster_program"] = id;
-		}
-	}
-#endif
 }
 
 void GUI::WORKSPACE::Viewport::initializeGL() {
@@ -338,74 +156,27 @@ void GUI::WORKSPACE::Viewport::paintGL() {
 
 	f_tickUpdate();
 
-#ifdef PATH_TRACING
-	{
-		glClear(GL_COLOR_BUFFER_BIT);
-		const GLuint compute_program = gl_data["compute_program"];
-		glUseProgram(compute_program);
-		glUniform1ui(glGetUniformLocation(compute_program, "frame_count" ), ul_to_u(runframe));
-		glUniform1f (glGetUniformLocation(compute_program, "aspect_ratio"), d_to_f(render_aspect_ratio));
-		glUniform1f (glGetUniformLocation(compute_program, "current_time"), d_to_f(chrono::duration<double>(current_time - start_time).count()));
-		glUniform2ui(glGetUniformLocation(compute_program, "resolution"  ), render_resolution.x, render_resolution.y);
-		glUniform1ui(glGetUniformLocation(compute_program, "reset"), static_cast<GLuint>(reset));
-		glUniform1ui(glGetUniformLocation(compute_program, "debug"), static_cast<GLuint>(debug));
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-		glUniform1ui(glGetUniformLocation(compute_program, "ray_bounces"), 1);
-		glUniform1ui(glGetUniformLocation(compute_program, "samples_per_pixel"), 1);
+	const GLuint raster_program = renderer_data["raster_program"];
+	glUseProgram(raster_program);
 
-		KL::OBJECT::DATA::Camera* camera = FILE->default_camera->data->getCamera();
-		camera->compile(FILE->active_scene->pointer, FILE->default_camera);
-		glUniform3fv(glGetUniformLocation(compute_program, "camera_pos" ), 1, value_ptr(d_to_f(FILE->default_camera->transform.position)));
-		glUniform3fv(glGetUniformLocation(compute_program, "camera_p_uv"), 1, value_ptr(d_to_f(camera->projection_uv)));
-		glUniform3fv(glGetUniformLocation(compute_program, "camera_p_u" ), 1, value_ptr(d_to_f(camera->projection_u)));
-		glUniform3fv(glGetUniformLocation(compute_program, "camera_p_v" ), 1, value_ptr(d_to_f(camera->projection_v)));
-		glBindImageTexture(0, gl_data["accumulation_render_layer"], 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
-		glBindImageTexture(1, gl_data["raw_render_layer"         ], 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
-		glBindImageTexture(2, gl_data["bvh_render_layer"         ], 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
-		glBindImageTexture(3, gl_data["normal_render_layer"      ], 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
-		glDispatchCompute(gl_data["compute_layout_x"], gl_data["compute_layout_y"], gl_data["compute_layout_z"]);
+	KL::OBJECT::DATA::Camera* camera = FILE->default_camera->data->getCamera();
+	glUniform3fv(glGetUniformLocation(raster_program, "camera_pos" ), 1, value_ptr(d_to_f(FILE->default_camera->transform.position)));
+	glUniformMatrix4fv(glGetUniformLocation(raster_program, "view_matrix"), 1, GL_FALSE, value_ptr(d_to_f(camera->glViewMatrix(FILE->default_camera))));
+	glUniformMatrix4fv(glGetUniformLocation(raster_program, "projection_matrix"), 1, GL_FALSE, value_ptr(d_to_f(camera->glProjectionMatrix(display_aspect_ratio))));
 
-		glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
-
-		const GLuint display_program = gl_data["display_program"];
-		glUseProgram(display_program);
-		glClear(GL_COLOR_BUFFER_BIT);
-		glUniform1f(glGetUniformLocation(display_program, "display_aspect_ratio"), d_to_f(display_aspect_ratio));
-		glUniform1f(glGetUniformLocation(display_program, "render_aspect_ratio"), d_to_f(render_aspect_ratio));
-		glUniform1ui(glGetUniformLocation(display_program, "view_layer"), view_layer);
-		glUniform1ui(glGetUniformLocation(display_program, "debug"), static_cast<GLuint>(debug));
-		bindRenderLayer(display_program, 0, gl_data["accumulation_render_layer"], "accumulation_render_layer");
-		bindRenderLayer(display_program, 1, gl_data["raw_render_layer"]         , "raw_render_layer"         );
-		bindRenderLayer(display_program, 2, gl_data["bvh_render_layer"]         , "bvh_render_layer"         );
-		bindRenderLayer(display_program, 3, gl_data["normal_render_layer"]      , "normal_render_layer"      );
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-	}
-#else
-	{
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		const GLuint raster_program = renderer_data["raster_program"];
-		glUseProgram(raster_program);
-
-		KL::OBJECT::DATA::Camera* camera = FILE->default_camera->data->getCamera();
-		glUniform3fv(glGetUniformLocation(raster_program, "camera_pos" ), 1, value_ptr(d_to_f(FILE->default_camera->transform.position)));
-		glUniformMatrix4fv(glGetUniformLocation(raster_program, "view_matrix"), 1, GL_FALSE, value_ptr(d_to_f(camera->glViewMatrix(FILE->default_camera))));
-		glUniformMatrix4fv(glGetUniformLocation(raster_program, "projection_matrix"), 1, GL_FALSE, value_ptr(d_to_f(camera->glProjectionMatrix(render_aspect_ratio))));
-
-		for (KL::Object* object : FILE->active_scene->pointer->objects) {
-			if (object->data->type == KL::OBJECT::DATA::Type::MESH) {
-				f_renderMesh(raster_program, object);
-			}
-			else if (object->data->type == KL::OBJECT::DATA::Type::GROUP) {
-				f_renderGroup(raster_program, object);
-			}
+	for (KL::Object* object : FILE->active_scene->pointer->objects) {
+		if (object->data->type == KL::OBJECT::DATA::Type::MESH) {
+			f_renderMesh(raster_program, object);
+		}
+		else if (object->data->type == KL::OBJECT::DATA::Type::GROUP) {
+			f_renderGroup(raster_program, object);
 		}
 	}
-#endif
 
 	frame_counter++;
 	runframe++;
-	if (reset) reset = false;
 
 	if (window_time > 1.0) {
 		frame_count = frame_counter;
@@ -424,30 +195,41 @@ void GUI::WORKSPACE::Viewport::paintGL() {
 void GUI::WORKSPACE::Viewport::resizeGL(int w, int h) {
 	display_resolution = uvec2(i_to_u(w), i_to_u(h));
 	display_aspect_ratio = u_to_d(display_resolution.x) / u_to_d(display_resolution.y);
-
 	render_resolution = d_to_u(u_to_d(display_resolution) * render_scale);
-	render_aspect_ratio = u_to_d(render_resolution.x) / u_to_d(render_resolution.y);
 
 	glViewport(0, 0, render_resolution.x, render_resolution.y);
-#ifdef PATH_TRACING
-	{
-		// Compute Output
-		glBindTexture(GL_TEXTURE_2D, 0);
-		glDeleteTextures(1, &gl_data["accumulation_render_layer"]);
-		glDeleteTextures(1, &gl_data["normal_render_layer"]);
-		glDeleteTextures(1, &gl_data["bvh_render_layer"]);
-		glDeleteTextures(1, &gl_data["raw_render_layer"]); // TODO Fix all other potential OpenGL memory Leaks
+}
 
-		gl_data["accumulation_render_layer"] = renderLayer(render_resolution);
-		gl_data["normal_render_layer"]       = renderLayer(render_resolution);
-		gl_data["bvh_render_layer"]          = renderLayer(render_resolution);
-		gl_data["raw_render_layer"]          = renderLayer(render_resolution);
+void GUI::WORKSPACE::Viewport::mouseReleaseEvent(QMouseEvent* event) {
+	panning = false;
+}
 
-		gl_data["compute_layout_x"] = d_to_u(ceil(u_to_d(render_resolution.x) / 32.0));
-		gl_data["compute_layout_y"] = d_to_u(ceil(u_to_d(render_resolution.y) / 32.0));
-
+void GUI::WORKSPACE::Viewport::mousePressEvent(QMouseEvent* event) {
+	if (event->modifiers() == Qt::KeyboardModifier::AltModifier) {
+		panning = true;
+		last_mouse = p_to_d(event->pos());
 	}
-#endif
+	else {
+		f_selectObject(dvec2(1.0, -1.0) * (dvec2(event->pos().x(), event->pos().y()) - 1.0 - dvec2(width(), height()) / 2.0) / max(i_to_d(width()), i_to_d(height())));
+	}
+}
+
+void GUI::WORKSPACE::Viewport::mouseMoveEvent(QMouseEvent* event) {
+	if (panning) {
+		dvec2 delta = (p_to_d(event->pos()) - last_mouse) * 0.25;
+
+		FILE->default_camera->transform.orbit(dvec3(0), dvec2(-delta.y, -delta.x));
+		last_mouse = p_to_d(event->pos());
+	}
+}
+
+void GUI::WORKSPACE::Viewport::keyPressEvent(QKeyEvent* event) {
+	if (event->key() == Qt::Key::Key_R) {
+		f_recompileShaders();
+	}
+}
+
+void GUI::WORKSPACE::Viewport::wheelEvent(QWheelEvent*) {
 }
 
 void GUI::WORKSPACE::Viewport::f_renderMesh(const GLuint raster_program, KL::Object* object) {
@@ -496,19 +278,41 @@ void GUI::WORKSPACE::Viewport::f_renderMesh(const GLuint raster_program, KL::Obj
 	const GLuint vertex_count = ul_to_u(cached_triangles->size() / 8);
 
 	glBindVertexArray(*vao);
+
+	glEnable(GL_STENCIL_TEST);
+	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+	glStencilFunc(GL_ALWAYS, 1, 255);
+	glStencilMask(255);
+
 	// Mesh
 	glUniformMatrix4fv(glGetUniformLocation(raster_program, "model_matrix"), 1, GL_FALSE, value_ptr(d_to_f(object->transform_matrix)));
 	glUniform1ui(glGetUniformLocation(raster_program, "wireframe"), 0);
+	glUniform1ui(glGetUniformLocation(raster_program, "stencil"), 0);
 	glDisable(GL_POLYGON_OFFSET_LINE);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	glDrawArrays(GL_TRIANGLES, 0, vertex_count);
-	// Wireframe
 
+	// Stencil
+	//glDisable(GL_POLYGON_OFFSET_LINE);
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	//
+	//glStencilFunc(GL_NOTEQUAL, 1, 255);
+	//glStencilMask(255);
+	//
+	//glUniformMatrix4fv(glGetUniformLocation(raster_program, "model_matrix"), 1, GL_FALSE, value_ptr(glm::scale(d_to_f(object->transform_matrix), vec3(1.15f))));
+	//glUniform1ui(glGetUniformLocation(raster_program, "stencil"), 1);
+	//glDrawArrays(GL_TRIANGLES, 0, vertex_count);
+	//
+	//glDisable(GL_STENCIL_TEST);
+
+	// Wireframe
 	glUniform1ui(glGetUniformLocation(raster_program, "wireframe"), 1);
+	glUniform1ui(glGetUniformLocation(raster_program, "stencil"), 0);
 	glEnable(GL_POLYGON_OFFSET_LINE);
 	glPolygonOffset(-1.0, -1.0);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	glDrawArrays(GL_TRIANGLES, 0, vertex_count);
+
 
 	glBindVertexArray(0);
 }
@@ -554,7 +358,7 @@ tuple<bool, GLuint> GUI::WORKSPACE::Viewport::fragmentShaderProgram(const string
 	GLuint shader_program = glCreateShader(GL_VERTEX_SHADER);
 
 	GLuint vert_shader = glCreateShader(GL_VERTEX_SHADER);
-	const string vertex_code = loadFromFile("../Shared/Resources/Shaders/" + file_path + ".vert");
+	const string vertex_code = loadFromFile("./Resources/Shaders/" + file_path + ".vert");
 	const char* vertex_code_cstr = vertex_code.c_str();
 	glShaderSource(vert_shader, 1, &vertex_code_cstr, NULL);
 	glCompileShader(vert_shader);
@@ -564,7 +368,7 @@ tuple<bool, GLuint> GUI::WORKSPACE::Viewport::fragmentShaderProgram(const string
 	}
 
 	GLuint frag_shader = glCreateShader(GL_FRAGMENT_SHADER);
-	const string fragment_code = loadFromFile("../Shared/Resources/Shaders/" + file_path + ".frag");
+	const string fragment_code = loadFromFile("./Resources/Shaders/" + file_path + ".frag");
 	const char* fragment_code_cstr = fragment_code.c_str();
 	glShaderSource(frag_shader, 1, &fragment_code_cstr, NULL);
 	glCompileShader(frag_shader);
@@ -588,9 +392,9 @@ tuple<bool, GLuint> GUI::WORKSPACE::Viewport::fragmentShaderProgram(const string
 
 tuple<bool, GLuint> GUI::WORKSPACE::Viewport::computeShaderProgram(const string& file_path) {
 	GLuint shader_program;
-	string compute_code = preprocessShader("../Shared/Resources/Shaders/" + file_path + ".comp");
+	string compute_code = preprocessShader("./Resources/Shaders/" + file_path + ".comp");
 	compute_code = KL::Shader::f_compileShaders(compute_code);
-	writeToFile("../Shared/Resources/Shaders/" + file_path + "_Compiled.comp", compute_code);
+	writeToFile("./Resources/Shaders/" + file_path + "_Compiled.comp", compute_code);
 	const char* compute_code_cstr = compute_code.c_str();
 	GLuint comp_shader = glCreateShader(GL_COMPUTE_SHADER);
 	glShaderSource(comp_shader, 1, &compute_code_cstr, NULL);

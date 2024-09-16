@@ -61,12 +61,6 @@ bool GUI::WORKSPACE::Main_Window::eventFilter(QObject* object, QEvent* event) {
 	}
 	if (!mouse_pressed && event->type() == QEvent::MouseButtonPress) {
 		mouse_pressed = true;
-		if (object->objectName() == "Viewport_Realtime") {
-			QMouseEvent* d_event =static_cast<QMouseEvent*>(event);
-			Viewport* viewport = dynamic_cast<Viewport*>(object);
-			//viewport->f_selectObject(dvec2(1.0, -1.0) * (dvec2(d_event->pos().x(), d_event->pos().y()) - 1.0 - dvec2(viewport->width(), viewport->height()) / 2.0) / max(i_to_d(viewport->width()), i_to_d(viewport->height())));
-		
-		}
 	}
 	if (event->type() == QEvent::MouseButtonRelease) {
 		mouse_pressed = false;
@@ -77,7 +71,7 @@ bool GUI::WORKSPACE::Main_Window::eventFilter(QObject* object, QEvent* event) {
 			Viewport* viewport = dynamic_cast<Viewport*>(object);
 			QKeyEvent* d_event =static_cast<QKeyEvent*>(event);
 			if (d_event->key() == Qt::Key::Key_R) {
-				//viewport->f_recompileShaders();
+				viewport->f_recompileShaders();
 			}
 		}
 	}

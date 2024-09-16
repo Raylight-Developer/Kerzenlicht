@@ -74,7 +74,6 @@ namespace GUI {
 
 			dvec1 render_scale;
 			dvec1 display_aspect_ratio;
-			dvec1 render_aspect_ratio;
 			uvec2 display_resolution;
 			uvec2 render_resolution;
 
@@ -90,9 +89,6 @@ namespace GUI {
 			uint   frame_count;
 			uint64 runframe;
 
-			bool reset;
-			bool debug;
-
 			chrono::high_resolution_clock::time_point current_time;
 			chrono::high_resolution_clock::time_point start_time;
 			chrono::high_resolution_clock::time_point last_time;
@@ -100,6 +96,9 @@ namespace GUI {
 			dvec1 frame_time;
 
 			uint view_layer;
+
+			bool panning;
+			dvec2 last_mouse;
 
 			Viewport(Workspace_Viewport* parent);
 
@@ -114,6 +113,12 @@ namespace GUI {
 			void initializeGL() override;
 			void paintGL() override;
 			void resizeGL(int w, int h) override;
+
+			void mouseReleaseEvent(QMouseEvent* event) override;
+			void mousePressEvent(QMouseEvent* event) override;
+			void mouseMoveEvent(QMouseEvent* event) override;
+			void keyPressEvent(QKeyEvent* event) override;
+			void wheelEvent(QWheelEvent*) override;
 
 			void f_renderMesh(const GLuint raster_program, KL::Object* object);
 			void f_renderGroup(const GLuint raster_program, KL::Object* object);

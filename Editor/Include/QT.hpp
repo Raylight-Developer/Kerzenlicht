@@ -217,3 +217,4 @@ namespace GUI {
 
 ivec2 p_to_i(const QPoint& val);
 dvec2 p_to_d(const QPointF& val);
+dvec2 p_to_d(const QPoint& val);
