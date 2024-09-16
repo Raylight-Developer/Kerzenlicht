@@ -52,7 +52,7 @@ namespace KL {
 		Observable_Ptr<Object>* active_object;
 		Observable_Ptr<Scene>* active_scene;
 		vector<Object*> selected_objects;
-		Object* default_camera;
+		Object* active_camera;
 
 		string version;
 		string type;

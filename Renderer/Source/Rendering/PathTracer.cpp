@@ -12,8 +12,8 @@ KL::PathTracer::PathTracer(Renderer* renderer) :
 
 	sample = 0;
 
-	d_resolution = uvec2(0);
-	d_aspect_ratio = 1.0;
+	resolution = uvec2(0);
+	aspect_ratio = 1.0;
 
 	r_resolution = uvec2(0);
 	r_aspect_ratio = 1.0;
@@ -25,8 +25,8 @@ void KL::PathTracer::f_initialize() {
 
 	sample = 0;
 
-	d_resolution = renderer->display_resolution;
-	d_aspect_ratio = d_to_f(renderer->display_aspect_ratio);
+	resolution = renderer->resolution;
+	aspect_ratio = d_to_f(renderer->aspect_ratio);
 
 	r_resolution = renderer->f_res();
 	r_aspect_ratio = d_to_f(renderer->f_aspectRatio());
@@ -52,7 +52,7 @@ void KL::PathTracer::f_initialize() {
 	data["ssbo 7"] = 0;
 	data["ssbo 8"] = 0;
 
-	glViewport(0, 0, d_resolution.x, d_resolution.y);
+	glViewport(0, 0, resolution.x, resolution.y);
 	glClearColor(0, 0, 0, 0);
 
 	const GLfloat vertices[16] = {
@@ -180,13 +180,13 @@ void KL::PathTracer::f_cleanup() {
 }
 
 void KL::PathTracer::f_resize() {
-	d_resolution = renderer->display_resolution;
-	d_aspect_ratio = d_to_f(renderer->display_aspect_ratio);
+	resolution = renderer->resolution;
+	aspect_ratio = d_to_f(renderer->aspect_ratio);
 
 	r_resolution = renderer->f_res();
 	r_aspect_ratio = d_to_f(renderer->f_aspectRatio());
 
-	glViewport(0, 0, d_resolution.x, d_resolution.y);
+	glViewport(0, 0, resolution.x, resolution.y);
 
 	if (true) {
 		data["compute_layout.x"] = d_to_u(ceil(u_to_d(r_resolution.x) / 32.0));
@@ -219,10 +219,10 @@ void KL::PathTracer::f_render() {
 	glUniform1ui(glGetUniformLocation(compute_program, "ray_bounces"), 1);
 	glUniform1ui(glGetUniformLocation(compute_program, "samples_per_pixel"), 1);
 
-	KL::OBJECT::DATA::Camera* camera = FILE->default_camera->data->getCamera();
-	camera->f_updateRayVectors(FILE->active_scene->pointer, FILE->default_camera);
+	KL::OBJECT::DATA::Camera* camera = FILE->active_camera->data->getCamera();
+	camera->f_updateRayVectors(FILE->active_scene->pointer, FILE->active_camera);
 
-	glUniform3fv(glGetUniformLocation(compute_program, "camera_pos"),  1, value_ptr(d_to_f(FILE->default_camera->transform.position)));
+	glUniform3fv(glGetUniformLocation(compute_program, "camera_pos"),  1, value_ptr(d_to_f(FILE->active_camera->transform.position)));
 	glUniform3fv(glGetUniformLocation(compute_program, "camera_p_uv"), 1, value_ptr(d_to_f(camera->projection_uv)));
 	glUniform3fv(glGetUniformLocation(compute_program, "camera_p_u"),  1, value_ptr(d_to_f(camera->projection_u)));
 	glUniform3fv(glGetUniformLocation(compute_program, "camera_p_v"),  1, value_ptr(d_to_f(camera->projection_v)));
@@ -238,7 +238,7 @@ void KL::PathTracer::f_render() {
 
 	glUseProgram(display_program);
 	glClear(GL_COLOR_BUFFER_BIT);
-	glUniform1f (glGetUniformLocation(display_program, "display_aspect_ratio"), d_aspect_ratio);
+	glUniform1f (glGetUniformLocation(display_program, "display_aspect_ratio"), aspect_ratio);
 	glUniform1f (glGetUniformLocation(display_program, "render_aspect_ratio"), r_aspect_ratio);
 	glUniform1ui(glGetUniformLocation(display_program, "view_layer"), data["view_layer"] );
 	glUniform1ui(glGetUniformLocation(display_program, "debug"), static_cast<GLuint>(debug));

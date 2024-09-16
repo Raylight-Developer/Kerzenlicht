@@ -86,12 +86,8 @@ GUI::WORKSPACE::Viewport::Viewport(Workspace_Viewport* parent) :
 	frame_count(0),
 	runframe(0),
 
-	display_resolution(uvec2(3840U, 2160U)),
-	display_aspect_ratio(u_to_d(display_resolution.x) / u_to_d(display_resolution.y)),
-
-	render_scale(1.0),
-
-	render_resolution(d_to_u(u_to_d(display_resolution)* render_scale)),
+	resolution(uvec2(3840U, 2160U)),
+	aspect_ratio(u_to_d(resolution.x) / u_to_d(resolution.y)),
 
 	data({}),
 
@@ -116,10 +112,10 @@ void GUI::WORKSPACE::Viewport::f_displayLoop() {
 
 	glUseProgram(mesh_program);
 
-	KL::OBJECT::DATA::Camera* camera = FILE->default_camera->data->getCamera();
-	glUniform3fv(glGetUniformLocation(mesh_program, "camera_pos" ), 1, value_ptr(d_to_f(FILE->default_camera->transform.position)));
-	glUniformMatrix4fv(glGetUniformLocation(mesh_program, "view_matrix"), 1, GL_FALSE, value_ptr(d_to_f(camera->glViewMatrix(FILE->default_camera))));
-	glUniformMatrix4fv(glGetUniformLocation(mesh_program, "projection_matrix"), 1, GL_FALSE, value_ptr(d_to_f(camera->glProjectionMatrix(display_aspect_ratio))));
+	KL::OBJECT::DATA::Camera* camera = FILE->active_camera->data->getCamera();
+	glUniform3fv(glGetUniformLocation(mesh_program, "camera_pos" ), 1, value_ptr(d_to_f(FILE->active_camera->transform.position)));
+	glUniformMatrix4fv(glGetUniformLocation(mesh_program, "view_matrix"), 1, GL_FALSE, value_ptr(d_to_f(camera->glViewMatrix(FILE->active_camera))));
+	glUniformMatrix4fv(glGetUniformLocation(mesh_program, "projection_matrix"), 1, GL_FALSE, value_ptr(d_to_f(camera->glProjectionMatrix(aspect_ratio))));
 
 	for (KL::Object* object : FILE->active_scene->pointer->objects) {
 		if (object->data->type == KL::OBJECT::DATA::Type::MESH) {
@@ -160,28 +156,28 @@ void GUI::WORKSPACE::Viewport::f_guiUpdate() {
 
 void GUI::WORKSPACE::Viewport::f_inputLoop() {
 	if (inputs[Qt::Key::Key_D]) {
-		FILE->default_camera->transform.moveLocal(dvec3(1.0, 0.0, 0.0)* camera_move_sensitivity * frame_time);
+		FILE->active_camera->transform.moveLocal(dvec3(1.0, 0.0, 0.0)* camera_move_sensitivity * frame_time);
 	}
 	if (inputs[Qt::Key::Key_A]) {
-		FILE->default_camera->transform.moveLocal(dvec3(-1.0, 0.0, 0.0)* camera_move_sensitivity * frame_time);
+		FILE->active_camera->transform.moveLocal(dvec3(-1.0, 0.0, 0.0)* camera_move_sensitivity * frame_time);
 	}
 	if (inputs[Qt::Key::Key_E] || inputs[Qt::Key::Key_Space]) {
-		FILE->default_camera->transform.moveLocal(dvec3(0.0, 1.0, 0.0)* camera_move_sensitivity * frame_time);
+		FILE->active_camera->transform.moveLocal(dvec3(0.0, 1.0, 0.0)* camera_move_sensitivity * frame_time);
 	}
 	if (inputs[Qt::Key::Key_Q] || inputs[Qt::Key::Key_Control]) {
-		FILE->default_camera->transform.moveLocal(dvec3(0.0, -1.0, 0.0)* camera_move_sensitivity * frame_time);
+		FILE->active_camera->transform.moveLocal(dvec3(0.0, -1.0, 0.0)* camera_move_sensitivity * frame_time);
 	}
 	if (inputs[Qt::Key::Key_W]) {
-		FILE->default_camera->transform.moveLocal(dvec3(0.0, 0.0, -1.0)* camera_move_sensitivity * frame_time);
+		FILE->active_camera->transform.moveLocal(dvec3(0.0, 0.0, -1.0)* camera_move_sensitivity * frame_time);
 	}
 	if (inputs[Qt::Key::Key_S]) {
-		FILE->default_camera->transform.moveLocal(dvec3(0.0, 0.0, 1.0)* camera_move_sensitivity * frame_time);
+		FILE->active_camera->transform.moveLocal(dvec3(0.0, 0.0, 1.0)* camera_move_sensitivity * frame_time);
 	}
 	if (inputs[Qt::Key::Key_Alt] and inputs[Qt::MouseButton::LeftButton]) {
 		const dvec1 xoffset = (last_mouse.x - current_mouse.x) * frame_time * camera_orbit_sensitivity;
 		const dvec1 yoffset = (last_mouse.y - current_mouse.y) * frame_time * camera_orbit_sensitivity;
 
-		FILE->default_camera->transform.orbit(dvec3(0), dvec3(yoffset, xoffset, 0.0));
+		FILE->active_camera->transform.orbit(dvec3(0), dvec3(yoffset, xoffset, 0.0));
 
 		last_mouse = current_mouse;
 	}
@@ -189,7 +185,7 @@ void GUI::WORKSPACE::Viewport::f_inputLoop() {
 		const dvec1 xoffset = (last_mouse.x - current_mouse.x) * frame_time * camera_view_sensitivity;
 		const dvec1 yoffset = (last_mouse.y - current_mouse.y) * frame_time * camera_view_sensitivity;
 
-		FILE->default_camera->transform.rotate(dvec3(yoffset, xoffset, 0.0));
+		FILE->active_camera->transform.rotate(dvec3(yoffset, xoffset, 0.0));
 
 		last_mouse = current_mouse;
 	}
@@ -207,8 +203,54 @@ void GUI::WORKSPACE::Viewport::f_frameUpdate() {
 	runframe++;
 }
 
-void GUI::WORKSPACE::Viewport::f_selectObject(const dvec2& uv) { // TODO
+void GUI::WORKSPACE::Viewport::f_selectObject(const dvec2& uv) {
+	KL::OBJECT::DATA::Camera* camera = FILE->active_camera->data->getCamera();
+	const vec3 ray_origin = d_to_f(FILE->active_camera->transform.position);
+	const vec3 ray_direction = d_to_f(normalize(
+			camera->projection_uv
+			+ (camera->projection_u * uv.x)
+			+ (camera->projection_v * uv.y)
+			- FILE->active_camera->transform.position
+		)
+	);
 
+	vec1 t_dist = MAX_DIST;
+	vec1 closest_dist = MAX_DIST;
+	KL::Object* closest = nullptr;
+
+	LOG ENDL << "Selecting at: " << uv; FLUSH;
+
+	for (KL::Object* object : FILE->objects) {
+		object->f_compileMatrix();
+		if (object->data->type == KL::OBJECT::DATA::Type::MESH) {
+			for (const KL::OBJECT::DATA::MESH::Face* face : object->data->getMesh()->faces) {
+				if (face->vertices.size() == 3) {
+					if (KL::OBJECT::DATA::MESH::Face::f_rayTriangleIntersection(d_to_f(
+						object->transform_matrix),
+						ray_origin,
+						ray_direction,
+						d_to_f(face->vertices[0]->position),
+						d_to_f(face->vertices[1]->position),
+						d_to_f(face->vertices[2]->position),
+						t_dist
+					)) {
+						if (t_dist < closest_dist && t_dist > EPSILON) {
+							closest_dist = t_dist;
+							closest = object;
+						}
+					}
+				}
+			}
+		}
+	}
+	if (closest) {
+		FILE->active_object->set(closest);
+		cout << endl << "Selected Closest: " << closest->name;
+	}
+	else {
+		FILE->active_object->set(nullptr);
+		cout << endl << "Deselected";
+	}
 }
 
 void GUI::WORKSPACE::Viewport::f_pipeline() {
@@ -233,7 +275,7 @@ void GUI::WORKSPACE::Viewport::f_recompile() {
 void GUI::WORKSPACE::Viewport::initializeGL() {
 	initializeOpenGLFunctions();
 	glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
-	glViewport(0, 0, render_resolution.x, render_resolution.y);
+	glViewport(0, 0, resolution.x, resolution.y);
 
 	f_pipeline();
 	start_time = chrono::high_resolution_clock::now();
@@ -253,11 +295,10 @@ void GUI::WORKSPACE::Viewport::paintGL() {
 }
 
 void GUI::WORKSPACE::Viewport::resizeGL(int w, int h) {
-	display_resolution = uvec2(i_to_u(w), i_to_u(h));
-	display_aspect_ratio = u_to_d(display_resolution.x) / u_to_d(display_resolution.y);
-	render_resolution = d_to_u(u_to_d(display_resolution) * render_scale);
+	resolution = uvec2(i_to_u(w), i_to_u(h));
+	aspect_ratio = u_to_d(resolution.x) / u_to_d(resolution.y);
 
-	glViewport(0, 0, render_resolution.x, render_resolution.y);
+	glViewport(0, 0, resolution.x, resolution.y);
 }
 
 void GUI::WORKSPACE::Viewport::mouseReleaseEvent(QMouseEvent* event) {
@@ -270,6 +311,7 @@ void GUI::WORKSPACE::Viewport::mousePressEvent(QMouseEvent* event) {
 
 	if (event->button() == Qt::MouseButton::LeftButton) {
 		f_selectObject(dvec2(1.0, -1.0) * (dvec2(event->pos().x(), event->pos().y()) - 1.0 - dvec2(width(), height()) / 2.0) / max(i_to_d(width()), i_to_d(height())));
+
 	}
 }
 
@@ -291,10 +333,10 @@ void GUI::WORKSPACE::Viewport::keyPressEvent(QKeyEvent* event) {
 void GUI::WORKSPACE::Viewport::wheelEvent(QWheelEvent* event) {
 	const QPoint scrollAmount = event->angleDelta();
 	if (scrollAmount.y() > 0) {
-		FILE->default_camera->transform.moveLocal(dvec3(0.0, 0.0, -25.0) * camera_move_sensitivity * frame_time);
+		FILE->active_camera->transform.moveLocal(dvec3(0.0, 0.0, -25.0) * camera_move_sensitivity * frame_time);
 	}
 	else {
-		FILE->default_camera->transform.moveLocal(dvec3(0.0, 0.0,  25.0) * camera_move_sensitivity * frame_time);
+		FILE->active_camera->transform.moveLocal(dvec3(0.0, 0.0,  25.0) * camera_move_sensitivity * frame_time);
 	}
 }
 
@@ -453,23 +495,6 @@ void GUI::WORKSPACE::Viewport::f_renderCurve(const GLuint& raster_program, KL::O
 	glDrawArrays(GL_LINE_STRIP, 0, point_count);
 
 	glBindVertexArray(0);
-}
-
-bool GUI::WORKSPACE::VIEWPORT_REALTIME::f_rayTriangleIntersection(const Ray& ray, const Triangle& tri, dvec1& ray_length) {
-	const dvec3 v1v0 = tri.v1 - tri.v0;
-	const dvec3 v2v0 = tri.v2 - tri.v0;
-	const dvec3 rov0 = ray.origin - tri.v0;
-
-	const dvec3 n = cross(v1v0, v2v0);
-	const dvec3 q = cross(rov0, ray.direction);
-	const dvec1 d = 1.0 / dot(ray.direction, n);
-	const dvec1 u = d * dot(-q, v2v0);
-	const dvec1 v = d * dot(q, v1v0);
-	const dvec1 t = d * dot(-n, rov0);
-
-	if (u < 0.0 || v < 0.0 || (u + v) > 1.0) return false;
-	ray_length = t;
-	return true;
 }
 
 GLuint GUI::WORKSPACE::Viewport::renderLayer(const uvec2& resolution) {

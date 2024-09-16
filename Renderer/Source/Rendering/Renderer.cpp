@@ -15,18 +15,18 @@ KL::Renderer::Renderer() {
 	frame_count = 0;
 	runframe = 0;
 
-	display_resolution = uvec2(3840U, 2160U);
-	display_aspect_ratio = u_to_d(display_resolution.x) / u_to_d(display_resolution.y);
+	resolution = uvec2(3840U, 2160U);
+	aspect_ratio = u_to_d(resolution.x) / u_to_d(resolution.y);
 
-	render_resolution = uvec2(2100U, 900U);
-	render_aspect_ratio = u_to_d(render_resolution.x) / u_to_d(render_resolution.y);
+	r_resolution = uvec2(2100U, 900U);
+	render_aspect_ratio = u_to_d(r_resolution.x) / u_to_d(r_resolution.y);
 
 	camera_move_sensitivity = 0.75;
 	camera_view_sensitivity = 100.0;
 	camera_orbit_sensitivity = 150.0;
 	inputs = vector(348, false);
-	current_mouse = dvec2(display_resolution) / 2.0;
-	last_mouse = dvec2(display_resolution) / 2.0;
+	current_mouse = dvec2(resolution) / 2.0;
+	last_mouse = dvec2(resolution) / 2.0;
 
 	current_time = 0.0;
 	window_time = 0.0;
@@ -96,32 +96,32 @@ void KL::Renderer::f_guiLoop() {
 
 void KL::Renderer::f_inputLoop() {
 	if (inputs[GLFW_KEY_D]) {
-		FILE->default_camera->transform.moveLocal(dvec3(1.0, 0.0, 0.0)* camera_move_sensitivity * frame_time);
+		FILE->active_camera->transform.moveLocal(dvec3(1.0, 0.0, 0.0)* camera_move_sensitivity * frame_time);
 		pathtracer.reset = true;
 		runframe = 0;
 	}
 	if (inputs[GLFW_KEY_A]) {
-		FILE->default_camera->transform.moveLocal(dvec3(-1.0, 0.0, 0.0)* camera_move_sensitivity * frame_time);
+		FILE->active_camera->transform.moveLocal(dvec3(-1.0, 0.0, 0.0)* camera_move_sensitivity * frame_time);
 		pathtracer.reset = true;
 		runframe = 0;
 	}
 	if (inputs[GLFW_KEY_E] || inputs[GLFW_KEY_SPACE]) {
-		FILE->default_camera->transform.moveLocal(dvec3(0.0, 1.0, 0.0)* camera_move_sensitivity * frame_time);
+		FILE->active_camera->transform.moveLocal(dvec3(0.0, 1.0, 0.0)* camera_move_sensitivity * frame_time);
 		pathtracer.reset = true;
 		runframe = 0;
 	}
 	if (inputs[GLFW_KEY_Q] || inputs[GLFW_KEY_LEFT_CONTROL]) {
-		FILE->default_camera->transform.moveLocal(dvec3(0.0, -1.0, 0.0)* camera_move_sensitivity * frame_time);
+		FILE->active_camera->transform.moveLocal(dvec3(0.0, -1.0, 0.0)* camera_move_sensitivity * frame_time);
 		pathtracer.reset = true;
 		runframe = 0;
 	}
 	if (inputs[GLFW_KEY_W]) {
-		FILE->default_camera->transform.moveLocal(dvec3(0.0, 0.0, -1.0)* camera_move_sensitivity * frame_time);
+		FILE->active_camera->transform.moveLocal(dvec3(0.0, 0.0, -1.0)* camera_move_sensitivity * frame_time);
 		pathtracer.reset = true;
 		runframe = 0;
 	}
 	if (inputs[GLFW_KEY_S]) {
-		FILE->default_camera->transform.moveLocal(dvec3(0.0, 0.0, 1.0)* camera_move_sensitivity * frame_time);
+		FILE->active_camera->transform.moveLocal(dvec3(0.0, 0.0, 1.0)* camera_move_sensitivity * frame_time);
 		pathtracer.reset = true;
 		runframe = 0;
 	}
@@ -129,7 +129,7 @@ void KL::Renderer::f_inputLoop() {
 		const dvec1 xoffset = (last_mouse.x - current_mouse.x) * frame_time * camera_orbit_sensitivity;
 		const dvec1 yoffset = (last_mouse.y - current_mouse.y) * frame_time * camera_orbit_sensitivity;
 
-		FILE->default_camera->transform.orbit(dvec3(0), dvec3(yoffset, xoffset, 0.0));
+		FILE->active_camera->transform.orbit(dvec3(0), dvec3(yoffset, xoffset, 0.0));
 		pathtracer.reset = true;
 		runframe = 0;
 
@@ -139,7 +139,7 @@ void KL::Renderer::f_inputLoop() {
 		const dvec1 xoffset = (last_mouse.x - current_mouse.x) * frame_time * camera_view_sensitivity;
 		const dvec1 yoffset = (last_mouse.y - current_mouse.y) * frame_time * camera_view_sensitivity;
 
-		FILE->default_camera->transform.rotate(dvec3(yoffset, xoffset, 0.0));
+		FILE->active_camera->transform.rotate(dvec3(yoffset, xoffset, 0.0));
 		pathtracer.reset = true;
 		runframe = 0;
 
@@ -186,14 +186,14 @@ void KL::Renderer::f_recompile() {
 
 uvec2 KL::Renderer::f_res() const {
 	if (direct_render) {
-		return display_resolution;
+		return resolution;
 	}
-	return render_resolution;
+	return r_resolution;
 }
 
 dvec1 KL::Renderer::f_aspectRatio() const {
 	if (direct_render) {
-		return display_aspect_ratio;
+		return aspect_ratio;
 	}
 	return render_aspect_ratio;
 }
@@ -226,11 +226,11 @@ void KL::Renderer::initGlfw() {
 	GLFWmonitor* monitor = glfwGetPrimaryMonitor();
 	const GLFWvidmode* mode = glfwGetVideoMode(monitor);
 
-	display_resolution = uvec2(mode->width, mode->height);
-	display_aspect_ratio = u_to_d(display_resolution.x) / u_to_d(display_resolution.y);
-	last_mouse = glm::dvec2(display_resolution) / 2.0;
+	resolution = uvec2(mode->width, mode->height);
+	aspect_ratio = u_to_d(resolution.x) / u_to_d(resolution.y);
+	last_mouse = glm::dvec2(resolution) / 2.0;
 
-	window = glfwCreateWindow(display_resolution.x, display_resolution.y, "Runtime", NULL, NULL);
+	window = glfwCreateWindow(resolution.x, resolution.y, "Runtime", NULL, NULL);
 
 	//SHADER::Texture icon = SHADER::Texture();
 	//if (icon.loadFromFile("./Resources/Icon.png")) {
@@ -316,10 +316,10 @@ void KL::Renderer::systemInfo() {
 
 void KL::Renderer::glfwFramebufferSize(GLFWwindow* window, int width, int height) {
 	Renderer* instance = static_cast<Renderer*>(glfwGetWindowUserPointer(window));
-	instance->display_resolution.x = width;
-	instance->display_resolution.y = height;
-	instance->display_aspect_ratio = u_to_d(instance->display_resolution.x) / u_to_d(instance->display_resolution.y);
-	instance->current_mouse = dvec2(instance->display_resolution) / 2.0;
+	instance->resolution.x = width;
+	instance->resolution.y = height;
+	instance->aspect_ratio = u_to_d(instance->resolution.x) / u_to_d(instance->resolution.y);
+	instance->current_mouse = dvec2(instance->resolution) / 2.0;
 	instance->last_mouse = instance->current_mouse;
 	instance->runframe = 0;
 	if (instance->render_mode == Mode::PATHTRACING) {

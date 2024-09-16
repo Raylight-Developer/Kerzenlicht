@@ -43,5 +43,6 @@ namespace KL {
 		Object();
 
 		void f_compileMatrix();
+		void f_intersects(const dvec3& ray_origin, const dvec3& ray_direction);
 	};
 }

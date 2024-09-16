@@ -28,15 +28,15 @@ namespace KL {
 		GLFWwindow* window;
 
 		Render_File* file;
-		KL::Object default_camera;
+		KL::Object active_camera;
 
 		Rasterizer rasterizer;
 		PathTracer pathtracer;
 
-		dvec1 display_aspect_ratio;
+		dvec1 aspect_ratio;
 		dvec1 render_aspect_ratio;
-		uvec2 display_resolution;
-		uvec2 render_resolution;
+		uvec2 resolution;
+		uvec2 r_resolution;
 
 		uint   frame_counter;
 		uint   frame_count;

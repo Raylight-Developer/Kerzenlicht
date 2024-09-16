@@ -5,16 +5,16 @@
 KL::Rasterizer::Rasterizer(Renderer* renderer) :
 	renderer(renderer)
 {
-	d_resolution = uvec2(0);
-	d_aspect_ratio = 1.0;
+	resolution = uvec2(0);
+	aspect_ratio = 1.0;
 
 	r_resolution = uvec2(0);
 	r_aspect_ratio = 1.0;
 }
 
 void KL::Rasterizer::f_initialize() {
-	d_resolution = renderer->display_resolution;
-	d_aspect_ratio = d_to_f(renderer->display_aspect_ratio);
+	resolution = renderer->resolution;
+	aspect_ratio = d_to_f(renderer->aspect_ratio);
 
 	r_resolution = renderer->f_res();
 	r_aspect_ratio = d_to_f(renderer->f_aspectRatio());
@@ -159,8 +159,8 @@ void KL::Rasterizer::f_cleanup() {
 }
 
 void KL::Rasterizer::f_resize() {
-	d_resolution = renderer->display_resolution;
-	d_aspect_ratio = d_to_f(renderer->display_aspect_ratio);
+	resolution = renderer->resolution;
+	aspect_ratio = d_to_f(renderer->aspect_ratio);
 
 	r_resolution = renderer->f_res();
 	r_aspect_ratio = d_to_f(renderer->f_aspectRatio());
@@ -205,9 +205,9 @@ void KL::Rasterizer::f_render() {
 
 	glUseProgram(raster_program);
 
-	KL::OBJECT::DATA::Camera* camera = FILE->default_camera->data->getCamera();
-	glUniform3fv(glGetUniformLocation(raster_program, "camera_pos" ), 1, value_ptr(d_to_f(FILE->default_camera->transform.position)));
-	glUniformMatrix4fv(glGetUniformLocation(raster_program, "view_matrix"), 1, GL_FALSE, value_ptr(d_to_f(camera->glViewMatrix(FILE->default_camera))));
+	KL::OBJECT::DATA::Camera* camera = FILE->active_camera->data->getCamera();
+	glUniform3fv(glGetUniformLocation(raster_program, "camera_pos" ), 1, value_ptr(d_to_f(FILE->active_camera->transform.position)));
+	glUniformMatrix4fv(glGetUniformLocation(raster_program, "view_matrix"), 1, GL_FALSE, value_ptr(d_to_f(camera->glViewMatrix(FILE->active_camera))));
 	glUniformMatrix4fv(glGetUniformLocation(raster_program, "projection_matrix"), 1, GL_FALSE, value_ptr(d_to_f(camera->glProjectionMatrix(r_aspect_ratio))));
 
 	for (KL::Object* object : FILE->active_scene->pointer->objects) {
@@ -222,10 +222,10 @@ void KL::Rasterizer::f_render() {
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	glViewport(0, 0, d_resolution.x, d_resolution.y);
+	glViewport(0, 0, resolution.x, resolution.y);
 	glUseProgram(display_program);
 
-	glUniform1f (glGetUniformLocation(display_program, "display_aspect_ratio"), d_aspect_ratio);
+	glUniform1f (glGetUniformLocation(display_program, "display_aspect_ratio"), aspect_ratio);
 	glUniform1f (glGetUniformLocation(display_program, "render_aspect_ratio"), r_aspect_ratio);
 	bindRenderLayer(display_program, 0, data["FBT"], "render");
 
@@ -308,7 +308,7 @@ void KL::Rasterizer::f_renderMesh(const GLuint raster_program, KL::Object* objec
 		glStencilFunc(GL_NOTEQUAL, 1, 255);
 		glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-		glLineWidth(4);
+		glLineWidth(2);
 
 		glUniform1ui(glGetUniformLocation(raster_program, "wireframe"), 0);
 		glUniform1ui(glGetUniformLocation(raster_program, "stencil"), 1);

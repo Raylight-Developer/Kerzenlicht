@@ -16,6 +16,7 @@ namespace KL::OBJECT::DATA {
 		};
 		struct Face {
 			vector<Vertex*> vertices;
+			static bool f_rayTriangleIntersection(const mat4& transform_matrix, const vec3& ray_origin, const vec3& ray_direction, const vec3& vert_a, const vec3& vert_b, const vec3& vert_c, vec1& ray_length);
 		};
 	}
 	struct Mesh {

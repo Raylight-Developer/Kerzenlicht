@@ -50,35 +50,14 @@ namespace GUI {
 			~Workspace_Viewport();
 		};
 
-		namespace VIEWPORT_REALTIME {
-			struct Ray {
-				dvec3 origin, direction;
-				Ray(const dvec3& origin, const dvec3& direction) : origin(origin), direction(direction) {};
-			};
-			struct Triangle {
-				dvec3 v0, v1, v2;
-				Triangle(const dvec3& v0, const dvec3& v1, const dvec3& v2) : v0(v0), v1(v1), v2(v2) {};
-			};
-			struct alignas(16) GPU_Triangle {
-				vec4 v0, v1, v2;
-				GPU_Triangle(const vec3& v0, const vec3& v1, const vec3& v2) : v0(vec4(v0, 1.0f)), v1(vec4(v1, 1.0f)), v2(vec4(v2, 1.0f)) {};
-			};
-
-			bool f_rayTriangleIntersection(const Ray& ray, const Triangle& tri, dvec1& ray_length);
-		}
-
 		struct Viewport : QOpenGLWindow, protected QOpenGLFunctions_4_5_Core {
 			Workspace_Viewport* parent;
 
 			KL::GPU_Scene* gpu_data;
 
-			dvec1 render_scale;
-			dvec1 display_aspect_ratio;
-			uvec2 display_resolution;
-			uvec2 render_resolution;
+			dvec1 aspect_ratio;
+			uvec2 resolution;
 
-			unordered_map<KL::Object*, vector<VIEWPORT_REALTIME::Triangle>> triangle_map;
-			vector<VIEWPORT_REALTIME::GPU_Triangle> triangles;
 			unordered_map<uint64, vector<vec1>> gl_triangle_cache;
 			vector<vec1> gl_triangles;
 

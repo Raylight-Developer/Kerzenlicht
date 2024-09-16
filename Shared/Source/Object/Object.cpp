@@ -27,3 +27,12 @@ void KL::Object::f_compileMatrix() {
 		transform_matrix = transform.getMatrix() * node_transform.getMatrix();
 	}
 }
+
+void KL::Object::f_intersects(const dvec3& ray_origin, const dvec3& ray_direction) {
+	switch (data->type) {
+		case OBJECT::DATA::Type::MESH: {
+
+			break;
+		}
+	}
+}
