@@ -5,9 +5,6 @@
 KL::OBJECT::DATA::Camera::Camera() {
 	view_angle  = 70.0;
 
-	distance = 2.5;
-	rotation = dvec3(0.0);
-
 	projection_uv = dvec3(0.0);
 	projection_u  = dvec3(0.0);
 	projection_v  = dvec3(0.0);
@@ -20,9 +17,8 @@ void KL::OBJECT::DATA::Camera::compile(KL::Scene* scene, KL::Object* object, con
 	const dvec3 z_vector = -matrix[2];
 
 	const dvec1 projectionPlaneHalfWidth = tan((view_angle * DEG_RAD) / 2.0);
-
-	const dvec3 camera_position = object->transform.position - z_vector * distance;
-	projection_uv = camera_position + z_vector;
+	
+	projection_uv = object->transform.position + z_vector;
 	projection_u = normalize(cross(z_vector, y_vector)) * projectionPlaneHalfWidth * 2.0;
 	projection_v = normalize(cross(projection_u, z_vector)) * projectionPlaneHalfWidth * 2.0;
 }
@@ -34,7 +30,7 @@ dmat4 KL::OBJECT::DATA::Camera::glViewMatrix(const KL::Object* object) const {
 	const dvec3 y_vector = rotation_matrix[1];
 	const dvec3 z_vector = -rotation_matrix[2];
 
-	const dvec3 camera_position = object->transform.position - z_vector * distance;
+	const dvec3 camera_position = object->transform.position;
 	const dmat4 view_matrix = glm::lookAt(camera_position, camera_position + z_vector, y_vector);
 
 	return view_matrix;

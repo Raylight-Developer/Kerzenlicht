@@ -22,7 +22,8 @@ KL::Renderer::Renderer() {
 	render_aspect_ratio = u_to_d(render_resolution.x) / u_to_d(render_resolution.y);
 
 	camera_move_sensitivity = 0.75;
-	camera_view_sensitivity = 15.0;
+	camera_view_sensitivity = 100.0;
+	camera_orbit_sensitivity = 150.0;
 	keys = vector(348, false);
 	current_mouse = dvec2(display_resolution) / 2.0;
 	last_mouse = dvec2(display_resolution) / 2.0;
@@ -170,11 +171,11 @@ void KL::Renderer::f_gameLoop() {
 		pathtracer.reset = true;
 		runframe = 0;
 	}
-	if (keys[GLFW_KEY_LEFT_ALT] and keys[GLFW_MOUSE_BUTTON_RIGHT]) {
-		const dvec1 xoffset = (last_mouse.x - current_mouse.x) * frame_time * camera_view_sensitivity;
-		const dvec1 yoffset = (last_mouse.y - current_mouse.y) * frame_time * camera_view_sensitivity;
+	if (keys[GLFW_KEY_LEFT_ALT] and keys[GLFW_MOUSE_BUTTON_LEFT]) {
+		const dvec1 xoffset = (last_mouse.x - current_mouse.x) * frame_time * camera_orbit_sensitivity;
+		const dvec1 yoffset = (last_mouse.y - current_mouse.y) * frame_time * camera_orbit_sensitivity;
 
-		FILE->default_camera->transform.rotate(dvec3(yoffset, xoffset, 0.0));
+		FILE->default_camera->transform.orbit(dvec3(0), dvec3(yoffset, xoffset, 0.0));
 		pathtracer.reset = true;
 		runframe = 0;
 

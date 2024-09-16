@@ -11,9 +11,6 @@ namespace KL::OBJECT::DATA {
 	struct Camera {
 		dvec1 view_angle;
 
-		dvec1 distance;
-		dvec3 rotation;
-
 		dvec3 projection_uv;
 		dvec3 projection_u;
 		dvec3 projection_v;

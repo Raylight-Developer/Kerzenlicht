@@ -48,6 +48,7 @@ namespace KL {
 
 		dvec1 camera_move_sensitivity;
 		dvec1 camera_view_sensitivity;
+		dvec1 camera_orbit_sensitivity;
 		vector<bool> keys;
 
 		dvec2 current_mouse;
