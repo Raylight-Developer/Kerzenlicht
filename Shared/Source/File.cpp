@@ -2,13 +2,15 @@
 
 #include "Session.hpp"
 
-KL::File::File() {
-	pointer_map = {};
-	object_data = {};
-	node_trees = {};
-	shaders = {};
-	objects = {};
-	scenes = {};
+KL::File::File() :
+
+	pointer_map({}),
+	object_data({}),
+	node_trees({}),
+	shaders({}),
+	objects({}),
+	scenes({})
+{
 
 	active_object = new Observable_Ptr<Object>();
 	active_scene = new Observable_Ptr<Scene>();
@@ -18,6 +20,15 @@ KL::File::File() {
 	active_camera->data = new OBJECT::DATA::Camera();
 
 	version = "ERROR";
+}
+
+KL::Confirm<KL::Object*> KL::File::f_getObject(const string& name) {
+	for (Object* object : objects) {
+		if (object->name == name) {
+			return Confirm(object);
+		}
+	}
+	return KL::Confirm<KL::Object*>();
 }
 
 void KL::File::f_loadAsciiFile(const string& file_path) {

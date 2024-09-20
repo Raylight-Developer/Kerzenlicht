@@ -78,8 +78,8 @@ EXEC::Script::Script(const string& script_id) :
 		FARPROC dataAddress = GetProcAddress(dynlib, (script_id + "_getData").c_str());
 		FARPROC buildAddress = GetProcAddress(dynlib, (script_id + "_build").c_str());
 		if (execAddress and dataAddress and buildAddress) {
-			execFunc = (void(*)(Script_Node*))execAddress;
-			getDataFunc = (KL::Prop(*)(const Script_Node*, const uint16&))dataAddress;
+			execFunc = (void(*)(Script_Node*, File*, Lace*))execAddress;
+			getDataFunc = (KL::Prop(*)(Script_Node*, const uint16&))dataAddress;
 			buildFunc = (void(*)(Script_Node*))buildAddress;
 			buildFunc(wrapper);
 		}
@@ -122,8 +122,8 @@ void EXEC::Script::reloadFunctions() {
 	FARPROC dataAddress  = GetProcAddress(dynlib, (script_id + "_getData").c_str());
 	FARPROC buildAddress = GetProcAddress(dynlib, (script_id + "_build").c_str());
 	if (execAddress and dataAddress and buildAddress) {
-		execFunc = (void(*)(Script_Node*))execAddress;
-		getDataFunc = (KL::Prop(*)(const Script_Node*, const uint16&))dataAddress;
+		execFunc = (void(*)(Script_Node*, File*, Lace*))execAddress;
+		getDataFunc = (KL::Prop(*)(Script_Node*, const uint16&))dataAddress;
 		buildFunc = (void(*)(Script_Node*))buildAddress;
 		buildFunc(wrapper);
 	}
@@ -156,7 +156,7 @@ void EXEC::Script::clearIO() {
 
 void EXEC::Script::exec(const uint16& slot_id) {
 	if (execFunc) {
-		execFunc(wrapper);
+		execFunc(wrapper, FILE, KL::Session::getInstance().getLog());
 	}
 }
 

@@ -143,7 +143,7 @@ GUI::NODE::PORT::Data_O_Port::Data_O_Port(Node* parent, const uint16& slot_id, c
 	this->any_data_type = KL::PROP::Type::NONE;
 	this->outgoing_connections = {};
 
-	const qreal width = QFontMetrics(QApplication::font()).horizontalAdvance(label) + 25;
+	const qreal width = QFontMetrics(QApplication::font()).horizontalAdvance(label) + 35;
 	rect = QRectF(node->rect.topRight().x() - width-5, node->rect.topLeft().y() + 30 + slot_id * 20, width + 10, 20);
 	auto temp_color = typeColor(type);
 	color = QColor(temp_color.x, temp_color.y, temp_color.z);
@@ -209,7 +209,7 @@ GUI::NODE::PORT::Exec_O_Port::Exec_O_Port(Node* parent, const uint16& slot_id, c
 
 	this->connection = nullptr;
 
-	const qreal width = QFontMetrics(QApplication::font()).horizontalAdvance(label) + 25;
+	const qreal width = QFontMetrics(QApplication::font()).horizontalAdvance(label) + 35;
 	rect = QRectF(node->rect.topRight().x() - width - 5, node->rect.topLeft().y() + 30 + slot_id * 20, width + 10, 20);
 	color = QColor(250, 250, 250);
 }

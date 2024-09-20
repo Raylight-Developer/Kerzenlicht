@@ -5,6 +5,7 @@
 
 #include "Nodes.hpp"
 #include "Math.hpp"
+#include "Session.hpp"
 
 // FWD DECL OTHER
 
@@ -110,9 +111,9 @@ namespace KL {
 				HINSTANCE dynlib;
 				Script_Node* wrapper;
 
-				Prop (*getDataFunc)(const Script_Node*, const uint16&);
+				Prop (*getDataFunc)(Script_Node*, const uint16&);
 				void (*buildFunc)(Script_Node*);
-				void (*execFunc)(Script_Node*);
+				void (*execFunc)(Script_Node*, File*, Lace*);
 
 				void exec(const uint16& slot_id = 0) override;
 				Prop getData(const uint16& slot_id) const override;

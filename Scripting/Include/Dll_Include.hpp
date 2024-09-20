@@ -2,7 +2,7 @@
 
 #include "pch.h"
 
-#define EXPORT __declspec(dllexport)
+#define EXPORT extern "C" __declspec(dllexport)
 
 #include "Shared.hpp"
 
@@ -15,3 +15,4 @@
 using Prop      = KL::Prop;
 using Prop_Type = KL::PROP::Type;
 using Script    = KL::NODE::EXEC::Script_Node;
+using File      = KL::File;

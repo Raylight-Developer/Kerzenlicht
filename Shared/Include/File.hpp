@@ -59,6 +59,8 @@ namespace KL {
 
 		File();
 
+		KL::Confirm<KL::Object*> f_getObject(const string& name);
+
 		void f_loadAsciiFile   (const string& file_path);
 		void f_saveAsciiFile   (const string& file_path);
 

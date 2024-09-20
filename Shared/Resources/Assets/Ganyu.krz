@@ -13,48 +13,18 @@
     Type EXEC :: TICK
    └Node
    ┌Node [ 1 ] #
-    * 2078820830272
-    ( 1100 -110 )
-    Type LINK :: SET :: TRANSFORM :: EULER_ROTATION :: Y
-   └Node
-   ┌Node [ 2 ] #
-    * 2078927963616
-    ( -120 -90 )
-    Type LINK :: POINTER
-    ┌Pointer
-     Type OBJECT
-    └Pointer
-   └Node
-   ┌Node [ 3 ] #
-    * 2078927962784
-    ( 120 200 )
-    Type LINK :: POINTER
-    ┌Pointer
-     Type SCENE
-    └Pointer
-   └Node
-   ┌Node [ 4 ] #
-    * 2078990439696
-    ( 360 200 )
-    Type LINK :: GET :: FIELD
-    ┌Field
-     current_frame
-    └Field
-   └Node
-   ┌Node [ 5 ] #
-    * 2078927954048
-    ( 600 200 )
-    Type UTIL :: CAST :: INT_TO_DOUBLE
+    * 2195304542288
+    ( 120 0 )
+    Type EXEC :: SCRIPT
+    ┌Script
+     Ganyu
+    └Script
    └Node
   └Nodes
   ┌Build-E
-   * 2078927956960 0 0 * 2078820830272
+   * 2078927956960 0 0 * 2195304542288
   └Build-E
   ┌Build-D
-   * 2078927963616 0 1 * 2078820830272
-   * 2078927954048 0 2 * 2078820830272
-   * 2078927962784 0 0 * 2078990439696
-   * 2078990439696 0 0 * 2078927954048
   └Build-D
  └Node-Tree
 └Node-Trees
@@ -24849,7 +24819,5 @@ return sampleTextureRgba8u(<inputs>[0], vec2(uv.x, 1 - uv.y));
   * 2079009586528 * 2078927962576
  └Object-Node
  ┌Node-Pointer
-  * 2078927963616 * 2079009586528
-  * 2078927962784 * 2079014598624
  └Node-Pointer
 └Build-Steps

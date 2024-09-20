@@ -39,11 +39,11 @@ GUI::NODE::EXEC::Script::Script(const ivec2& pos, const string& script_id) {
 	script_identifier_proxyWidget->setFlag(QGraphicsItem::ItemIsFocusable);
 	script_identifier_proxyWidget->setFocusPolicy(Qt::StrongFocus);
 	script_identifier = new GUI::Value_Input();
-	script_identifier->setFixedSize(90, 20);
+	script_identifier->setFixedSize(150, 20);
 	script_identifier->setPlaceholderText("Script_ID");
 	script_identifier->setText(QString::fromStdString(script_id));
 	script_identifier_proxyWidget->setWidget(script_identifier);
-	script_identifier_proxyWidget->setPos(boundingRect().topLeft() + QPointF(40, 30));
+	script_identifier_proxyWidget->setPos(boundingRect().topLeft() + QPointF(10, 30));
 
 	reload_proxyWidget = new QGraphicsProxyWidget(this);
 	reload_proxyWidget->setFlag(QGraphicsItem::ItemIsFocusable);
@@ -51,7 +51,7 @@ GUI::NODE::EXEC::Script::Script(const ivec2& pos, const string& script_id) {
 	reload = new GUI::Button();
 	reload->setFixedSize(20, 20);
 	reload_proxyWidget->setWidget(reload);
-	reload_proxyWidget->setPos(boundingRect().topLeft() + QPointF(140, 30));
+	reload_proxyWidget->setPos(boundingRect().topLeft() + QPointF(170, 30));
 
 	QObject::connect(reload, &GUI::Button::clicked, [this]() {
 		reloadDll();

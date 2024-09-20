@@ -2,7 +2,7 @@
 
 #include "pch.h"
 
-#define EXPORT __declspec(dllexport)
+#define EXPORT extern "C" __declspec(dllexport)
 
 #include "Shared.hpp"
 
