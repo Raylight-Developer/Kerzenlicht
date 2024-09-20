@@ -446,49 +446,6 @@ KL::Prop LINK::Pointer::getData(const uint16& slot_id) const {
 	return KL::Prop();
 }
 
-MATH::Math::Math() {
-	type = NODE::Type::MATH;
-	sub_type = e_to_us(Type::NONE);
-
-	i_value_a   = new PORT::Data_I_Port(this, 0, PROP::Type::ANY);
-	i_value_b   = new PORT::Data_I_Port(this, 1, PROP::Type::ANY);
-
-	o_value_res = new PORT::Data_O_Port(this, 0, PROP::Type::ANY);
-
-	inputs.push_back(i_value_a);
-	inputs.push_back(i_value_b);
-	outputs.push_back(o_value_res);
-}
-
-KL::NODE::MATH::Add::Add() {
-	sub_type = e_to_us(Type::ADD);
-}
-
-KL::Prop MATH::Add::getData(const uint16& slot_id) const {
-	return i_value_a->getData() + i_value_b->getData();
-}
-
-KL::NODE::MATH::Sub::Sub() {
-	sub_type = e_to_us(Type::SUB);
-}
-KL::Prop MATH::Sub::getData(const uint16& slot_id) const {
-	return i_value_a->getData() - i_value_b->getData();
-}
-
-KL::NODE::MATH::Mul::Mul() {
-	sub_type = e_to_us(Type::MUL);
-}
-KL::Prop MATH::Mul::getData(const uint16& slot_id) const {
-	return i_value_a->getData() * i_value_b->getData();
-}
-
-KL::NODE::MATH::Div::Div() {
-	sub_type = e_to_us(Type::DIV);
-}
-KL::Prop MATH::Div::getData(const uint16& slot_id) const {
-	return i_value_a->getData() / i_value_b->getData();
-}
-
 KL::NODE::UTIL::Print::Print() {
 	type = NODE::Type::UTIL;
 	sub_type = e_to_us(Type::PRINT);

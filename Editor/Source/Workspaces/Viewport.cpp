@@ -80,7 +80,6 @@ void GUI::WORKSPACE::Workspace_Viewport::f_systemInfo() {
 GUI::WORKSPACE::Viewport::Viewport(Workspace_Viewport* parent) :
 	QOpenGLWindow(),
 	parent(parent),
-	gpu_data(new KL::GPU_Scene()),
 
 	frame_counter(0),
 	frame_count(0),
@@ -101,6 +100,9 @@ GUI::WORKSPACE::Viewport::Viewport(Workspace_Viewport* parent) :
 	camera_move_sensitivity = 0.75;
 	camera_view_sensitivity = 100.0;
 	camera_orbit_sensitivity = 150.0;
+}
+
+GUI::WORKSPACE::Viewport::~Viewport() {
 }
 
 void GUI::WORKSPACE::Viewport::f_displayLoop() {
@@ -203,7 +205,7 @@ void GUI::WORKSPACE::Viewport::f_frameUpdate() {
 	runframe++;
 }
 
-void GUI::WORKSPACE::Viewport::f_selectObject(const dvec2& uv) {
+void GUI::WORKSPACE::Viewport::f_selectClosestObject(const dvec2& uv) {
 	KL::OBJECT::DATA::Camera* camera = FILE->active_camera->getCamera();
 	const vec3 ray_origin = d_to_f(FILE->active_camera->transform.position);
 	const vec3 ray_direction = d_to_f(normalize(
@@ -214,8 +216,7 @@ void GUI::WORKSPACE::Viewport::f_selectObject(const dvec2& uv) {
 		)
 	);
 
-	vec1 t_dist = MAX_DIST;
-	vec1 closest_dist = MAX_DIST;
+	dvec1 t_dist = MAX_DIST;
 	KL::Object* closest = nullptr;
 
 	LOG ENDL << "Selecting at: " << uv; FLUSH;
@@ -223,22 +224,11 @@ void GUI::WORKSPACE::Viewport::f_selectObject(const dvec2& uv) {
 	for (KL::Object* object : FILE->objects) {
 		object->f_compileMatrix();
 		if (object->data->type == KL::OBJECT::DATA::Type::MESH) {
-			for (const KL::OBJECT::DATA::MESH::Face* face : object->getMesh()->faces) {
-				if (face->vertices.size() == 3) {
-					if (KL::OBJECT::DATA::MESH::Face::f_rayTriangleIntersection(d_to_f(
-						object->transform_matrix),
-						ray_origin,
-						ray_direction,
-						d_to_f(face->vertices[0]->position),
-						d_to_f(face->vertices[1]->position),
-						d_to_f(face->vertices[2]->position),
-						t_dist
-					)) {
-						if (t_dist < closest_dist && t_dist > EPSILON) {
-							closest_dist = t_dist;
-							closest = object;
-						}
-					}
+			auto hit = object->getMesh()->f_rayPicking(object->transform_matrix, ray_origin, ray_direction);
+			if (hit) {
+				if (hit.data < t_dist) {
+					t_dist = hit.data;
+					closest = object;
 				}
 			}
 		}
@@ -259,13 +249,13 @@ void GUI::WORKSPACE::Viewport::f_pipeline() {
 
 void GUI::WORKSPACE::Viewport::f_recompile() {
 	{
-		auto confirmation = fragmentShaderProgram("Curve", "Curve");
+		auto confirmation = fragmentShaderProgram("Raster/Curve", "Raster/Curve");
 		if (confirmation) {
 			data["curve_program"] = confirmation.data;
 		}
 	}
 	{
-		auto confirmation = fragmentShaderProgram("Mesh", "Mesh");
+		auto confirmation = fragmentShaderProgram("Raster/Mesh", "Raster/Mesh");
 		if (confirmation) {
 			data["mesh_program"] = confirmation.data;
 		}
@@ -310,7 +300,7 @@ void GUI::WORKSPACE::Viewport::mousePressEvent(QMouseEvent* event) {
 	last_mouse = p_to_d(event->pos());
 
 	if (event->button() == Qt::MouseButton::LeftButton) {
-		f_selectObject(dvec2(1.0, -1.0) * (dvec2(event->pos().x(), event->pos().y()) - 1.0 - dvec2(width(), height()) / 2.0) / max(i_to_d(width()), i_to_d(height())));
+		f_selectClosestObject(dvec2(1.0, -1.0) * (dvec2(event->pos().x(), event->pos().y()) - 1.0 - dvec2(width(), height()) / 2.0) / max(i_to_d(width()), i_to_d(height())));
 
 	}
 }

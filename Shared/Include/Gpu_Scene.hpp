@@ -32,7 +32,7 @@ namespace KL {
 		void f_init();
 
 		void updateTextures();
-		void f_tickUpdate();
+		void f_update();
 
 		uint64 bvhNodesSize() const;
 		uint64 texturesSize() const;

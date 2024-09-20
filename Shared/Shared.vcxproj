@@ -106,6 +106,7 @@
     <Lib />
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Include\Object\Nodes\Math.hpp" />
     <ClInclude Include="External\stb_image.h" />
     <ClInclude Include="Include\History.hpp" />
     <ClInclude Include="Include\Glm.hpp" />
@@ -141,8 +142,11 @@
     <ClInclude Include="Include\Scene.hpp" />
     <ClInclude Include="Include\String.hpp" />
     <ClInclude Include="Include\Types.hpp" />
+    <ClInclude Include="Include\Math\Interpolation.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\Object\Nodes\Math.cpp" />
+    <ClCompile Include="Source\Math\Interpolation.cpp" />
     <ClCompile Include="Source\History.cpp" />
     <ClCompile Include="Source\Gpu_Scene.cpp" />
     <ClCompile Include="Source\Session.cpp" />

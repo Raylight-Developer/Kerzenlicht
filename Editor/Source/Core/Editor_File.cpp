@@ -193,29 +193,32 @@ KL::Node_Tree* KL::Editor_File::f_loadAsciiNodeTree(const Token_Array&token_data
 				}
 			}
 			else if (read_data[3][1] == "MATH") {
-				if      (read_data[3][3] == "ADD") {
-					LOG ENDL ANSI_B << "      [Node]" ANSI_RESET; FLUSH;
-					LOG ENDL << "        " ANSI_PURPLE << name ANSI_RESET; FLUSH;
-					node = new NODE::MATH::Add();
-					gui_node = new GUI::NODE::MATH::Add(pos);
-				}
-				else if (read_data[3][3] == "SUB") {
-					LOG ENDL ANSI_B << "      [Node]" ANSI_RESET; FLUSH;
-					LOG ENDL << "        " ANSI_PURPLE << name ANSI_RESET; FLUSH;
-					node = new NODE::MATH::Sub();
-					gui_node = new GUI::NODE::MATH::Sub(pos);
-				}
-				else if (read_data[3][3] == "MUL") {
-					LOG ENDL ANSI_B << "      [Node]" ANSI_RESET; FLUSH;
-					LOG ENDL << "        " ANSI_PURPLE << name ANSI_RESET; FLUSH;
-					node = new NODE::MATH::Mul();
-					gui_node = new GUI::NODE::MATH::Mul(pos);
-				}
-				else if (read_data[3][3] == "DIV") {
-					LOG ENDL ANSI_B << "      [Node]" ANSI_RESET; FLUSH;
-					LOG ENDL << "        " ANSI_PURPLE << name ANSI_RESET; FLUSH;
-					node = new NODE::MATH::Div();
-					gui_node = new GUI::NODE::MATH::Div(pos);
+				if (read_data[3][3] == "ARITHMETIC") {
+					if      (read_data[3][5] == "MUL") {
+						LOG ENDL ANSI_B << "      [Node]" ANSI_RESET; FLUSH;
+						LOG ENDL << "        " ANSI_PURPLE << name ANSI_RESET; FLUSH;
+						node = new NODE::MATH::ARITHMETIC::Multiplication();
+					}
+					else if (read_data[3][5] == "SUB") {
+						LOG ENDL ANSI_B << "      [Node]" ANSI_RESET; FLUSH;
+						LOG ENDL << "        " ANSI_PURPLE << name ANSI_RESET; FLUSH;
+						node = new NODE::MATH::ARITHMETIC::Subtraction();
+					}
+					else if (read_data[3][5] == "ADD") {
+						LOG ENDL ANSI_B << "      [Node]" ANSI_RESET; FLUSH;
+						LOG ENDL << "        " ANSI_PURPLE << name ANSI_RESET; FLUSH;
+						node = new NODE::MATH::ARITHMETIC::Addition();
+					}
+					else if (read_data[3][5] == "DIV") {
+						LOG ENDL ANSI_B << "      [Node]" ANSI_RESET; FLUSH;
+						LOG ENDL << "        " ANSI_PURPLE << name ANSI_RESET; FLUSH;
+						node = new NODE::MATH::ARITHMETIC::Division();
+					}
+					else if (read_data[3][5] == "POW") {
+						LOG ENDL ANSI_B << "      [Node]" ANSI_RESET; FLUSH;
+						LOG ENDL << "        " ANSI_PURPLE << name ANSI_RESET; FLUSH;
+						node = new NODE::MATH::ARITHMETIC::Power();
+					}
 				}
 			}
 			else if (read_data[3][1] == "UTIL") {
@@ -458,21 +461,29 @@ void KL::Editor_File::f_saveAsciiNodeTree(Lace& lace, const KL::Node_Tree* data,
 			}
 			case NODE::Type::MATH: {
 				switch (static_cast<NODE::MATH::Type>(node->sub_type)) {
-					case NODE::MATH::Type::ADD: {
-						lace NL << "Type MATH :: ADD";
-						break;
-					}
-					case NODE::MATH::Type::SUB: {
-						lace NL << "Type MATH :: SUB";
-						break;
-					}
-					case NODE::MATH::Type::MUL: {
-						lace NL << "Type MATH :: MUL";
-						break;
-					}
-					case NODE::MATH::Type::DIV: {
-						lace NL << "Type MATH :: DIV";
-						break;
+					case NODE::MATH::Type::ARITHMETIC: {
+						switch (static_cast<NODE::MATH::Arithmetic*>(node)->mini_type) {
+							case NODE::MATH::ARITHMETIC::Type::MULTIPLICATION: {
+								lace NL << "Type MATH :: MUL";
+								break;
+							}
+							case NODE::MATH::ARITHMETIC::Type::SUBTRACTION: {
+								lace NL << "Type MATH :: SUB";
+								break;
+							}
+							case NODE::MATH::ARITHMETIC::Type::ADDITION: {
+								lace NL << "Type MATH :: ADD";
+								break;
+							}
+							case NODE::MATH::ARITHMETIC::Type::DIVISION: {
+								lace NL << "Type MATH :: DIV";
+								break;
+							}
+							case NODE::MATH::ARITHMETIC::Type::POWER: {
+								lace NL << "Type MATH :: POW";
+								break;
+							}
+						}
 					}
 				}
 				break;

@@ -1,0 +1,3 @@
+float f_InterpolationEaseInOut(float t) {
+	return 3 * pow(t, 2.0) - 2 * pow(t, 3.0);
+}

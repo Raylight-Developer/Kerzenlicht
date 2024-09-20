@@ -57,10 +57,11 @@ namespace KL {
 		Prop(Object* data);
 		Prop(SHADER::Texture* data);
 
-		Prop operator+(const Prop& other);
-		Prop operator-(const Prop& other);
-		Prop operator*(const Prop& other);
-		Prop operator/(const Prop& other);
+		Prop operator+(const Prop& other) const;
+		Prop operator-(const Prop& other) const;
+		Prop operator*(const Prop& other) const;
+		Prop operator/(const Prop& other) const;
+		Prop pow(const Prop& other) const;
 
 		int64  getInt()    const;
 		uint64 getUint()   const;
@@ -68,6 +69,7 @@ namespace KL {
 		KL::Scene* getScene()    const;
 		KL::Object* getObject()  const;
 		KL::SHADER::Texture* getTexture()  const;
+
 
 		string to_string() const;
 	};

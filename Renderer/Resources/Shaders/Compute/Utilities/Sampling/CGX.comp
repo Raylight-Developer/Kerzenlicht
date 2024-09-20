@@ -1,0 +1,28 @@
+// Hammersley point set
+vec2 f_hammersley(uint current_sample, uint total_samples) {
+	return vec2(float(current_sample) / float(total_samples), vdc(current_sample));
+}
+
+// GGX importance direction sampling
+vec3 f_importanceSampleGGX(in vec2 hammersley, in vec3 surface_normal, in float roughness) {
+	float a = roughness * roughness;
+
+	float phi = 2.0 * PI * fract(hammersley.x);
+	float cosTheta = sqrt((1.0 - hammersley.y) / (1.0 + (a*a - 1.0) * hammersley.y));
+	float sinTheta = sqrt(1.0 - cosTheta*cosTheta);
+
+	// From spherical coordinates to cartesian coordinates
+	vec3 H;
+	H.x = cos(phi) * sinTheta;
+	H.y = sin(phi) * sinTheta;
+	H.z = cosTheta;
+
+	// From tangent-space vector to world-space sample vector
+	vec3 up = abs(surface_normal.z) < 0.5 ? vec3(0.0, 0.0, 1.0) : vec3(1.0, 0.0, 0.0);
+	vec3 tangent = normalize(cross(up, surface_normal));
+	vec3 bitangent = cross(surface_normal, tangent);
+
+	vec3 sampleVec = tangent * H.x + bitangent * H.y + surface_normal * H.z;
+
+	return normalize(sampleVec);
+}

@@ -141,25 +141,32 @@ namespace GUI {
 			}
 		}
 		namespace MATH {
-			struct Math : Node {
+			struct Arithmetic : Node {
+				KL::NODE::MATH::ARITHMETIC::Type mini_type;
+
 				PORT::Data_I_Port* in_a;
 				PORT::Data_I_Port* in_b;
 				PORT::Data_O_Port* out_a;
 
-				Math(const ivec2& pos);
+				Arithmetic(const ivec2& pos);
 			};
-			struct Add : Math {
-				Add(const ivec2& pos);
-			};
-			struct Sub : Math {
-				Sub(const ivec2& pos);
-			};
-			struct Mul : Math {
-				Mul(const ivec2& pos);
-			};
-			struct Div : Math {
-				Div(const ivec2& pos);
-			};
+			namespace ARITHMETIC {
+				struct Add : Arithmetic {
+					Add(const ivec2& pos);
+				};
+				struct Sub : Arithmetic {
+					Sub(const ivec2& pos);
+				};
+				struct Mul : Arithmetic {
+					Mul(const ivec2& pos);
+				};
+				struct Div : Arithmetic {
+					Div(const ivec2& pos);
+				};
+				struct Pow : Arithmetic {
+					Pow(const ivec2& pos);
+				};
+			}
 		}
 		namespace UTIL {
 			struct Print : Node {

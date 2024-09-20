@@ -448,17 +448,20 @@ void GUI::WORKSPACE::Object_Node_Viewport::dropEvent(QDropEvent* event) {
 				}
 			}
 			else if (type == "MATH") {
-				if (sub_type == "Add") {
-					node = new GUI::NODE::MATH::Add(drop_pos);
+				if (sub_type == "ARITHMETIC_Add") {
+					node = new GUI::NODE::MATH::ARITHMETIC::Add(drop_pos);
 				}
-				else if (sub_type == "Sub") {
-					node = new GUI::NODE::MATH::Sub(drop_pos);
+				else if (sub_type == "ARITHMETIC_Sub") {
+					node = new GUI::NODE::MATH::ARITHMETIC::Sub(drop_pos);
 				}
-				else if (sub_type == "Mul") {
-					node = new GUI::NODE::MATH::Mul(drop_pos);
+				else if (sub_type == "ARITHMETIC_Mul") {
+					node = new GUI::NODE::MATH::ARITHMETIC::Mul(drop_pos);
 				}
-				else if (sub_type == "Div") {
-					node = new GUI::NODE::MATH::Div(drop_pos);
+				else if (sub_type == "ARITHMETIC_Div") {
+					node = new GUI::NODE::MATH::ARITHMETIC::Div(drop_pos);
+				}
+				else if (sub_type == "ARITHMETIC_Pow") {
+					node = new GUI::NODE::MATH::ARITHMETIC::Div(drop_pos);
 				}
 			}
 			else if (type == "LINK") {
@@ -539,10 +542,11 @@ GUI::WORKSPACE::Object_Node_Shelf::Object_Node_Shelf(Workspace_Object_Node_Edito
 	auto tree_exec_6     = new Tree_Item(tree_exec    , "For"            , 1, { { 1000, "EXEC" }, { 1001, "For"                       } });
 	auto tree_exec_3     = new Tree_Item(tree_exec    , "Start"          , 1, { { 1000, "EXEC" }, { 1001, "Start"                     } });
 	
-	auto tree_math_0     = new Tree_Item(tree_math    , "Add"            , 1, { { 1000, "MATH" }, { 1001, "Add"                       } });
-	auto tree_math_1     = new Tree_Item(tree_math    , "Sub"            , 1, { { 1000, "MATH" }, { 1001, "Sub"                       } });
-	auto tree_math_2     = new Tree_Item(tree_math    , "Mul"            , 1, { { 1000, "MATH" }, { 1001, "Mul"                       } });
-	auto tree_math_3     = new Tree_Item(tree_math    , "Div"            , 1, { { 1000, "MATH" }, { 1001, "Div"                       } });
+	auto tree_math_0     = new Tree_Item(tree_math    , "Add"            , 1, { { 1000, "MATH" }, { 1001, "ARITHMETIC_Add"            } });
+	auto tree_math_1     = new Tree_Item(tree_math    , "Sub"            , 1, { { 1000, "MATH" }, { 1001, "ARITHMETIC_Sub"            } });
+	auto tree_math_2     = new Tree_Item(tree_math    , "Mul"            , 1, { { 1000, "MATH" }, { 1001, "ARITHMETIC_Mul"            } });
+	auto tree_math_3     = new Tree_Item(tree_math    , "Div"            , 1, { { 1000, "MATH" }, { 1001, "ARITHMETIC_Div"            } });
+	auto tree_math_4     = new Tree_Item(tree_math    , "Pow"            , 1, { { 1000, "MATH" }, { 1001, "ARITHMETIC_Pow"            } });
 
 	auto tree_link_0     = new Tree_Item(tree_link    , "Pointer"        , 1, { { 1000, "LINK" }, { 1001, "Pointer"                   } });
 	auto tree_link_1     = new Tree_Item(tree_link    , "Set"            , 1, { { 1000, "LINK" }, { 1001, "SET_Field"                 } });

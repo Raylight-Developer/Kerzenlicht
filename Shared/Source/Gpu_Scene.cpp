@@ -52,7 +52,7 @@ void KL::GPU_Scene::updateTextures() { // TODO handle different formats
 	}
 }
 
-void KL::GPU_Scene::f_tickUpdate() {
+void KL::GPU_Scene::f_update() {
 	triangles.clear();
 	bvh_nodes.clear();
 

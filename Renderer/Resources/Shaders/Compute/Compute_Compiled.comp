@@ -97,7 +97,6 @@ uniform uint  frame_count;
 uniform float aspect_ratio;
 uniform float current_time;
 uniform uvec2 resolution;
-uniform bool  reset;
 uniform bool  debug;
 uniform uint  current_sample;
 uniform uint  ray_bounces;
@@ -400,7 +399,9 @@ void main() {
 	vec2 uv = (pixel_id - 1 - vec2(resolution) / 2.0) / float(max(resolution.x, resolution.y));
 	vec4 color = f_render(uv, pixel_id);
 	vec4 previous_color = imageLoad(accumulation_render_layer, pixel_id);
-	if (current_sample == 0 || bool(reset)) previous_color = vec4(0);
+	if (current_sample == 0) {
+		previous_color = vec4(0);
+	}
 	vec4 full_color = previous_color + color;
 	imageStore(accumulation_render_layer, pixel_id, vec4(full_color.rgb / full_color.a, 1));
 	imageStore(raw_render_layer, pixel_id, color);

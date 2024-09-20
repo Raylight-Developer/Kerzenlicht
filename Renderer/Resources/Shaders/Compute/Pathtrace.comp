@@ -1,9 +1,3 @@
-//-------------------------------------------------------------------------------------------------
-//-------------------------------------------------------------------------------------------------
-Ray f_cameraRay(vec2 uv) {
-	return Ray(camera_pos, normalize(camera_p_uv + (camera_p_u * uv.x) + (camera_p_v * uv.y) - camera_pos));
-}
-
 //vec4 f_environmentTexture(in Ray ray) {
 //	ray.direction = eulerToRot(vec3(0,-90,0)) * ray.direction;
 //

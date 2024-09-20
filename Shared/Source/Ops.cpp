@@ -194,10 +194,11 @@ Token_Array loadFileTokens(const string& file_path) {
 	throw runtime_error(to_string(errno));
 }
 
-void writeToFile(const string& filename, const string& content) {
-	ofstream file(filename, ios::binary);
+void writeToFile(const string& file_path, const string& content) {
+	ofstream file(file_path, ios::binary);
 
 	if (!file.is_open()) {
+		cout << endl << endl << "ERROR" << endl << file_path;
 		throw runtime_error("Unable to open file");
 	}
 
@@ -234,6 +235,7 @@ string processSubShader(const string& file_path) {
 		}
 		return output.str();
 	}
+	cout << endl << endl << "ERROR" << endl << file_path;
 	throw runtime_error(to_string(errno));
 }
 
@@ -252,7 +254,7 @@ string preprocessShader(const string& file_path) {
 						size_t endQuotePos = line.find("\"", quotePos + 1);
 						if (endQuotePos != string::npos) {
 							string includeFilename = line.substr(quotePos + 1, endQuotePos - quotePos - 1);
-							output << processSubShader("./Resources/Shaders/" + includeFilename);
+							output << processSubShader("./Resources/Shaders/Compute/" + includeFilename);
 							continue;
 						}
 					}
@@ -263,6 +265,7 @@ string preprocessShader(const string& file_path) {
 		}
 		return output.str().substr(0, output.str().size() - 1);
 	}
+	cout << endl << endl << "ERROR" << endl << file_path;
 	throw runtime_error(to_string(errno));
 }
 
@@ -437,6 +440,10 @@ void KL::Observable::call() {
 
 void KL::Observable::addCallback(void* key, function<void()> func) {
 	callbacks[key] = std::move(func);
+}
+
+void KL::Observable::removeCallback(void* key) {
+	callbacks.erase(key);
 }
 
 void KL::Observable::clearCallbacks() {

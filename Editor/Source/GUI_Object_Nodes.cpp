@@ -209,7 +209,7 @@ GUI::NODE::LINK::Pointer::Pointer(const ivec2& pos, const KL::PROP::Type& pointe
 
 	rect = QRectF(-100, -20, 200, 40);
 
-	o_pointer = new PORT::Data_O_Port(this, 0, "Pointer", pointer_type);
+	o_pointer = new PORT::Data_O_Port(this, 0, "", pointer_type);
 
 	outputs.push_back(o_pointer);
 
@@ -221,16 +221,16 @@ void GUI::NODE::LINK::Pointer::paint(QPainter* painter, const QStyleOptionGraphi
 	Node::paint(painter, option, widget);
 	if (pointer) {
 		painter->setBrush(QColor(25, 25, 25));
-		painter->drawRoundedRect(QRectF(rect.topLeft() + QPointF(4, 30), QSize(120, 20)), 5, 5);
+		painter->drawRoundedRect(QRectF(rect.topLeft() + QPointF(5, 30), QSize(180, 20)), 5, 5);
 
 		painter->setPen(Qt::white);
 		switch (pointer_type) {
 			case KL::PROP::Type::OBJECT: {
-				painter->drawText(QRectF(rect.topLeft() + QPointF(14, 30), QSize(100, 20)), Qt::AlignLeft, QString::fromStdString(static_cast<KL::Object*>(pointer)->name));
+				painter->drawText(QRectF(rect.topLeft() + QPointF(15, 30), QSize(160, 20)), Qt::AlignLeft, QString::fromStdString(static_cast<KL::Object*>(pointer)->name));
 				break;
 			}
 			case KL::PROP::Type::SCENE: {
-				painter->drawText(QRectF(rect.topLeft() + QPointF(14, 30), QSize(100, 20)), Qt::AlignLeft, "Active Scene");
+				painter->drawText(QRectF(rect.topLeft() + QPointF(15, 30), QSize(160, 20)), Qt::AlignLeft, "Active Scene");
 				break;
 			}
 		}
@@ -268,14 +268,14 @@ GUI::NODE::LINK::GET::Field::Field(const ivec2& pos) :
 	proxyWidget_id->setWidget(field);
 	proxyWidget_id->setPos(boundingRect().topLeft() + QPointF(10, 50));
 
-	i_pointer = new PORT::Data_I_Port(this, 0, "Pointer", KL::PROP::Type::ANY);
+	i_pointer = new PORT::Data_I_Port(this, 0, "Ptr", KL::PROP::Type::ANY);
 
-	o_value   = new PORT::Data_O_Port(this, 0, "Value", KL::PROP::Type::ANY);
+	o_value   = new PORT::Data_O_Port(this, 0, "Val", KL::PROP::Type::ANY);
 
 	inputs.push_back(i_pointer);
 	outputs.push_back(o_value);
 
-	rect.setHeight(60 + max(inputs.size(), outputs.size()) * 20);
+	rect.setHeight(80);
 }
 
 bool GUI::NODE::LINK::GET::Field::eventFilter(QObject* obj, QEvent* event) {
@@ -308,11 +308,11 @@ GUI::NODE::LINK::SET::Euler_Rotation_X::Euler_Rotation_X(const ivec2& pos) :
 	mini_type = KL::NODE::LINK::SET::Type::EULER_ROTATION_X;
 
 	i_exec    = new PORT::Exec_I_Port(this, 0, "Exec");
-	i_pointer = new PORT::Data_I_Port(this, 1, "Pointer", KL::PROP::Type::OBJECT);
-	i_value   = new PORT::Data_I_Port(this, 2, "Input Value", KL::PROP::Type::DOUBLE);
+	i_pointer = new PORT::Data_I_Port(this, 1, "Ptr", KL::PROP::Type::OBJECT);
+	i_value   = new PORT::Data_I_Port(this, 2, "In", KL::PROP::Type::DOUBLE);
 
 	o_exec    = new PORT::Exec_O_Port(this, 0, "Exec");
-	o_value   = new PORT::Data_O_Port(this, 1, "Output Value", KL::PROP::Type::DOUBLE);
+	o_value   = new PORT::Data_O_Port(this, 1, "Out", KL::PROP::Type::DOUBLE);
 
 	inputs.push_back(i_exec);
 	inputs.push_back(i_pointer);
@@ -331,11 +331,11 @@ GUI::NODE::LINK::SET::Euler_Rotation_Y::Euler_Rotation_Y(const ivec2& pos) :
 	mini_type = KL::NODE::LINK::SET::Type::EULER_ROTATION_Y;
 
 	i_exec    = new PORT::Exec_I_Port(this, 0, "Exec");
-	i_pointer = new PORT::Data_I_Port(this, 1, "Pointer", KL::PROP::Type::OBJECT);
-	i_value   = new PORT::Data_I_Port(this, 2, "Input Value", KL::PROP::Type::DOUBLE);
+	i_pointer = new PORT::Data_I_Port(this, 1, "Ptr", KL::PROP::Type::OBJECT);
+	i_value   = new PORT::Data_I_Port(this, 2, "In", KL::PROP::Type::DOUBLE);
 
 	o_exec    = new PORT::Exec_O_Port(this, 0, "Exec");
-	o_value   = new PORT::Data_O_Port(this, 1, "Output Value", KL::PROP::Type::DOUBLE);
+	o_value   = new PORT::Data_O_Port(this, 1, "Out", KL::PROP::Type::DOUBLE);
 
 	inputs.push_back(i_exec);
 	inputs.push_back(i_pointer);
@@ -354,11 +354,11 @@ GUI::NODE::LINK::SET::Euler_Rotation_Z::Euler_Rotation_Z(const ivec2& pos) :
 	mini_type = KL::NODE::LINK::SET::Type::EULER_ROTATION_Z;
 
 	i_exec    = new PORT::Exec_I_Port(this, 0, "Exec");
-	i_pointer = new PORT::Data_I_Port(this, 1, "Pointer", KL::PROP::Type::OBJECT);
-	i_value   = new PORT::Data_I_Port(this, 2, "Input Value", KL::PROP::Type::DOUBLE);
+	i_pointer = new PORT::Data_I_Port(this, 1, "Ptr", KL::PROP::Type::OBJECT);
+	i_value   = new PORT::Data_I_Port(this, 2, "In", KL::PROP::Type::DOUBLE);
 
 	o_exec    = new PORT::Exec_O_Port(this, 0, "Exec");
-	o_value   = new PORT::Data_O_Port(this, 1, "Output Value", KL::PROP::Type::DOUBLE);
+	o_value   = new PORT::Data_O_Port(this, 1, "Out", KL::PROP::Type::DOUBLE);
 
 	inputs.push_back(i_exec);
 	inputs.push_back(i_pointer);
@@ -370,9 +370,10 @@ GUI::NODE::LINK::SET::Euler_Rotation_Z::Euler_Rotation_Z(const ivec2& pos) :
 	rect.setHeight(40 + max(inputs.size(), outputs.size()) * 20);
 }
 
-GUI::NODE::MATH::Math::Math(const ivec2& pos) {
+GUI::NODE::MATH::Arithmetic::Arithmetic(const ivec2& pos) {
 	type = KL::NODE::Type::MATH;
-	sub_type = e_to_us(KL::NODE::MATH::Type::NONE);
+	sub_type = e_to_us(KL::NODE::MATH::Type::ARITHMETIC);
+	mini_type = KL::NODE::MATH::ARITHMETIC::Type::NONE;
 
 	rect = QRectF(-100, -20, 200, 40);
 
@@ -389,42 +390,51 @@ GUI::NODE::MATH::Math::Math(const ivec2& pos) {
 	node_pos = QPointF(pos.x, pos.y);
 }
 
-GUI::NODE::MATH::Add::Add(const ivec2& pos) :
-	Math(pos)
+GUI::NODE::MATH::ARITHMETIC::Add::Add(const ivec2& pos) :
+	Arithmetic(pos)
 {
 	label = "Add";
-	sub_type = e_to_us(KL::NODE::MATH::Type::ADD);
+	mini_type = KL::NODE::MATH::ARITHMETIC::Type::ADDITION;
 	in_a->setDataType(KL::PROP::Type::DOUBLE);
 	in_b->setDataType(KL::PROP::Type::DOUBLE);
 	out_a->setDataType(KL::PROP::Type::DOUBLE);
 }
 
-GUI::NODE::MATH::Sub::Sub(const ivec2& pos) :
-	Math(pos)
+GUI::NODE::MATH::ARITHMETIC::Sub::Sub(const ivec2& pos) :
+	Arithmetic(pos)
 {
 	label = "Subtract";
-	sub_type = e_to_us(KL::NODE::MATH::Type::SUB);
+	mini_type = KL::NODE::MATH::ARITHMETIC::Type::SUBTRACTION;
 	in_a->setDataType(KL::PROP::Type::DOUBLE);
 	in_b->setDataType(KL::PROP::Type::DOUBLE);
 	out_a->setDataType(KL::PROP::Type::DOUBLE);
 }
 
-GUI::NODE::MATH::Mul::Mul(const ivec2& pos) :
-	Math(pos)
+GUI::NODE::MATH::ARITHMETIC::Mul::Mul(const ivec2& pos) :
+	Arithmetic(pos)
 {
 	label = "Multiply";
-	sub_type = e_to_us(KL::NODE::MATH::Type::MUL);
+	mini_type = KL::NODE::MATH::ARITHMETIC::Type::MULTIPLICATION;
 	in_a->setDataType(KL::PROP::Type::DOUBLE);
 	in_b->setDataType(KL::PROP::Type::DOUBLE);
 	out_a->setDataType(KL::PROP::Type::DOUBLE);
 }
 
-GUI::NODE::MATH::Div::Div(const ivec2& pos) :
-	Math(pos)
+GUI::NODE::MATH::ARITHMETIC::Div::Div(const ivec2& pos) :
+	Arithmetic(pos)
 {
 	label = "Divide";
-	sub_type = e_to_us(KL::NODE::Type::MATH);
-	sub_type = e_to_us(KL::NODE::MATH::Type::DIV);
+	mini_type = KL::NODE::MATH::ARITHMETIC::Type::DIVISION;
+	in_a->setDataType(KL::PROP::Type::DOUBLE);
+	in_b->setDataType(KL::PROP::Type::DOUBLE);
+	out_a->setDataType(KL::PROP::Type::DOUBLE);
+}
+
+GUI::NODE::MATH::ARITHMETIC::Pow::Pow(const ivec2& pos) :
+	Arithmetic(pos)
+{
+	label = "Power";
+	mini_type = KL::NODE::MATH::ARITHMETIC::Type::POWER;
 	in_a->setDataType(KL::PROP::Type::DOUBLE);
 	in_b->setDataType(KL::PROP::Type::DOUBLE);
 	out_a->setDataType(KL::PROP::Type::DOUBLE);
@@ -565,25 +575,34 @@ KL::Node_Tree* GUI::NODE::Node_Tree::toExecTree() {
 			}
 			case KL::NODE::Type::MATH: {
 				switch (static_cast<KL::NODE::MATH::Type>(gui_node->sub_type)) {
-					case KL::NODE::MATH::Type::ADD: {
-						auto t_node = new KL::NODE::MATH::Add();
-						node = t_node;
-						break;
-					}
-					case KL::NODE::MATH::Type::SUB: {
-						auto t_node = new KL::NODE::MATH::Sub();
-						node = t_node;
-						break;
-					}
-					case KL::NODE::MATH::Type::MUL: {
-						auto t_node = new KL::NODE::MATH::Mul();
-						node = t_node;
-						break;
-					}
-					case KL::NODE::MATH::Type::DIV: {
-						auto t_node = new KL::NODE::MATH::Div();
-						node = t_node;
-						break;
+					case KL::NODE::MATH::Type::ARITHMETIC: {
+						switch (static_cast<GUI::NODE::MATH::Arithmetic*>(gui_node)->mini_type) {
+							case KL::NODE::MATH::ARITHMETIC::Type::MULTIPLICATION: {
+								auto t_node = new KL::NODE::MATH::ARITHMETIC::Multiplication();
+								node = t_node;
+								break;
+							}
+							case KL::NODE::MATH::ARITHMETIC::Type::SUBTRACTION: {
+								auto t_node = new KL::NODE::MATH::ARITHMETIC::Subtraction();
+								node = t_node;
+								break;
+							}
+							case KL::NODE::MATH::ARITHMETIC::Type::ADDITION: {
+								auto t_node = new KL::NODE::MATH::ARITHMETIC::Addition();
+								node = t_node;
+								break;
+							}
+							case KL::NODE::MATH::ARITHMETIC::Type::DIVISION: {
+								auto t_node = new KL::NODE::MATH::ARITHMETIC::Division();
+								node = t_node;
+								break;
+							}
+							case KL::NODE::MATH::ARITHMETIC::Type::POWER: {
+								auto t_node = new KL::NODE::MATH::ARITHMETIC::Power();
+								node = t_node;
+								break;
+							}
+						}
 					}
 				}
 				break;

@@ -15,10 +15,12 @@ namespace KL::OBJECT::DATA {
 			Vertex(const dvec3& position)
 				: position(position)
 			{}
+
+			static dvec3 transformed(const dmat4& matrix, const dvec3& position);
 		};
 		struct Face {
 			vector<Vertex*> vertices;
-			static bool f_rayTriangleIntersection(const mat4& transform_matrix, const vec3& ray_origin, const vec3& ray_direction, const vec3& vert_a, const vec3& vert_b, const vec3& vert_c, vec1& ray_length);
+			static KL::Confirm<dvec1> f_rayTriangleIntersection(const dvec3& ray_origin, const dvec3& ray_direction, const dvec3& vert_a, const dvec3& vert_b, const dvec3& vert_c);
 		};
 	}
 	struct Mesh : Data {
@@ -38,5 +40,8 @@ namespace KL::OBJECT::DATA {
 
 		static vector<vec1> faceToArray(MESH::Face* face, const Mesh* mesh, const mat4& matrix, const mat3& rotation_matrix);
 		static void packVertexData(vector<vec1>& array, const vec3& vert, const vec3& nor, const vec2& uv);
+
+		KL::Confirm<dvec1> f_rayPicking(const dmat4& transform_matrix, const dvec3& ray_origin, const dvec3& ray_direction);
+		bool f_rayAnyHit(const dmat4& transform_matrix, const dvec3& ray_origin, const dvec3& ray_direction);
 	};
 }

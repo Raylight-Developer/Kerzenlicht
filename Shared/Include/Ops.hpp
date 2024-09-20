@@ -18,7 +18,7 @@ bool   f_contains(const string& input, const string& substring);
 
 // I/O
 string loadFromFile(const string& file_path);
-void writeToFile(const string& filename, const string& content);
+void writeToFile(const string& file_path, const string& content);
 
 Tokens loadFileLines(const string& file_path);
 Token_Array loadFileTokens(const string& file_path);
@@ -69,19 +69,20 @@ namespace KL {
 	};
 
 	struct Observable {
-		map<void*, function<void()>> callbacks;
+		unordered_map<void*, function<void()>> callbacks;
 
 		Observable();
 
 		void call();
 		void addCallback(void* key, function<void()> func);
+		void removeCallback(void* key);
 		void clearCallbacks();
 	};
 
 	template<typename T>
 	struct Observable_Ptr {
 		T* pointer;
-		map<void*, function<void()>> callbacks;
+		unordered_map<void*, function<void()>> callbacks;
 
 		Observable_Ptr() : pointer(nullptr) {}
 		Observable_Ptr(T* pointer) : pointer(pointer) {}
@@ -94,6 +95,10 @@ namespace KL {
 
 		void addCallback(void* key, function<void()> func) {
 			callbacks[key] = std::move(func);
+		}
+
+		void removeCallback(void* key) {
+			callbacks.erase(key);
 		}
 
 		void clearCallbacks() {

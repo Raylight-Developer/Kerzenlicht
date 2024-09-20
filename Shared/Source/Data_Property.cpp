@@ -39,7 +39,7 @@ KL::Prop::Prop(SHADER::Texture* data) : data(data) {
 	modifier = PROP::Modifier::SINGLE; type = PROP::Type::TEXTURE;
 }
 
-KL::Prop KL::Prop::operator+(const KL::Prop & other) {
+KL::Prop KL::Prop::operator+(const KL::Prop & other) const {
 	if (type == other.type) {
 		switch (type) {
 			case PROP::Type::DOUBLE: return KL::Prop(getDouble() + other.getDouble(), type);
@@ -59,16 +59,16 @@ KL::Prop KL::Prop::operator+(const KL::Prop & other) {
 	}
 	return KL::Prop();
 }
-KL::Prop KL::Prop::operator-(const KL::Prop& other) {
+KL::Prop KL::Prop::operator-(const KL::Prop& other) const {
 	if (type == other.type) {
 		switch (type) {
-		case PROP::Type::DOUBLE: return KL::Prop(getDouble() - other.getDouble(), type);
+			case PROP::Type::DOUBLE: return KL::Prop(getDouble() - other.getDouble(), type);
 		}
 	}
 	return KL::Prop();
 }
 
-KL::Prop KL::Prop::operator*(const KL::Prop& other) {
+KL::Prop KL::Prop::operator*(const KL::Prop& other) const {
 	if (type == other.type) {
 		switch (type) {
 		case PROP::Type::DOUBLE: return KL::Prop(getDouble() * other.getDouble(), type);
@@ -77,10 +77,19 @@ KL::Prop KL::Prop::operator*(const KL::Prop& other) {
 	return KL::Prop();
 }
 
-KL::Prop KL::Prop::operator/(const KL::Prop& other) {
+KL::Prop KL::Prop::operator/(const KL::Prop& other) const {
 	if (type == other.type) {
 		switch (type) {
-		case PROP::Type::DOUBLE: return KL::Prop(getDouble() / other.getDouble(), type);
+			case PROP::Type::DOUBLE: return KL::Prop(getDouble() / other.getDouble(), type);
+		}
+	}
+	return KL::Prop();
+}
+
+Prop KL::Prop::pow(const Prop& other) const {
+	if (type == other.type) {
+		switch (type) {
+			case PROP::Type::DOUBLE: return KL::Prop(std::pow(getDouble(), other.getDouble()), type);
 		}
 	}
 	return KL::Prop();

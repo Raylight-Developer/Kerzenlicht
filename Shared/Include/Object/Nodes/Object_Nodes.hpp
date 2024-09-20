@@ -4,6 +4,7 @@
 #include "Data_Property.hpp"
 
 #include "Nodes.hpp"
+#include "Math.hpp"
 
 // FWD DECL OTHER
 
@@ -162,32 +163,6 @@ namespace KL {
 				Tick();
 
 				void exec(const uint16& slot_id = 0) override;
-				Prop getData(const uint16& slot_id) const override;
-			};
-		}
-		namespace MATH {
-			enum struct Type { NONE, RAMP, MAP, ADD, DIV, MUL, SUB };
-			struct Math : Node {
-				PORT::Data_I_Port* i_value_a;
-				PORT::Data_I_Port* i_value_b;
-				PORT::Data_O_Port* o_value_res;
-
-				Math();
-			};
-			struct Add : Math {
-				Add();
-				Prop getData(const uint16& slot_id) const override;
-			};
-			struct Sub : Math {
-				Sub();
-				Prop getData(const uint16& slot_id) const override;
-			};
-			struct Mul : Math {
-				Mul();
-				Prop getData(const uint16& slot_id) const override;
-			};
-			struct Div : Math {
-				Div();
 				Prop getData(const uint16& slot_id) const override;
 			};
 		}

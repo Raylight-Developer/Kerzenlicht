@@ -20,7 +20,8 @@ void KL::Rasterizer::f_initialize() {
 	r_aspect_ratio = d_to_f(renderer->f_aspectRatio());
 
 	data["display_program"] = 0;
-	data["raster_program"] = 0;
+	data["mesh_program"] = 0;
+	data["curve_program"] = 0;
 	data["FBT"] = 0;
 	data["FBO"] = 0;
 	data["RBO"] = 0;
@@ -32,18 +33,7 @@ void KL::Rasterizer::f_initialize() {
 	glEnable(GL_DEPTH_TEST);
 	glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
 
-	{
-		auto confirmation = fragmentShaderProgram("Mesh", "Mesh");
-		if (confirmation) {
-			data["raster_program"] = confirmation.data;
-		}
-	}
-	{
-		auto confirmation = fragmentShaderProgram("Raster_Display", "Raster_Display");
-		if (confirmation) {
-			data["display_program"] = confirmation.data;
-		}
-	}
+	f_recompile();
 
 	// Fullscreen Quad
 	const GLfloat vertices[16] = {
@@ -109,15 +99,21 @@ void KL::Rasterizer::f_tickUpdate() {
 
 void KL::Rasterizer::f_recompile() {
 	{
-		auto confirmation = fragmentShaderProgram("Mesh", "Mesh");
+		auto confirmation = fragmentShaderProgram("Raster/Display", "Raster/Display");
 		if (confirmation) {
-			data["raster_program"] = confirmation.data;
+			data["display_program"] = confirmation.data;
 		}
 	}
 	{
-		auto confirmation = fragmentShaderProgram("Raster_Display", "Raster_Display");
+		auto confirmation = fragmentShaderProgram("Raster/Curve", "Raster/Curve");
 		if (confirmation) {
-			data["display_program"] = confirmation.data;
+			data["curve_program"] = confirmation.data;
+		}
+	}
+	{
+		auto confirmation = fragmentShaderProgram("Raster/Mesh", "Raster/Mesh");
+		if (confirmation) {
+			data["mesh_program"] = confirmation.data;
 		}
 	}
 }
@@ -128,7 +124,8 @@ void KL::Rasterizer::f_cleanup() {
 	glDeleteBuffers(1, &data["EBO"]);
 
 	glDeleteProgram(data["display_program"]);
-	glDeleteProgram(data["raster_program"]);
+	glDeleteProgram(data["curve_program"]);
+	glDeleteProgram(data["mesh_program"]);
 
 	glDeleteRenderbuffers(1, &data["RBO"]);
 	glDeleteFramebuffers(1, &data["FBO"]);
@@ -195,27 +192,28 @@ void KL::Rasterizer::f_resize() {
 }
 
 void KL::Rasterizer::f_render() {
-	const GLuint raster_program = data["raster_program"];
 	const GLuint display_program = data["display_program"];
+	const GLuint curve_program = data["curve_program"];
+	const GLuint mesh_program = data["mesh_program"];
 
 	glViewport(0, 0, r_resolution.x, r_resolution.y);
 	glBindFramebuffer(GL_FRAMEBUFFER, data["FBO"]);
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	glUseProgram(raster_program);
+	glUseProgram(mesh_program);
 
 	KL::OBJECT::DATA::Camera* camera = FILE->active_camera->getCamera();
-	glUniform3fv(glGetUniformLocation(raster_program, "camera_pos" ), 1, value_ptr(d_to_f(FILE->active_camera->transform.position)));
-	glUniformMatrix4fv(glGetUniformLocation(raster_program, "view_matrix"), 1, GL_FALSE, value_ptr(d_to_f(camera->glViewMatrix(FILE->active_camera))));
-	glUniformMatrix4fv(glGetUniformLocation(raster_program, "projection_matrix"), 1, GL_FALSE, value_ptr(d_to_f(camera->glProjectionMatrix(r_aspect_ratio))));
+	glUniform3fv(glGetUniformLocation(mesh_program, "camera_pos" ), 1, value_ptr(d_to_f(FILE->active_camera->transform.position)));
+	glUniformMatrix4fv(glGetUniformLocation(mesh_program, "view_matrix"), 1, GL_FALSE, value_ptr(d_to_f(camera->glViewMatrix(FILE->active_camera))));
+	glUniformMatrix4fv(glGetUniformLocation(mesh_program, "projection_matrix"), 1, GL_FALSE, value_ptr(d_to_f(camera->glProjectionMatrix(r_aspect_ratio))));
 
 	for (KL::Object* object : FILE->active_scene->pointer->objects) {
 		if (object->data->type == KL::OBJECT::DATA::Type::MESH) {
-			f_renderMesh(raster_program, object);
+			f_renderMesh(mesh_program, object);
 		}
 		else if (object->data->type == KL::OBJECT::DATA::Type::GROUP) {
-			f_renderGroup(raster_program, object);
+			f_renderGroup(mesh_program, object);
 		}
 	}
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);

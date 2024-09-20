@@ -7,7 +7,6 @@ KL::PathTracer::PathTracer(Renderer* renderer) :
 {
 	gpu_data = new GPU_Scene();
 
-	reset = false;
 	debug = false;
 
 	sample = 0;
@@ -20,7 +19,6 @@ KL::PathTracer::PathTracer(Renderer* renderer) :
 }
 
 void KL::PathTracer::f_initialize() {
-	reset = false;
 	debug = false;
 
 	sample = 0;
@@ -103,12 +101,12 @@ void KL::PathTracer::f_initialize() {
 
 	gpu_data->f_init();
 	gpu_data->updateTextures();
-	gpu_data->f_tickUpdate();
+	gpu_data->f_update();
 	gpu_data->printInfo();
 }
 
 void KL::PathTracer::f_tickUpdate() {
-	gpu_data->f_tickUpdate();
+	gpu_data->f_update();
 
 	GLint ssboMaxSize;
 	glGetIntegerv(GL_MAX_SHADER_STORAGE_BLOCK_SIZE, &ssboMaxSize);
@@ -126,14 +124,14 @@ void KL::PathTracer::f_tickUpdate() {
 
 void KL::PathTracer::f_recompile() {
 	{
-		auto confirmation = computeShaderProgram("Compute");
+		auto confirmation = computeShaderProgram("Compute/Compute");
 		if (confirmation) {
 			glDeleteProgram(data["compute_program"]);
 			data["compute_program"] =  confirmation.data;
 		}
 	}
 	{
-		auto confirmation = fragmentShaderProgram("Display", "Display");
+		auto confirmation = fragmentShaderProgram("Compute/Display", "Compute/Display");
 		if (confirmation) {
 			glDeleteProgram(data["display_program"]);
 			data["display_program"] = confirmation.data;
@@ -180,6 +178,7 @@ void KL::PathTracer::f_cleanup() {
 }
 
 void KL::PathTracer::f_resize() {
+	auto prev_res = r_resolution;
 	resolution = renderer->resolution;
 	aspect_ratio = d_to_f(renderer->aspect_ratio);
 
@@ -188,7 +187,7 @@ void KL::PathTracer::f_resize() {
 
 	glViewport(0, 0, resolution.x, resolution.y);
 
-	if (true) {
+	if (prev_res != r_resolution) {
 		data["compute_layout.x"] = d_to_u(ceil(u_to_d(r_resolution.x) / 32.0));
 		data["compute_layout.y"] = d_to_u(ceil(u_to_d(r_resolution.y) / 32.0));
 
@@ -212,7 +211,6 @@ void KL::PathTracer::f_render() {
 	glUniform1f (glGetUniformLocation(compute_program, "aspect_ratio"), r_aspect_ratio);
 	glUniform1f (glGetUniformLocation(compute_program, "current_time"), d_to_f(renderer->current_time));
 	glUniform2ui(glGetUniformLocation(compute_program, "resolution"), r_resolution.x, r_resolution.y);
-	glUniform1ui(glGetUniformLocation(compute_program, "reset"), static_cast<GLuint>(reset));
 	glUniform1ui(glGetUniformLocation(compute_program, "debug"), static_cast<GLuint>(debug));
 	glUniform1ui(glGetUniformLocation(compute_program, "current_sample"), sample);
 

@@ -17,7 +17,6 @@ namespace KL {
 
 		GPU_Scene* gpu_data;
 
-		bool reset;
 		bool debug;
 		uint sample;
 

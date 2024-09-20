@@ -28,7 +28,6 @@ namespace KL {
 		GLFWwindow* window;
 
 		Render_File* file;
-		KL::Object active_camera;
 
 		Rasterizer rasterizer;
 		PathTracer pathtracer;

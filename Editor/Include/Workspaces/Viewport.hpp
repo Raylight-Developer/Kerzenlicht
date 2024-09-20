@@ -53,8 +53,6 @@ namespace GUI {
 		struct Viewport : QOpenGLWindow, protected QOpenGLFunctions_4_5_Core {
 			Workspace_Viewport* parent;
 
-			KL::GPU_Scene* gpu_data;
-
 			dvec1 aspect_ratio;
 			uvec2 resolution;
 
@@ -84,6 +82,7 @@ namespace GUI {
 			dvec2 last_mouse;
 
 			Viewport(Workspace_Viewport* parent);
+			~Viewport(); // TODO Cleanup
 
 			void f_pipeline();
 			void f_recompile();
@@ -96,7 +95,7 @@ namespace GUI {
 			void f_displayLoop();
 			void f_frameUpdate();
 
-			void f_selectObject(const dvec2& uv);
+			void f_selectClosestObject(const dvec2& uv);
 
 			void initializeGL() override;
 			void paintGL() override;

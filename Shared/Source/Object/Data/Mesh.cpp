@@ -65,38 +65,65 @@ void KL::OBJECT::DATA::Mesh::packVertexData(vector<vec1>& array, const vec3& ver
 	array.push_back(uv.y);
 }
 
-bool KL::OBJECT::DATA::MESH::Face::f_rayTriangleIntersection(const mat4& transform_matrix, const vec3& ray_origin, const vec3& ray_direction, const vec3& vert_a, const vec3& vert_b, const vec3& vert_c, vec1& ray_length) {
-	const vec4 vert4_a = transform_matrix * vec4(vert_a, 1);
-	const vec4 vert4_b = transform_matrix * vec4(vert_b, 1);
-	const vec4 vert4_c = transform_matrix * vec4(vert_c, 1);
-	vec3 trans_vert_a = vec3(vert4_a.x, vert4_a.y, vert4_a.z);
-	vec3 trans_vert_b = vec3(vert4_b.x, vert4_b.y, vert4_b.z);
-	vec3 trans_vert_c = vec3(vert4_c.x, vert4_c.y, vert4_c.z);
-	if (vert4_a.w != 1.0f && vert4_a.w != 0.0f) {
-		trans_vert_a /= vert4_a.w;
-	}
-	if (vert4_b.w != 1.0f && vert4_b.w != 0.0f) {
-		trans_vert_b /= vert4_b.w;
-	}
-	if (vert4_c.w != 1.0f && vert4_c.w != 0.0f) {
-		trans_vert_c /= vert4_c.w;
-	}
+KL::Confirm<dvec1> KL::OBJECT::DATA::Mesh::f_rayPicking(const dmat4& transform_matrix, const dvec3& ray_origin, const dvec3& ray_direction) {
+	dvec1 closest_hit = MAX_DIST;
+	for (const KL::OBJECT::DATA::MESH::Face* face : faces) {
+		if (face->vertices.size() == 3) {
+			const dvec3 vert_a = MESH::Vertex::transformed(transform_matrix, face->vertices[0]->position);
+			const dvec3 vert_b = MESH::Vertex::transformed(transform_matrix, face->vertices[1]->position);
+			const dvec3 vert_c = MESH::Vertex::transformed(transform_matrix, face->vertices[2]->position);
 
-	const vec3 v1v0 = trans_vert_b - trans_vert_a;
-	const vec3 v2v0 = trans_vert_c - trans_vert_a;
-	const vec3 rov0 = ray_origin - trans_vert_a;
+			auto hit = MESH::Face::f_rayTriangleIntersection(ray_origin, ray_direction, vert_a, vert_b, vert_c);
+			if (hit) {
+				if (hit.data < closest_hit) {
+					closest_hit = hit.data;
+				}
+			}
 
-	const vec3 n = glm::cross(v1v0, v2v0);
-	const vec3 q = glm::cross(rov0, ray_direction);
-	const vec1 d = 1.0f / glm::dot(ray_direction, n);
-	const vec1 u = d * glm::dot(-q, v2v0);
-	const vec1 v = d * glm::dot(q, v1v0);
-	const vec1 t = d * glm::dot(-n, rov0);
+		}
+	}
+	if (closest_hit == MAX_DIST) {
+		return Confirm<dvec1>();
+	}
+	return Confirm(closest_hit);
+}
+
+bool KL::OBJECT::DATA::Mesh::f_rayAnyHit(const dmat4& transform_matrix, const dvec3& ray_origin, const dvec3& ray_direction) {
+	for (const KL::OBJECT::DATA::MESH::Face* face : faces) {
+		if (face->vertices.size() == 3) {
+			const dvec3 vert_a = MESH::Vertex::transformed(transform_matrix, face->vertices[0]->position);
+			const dvec3 vert_b = MESH::Vertex::transformed(transform_matrix, face->vertices[1]->position);
+			const dvec3 vert_c = MESH::Vertex::transformed(transform_matrix, face->vertices[2]->position);
+
+			auto hit = MESH::Face::f_rayTriangleIntersection(ray_origin, ray_direction, vert_a, vert_b, vert_c);
+			if (hit) {
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+KL::Confirm<dvec1>  KL::OBJECT::DATA::MESH::Face::f_rayTriangleIntersection(const dvec3& ray_origin, const dvec3& ray_direction, const dvec3& vert_a, const dvec3& vert_b, const dvec3& vert_c) {
+	const dvec3 v1v0 = vert_b - vert_a;
+	const dvec3 v2v0 = vert_c - vert_a;
+	const dvec3 rov0 = ray_origin - vert_a;
+
+	const dvec3 n = glm::cross(v1v0, v2v0);
+	const dvec3 q = glm::cross(rov0, ray_direction);
+	const dvec1 d = 1.0 / glm::dot(ray_direction, n);
+	const dvec1 u = d * glm::dot(-q, v2v0);
+	const dvec1 v = d * glm::dot(q, v1v0);
+	const dvec1 t_dist = d * glm::dot(-n, rov0);
 
 	if (u < 0.0 || v < 0.0 || (u + v) > 1.0) {
-		return false;
+		return Confirm<dvec1>();
 	}
 
-	ray_length = t;
-	return true;
+	return Confirm(t_dist);
+}
+
+dvec3 KL::OBJECT::DATA::MESH::Vertex::transformed(const dmat4& matrix, const dvec3& position) {
+	const dvec4 vert4 = matrix * dvec4(position, 1.0);
+	return dvec3(vert4.x, vert4.y, vert4.z) / vert4.w;
 }
