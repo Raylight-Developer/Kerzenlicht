@@ -62,7 +62,7 @@ void KL::Renderer::f_displayLoop() {
 }
 
 void KL::Renderer::f_tickUpdate() {
-	for (KL::Object* object : FILE->active_scene->pointer->objects) {
+	for (KL::Object* object : FILE->active_scene.pointer->objects) {
 		if (object->node_tree) {
 			object->node_tree->exec(&frame_time);
 			object->cpu_update = true;

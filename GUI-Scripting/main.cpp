@@ -1,6 +1,6 @@
 #include "Dll_Include.hpp"
 
-EXPORT void Script_ID_buildGui(Gui_Script* node) {
+BUILD_(Script_ID)(Gui_Script* node) {
 	node->clearIO();
 	
 	node->addExecInput("I Exec");
@@ -11,11 +11,11 @@ EXPORT void Script_ID_buildGui(Gui_Script* node) {
 }
 
 // Optional
-EXPORT void Script_ID_renderGui(Gui_Script* node, QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) {
+RENDER_(Script_ID)(Gui_Script* node, QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) {
 	node->renderDefault(painter, option, widget);
 }
 
-EXPORT void Ganyu_buildGui(Gui_Script* node) {
+F_BUILD_(Ganyu) {
 	node->clearIO();
 	
 	node->addExecInput("I");

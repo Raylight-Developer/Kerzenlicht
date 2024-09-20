@@ -1,4 +1,4 @@
-#include "GUI_Object_Nodes.hpp"
+﻿#include "GUI_Object_Nodes.hpp"
 
 #include "Object/Object.hpp"
 
@@ -50,6 +50,7 @@ GUI::NODE::EXEC::Script::Script(const ivec2& pos, const string& script_id) {
 	reload_proxyWidget->setFocusPolicy(Qt::StrongFocus);
 	reload = new GUI::Button();
 	reload->setFixedSize(20, 20);
+	reload->setText("⟳");
 	reload_proxyWidget->setWidget(reload);
 	reload_proxyWidget->setPos(boundingRect().topLeft() + QPointF(170, 30));
 
@@ -551,19 +552,19 @@ KL::Node_Tree* GUI::NODE::Node_Tree::toExecTree() {
 						switch (static_cast<GUI::NODE::LINK::Set*>(gui_node)->mini_type) {
 							case KL::NODE::LINK::SET::Type::EULER_ROTATION_X: {
 								auto t_node = new KL::NODE::LINK::SET::Euler_Rotation_X();
-								t_node->i_pointer->default_value = KL::Prop(FILE->active_object->pointer);
+								t_node->i_pointer->default_value = KL::Prop(FILE->f_activeObject());
 								node = t_node;
 								break;
 							}
 							case KL::NODE::LINK::SET::Type::EULER_ROTATION_Y: {
 								auto t_node = new KL::NODE::LINK::SET::Euler_Rotation_Y();
-								t_node->i_pointer->default_value = KL::Prop(FILE->active_object->pointer);
+								t_node->i_pointer->default_value = KL::Prop(FILE->f_activeObject());
 								node = t_node;
 								break;
 							}
 							case KL::NODE::LINK::SET::Type::EULER_ROTATION_Z: {
 								auto t_node = new KL::NODE::LINK::SET::Euler_Rotation_Z();
-								t_node->i_pointer->default_value = KL::Prop(FILE->active_object->pointer);
+								t_node->i_pointer->default_value = KL::Prop(FILE->f_activeObject());
 								node = t_node;
 								break;
 							}

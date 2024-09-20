@@ -3,26 +3,41 @@
 #include "Session.hpp"
 
 KL::File::File() :
+	pointer_map(BiMap<uint64, uint64>()),
 
-	pointer_map({}),
-	object_data({}),
-	node_trees({}),
-	shaders({}),
-	objects({}),
-	scenes({})
+	textures(Observable_Vector<SHADER::Texture*>()),
+	shaders(Observable_Vector<KL::Shader*>()),
+	object_data(Observable_Vector<OBJECT::Data*>()),
+	node_trees(Observable_Vector<Node_Tree*> ()),
+	objects(Observable_Vector<Object*>()),
+	scenes(Observable_Vector<Scene*>()),
+
+	active_camera(Observable_Ptr<Object>()),
+	active_object(Observable_Ptr<Object>()),
+	active_scene(Observable_Ptr<Scene>()),
+
+	selected_objects(Observable_Vector<Object*>())
 {
-
-	active_object = new Observable_Ptr<Object>();
-	active_scene = new Observable_Ptr<Scene>();
-
-	active_camera = new Object();
-	active_camera->transform.position = dvec3(0, 0, 2.5);
-	active_camera->data = new OBJECT::DATA::Camera();
+	active_camera.pointer = new Object();
+	active_camera.pointer->transform.position = dvec3(0, 0, 2.5);
+	active_camera.pointer->data = new OBJECT::DATA::Camera();
 
 	version = "ERROR";
 }
 
-KL::Confirm<KL::Object*> KL::File::f_getObject(const string& name) {
+KL::Object* KL::File::f_activeCamera() const {
+	return active_camera.pointer;
+}
+
+KL::Object* KL::File::f_activeObject() const {
+	return active_object.pointer;
+}
+
+KL::Scene* KL::File::f_activeScene() const {
+	return active_scene.pointer;
+}
+
+KL::Confirm<KL::Object*> KL::File::f_getObject(const string& name) const {
 	for (Object* object : objects) {
 		if (object->name == name) {
 			return Confirm(object);
@@ -780,10 +795,10 @@ void KL::File::f_loadAsciiBuild(const Token_Array& token_data, const Tokens& lin
 	Token_Array read_data = Token_Array();
 	for (const Tokens& tokens : token_data) {
 		if (tokens[0] == "Active-Scene") {
-			active_scene->set(ptr<KL::Scene*>(pointer_map.getVal(str_to_ul(tokens[2]))));
+			active_scene.set(ptr<KL::Scene*>(pointer_map.getVal(str_to_ul(tokens[2]))));
 		}
 		else if (tokens[0] == "Active-Object") {
-			active_object->set(ptr<KL::Object*>(pointer_map.getVal(str_to_ul(tokens[2]))));
+			active_object.set(ptr<KL::Object*>(pointer_map.getVal(str_to_ul(tokens[2]))));
 		}
 		else if (tokens[0] == "┌Data-Group") {
 			is_processing = true;
@@ -1293,9 +1308,9 @@ void KL::File::f_saveAsciiMesh(Lace& lace, const KL::OBJECT::Data* data, const u
 				if (mesh->faces[i]->vertices[j] == mesh->vertices[k])
 					lace SP << k;
 		lace SP << "]";
-		auto [exists, index] = f_getMapValue(mesh->shaders, mesh->faces[i], 0U);
+		auto exists = f_getMapValue(mesh->shaders, mesh->faces[i]);
 		if (exists) {
-			lace SP << index;
+			lace SP << exists.data;
 		}
 	}
 	lace--;
@@ -1304,7 +1319,7 @@ void KL::File::f_saveAsciiMesh(Lace& lace, const KL::OBJECT::Data* data, const u
 	lace++;
 	// TODO Fix crash if no normal layers are present or only certain faces contain data
 	for (uint64 i = 0; i < mesh->faces.size(); i++) {
-		auto [exists, index] = f_getMapValue(mesh->normals, mesh->faces[i], {});
+		auto exists = f_getMapValue(mesh->normals, mesh->faces[i]);
 		if (exists) {
 			lace NL << i SP << mesh->normals.at(mesh->faces[i]).size();
 			for (uint64 j = 0; j < mesh->normals.at(mesh->faces[i]).size(); j++) {
@@ -1318,7 +1333,7 @@ void KL::File::f_saveAsciiMesh(Lace& lace, const KL::OBJECT::Data* data, const u
 	lace++;
 	// TODO Fix crash if no uv layers are present or only certain faces contain data
 	for (uint64 i = 0; i < mesh->faces.size(); i++) {
-		auto [exists, index] = f_getMapValue(mesh->uvs, mesh->faces[i], {});
+		auto exists = f_getMapValue(mesh->uvs, mesh->faces[i]);
 		if (exists) {
 			lace NL << i SP << mesh->uvs.at(mesh->faces[i]).size();
 			for (uint64 j = 0; j < mesh->uvs.at(mesh->faces[i]).size(); j++) {
@@ -1397,8 +1412,7 @@ void KL::File::f_saveAsciiHistory(Lace& lace) {
 	lace NL << "┌History( " << KL::Session::getInstance().getHistory()->history_stack.size() << " )";
 	lace++;
 	uint64 i = 0;
-	for (const auto& ptr : KL::Session::getInstance().getHistory()->history_stack) {
-		const History_Command* command = ptr.get();
+	for (const  History_Command* command : KL::Session::getInstance().getHistory()->history_stack) {
 		lace NL << "┌Cmd[ " << i << " ]";
 		lace++;
 		switch (command->type) {
@@ -1429,8 +1443,8 @@ void KL::File::f_saveAsciiHistory(Lace& lace) {
 void KL::File::f_saveAsciiBuild(Lace& lace) {
 	lace NL << "┌Build-Steps";
 	lace++;
-	lace NL << "Active-Scene " PTR << uptr(active_scene->pointer);
-	lace NL << "Active-Object " PTR << uptr(active_object->pointer);
+	lace NL << "Active-Scene " PTR << uptr(active_scene.pointer);
+	lace NL << "Active-Object " PTR << uptr(active_object.pointer);
 	lace NL << "┌Data-Group";
 	lace++;
 	for (auto object : objects) {

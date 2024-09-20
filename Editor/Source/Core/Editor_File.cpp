@@ -321,10 +321,10 @@ void KL::Editor_File::f_loadAsciiBuild(const Token_Array& token_data, const Toke
 	Token_Array read_data = Token_Array();
 	for (const Tokens& tokens : token_data) {
 		if (tokens[0] == "Active-Scene") {
-			active_scene->set(ptr<KL::Scene*>(pointer_map.getVal(str_to_ul(tokens[2]))));
+			active_scene.set(ptr<KL::Scene*>(pointer_map.getVal(str_to_ul(tokens[2]))));
 		}
 		else if (tokens[0] == "Active-Object") {
-			active_object->set(ptr<KL::Object*>(pointer_map.getVal(str_to_ul(tokens[2]))));
+			active_object.set(ptr<KL::Object*>(pointer_map.getVal(str_to_ul(tokens[2]))));
 		}
 		else if (tokens[0] == "┌Data-Group") {
 			is_processing = true;

@@ -19,7 +19,7 @@ GUI::WORKSPACE::Timeline::Timeline(Workspace_Viewport* parent) :
 
 	connect(slider, &GUI::Slider::valueChanged, [this, current_frame](int value) {
 		current_frame->setText(QString::number(value));
-		FILE->active_scene->pointer->current_frame = value;
+		FILE->active_scene.pointer->current_frame = value;
 
 		if (this->parent->viewport) this->parent->viewport->f_tickUpdate();
 	});
@@ -88,6 +88,9 @@ GUI::WORKSPACE::Viewport::Viewport(Workspace_Viewport* parent) :
 	resolution(uvec2(3840U, 2160U)),
 	aspect_ratio(u_to_d(resolution.x) / u_to_d(resolution.y)),
 
+	current_mouse(u_to_d(resolution / 2U)),
+	last_mouse(current_mouse),
+
 	data({}),
 
 	window_time(0.0),
@@ -114,12 +117,12 @@ void GUI::WORKSPACE::Viewport::f_displayLoop() {
 
 	glUseProgram(mesh_program);
 
-	KL::OBJECT::DATA::Camera* camera = FILE->active_camera->getCamera();
-	glUniform3fv(glGetUniformLocation(mesh_program, "camera_pos" ), 1, value_ptr(d_to_f(FILE->active_camera->transform.position)));
-	glUniformMatrix4fv(glGetUniformLocation(mesh_program, "view_matrix"), 1, GL_FALSE, value_ptr(d_to_f(camera->glViewMatrix(FILE->active_camera))));
+	KL::OBJECT::DATA::Camera* camera = FILE->f_activeCamera()->getCamera();
+	glUniform3fv(glGetUniformLocation(mesh_program, "camera_pos" ), 1, value_ptr(d_to_f(FILE->f_activeCamera()->transform.position)));
+	glUniformMatrix4fv(glGetUniformLocation(mesh_program, "view_matrix"), 1, GL_FALSE, value_ptr(d_to_f(camera->glViewMatrix(FILE->f_activeCamera()))));
 	glUniformMatrix4fv(glGetUniformLocation(mesh_program, "projection_matrix"), 1, GL_FALSE, value_ptr(d_to_f(camera->glProjectionMatrix(aspect_ratio))));
 
-	for (KL::Object* object : FILE->active_scene->pointer->objects) {
+	for (KL::Object* object : FILE->active_scene.pointer->objects) {
 		if (object->data->type == KL::OBJECT::DATA::Type::MESH) {
 			f_renderMesh(mesh_program, object);
 		}
@@ -132,8 +135,8 @@ void GUI::WORKSPACE::Viewport::f_displayLoop() {
 }
 
 void GUI::WORKSPACE::Viewport::f_tickUpdate() {
-	if (FILE->active_scene->pointer) {
-		for (KL::Object* object : FILE->active_scene->pointer->objects) {
+	if (FILE->f_activeScene()) {
+		for (KL::Object* object : FILE->f_activeScene()->objects) {
 			if (object and object->node_tree) {
 				object->node_tree->exec(&frame_time);
 				object->cpu_update = true;
@@ -149,8 +152,8 @@ void GUI::WORKSPACE::Viewport::f_guiUpdate() {
 		frame_counter = 0;
 
 		string selected = "None";
-		if (FILE->active_object->pointer) {
-			selected = FILE->active_object->pointer->name;
+		if (FILE->f_activeObject()) {
+			selected = FILE->f_activeObject()->name;
 		}
 		parent->timeline->info->setText("FPS: " + QString::number(frame_count) + " | Frame: 0 | Delta: " + QString::number(frame_time) + "ms | Selected: " + QString::fromStdString(selected));
 	}
@@ -158,28 +161,28 @@ void GUI::WORKSPACE::Viewport::f_guiUpdate() {
 
 void GUI::WORKSPACE::Viewport::f_inputLoop() {
 	if (inputs[Qt::Key::Key_D]) {
-		FILE->active_camera->transform.moveLocal(dvec3(1.0, 0.0, 0.0)* camera_move_sensitivity * frame_time);
+		FILE->f_activeCamera()->transform.moveLocal(dvec3(1.0, 0.0, 0.0)* camera_move_sensitivity * frame_time);
 	}
 	if (inputs[Qt::Key::Key_A]) {
-		FILE->active_camera->transform.moveLocal(dvec3(-1.0, 0.0, 0.0)* camera_move_sensitivity * frame_time);
+		FILE->f_activeCamera()->transform.moveLocal(dvec3(-1.0, 0.0, 0.0)* camera_move_sensitivity * frame_time);
 	}
 	if (inputs[Qt::Key::Key_E] || inputs[Qt::Key::Key_Space]) {
-		FILE->active_camera->transform.moveLocal(dvec3(0.0, 1.0, 0.0)* camera_move_sensitivity * frame_time);
+		FILE->f_activeCamera()->transform.moveLocal(dvec3(0.0, 1.0, 0.0)* camera_move_sensitivity * frame_time);
 	}
 	if (inputs[Qt::Key::Key_Q] || inputs[Qt::Key::Key_Control]) {
-		FILE->active_camera->transform.moveLocal(dvec3(0.0, -1.0, 0.0)* camera_move_sensitivity * frame_time);
+		FILE->f_activeCamera()->transform.moveLocal(dvec3(0.0, -1.0, 0.0)* camera_move_sensitivity * frame_time);
 	}
 	if (inputs[Qt::Key::Key_W]) {
-		FILE->active_camera->transform.moveLocal(dvec3(0.0, 0.0, -1.0)* camera_move_sensitivity * frame_time);
+		FILE->f_activeCamera()->transform.moveLocal(dvec3(0.0, 0.0, -1.0)* camera_move_sensitivity * frame_time);
 	}
 	if (inputs[Qt::Key::Key_S]) {
-		FILE->active_camera->transform.moveLocal(dvec3(0.0, 0.0, 1.0)* camera_move_sensitivity * frame_time);
+		FILE->f_activeCamera()->transform.moveLocal(dvec3(0.0, 0.0, 1.0)* camera_move_sensitivity * frame_time);
 	}
 	if (inputs[Qt::Key::Key_Alt] and inputs[Qt::MouseButton::LeftButton]) {
 		const dvec1 xoffset = (last_mouse.x - current_mouse.x) * frame_time * camera_orbit_sensitivity;
 		const dvec1 yoffset = (last_mouse.y - current_mouse.y) * frame_time * camera_orbit_sensitivity;
 
-		FILE->active_camera->transform.orbit(dvec3(0), dvec3(yoffset, xoffset, 0.0));
+		FILE->f_activeCamera()->transform.orbit(dvec3(0), dvec3(yoffset, xoffset, 0.0));
 
 		last_mouse = current_mouse;
 	}
@@ -187,7 +190,7 @@ void GUI::WORKSPACE::Viewport::f_inputLoop() {
 		const dvec1 xoffset = (last_mouse.x - current_mouse.x) * frame_time * camera_view_sensitivity;
 		const dvec1 yoffset = (last_mouse.y - current_mouse.y) * frame_time * camera_view_sensitivity;
 
-		FILE->active_camera->transform.rotate(dvec3(yoffset, xoffset, 0.0));
+		FILE->f_activeCamera()->transform.rotate(dvec3(yoffset, xoffset, 0.0));
 
 		last_mouse = current_mouse;
 	}
@@ -206,13 +209,13 @@ void GUI::WORKSPACE::Viewport::f_frameUpdate() {
 }
 
 void GUI::WORKSPACE::Viewport::f_selectClosestObject(const dvec2& uv) {
-	KL::OBJECT::DATA::Camera* camera = FILE->active_camera->getCamera();
-	const vec3 ray_origin = d_to_f(FILE->active_camera->transform.position);
+	KL::OBJECT::DATA::Camera* camera = FILE->f_activeCamera()->getCamera();
+	const vec3 ray_origin = d_to_f(FILE->f_activeCamera()->transform.position);
 	const vec3 ray_direction = d_to_f(normalize(
 			camera->projection_uv
 			+ (camera->projection_u * uv.x)
 			+ (camera->projection_v * uv.y)
-			- FILE->active_camera->transform.position
+			- FILE->f_activeCamera()->transform.position
 		)
 	);
 
@@ -234,11 +237,11 @@ void GUI::WORKSPACE::Viewport::f_selectClosestObject(const dvec2& uv) {
 		}
 	}
 	if (closest) {
-		FILE->active_object->set(closest);
+		FILE->active_object.set(closest);
 		cout << endl << "Selected Closest: " << closest->name;
 	}
 	else {
-		FILE->active_object->set(nullptr);
+		FILE->active_object.set(nullptr);
 		cout << endl << "Deselected";
 	}
 }
@@ -323,10 +326,10 @@ void GUI::WORKSPACE::Viewport::keyPressEvent(QKeyEvent* event) {
 void GUI::WORKSPACE::Viewport::wheelEvent(QWheelEvent* event) {
 	const QPoint scrollAmount = event->angleDelta();
 	if (scrollAmount.y() > 0) {
-		FILE->active_camera->transform.moveLocal(dvec3(0.0, 0.0, -25.0) * camera_move_sensitivity * frame_time);
+		FILE->f_activeCamera()->transform.moveLocal(dvec3(0.0, 0.0, -25.0) * camera_move_sensitivity * frame_time);
 	}
 	else {
-		FILE->active_camera->transform.moveLocal(dvec3(0.0, 0.0,  25.0) * camera_move_sensitivity * frame_time);
+		FILE->f_activeCamera()->transform.moveLocal(dvec3(0.0, 0.0,  25.0) * camera_move_sensitivity * frame_time);
 	}
 }
 
@@ -378,7 +381,7 @@ void GUI::WORKSPACE::Viewport::f_renderMesh(const GLuint& raster_program, KL::Ob
 	glBindVertexArray(*vao);
 
 	// Outline
-	//if (object != FILE->active_object->pointer) {
+	//if (object != FILE->f_activeObject()) {
 	glEnable(GL_STENCIL_TEST);
 	glStencilFunc(GL_ALWAYS, 1, 255);
 	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
@@ -398,7 +401,7 @@ void GUI::WORKSPACE::Viewport::f_renderMesh(const GLuint& raster_program, KL::Ob
 	glDisable(GL_POLYGON_OFFSET_FILL);
 
 	// Stencil
-	//if (object != FILE->active_object->pointer) {
+	//if (object != FILE->f_activeObject()) {
 	glStencilFunc(GL_NOTEQUAL, 1, 255);
 	glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);

@@ -30,15 +30,15 @@ GUI::WORKSPACE::Workspace_Object_Node_Editor::Workspace_Object_Node_Editor(Works
 	addWidget(header);
 	addWidget(splitter);
 
-	FILE->active_object->addCallback(this, [this]() { viewport->f_objectChanged(FILE->active_object->pointer); });
+	FILE->active_object.addCallback(this, [this]() { viewport->f_objectChanged(FILE->f_activeObject()); });
 	connect(load_in, &GUI::Button::pressed, [this]() {
 		viewport->loadNodes();
 	});
 	connect(f_updateRayVectors, &GUI::Button::pressed, [this]() { // CAN CRASH. [xmemory 1335 and exec()] STOP Executing nodes before
-		if (viewport->active_node_tree and FILE->active_object->pointer) {
+		if (viewport->active_node_tree and FILE->f_activeObject()) {
 			LOG ENDL ANSI_B << "[DLL Compilation]" ANSI_RESET << " Compiling Solution..."; FLUSH;
 
-			auto node_tree = FILE->active_object->pointer->node_tree;
+			auto node_tree = FILE->f_activeObject()->node_tree;
 			auto gui_node_tree = FILE->nodetree_map[node_tree];
 			
 			HINSTANCE dynlib;
@@ -79,7 +79,7 @@ GUI::WORKSPACE::Object_Node_Viewport::Object_Node_Viewport(Workspace_Object_Node
 
 	setScene(scene);
 	scene->addItem(selection_rect);
-	f_objectChanged(FILE->active_object->pointer);
+	f_objectChanged(FILE->f_activeObject());
 }
 
 GUI::WORKSPACE::Object_Node_Viewport::~Object_Node_Viewport() {
@@ -88,7 +88,7 @@ GUI::WORKSPACE::Object_Node_Viewport::~Object_Node_Viewport() {
 			scene->removeItem(item);
 		}
 	}
-	FILE->active_object->callbacks.erase(this);
+	FILE->active_object.removeCallback(this);
 
 	delete connection;
 	delete selection_rect;
@@ -111,10 +111,10 @@ void GUI::WORKSPACE::Object_Node_Viewport::f_objectChanged(KL::Object* object) {
 }
 
 void GUI::WORKSPACE::Object_Node_Viewport::loadNodes() {
-	if (active_node_tree and FILE->active_object->pointer) {
+	if (active_node_tree and FILE->f_activeObject()) {
 		LOG ENDL ANSI_B << "[Translation]" ANSI_RESET << " Compiling Nodes..."; FLUSH;
 
-		auto pointer = FILE->active_object->pointer->node_tree;
+		auto pointer = FILE->f_activeObject()->node_tree;
 		for (auto node : pointer->nodes) {
 			f_removeMapItem(FILE->node_map, node);
 		}
@@ -122,7 +122,7 @@ void GUI::WORKSPACE::Object_Node_Viewport::loadNodes() {
 		f_removeVectorItem(FILE->node_trees, pointer);
 
 		auto node_tree = active_node_tree->toExecTree();
-		FILE->active_object->pointer->node_tree = node_tree;
+		FILE->f_activeObject()->node_tree = node_tree;
 		FILE->node_trees.push_back(node_tree);
 		FILE->nodetree_map[node_tree] = active_node_tree;
 
@@ -413,12 +413,12 @@ void GUI::WORKSPACE::Object_Node_Viewport::keyPressEvent(QKeyEvent* event) {
 //}
 
 void GUI::WORKSPACE::Object_Node_Viewport::dropEvent(QDropEvent* event) {
-	if (active_node_tree == nullptr and FILE->active_object->pointer) {
-		if (FILE->active_object->pointer->node_tree == nullptr) {
-			FILE->active_object->pointer->node_tree = new KL::Node_Tree();
+	if (active_node_tree == nullptr and FILE->f_activeObject()) {
+		if (FILE->f_activeObject()->node_tree == nullptr) {
+			FILE->f_activeObject()->node_tree = new KL::Node_Tree();
 			active_node_tree = new GUI::NODE::Node_Tree();
-			FILE->nodetree_map[FILE->active_object->pointer->node_tree] = active_node_tree;
-			FILE->node_trees.push_back(FILE->active_object->pointer->node_tree);
+			FILE->nodetree_map[FILE->f_activeObject()->node_tree] = active_node_tree;
+			FILE->node_trees.push_back(FILE->f_activeObject()->node_tree);
 		}
 	}
 	const ivec2 drop_pos = d_to_i(f_roundToNearest(p_to_d(mapToScene(event->position().toPoint())), 10.0));
@@ -467,7 +467,7 @@ void GUI::WORKSPACE::Object_Node_Viewport::dropEvent(QDropEvent* event) {
 			else if (type == "LINK") {
 				if (sub_type == "LINK_POINTER_SCENE") {
 					auto t_node = new GUI::NODE::LINK::Pointer(drop_pos, KL::PROP::Type::SCENE);
-					t_node->pointer = FILE->active_scene->pointer;
+					t_node->pointer = FILE->active_scene.pointer;
 					node = t_node;
 				}
 				else if (sub_type == "LINK_GET_FIELD") {
@@ -495,10 +495,11 @@ void GUI::WORKSPACE::Object_Node_Viewport::dropEvent(QDropEvent* event) {
 				}
 			}
 		}
-		else if (event->mimeData()->text() == "OBJECT") {
+		else if (event->mimeData()->text().contains("POINTER::")) {
 			event->acceptProposedAction();
+			const QString type = event->mimeData()->text().remove("POINTER::");
 
-			QByteArray byteArray = event->mimeData()->data("OBJECT");
+			QByteArray byteArray = event->mimeData()->data(type);
 			QDataStream stream(&byteArray, QIODevice::ReadOnly);
 			qulonglong pointer;
 			stream >> pointer;

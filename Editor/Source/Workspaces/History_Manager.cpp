@@ -9,9 +9,7 @@ GUI::WORKSPACE::Workspace_History_Manager::Workspace_History_Manager(Workspace_M
 	list = new List(this);
 	addWidget(list);
 
-	for (const auto& ptr : KL::Session::getInstance().getHistory()->history_stack) {
-		const auto command = ptr.get();
-
+	for (const KL::History_Command* command : KL::Session::getInstance().getHistory()->history_stack) {
 		QListWidgetItem* item = new QListWidgetItem();
 		item->setData(500, uptr(command));
 		item->setText(QString::fromStdString(command->info.str()));
@@ -19,8 +17,8 @@ GUI::WORKSPACE::Workspace_History_Manager::Workspace_History_Manager(Workspace_M
 		list->addItem(item);
 	}
 
-	KL::Session::getInstance().getHistory()->addCallback(this, [this]() {
-		KL::History_Command* command = KL::Session::getInstance().getHistory()->history_stack.back().get();
+	KL::Session::getInstance().getHistory()->history_stack.addCallback(this, [this](KL::Observable_Vector_Operation type) {
+		KL::History_Command* command = KL::Session::getInstance().getHistory()->history_stack.back();
 		
 		QListWidgetItem* item = new QListWidgetItem();
 		item->setData(1000, uptr(command));
@@ -36,4 +34,8 @@ GUI::WORKSPACE::Workspace_History_Manager::Workspace_History_Manager(Workspace_M
 		LOG ENDL << "Undo [" << count << "]"; FLUSH;
 		UNDO(count);
 	});
+}
+
+GUI::WORKSPACE::Workspace_History_Manager::~Workspace_History_Manager() {
+	KL::Session::getInstance().getHistory()->history_stack.removeCallback(this);
 }

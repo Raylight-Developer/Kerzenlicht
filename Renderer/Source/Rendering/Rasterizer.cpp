@@ -134,7 +134,7 @@ void KL::Rasterizer::f_cleanup() {
 	glDisable(GL_DEPTH_TEST);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-	for (KL::Object* object : FILE->active_scene->pointer->objects) {
+	for (KL::Object* object : FILE->active_scene.pointer->objects) {
 		auto vao = &gl_data[object]["VAO"];
 		auto vbo = &gl_data[object]["VBO"];
 		glDeleteVertexArrays(1, vao);
@@ -147,7 +147,7 @@ void KL::Rasterizer::f_cleanup() {
 	glBindVertexArray(0);
 	glUseProgram(0);
 
-	for (KL::Object* object : FILE->active_scene->pointer->objects) {
+	for (KL::Object* object : FILE->active_scene.pointer->objects) {
 		object->cpu_update = true;
 		if (object->data->type == KL::OBJECT::DATA::Type::MESH) {
 			object->getMesh()->cpu_update = true;
@@ -208,7 +208,7 @@ void KL::Rasterizer::f_render() {
 	glUniformMatrix4fv(glGetUniformLocation(mesh_program, "view_matrix"), 1, GL_FALSE, value_ptr(d_to_f(camera->glViewMatrix(FILE->active_camera))));
 	glUniformMatrix4fv(glGetUniformLocation(mesh_program, "projection_matrix"), 1, GL_FALSE, value_ptr(d_to_f(camera->glProjectionMatrix(r_aspect_ratio))));
 
-	for (KL::Object* object : FILE->active_scene->pointer->objects) {
+	for (KL::Object* object : FILE->active_scene.pointer->objects) {
 		if (object->data->type == KL::OBJECT::DATA::Type::MESH) {
 			f_renderMesh(mesh_program, object);
 		}

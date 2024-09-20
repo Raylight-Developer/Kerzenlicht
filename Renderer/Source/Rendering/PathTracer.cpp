@@ -169,7 +169,7 @@ void KL::PathTracer::f_cleanup() {
 
 	glUseProgram(0);
 
-	for (KL::Object* object : FILE->active_scene->pointer->objects) {
+	for (KL::Object* object : FILE->active_scene.pointer->objects) {
 		object->cpu_update = true;
 		if (object->data->type == KL::OBJECT::DATA::Type::MESH) {
 			object->getMesh()->cpu_update = true;
@@ -218,7 +218,7 @@ void KL::PathTracer::f_render() {
 	glUniform1ui(glGetUniformLocation(compute_program, "samples_per_pixel"), 1);
 
 	KL::OBJECT::DATA::Camera* camera = FILE->active_camera->getCamera();
-	camera->f_updateRayVectors(FILE->active_scene->pointer, FILE->active_camera);
+	camera->f_updateRayVectors(FILE->active_scene.pointer, FILE->active_camera);
 
 	glUniform3fv(glGetUniformLocation(compute_program, "camera_pos"),  1, value_ptr(d_to_f(FILE->active_camera->transform.position)));
 	glUniform3fv(glGetUniformLocation(compute_program, "camera_p_uv"), 1, value_ptr(d_to_f(camera->projection_uv)));

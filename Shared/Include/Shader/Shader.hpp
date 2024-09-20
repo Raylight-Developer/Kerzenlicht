@@ -82,7 +82,7 @@ namespace KL {
 
 			~Shader_Code() {};
 			void execute() override;
-			unique_ptr<History_Command> undo() const override;
+			History_Command* undo() const override;
 			void serialize(Lace& lace) const override;
 			void deserialize(const string& value) override;
 		};

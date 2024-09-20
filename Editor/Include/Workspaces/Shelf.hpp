@@ -36,10 +36,14 @@ namespace GUI {
 			GUI::Tree_Item* object_data;
 
 			Workspace_Shelf(Workspace_Manager* parent);
+			~Workspace_Shelf();
 		};
 
 		struct Shelf : GUI::Tree {
 			Shelf(Workspace_Shelf* parent);
+			~Shelf();
+
+			void f_update();
 
 			void startDrag(Qt::DropActions actions) override;
 		};

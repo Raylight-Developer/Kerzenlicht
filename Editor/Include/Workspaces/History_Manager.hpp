@@ -30,6 +30,7 @@ namespace GUI {
 			List* list;
 
 			Workspace_History_Manager(Workspace_Manager* parent);
+			~Workspace_History_Manager();
 		};
 		namespace HISTORY_MANAGER {
 		}

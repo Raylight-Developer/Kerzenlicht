@@ -68,9 +68,9 @@ string KL::Shader::f_compileShaders(const string & code) {
 				case (PROP::Type::TEXTURE) : {
 					const string section = "textures[";
 					process_shader.replace(input_pos, section.length(), section);
-					auto [exists, result_index] = f_getVectorIndex(FILE->textures, shader->inputs[index].getTexture(), MAX_UINT64);
+					auto exists = f_getVectorIndex(FILE->textures, shader->inputs[index].getTexture());
 					if (exists) {
-						process_shader.replace(input_pos + section.length(), index_str.length(), to_string(result_index));
+						process_shader.replace(input_pos + section.length(), index_str.length(), to_string(exists.data));
 					}
 					break;
 				}
@@ -113,8 +113,8 @@ void KL::SHADER_CMD::Shader_Code::execute() {
 	ptr->shader_code = cmd_new;
 }
 
-unique_ptr<KL::History_Command>  KL::SHADER_CMD::Shader_Code::undo() const {
-	return make_unique<Shader_Code>(ptr, cmd_old);
+KL::History_Command*  KL::SHADER_CMD::Shader_Code::undo() const {
+	return new Shader_Code(ptr, cmd_old);
 }
 
 void KL::SHADER_CMD::Shader_Code::serialize(Lace& lace) const {

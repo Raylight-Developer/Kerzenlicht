@@ -106,6 +106,88 @@ namespace KL {
 		}
 	};
 
+	enum struct Observable_Vector_Operation {
+		ADD,
+		REMOVE,
+		CLEAR
+	};
+
+	template<typename T>
+	struct Observable_Vector {
+		vector<T> internal_vector;
+		unordered_map<void*, function<void(Observable_Vector_Operation)>> callbacks;
+
+		Observable_Vector() : internal_vector({}) {}
+
+		void addCallback(void* key, function<void(Observable_Vector_Operation)> func) {
+			callbacks[key] = std::move(func);
+		}
+
+		void removeCallback(void* key) {
+			callbacks.erase(key);
+		}
+
+		void clearCallbacks() {
+			callbacks.clear();
+		}
+
+		void notify(const Observable_Vector_Operation& type) {
+			for (const auto& [key, func] : callbacks)
+				func(type);
+		}
+
+		void push_back(const T& value) {
+			internal_vector.push_back(value);
+			notify(Observable_Vector_Operation::ADD);
+		}
+
+		void erase(typename vector<T>::iterator pos) {
+			internal_vector.erase(pos);
+			notify(Observable_Vector_Operation::REMOVE);
+		}
+
+		void clear() {
+			internal_vector.clear();
+			notify(Observable_Vector_Operation::CLEAR);
+		}
+
+		T& operator[](uint64 index) {
+			return internal_vector[index];
+		}
+
+		uint64 size() const {
+			return internal_vector.size();
+		}
+
+		T& back() {
+			return internal_vector.back();
+		}
+
+		T back() const {
+			return internal_vector.back();
+		}
+
+		bool empty() const {
+			return internal_vector.empty();
+		}
+
+		typename vector<T>::iterator begin() {
+			return internal_vector.begin();
+		}
+
+		typename vector<T>::iterator end() {
+			return internal_vector.end();
+		}
+
+		typename vector<T>::const_iterator begin() const {
+			return internal_vector.begin();
+		}
+
+		typename vector<T>::const_iterator end() const {
+			return internal_vector.end();
+		}
+	};
+
 	template <typename K, typename V>
 	struct BiMap {
 		map<K, V> key_to_val;
@@ -257,41 +339,41 @@ T f_ramp(const map<U, T>& curve, const U& t) {
 }
 
 template<typename K, typename V>
-pair<bool, V> f_getMapValue(const map<K, V>& map, const K& key, const V& fail) {
+KL::Confirm<V> f_getMapValue(const map<K, V>& map, const K& key) {
 	auto it = map.find(key);
 	if (it != map.end()) {
-		return make_pair(true, it->second);
+		return  KL::Confirm(it->second);
 	}
-	return make_pair(false, fail);
+	return KL::Confirm<V>();
 }
 
 template<typename K, typename V>
-pair<bool, V> f_getMapValue(const unordered_map<K, V>& map, const K& key, const V& fail) {
+KL::Confirm<V> f_getMapValue(const unordered_map<K, V>& map, const K& key) {
 	auto it = map.find(key);
 	if (it != map.end()) {
-		return make_pair(true, it->second);
+		return  KL::Confirm(it->second);
 	}
-	return make_pair(false, fail);
+	return  KL::Confirm<V>();
 }
 
 template<typename K, typename V>
-pair<bool, K> f_getMapKey(const map<K, V>& map, const V& value, const K& fail) {
+KL::Confirm<K> f_getMapKey(const map<K, V>& map, const V& value) {
 	for (const auto& pair : map) {
 		if (pair.second == value) {
-			return make_pair(true, pair.first);
+			return  KL::Confirm(pair.first);
 		}
 	}
-	return make_pair(false, fail);
+	return  KL::Confirm<K>();
 }
 
 template<typename K, typename V>
-pair<bool, K> f_getMapKey(const unordered_map<K, V>& map, const V& value, const K& fail) {
+KL::Confirm<K> f_getMapKey(const unordered_map<K, V>& map, const V& value) {
 	for (const auto& pair : map) {
 		if (pair.second == value) {
-			return make_pair(true, pair.first);
+			return  KL::Confirm(pair.first);
 		}
 	}
-	return make_pair(false, fail);
+	return  KL::Confirm<K>();
 }
 
 template<typename T>
@@ -304,12 +386,31 @@ bool f_hasVectorItem(const vector<T>& vec, const T& value) {
 }
 
 template<typename T>
-pair<bool, uint64> f_getVectorIndex(const vector<T>& vec, const T& value, const uint64& fail = 0U) {
+bool f_hasVectorItem(const KL::Observable_Vector<T>& vec, const T& value) {
 	auto it = find(vec.begin(), vec.end(), value);
 	if (it != vec.end()) {
-		return make_pair(true, distance(vec.begin(), it));
+		return true;
 	}
-	return make_pair(false, fail);
+	return false;
+}
+
+template<typename T>
+KL::Confirm<uint64> f_getVectorIndex(const vector<T>& vec, const T& value) {
+	auto it = find(vec.begin(), vec.end(), value);
+	if (it != vec.end()) {
+		return KL::Confirm(distance(vec.begin(), it));
+	}
+	return KL::Confirm<uint64>();
+}
+
+
+template<typename T>
+KL::Confirm<uint64> f_getVectorIndex(const KL::Observable_Vector<T>& vec, const T& value) {
+	auto it = find(vec.begin(), vec.end(), value);
+	if (it != vec.end()) {
+		return KL::Confirm(uint64(distance(vec.begin(), it)));
+	}
+	return KL::Confirm<uint64>();
 }
 
 template<typename K, typename V>
@@ -346,6 +447,11 @@ void f_removeMapItem(unordered_map<K, V>& map, const K& key) {
 
 template<typename T>
 void f_removeVectorItem(vector<T>& vec, const T& value) {
+	vec.erase(find(vec.begin(), vec.end(), value));
+}
+
+template<typename T>
+void f_removeVectorItem(KL::Observable_Vector<T>& vec, const T& value) {
 	vec.erase(find(vec.begin(), vec.end(), value));
 }
 

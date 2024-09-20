@@ -11,14 +11,10 @@ GUI::WORKSPACE::Workspace_Shelf::Workspace_Shelf(Workspace_Manager* parent) :
 	objects = new Tree_Item(tree, "Objects");
 	object_data = new Tree_Item(tree, "Data");
 
-	for (const KL::Object* object : parent->parent->file->objects) {
-		auto item = new Tree_Item(objects, QString::fromStdString(object->name), 1);
-		item->setData(0, 1000, uptr(object));
-	}
-	//for (pair<string, Object_Data*> Mesh : parent->parent->file->data_array[Data_Type::MESH]) {
-	//	GUI::Tree_Item* Item = new GUI::Tree_Item(object_data, Mesh.first);
-	//}
 	addWidget(tree);
+}
+
+GUI::WORKSPACE::Workspace_Shelf::~Workspace_Shelf() {
 }
 
 GUI::WORKSPACE::Shelf::Shelf(Workspace_Shelf* parent) :
@@ -26,6 +22,36 @@ GUI::WORKSPACE::Shelf::Shelf(Workspace_Shelf* parent) :
 {
 	setDragEnabled(true);
 	setDragDropMode(QAbstractItemView::DragDropMode::DragOnly);
+	FILE->objects.addCallback(this, [this](KL::Observable_Vector_Operation type) {
+		f_update();
+	});
+}
+
+GUI::WORKSPACE::Shelf::~Shelf() {
+	FILE->objects.removeCallback(this);
+}
+
+void GUI::WORKSPACE::Shelf::f_update() {
+	for (const KL::Object* data : FILE->objects) {
+		auto item = new Tree_Item(this, QString::fromStdString(data->name), 1);
+		item->setData(0, 1000, uptr(data));
+		item->setData(0, 1001, "OBJECT");
+	}
+	for (const KL::OBJECT::Data* data : FILE->object_data) {
+		auto item = new Tree_Item(this, QString::fromStdString(data->name), 1);
+		item->setData(0, 1000, uptr(data));
+		item->setData(0, 1001, "OBJECT_DATA");
+	}
+	for (const KL::Shader* data : FILE->shaders) {
+		auto item = new Tree_Item(this, QString::fromStdString(data->name), 1);
+		item->setData(0, 1000, uptr(data));
+		item->setData(0, 1001, "SHADER");
+	}
+	for (const KL::SHADER::Texture* data : FILE->textures) {
+		auto item = new Tree_Item(this, QString::fromStdString(data->name), 1);
+		item->setData(0, 1000, uptr(data));
+		item->setData(0, 1001, "TEXTURE");
+	}
 }
 
 void GUI::WORKSPACE::Shelf::startDrag(Qt::DropActions actions) {
@@ -36,8 +62,8 @@ void GUI::WORKSPACE::Shelf::startDrag(Qt::DropActions actions) {
 		stream << temp->data(0, 1000).toULongLong();
 
 		QMimeData* mimeData = new QMimeData;
-		mimeData->setText("OBJECT");
-		mimeData->setData("OBJECT", byteArray);
+		mimeData->setText("POINTER::" + temp->data(0, 1001).toString());
+		mimeData->setData(temp->data(0, 1001).toString(), byteArray);
 
 		QDrag* drag = new QDrag(this);
 		drag->setMimeData(mimeData);

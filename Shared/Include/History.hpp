@@ -19,15 +19,15 @@ namespace KL {
 		HISTORY::Type type;
 		virtual ~History_Command() = default;
 		virtual void execute() = 0;
-		virtual unique_ptr<History_Command> undo() const = 0;
+		virtual History_Command* undo() const = 0;
 		virtual void serialize(Lace& lace) const = 0;
 		virtual void deserialize(const string& value) = 0;
 	};
 
-	struct History_Manager : Observable {
-		vector<unique_ptr<History_Command>> history_stack;
+	struct History_Manager {
+		Observable_Vector<History_Command*> history_stack;
 
-		void execute(unique_ptr<History_Command> cmd);
+		void execute(History_Command* cmd);
 		void undo(const uint64& count);
 		void redo(const uint64& count);
 	};

@@ -41,25 +41,29 @@ namespace KL {
 		//TODO store pointer map as old if there are no duplicated pointers for conflict and to avoid re-writing files for versioning systems
 		BiMap<uint64, uint64> pointer_map; // hash - pointer_address
 
-		vector<SHADER::Texture*> textures;
-		vector<KL::Shader*> shaders;
+		Observable_Vector<SHADER::Texture*> textures;
+		Observable_Vector<KL::Shader*> shaders;
 
-		vector<OBJECT::Data*> object_data;
-		vector<Node_Tree*> node_trees;
-		vector<Object*> objects;
-		vector<Scene*> scenes;
+		Observable_Vector<OBJECT::Data*> object_data;
+		Observable_Vector<Node_Tree*> node_trees;
+		Observable_Vector<Object*> objects;
+		Observable_Vector<Scene*> scenes;
 
-		Observable_Ptr<Object>* active_object;
-		Observable_Ptr<Scene>* active_scene;
-		vector<Object*> selected_objects;
-		Object* active_camera;
+		Observable_Ptr<Object> active_camera;
+		Observable_Ptr<Object> active_object;
+		Observable_Ptr<Scene> active_scene;
+		Observable_Vector<Object*> selected_objects;
 
 		string version;
 		string type;
 
 		File();
 
-		KL::Confirm<KL::Object*> f_getObject(const string& name);
+		KL::Object* f_activeCamera() const;
+		KL::Object* f_activeObject() const;
+		KL::Scene*  f_activeScene() const;
+
+		KL::Confirm<KL::Object*> f_getObject(const string& name) const;
 
 		void f_loadAsciiFile   (const string& file_path);
 		void f_saveAsciiFile   (const string& file_path);

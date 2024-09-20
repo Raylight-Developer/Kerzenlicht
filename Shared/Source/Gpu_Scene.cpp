@@ -56,7 +56,7 @@ void KL::GPU_Scene::f_update() {
 	triangles.clear();
 	bvh_nodes.clear();
 
-	for (KL::Object* object : FILE->active_scene->pointer->objects) {
+	for (KL::Object* object : FILE->active_scene.pointer->objects) {
 		object->f_compileMatrix();
 		vector<GPU_Triangle> mesh_triangles;
 		if (object->data->type == KL::OBJECT::DATA::Type::MESH) {
@@ -290,12 +290,12 @@ KL::GPU_Triangle KL::faceToGpuTri(const mat4& matrix, KL::OBJECT::DATA::Mesh* me
 	vec2 uv_c = vec2(0.0f);
 
 	uint material_index = MAX_UINT32;
-	auto [exists_a, value] = f_getMapValue(mesh->shaders, face, 0U);
-	if (exists_a) {
+	auto confirm = f_getMapValue(mesh->shaders, face);
+	if (confirm.data) {
 		if (mesh->shader_slots.size() > mesh->shaders[face]) {
-			auto [exists, index] = f_getVectorIndex(FILE->shaders, mesh->shader_slots[value]);
-			if (exists) {
-				material_index = ul_to_u(index);
+			auto sub_confirm = f_getVectorIndex(FILE->shaders, mesh->shader_slots[confirm.data]);
+			if (sub_confirm) {
+				material_index = ul_to_u(sub_confirm.data);
 			}
 		}
 	}

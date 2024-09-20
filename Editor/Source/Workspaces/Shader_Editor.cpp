@@ -81,10 +81,10 @@ void GUI::WORKSPACE::Shader_Code_Editor::load(KL::Shader* shader) {
 void GUI::WORKSPACE::Shader_Code_Editor::save() {
 	if (parent->active_shader != nullptr) {
 		if (parent->active_shader->shader_code != toPlainText().toStdString()) {
-			auto pointer = make_unique<KL::SHADER_CMD::Shader_Code>(parent->active_shader, toPlainText().toStdString());
+			auto pointer = new KL::SHADER_CMD::Shader_Code(parent->active_shader, toPlainText().toStdString());
 
 			KL::Session::getInstance().getHistory()->execute(
-				std::move(pointer)
+				pointer
 			);
 		}
 	}
