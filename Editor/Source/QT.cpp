@@ -12,8 +12,10 @@ GUI::Button::Button(QWidget* parent) :
 	QPushButton(parent)
 {
 	setSizePolicy(QSizePolicy::Policy::Preferred, QSizePolicy::Policy::Preferred);
+	setAttribute(Qt::WidgetAttribute::WA_TranslucentBackground);
 	setAttribute(Qt::WidgetAttribute::WA_StyledBackground);
 	setContentsMargins(0, 0, 0, 0);
+	setCheckable(false);
 }
 
 GUI::Dock::Dock(QWidget* parent) :
@@ -139,7 +141,7 @@ void GUI::Graphics_View::pan(QPointF delta) {
 	delta *= view_scale;
 
 	setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
-	QPoint newCenter(viewport()->rect().width() / 2 - delta.x(),  viewport()->rect().height() / 2 - delta.y());
+	QPoint newCenter(viewport()->rect().width() / 2.0 - delta.x(),  viewport()->rect().height() / 2.0 - delta.y());
 	centerOn(mapToScene(newCenter));
 
 	setTransformationAnchor(QGraphicsView::AnchorViewCenter);
@@ -289,6 +291,7 @@ GUI::Value_Input::Value_Input(QWidget* parent) :
 	QLineEdit(parent)
 {
 	setSizePolicy(QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Preferred);
+	setAttribute(Qt::WidgetAttribute::WA_TranslucentBackground);
 	setAttribute(Qt::WidgetAttribute::WA_StyledBackground);
 	setContentsMargins(0, 0, 0, 0);
 }
@@ -470,6 +473,8 @@ GUI::Window::Window(QWidget* parent) :
 {
 	setDockOptions(QMainWindow::DockOption::AllowTabbedDocks);
 	setDockOptions(QMainWindow::DockOption::AllowNestedDocks);
+	setAttribute(Qt::WidgetAttribute::WA_TranslucentBackground);
+	setAttribute(Qt::WidgetAttribute::WA_NoSystemBackground);
 	setAttribute(Qt::WidgetAttribute::WA_StyledBackground);
 	setContentsMargins(0, 0, 0, 0);
 }
@@ -487,6 +492,7 @@ GUI::Widget_List::Widget_List(QWidget* parent) :
 GUI::Toggle::Toggle(QWidget* parent) :
 	GUI::Button(parent)
 {
+	setAttribute(Qt::WidgetAttribute::WA_TranslucentBackground, false);
 	setCheckable(true);
 	setChecked(false);
 }

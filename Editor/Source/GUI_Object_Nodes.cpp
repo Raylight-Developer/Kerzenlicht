@@ -49,6 +49,7 @@ GUI::NODE::EXEC::Script::Script(const ivec2& pos, const string& script_id) {
 	reload_proxyWidget->setFlag(QGraphicsItem::ItemIsFocusable);
 	reload_proxyWidget->setFocusPolicy(Qt::StrongFocus);
 	reload = new GUI::Button();
+	reload->setObjectName("Node_Input");
 	reload->setFixedSize(20, 20);
 	reload->setText("⟳");
 	reload_proxyWidget->setWidget(reload);
@@ -222,12 +223,24 @@ void GUI::NODE::LINK::Pointer::paint(QPainter* painter, const QStyleOptionGraphi
 	Node::paint(painter, option, widget);
 	if (pointer) {
 		painter->setBrush(QColor(25, 25, 25));
-		painter->drawRoundedRect(QRectF(rect.topLeft() + QPointF(5, 30), QSize(180, 20)), 5, 5);
+		painter->drawRoundedRect(QRectF(rect.topLeft() + QPointF(5, 30), QSize(180, 20)), 3, 3);
 
 		painter->setPen(Qt::white);
 		switch (pointer_type) {
+			case KL::PROP::Type::OBJECT_DATA: {
+				painter->drawText(QRectF(rect.topLeft() + QPointF(15, 30), QSize(160, 20)), Qt::AlignLeft, QString::fromStdString(static_cast<KL::OBJECT::Data*>(pointer)->name));
+				break;
+			}
+			case KL::PROP::Type::TEXTURE: {
+				painter->drawText(QRectF(rect.topLeft() + QPointF(15, 30), QSize(160, 20)), Qt::AlignLeft, QString::fromStdString(static_cast<KL::SHADER::Texture*>(pointer)->name));
+				break;
+			}
 			case KL::PROP::Type::OBJECT: {
 				painter->drawText(QRectF(rect.topLeft() + QPointF(15, 30), QSize(160, 20)), Qt::AlignLeft, QString::fromStdString(static_cast<KL::Object*>(pointer)->name));
+				break;
+			}
+			case KL::PROP::Type::SHADER: {
+				painter->drawText(QRectF(rect.topLeft() + QPointF(15, 30), QSize(160, 20)), Qt::AlignLeft, QString::fromStdString(static_cast<KL::Shader*>(pointer)->name));
 				break;
 			}
 			case KL::PROP::Type::SCENE: {
@@ -264,6 +277,7 @@ GUI::NODE::LINK::GET::Field::Field(const ivec2& pos) :
 	proxyWidget_id->setFocusPolicy(Qt::StrongFocus);
 	field = new GUI::Value_Input();
 	field->setFixedSize(180, 20);
+	field->setObjectName("Node_Input");
 	field->setPlaceholderText("Field");
 	field->installEventFilter(this);
 	proxyWidget_id->setWidget(field);

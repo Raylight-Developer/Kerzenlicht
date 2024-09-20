@@ -38,7 +38,6 @@ namespace GUI {
 
 			Main_Window(GUI::Application* app);
 
-			bool eventFilter(QObject* object, QEvent* event) override;
 			void closeEvent(QCloseEvent* event) override;
 		};
 	}

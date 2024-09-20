@@ -144,11 +144,13 @@ uvec3 typeColor(const KL::PROP::Type& type) {
 	case KL::PROP::Type::UINT:   return uvec3(105, 125,  60);
 	case KL::PROP::Type::INT:    return uvec3( 40, 130,  40);
 
-	case KL::PROP::Type::TRANSFORM: return uvec3( 85,  85, 240);
-	case KL::PROP::Type::TEXTURE:   return uvec3(240,  85,  85);
-	case KL::PROP::Type::OBJECT:    return uvec3(250, 175, 100);
-	case KL::PROP::Type::SCENE:     return uvec3( 85, 195, 240);
-	case KL::PROP::Type::PROP:      return uvec3(210, 240,  85);
+	case KL::PROP::Type::OBJECT_DATA: return uvec3(175, 250, 100);
+	case KL::PROP::Type::TRANSFORM:   return uvec3( 85,  85, 240);
+	case KL::PROP::Type::TEXTURE:     return uvec3(240,  85,  85);
+	case KL::PROP::Type::OBJECT:      return uvec3(250, 175, 100);
+	case KL::PROP::Type::SHADER:      return uvec3(255, 150, 150);
+	case KL::PROP::Type::SCENE:       return uvec3( 85, 195, 240);
+	case KL::PROP::Type::PROP:        return uvec3(210, 240,  85);
 
 	case KL::PROP::Type::VEC2:
 	case KL::PROP::Type::VEC3:

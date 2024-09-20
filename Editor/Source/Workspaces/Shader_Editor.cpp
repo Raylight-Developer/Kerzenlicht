@@ -83,9 +83,7 @@ void GUI::WORKSPACE::Shader_Code_Editor::save() {
 		if (parent->active_shader->shader_code != toPlainText().toStdString()) {
 			auto pointer = new KL::SHADER_CMD::Shader_Code(parent->active_shader, toPlainText().toStdString());
 
-			KL::Session::getInstance().getHistory()->execute(
-				pointer
-			);
+			KL::Session::getInstance().getHistory()->execute(pointer);
 		}
 	}
 }
@@ -93,13 +91,13 @@ void GUI::WORKSPACE::Shader_Code_Editor::save() {
 void GUI::WORKSPACE::Shader_Code_Editor::keyPressEvent(QKeyEvent* event) {
 	if (completer && completer->popup()->isVisible()) {
 		switch (event->key()) {
-		case Qt::Key_Enter:
-		case Qt::Key_Return:
-		case Qt::Key_Tab:
-			event->ignore();
-			return;
-		default:
-			break;
+			case Qt::Key_Enter:
+			case Qt::Key_Return:
+			case Qt::Key_Tab:
+				event->ignore();
+				return;
+			default:
+				break;
 		}
 	}
 	QPlainTextEdit::keyPressEvent(event);

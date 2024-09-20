@@ -5,8 +5,8 @@
 
 int main(int argc, char* argv[]) {
 	SetConsoleOutputCP(65001);
-	QApplication::setAttribute(Qt::ApplicationAttribute::AA_NativeWindows);
 	QApplication::setAttribute(Qt::ApplicationAttribute::AA_UseDesktopOpenGL);
+	QApplication::setAttribute(Qt::ApplicationAttribute::AA_NativeWindows);
 
 	GUI::WORKSPACE::App* application = new GUI::WORKSPACE::App(argc, argv);
 	application->exec();

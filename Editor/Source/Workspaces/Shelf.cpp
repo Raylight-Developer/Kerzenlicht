@@ -6,11 +6,7 @@ GUI::WORKSPACE::Workspace_Shelf::Workspace_Shelf(Workspace_Manager* parent) :
 	GUI::Linear_Contents(parent, QBoxLayout::Direction::TopToBottom),
 	parent(parent)
 {
-	parent->setMaximumWidth(150);
 	tree = new Shelf(this);
-	objects = new Tree_Item(tree, "Objects");
-	object_data = new Tree_Item(tree, "Data");
-
 	addWidget(tree);
 }
 
@@ -22,9 +18,16 @@ GUI::WORKSPACE::Shelf::Shelf(Workspace_Shelf* parent) :
 {
 	setDragEnabled(true);
 	setDragDropMode(QAbstractItemView::DragDropMode::DragOnly);
+
+	objects = new Tree_Item(this, "Objects");
+	object_data = new Tree_Item(this, "Object Data");
+	shaders = new Tree_Item(this, "Shaders");
+	textures = new Tree_Item(this, "Textures");
+
 	FILE->objects.addCallback(this, [this](KL::Observable_Vector_Operation type) {
 		f_update();
 	});
+	f_update();
 }
 
 GUI::WORKSPACE::Shelf::~Shelf() {
@@ -33,24 +36,24 @@ GUI::WORKSPACE::Shelf::~Shelf() {
 
 void GUI::WORKSPACE::Shelf::f_update() {
 	for (const KL::Object* data : FILE->objects) {
-		auto item = new Tree_Item(this, QString::fromStdString(data->name), 1);
+		auto item = new Tree_Item(objects, QString::fromStdString(data->name), 1);
 		item->setData(0, 1000, uptr(data));
-		item->setData(0, 1001, "OBJECT");
+		item->setData(0, 1001, "POINTER::OBJECT");
 	}
 	for (const KL::OBJECT::Data* data : FILE->object_data) {
-		auto item = new Tree_Item(this, QString::fromStdString(data->name), 1);
+		auto item = new Tree_Item(object_data, QString::fromStdString(data->name), 1);
 		item->setData(0, 1000, uptr(data));
-		item->setData(0, 1001, "OBJECT_DATA");
+		item->setData(0, 1001, "POINTER::OBJECT_DATA");
 	}
 	for (const KL::Shader* data : FILE->shaders) {
-		auto item = new Tree_Item(this, QString::fromStdString(data->name), 1);
+		auto item = new Tree_Item(shaders, QString::fromStdString(data->name), 1);
 		item->setData(0, 1000, uptr(data));
-		item->setData(0, 1001, "SHADER");
+		item->setData(0, 1001, "POINTER::SHADER");
 	}
 	for (const KL::SHADER::Texture* data : FILE->textures) {
-		auto item = new Tree_Item(this, QString::fromStdString(data->name), 1);
+		auto item = new Tree_Item(textures, QString::fromStdString(data->name), 1);
 		item->setData(0, 1000, uptr(data));
-		item->setData(0, 1001, "TEXTURE");
+		item->setData(0, 1001, "POINTER::TEXTURE");
 	}
 }
 
@@ -62,7 +65,7 @@ void GUI::WORKSPACE::Shelf::startDrag(Qt::DropActions actions) {
 		stream << temp->data(0, 1000).toULongLong();
 
 		QMimeData* mimeData = new QMimeData;
-		mimeData->setText("POINTER::" + temp->data(0, 1001).toString());
+		mimeData->setText(temp->data(0, 1001).toString());
 		mimeData->setData(temp->data(0, 1001).toString(), byteArray);
 
 		QDrag* drag = new QDrag(this);

@@ -8,7 +8,6 @@ GUI::WORKSPACE::Workspace_Object_Node_Editor::Workspace_Object_Node_Editor(Works
 	GUI::Linear_Contents(parent, QBoxLayout::Direction::TopToBottom),
 	parent(parent)
 {
-	parent->setMaximumWidth(800);
 	viewport = new Object_Node_Viewport(this);
 	shelf = new Object_Node_Shelf(this);
 
@@ -16,12 +15,12 @@ GUI::WORKSPACE::Workspace_Object_Node_Editor::Workspace_Object_Node_Editor(Works
 	splitter->addWidget(shelf);
 	splitter->addWidget(viewport);
 
-	auto f_updateRayVectors = new GUI::Button(this);
-	f_updateRayVectors->setText("Compile");
+	auto compile = new GUI::Button(this);
+	compile->setText("Compile");
 
 	auto header = new GUI::Linear_Contents(this);
 	header->setFixedHeight(30);
-	header->addWidget(f_updateRayVectors);
+	header->addWidget(compile);
 
 	auto load_in = new GUI::Button(this);
 	load_in->setText("Load To View");
@@ -34,7 +33,7 @@ GUI::WORKSPACE::Workspace_Object_Node_Editor::Workspace_Object_Node_Editor(Works
 	connect(load_in, &GUI::Button::pressed, [this]() {
 		viewport->loadNodes();
 	});
-	connect(f_updateRayVectors, &GUI::Button::pressed, [this]() { // CAN CRASH. [xmemory 1335 and exec()] STOP Executing nodes before
+	connect(compile, &GUI::Button::pressed, [this]() { // CAN CRASH. [xmemory 1335 and exec()] STOP Executing nodes before
 		if (viewport->active_node_tree and FILE->f_activeObject()) {
 			LOG ENDL ANSI_B << "[DLL Compilation]" ANSI_RESET << " Compiling Solution..."; FLUSH;
 
@@ -382,7 +381,7 @@ void GUI::WORKSPACE::Object_Node_Viewport::keyPressEvent(QKeyEvent* event) {
 		selection.clear();
 		loadNodes();
 	}
-	Graphics_View::keyPressEvent(event);
+	//Graphics_View::keyPressEvent(event);
 }
 
 //void GUI::WORKSPACE::Object_Node_Viewport::resizeEvent(QResizeEvent* event) {
@@ -497,17 +496,30 @@ void GUI::WORKSPACE::Object_Node_Viewport::dropEvent(QDropEvent* event) {
 		}
 		else if (event->mimeData()->text().contains("POINTER::")) {
 			event->acceptProposedAction();
-			const QString type = event->mimeData()->text().remove("POINTER::");
-
-			QByteArray byteArray = event->mimeData()->data(type);
+			QByteArray byteArray = event->mimeData()->data(event->mimeData()->text());
 			QDataStream stream(&byteArray, QIODevice::ReadOnly);
 			qulonglong pointer;
 			stream >> pointer;
 			
-			auto object = ptr<KL::Object*>(pointer);
 
-			auto t_node = new GUI::NODE::LINK::Pointer(drop_pos, KL::PROP::Type::OBJECT);
-			t_node->pointer = object;
+			const string type = event->mimeData()->text().remove("POINTER::").toStdString();
+			GUI::NODE::LINK::Pointer* t_node = nullptr;
+			if (type == "OBJECT") {
+				t_node = new GUI::NODE::LINK::Pointer(drop_pos, KL::PROP::Type::OBJECT);
+				t_node->pointer = ptr<KL::Object*>(pointer);
+			}
+			else if (type == "OBJECT_DATA") {
+				t_node = new GUI::NODE::LINK::Pointer(drop_pos, KL::PROP::Type::OBJECT_DATA);
+				t_node->pointer = ptr<KL::OBJECT::Data*>(pointer);
+			}
+			else if (type == "SHADER") {
+				t_node = new GUI::NODE::LINK::Pointer(drop_pos, KL::PROP::Type::SHADER);
+				t_node->pointer = ptr<KL::Shader*>(pointer);
+			}
+			else if (type == "TEXTURE") {
+				t_node = new GUI::NODE::LINK::Pointer(drop_pos, KL::PROP::Type::TEXTURE);
+				t_node->pointer =  ptr<KL::SHADER::Texture*>(pointer);
+			}
 			node = t_node;
 		}
 		if (node) {
@@ -522,7 +534,6 @@ void GUI::WORKSPACE::Object_Node_Viewport::dropEvent(QDropEvent* event) {
 GUI::WORKSPACE::Object_Node_Shelf::Object_Node_Shelf(Workspace_Object_Node_Editor* parent) :
 	Tree(parent)
 {
-	setMaximumWidth(100);
 	setDragEnabled(true);
 	setDragDropMode(QAbstractItemView::DragDropMode::DragDrop);
 

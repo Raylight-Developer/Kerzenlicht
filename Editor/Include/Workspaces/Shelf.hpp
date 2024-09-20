@@ -32,9 +32,6 @@ namespace GUI {
 
 			Shelf* tree;
 
-			GUI::Tree_Item* objects;
-			GUI::Tree_Item* object_data;
-
 			Workspace_Shelf(Workspace_Manager* parent);
 			~Workspace_Shelf();
 		};
@@ -42,6 +39,11 @@ namespace GUI {
 		struct Shelf : GUI::Tree {
 			Shelf(Workspace_Shelf* parent);
 			~Shelf();
+
+			GUI::Tree_Item* objects;
+			GUI::Tree_Item* object_data;
+			GUI::Tree_Item* shaders;
+			GUI::Tree_Item* textures;
 
 			void f_update();
 

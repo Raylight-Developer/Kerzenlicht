@@ -16,7 +16,6 @@ GUI::WORKSPACE::Main_Window::Main_Window(GUI::Application* app) :
 	key_pressed(false),
 	mouse_pressed(false)
 {
-
 	log = new KL::Lace();
 	KL::Session::getInstance().setLog(log);
 	file = new KL::Editor_File();
@@ -52,33 +51,6 @@ GUI::WORKSPACE::Main_Window::Main_Window(GUI::Application* app) :
 	showMaximized();
 
 	LOG ENDL ANSI_G << "Fully Initialized" ANSI_RESET; FLUSH;
-}
-
-bool GUI::WORKSPACE::Main_Window::eventFilter(QObject* object, QEvent* event) {
-	if (event->type() == QEvent::MouseMove) {
-		if (object->inherits("QOpenGLWindow")) {
-		}
-	}
-	if (!mouse_pressed && event->type() == QEvent::MouseButtonPress) {
-		mouse_pressed = true;
-	}
-	if (event->type() == QEvent::MouseButtonRelease) {
-		mouse_pressed = false;
-	}
-	if (!key_pressed && event->type() == QEvent::KeyPress) {
-		key_pressed = true;
-		if (object->objectName() == "Viewport_Realtime") {
-			Viewport* viewport = dynamic_cast<Viewport*>(object);
-			QKeyEvent* d_event =static_cast<QKeyEvent*>(event);
-			if (d_event->key() == Qt::Key::Key_R) {
-				viewport->f_recompile();
-			}
-		}
-	}
-	if (event->type() == QEvent::KeyRelease) {
-		key_pressed = false;
-	}
-	return QObject::eventFilter(object, event);
 }
 
 void GUI::WORKSPACE::Main_Window::closeEvent(QCloseEvent* event) {
