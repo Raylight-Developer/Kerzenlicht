@@ -97,28 +97,28 @@ void KL::Renderer::f_guiLoop() {
 
 void KL::Renderer::f_inputLoop() {
 	if (inputs[GLFW_KEY_D]) {
-		FILE->active_camera->transform.moveLocal(dvec3(1.0, 0.0, 0.0) * camera_move_sensitivity * frame_time);
+		FILE->f_activeCamera()->transform.moveLocal(dvec3(1.0, 0.0, 0.0) * camera_move_sensitivity * frame_time);
 	}
 	if (inputs[GLFW_KEY_A]) {
-		FILE->active_camera->transform.moveLocal(dvec3(-1.0, 0.0, 0.0) * camera_move_sensitivity * frame_time);
+		FILE->f_activeCamera()->transform.moveLocal(dvec3(-1.0, 0.0, 0.0) * camera_move_sensitivity * frame_time);
 	}
 	if (inputs[GLFW_KEY_E] || inputs[GLFW_KEY_SPACE]) {
-		FILE->active_camera->transform.moveLocal(dvec3(0.0, 1.0, 0.0) * camera_move_sensitivity * frame_time);
+		FILE->f_activeCamera()->transform.moveLocal(dvec3(0.0, 1.0, 0.0) * camera_move_sensitivity * frame_time);
 	}
 	if (inputs[GLFW_KEY_Q] || inputs[GLFW_KEY_LEFT_CONTROL]) {
-		FILE->active_camera->transform.moveLocal(dvec3(0.0, -1.0, 0.0) * camera_move_sensitivity * frame_time);
+		FILE->f_activeCamera()->transform.moveLocal(dvec3(0.0, -1.0, 0.0) * camera_move_sensitivity * frame_time);
 	}
 	if (inputs[GLFW_KEY_W]) {
-		FILE->active_camera->transform.moveLocal(dvec3(0.0, 0.0, -1.0) * camera_move_sensitivity * frame_time);
+		FILE->f_activeCamera()->transform.moveLocal(dvec3(0.0, 0.0, -1.0) * camera_move_sensitivity * frame_time);
 	}
 	if (inputs[GLFW_KEY_S]) {
-		FILE->active_camera->transform.moveLocal(dvec3(0.0, 0.0, 1.0) * camera_move_sensitivity * frame_time);
+		FILE->f_activeCamera()->transform.moveLocal(dvec3(0.0, 0.0, 1.0) * camera_move_sensitivity * frame_time);
 	}
 	if (inputs[GLFW_KEY_LEFT_ALT] and inputs[GLFW_MOUSE_BUTTON_LEFT]) {
 		const dvec1 xoffset = (last_mouse.x - current_mouse.x) * frame_time * camera_orbit_sensitivity;
 		const dvec1 yoffset = (last_mouse.y - current_mouse.y) * frame_time * camera_orbit_sensitivity;
 
-		FILE->active_camera->transform.orbit(dvec3(0), dvec3(yoffset, xoffset, 0.0));
+		FILE->f_activeCamera()->transform.orbit(dvec3(0), dvec3(yoffset, xoffset, 0.0));
 
 		last_mouse = current_mouse;
 	}
@@ -126,7 +126,7 @@ void KL::Renderer::f_inputLoop() {
 		const dvec1 xoffset = (last_mouse.x - current_mouse.x) * frame_time * camera_view_sensitivity;
 		const dvec1 yoffset = (last_mouse.y - current_mouse.y) * frame_time * camera_view_sensitivity;
 
-		FILE->active_camera->transform.rotate(dvec3(yoffset, xoffset, 0.0));
+		FILE->f_activeCamera()->transform.rotate(dvec3(yoffset, xoffset, 0.0));
 
 		last_mouse = current_mouse;
 	}
@@ -344,10 +344,10 @@ void KL::Renderer::glfwCursorPos(GLFWwindow* window, dvec1 xpos, dvec1 ypos) {
 void KL::Renderer::glfwScroll(GLFWwindow* window, dvec1 xoffset, dvec1 yoffset) {
 	Renderer* instance = static_cast<Renderer*>(glfwGetWindowUserPointer(window));
 	if (yoffset < 0) {
-		FILE->active_camera->transform.moveLocal(dvec3(0.0, 0.0,  25.0) * instance->camera_move_sensitivity * instance->frame_time);
+		FILE->f_activeCamera()->transform.moveLocal(dvec3(0.0, 0.0,  25.0) * instance->camera_move_sensitivity * instance->frame_time);
 	}
 	if (yoffset > 0) {
-		FILE->active_camera->transform.moveLocal(dvec3(0.0, 0.0, -25.0) * instance->camera_move_sensitivity * instance->frame_time);
+		FILE->f_activeCamera()->transform.moveLocal(dvec3(0.0, 0.0, -25.0) * instance->camera_move_sensitivity * instance->frame_time);
 	}
 }
 

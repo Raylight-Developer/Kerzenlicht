@@ -291,7 +291,7 @@ KL::GPU_Triangle KL::faceToGpuTri(const mat4& matrix, KL::OBJECT::DATA::Mesh* me
 
 	uint material_index = MAX_UINT32;
 	auto confirm = f_getMapValue(mesh->shaders, face);
-	if (confirm.data) {
+	if (confirm) {
 		if (mesh->shader_slots.size() > mesh->shaders[face]) {
 			auto sub_confirm = f_getVectorIndex(FILE->shaders, mesh->shader_slots[confirm.data]);
 			if (sub_confirm) {

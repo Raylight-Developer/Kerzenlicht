@@ -5,9 +5,9 @@
 #include "Inputs.comp"
 #include "Utilities.comp"
 #include "Random.comp"
-#include "Camera.comp"
 #include "Intersections.comp"
 #include "Hook.comp"
+#include "Camera.comp"
 #include "Pathtrace.comp"
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------

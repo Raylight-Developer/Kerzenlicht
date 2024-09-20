@@ -111,7 +111,7 @@ void GUI::WORKSPACE::Workspace_Dock_Header::f_initWorkspacesMenu() {
 	properties->setText(" Properties");
 	connect(properties, &GUI::Button::clicked, [this]() {f_setWorkspace(Workspace_Type::PROPERTIES); });
 	
-	object_nodes->setIcon(QIcon("./Resources/Icons/Workspaces/Outliner.png"));
+	object_nodes->setIcon(QIcon("./Resources/Icons/Workspaces/Node_Editor.png"));
 	object_nodes->setText(" Object Nodes");
 	connect(object_nodes, &GUI::Button::clicked, [this]() {f_setWorkspace(Workspace_Type::OBJECT_NODE_EDITOR); });
 
@@ -178,7 +178,7 @@ void GUI::WORKSPACE::Workspace_Dock_Header::f_setWorkspace(const Workspace_Type&
 		}
 		case (Workspace_Type::OBJECT_NODE_EDITOR): {
 			parent->setWindowTitle("Object Nodes");
-			change_workspace_type->setIcon(QIcon("./Resources/Icons/Workspaces/Outliner.png"));
+			change_workspace_type->setIcon(QIcon("./Resources/Icons/Workspaces/Node_Editor.png"));
 			parent->workspace = new Workspace_Object_Node_Editor(parent);
 			parent->setWidget(parent->workspace);
 			floating_workspace_toggle->setText("Object Nodes");

@@ -136,7 +136,7 @@ void GUI::NODE::EXEC::Script::reloadFunctions() {
 		paintGuiFunc = (void(*)(Script_Node*, QPainter*, const QStyleOptionGraphicsItem*, QWidget*))paintAddress;
 	}
 	FARPROC buildAddress = GetProcAddress(dynlib, (script_identifier->text().toStdString() + "_buildGui").c_str());
-	if (buildAddress != nullptr) {
+	if (buildAddress) {
 		buildGuiFunc = (void(*)(Script_Node*))buildAddress;
 		buildGuiFunc(wrapper);
 	}
