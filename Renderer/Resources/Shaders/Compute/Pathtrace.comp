@@ -14,7 +14,8 @@ vec4 f_pathTrace(in Ray ray, in vec2 uv, in ivec2 pixel_id) {
 	float alpha = 1.0f;
 
 	for (uint b = 0; b < ray_bounces; b++) {
-		Hit hit_data = f_SceneIntersection(ray);
+		Hit hit_data = f_hit();
+		f_sceneIntersection(ray, hit_data);
 		if (hit_data.mesh_hit) {
 			imageStore(normal_render_layer, pixel_id, vec4(abs(hit_data.hit_normal), 1));
 			radiance = f_shade(hit_data, ray);

@@ -1,4 +1,13 @@
-//-------------------------------------------------------------------------------------------------
+// INTERNAL ---------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
+struct Medium {
+	int   type;
+	float density;
+	vec3  color;
+	float anisotropy;
+};
+
+// LINK -------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
 struct Triangle {
 	vec3  pos_a;
@@ -53,57 +62,28 @@ struct Directional_Light {
 	// 32
 };
 
-struct Shader {
+struct Material {
 	vec3  baseColor;
-	float subsurface;
-	float roughness;
-	float metallic;
-	float specular;
-	float specularTint;
-	float clearcoat;
-	float clearcoatGloss;
+	float opacity;
+	uint  alphaMode;
+	float alphaCutoff;
+	vec3  emission;
 	float anisotropic;
+	float metallic;
+	float roughness;
+	float subsurface;
+	float specularTint;
 	float sheen;
 	float sheenTint;
-};
-// INTERNAL ---------------------------------------------------------------------------------------
-// ------------------------------------------------------------------------------------------------
-struct Ray {
-	vec3  origin;
-	vec3  direction;
-};
-
-struct Hit {
-	bool  error;
-	vec3  pos;
-	float t_dist;
-	bool  inside;
-	bool  mesh_hit;
-
-	uint  bvh_depth;
-	uint material;
-
-	vec3  hit_pos;
-	vec3  hit_normal;
-	vec3  uvw;
-	float pdf;
-
-	Triangle hit_tri;
+	float clearcoat;
+	float clearcoatRoughness;
+	float specTrans;
+	float ior;
+	float ax;
+	float ay;
+	Medium medium;
 };
 
-struct BsdfSample {
-	vec3 L;
-	vec3 f;
-	float pdf;
-};
-
-struct LightSample {
-	vec3  normal;
-	vec3  emission;
-	vec3  direction;
-	float dist;
-	float pdf;
-};
 // DEFINITIONS ------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
 #define TWO_PI   6.28318530718
@@ -115,5 +95,87 @@ struct LightSample {
 
 #define MAX_DIST 10000.0
 #define EPSILON  0.0001
+#define INF 1000000.0
 
 #define MAX_UINT 4294967295
+
+#define QUAD_LIGHT 0
+#define SPHERE_LIGHT 1
+#define DISTANT_LIGHT 2
+
+#define MEDIUM_NONE 0
+#define MEDIUM_ABSORB 1
+#define MEDIUM_SCATTER 2
+#define MEDIUM_EMISSIVE 3
+
+#define ALPHA_MODE_OPAQUE 0
+#define ALPHA_MODE_BLEND 1
+#define ALPHA_MODE_MASK 2
+
+// INTERNAL ---------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
+struct Ray {
+	vec3 origin;
+	vec3 direction;
+};
+
+struct Hit {
+	bool  error;
+	float t_dist;
+	bool  inside;
+	bool  mesh_hit;
+
+	uint  bvh_depth;
+	uint  material;
+
+	vec3  hit_pos;
+	vec3  hit_normal;
+	vec3  uvw;
+	float pdf;
+
+	Triangle hit_tri;
+};
+Hit f_hit() {
+	Hit hit;
+	hit.error = false;
+	hit.mesh_hit = false;
+	hit.bvh_depth = 0;
+	hit.material = 0;
+	hit.pdf = 0;
+	hit.t_dist = MAX_DIST;
+	return hit;
+}
+
+struct State {
+	uint  depth;
+	float eta;
+	float hitDist;
+
+	vec3  fhp;
+	vec3  normal;
+	vec3  ffnormal;
+	vec3  tangent;
+	vec3  bitangent;
+
+	bool  isEmitter;
+
+	vec2  texCoord;
+	uint  matID;
+
+	Medium medium;
+	Material material;
+};
+
+struct BsdfSampleRec {
+	vec3  L;
+	vec3  f;
+	float pdf;
+};
+
+struct LightSampleRec {
+	vec3  normal;
+	vec3  emission;
+	vec3  direction;
+	float dist;
+	float pdf;
+};

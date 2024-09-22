@@ -1,7 +1,12 @@
 #include "Object/Nodes/Compiler.hpp"
 
-#define DLL_PATH "D:/Kerzenlicht/x64/Debug/Scripting.dll"
-#define DLL_GUI_PATH "D:/Kerzenlicht/x64/Debug/GUI-Scripting.dll"
+#ifdef _DEBUG
+	#define DLL_PATH "D:/Kerzenlicht/x64/Debug/Scripting.dll"
+	#define DLL_GUI_PATH "D:/Kerzenlicht/x64/Debug/GUI-Scripting.dll"
+#else
+	#define DLL_PATH "D:/Kerzenlicht/x64/Release/Scripting.dll"
+	#define DLL_GUI_PATH "D:/Kerzenlicht/x64/Release/GUI-Scripting.dll"
+#endif
 
 void loadDLL(HINSTANCE& dynlib, const bool& gui) {
 	string libfile = "";

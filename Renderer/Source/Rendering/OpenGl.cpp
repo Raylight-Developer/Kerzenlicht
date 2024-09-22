@@ -43,7 +43,7 @@ KL::Confirm<GLuint> computeShaderProgram(const string& file_path) {
 	GLuint shader_program;
 	string compute_code = preprocessShader("./Resources/Shaders/" + file_path + ".comp");
 	compute_code = KL::Shader::f_compileShaders(compute_code);
-	writeToFile("./Resources/Shaders/" + file_path + "_Compiled.comp", compute_code);
+	//writeToFile("./Resources/Shaders/" + file_path + "_Compiled.comp", compute_code);
 	const char* compute_code_cstr = compute_code.c_str();
 	GLuint comp_shader = glCreateShader(GL_COMPUTE_SHADER);
 	glShaderSource(comp_shader, 1, &compute_code_cstr, NULL);

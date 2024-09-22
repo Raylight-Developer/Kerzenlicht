@@ -129,6 +129,10 @@ void KL::PathTracer::f_tickUpdate() {
 }
 
 void KL::PathTracer::f_recompile() {
+	delete renderer->file;
+	renderer->file = new KL::Render_File();
+	renderer->file->f_loadAsciiFile("../Shared/Resources/Assets/Ganyu.krz");
+	Session::getInstance().setFile(renderer->file);
 	{
 		auto confirmation = computeShaderProgram("Compute/Compute");
 		if (confirmation) {

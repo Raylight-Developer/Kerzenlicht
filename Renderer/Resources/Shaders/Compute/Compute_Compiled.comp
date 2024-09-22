@@ -77,7 +77,7 @@ struct Hit {
 	bool  inside;
 	bool  mesh_hit;
 	uint  bvh_depth;
-	uint material;
+	uint  material;
 	vec3  hit_pos;
 	vec3  hit_normal;
 	vec3  uvw;
@@ -223,6 +223,13 @@ vec4 sampleTextureRgba32f(in Texture tex, in vec2 uv) {
 }
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
+vec2 f_getUV(Hit hit_data) {
+	return hit_data.uvw.x * vec2(hit_data.hit_tri.uv_a_x, hit_data.hit_tri.uv_a_y) +
+	hit_data.uvw.y * vec2(hit_data.hit_tri.uv_b_x, hit_data.hit_tri.uv_b_y) +
+	hit_data.uvw.z * vec2(hit_data.hit_tri.uv_c_x, hit_data.hit_tri.uv_c_y);
+}
+//-------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 uint f_tea(in uint val0, in uint val1) {
 	uint v0 = val0;
 	uint v1 = val1;
@@ -253,6 +260,12 @@ float f_rand(inout uint seed) { // [0 to 1]
 float f_randAround(inout uint seed, int range) { // [-1 to 1]
 	uint r = f_pcg(seed);
 	return f_mapFloat(0, 1, -range, range, uintBitsToFloat(0x3f800000 | (r >> 9)) - 1.0f);
+}
+//-------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
+void f_shadowRayPointLightSample(in Point_Light light, inout Hit hit_data) {
+	vec3 light_inv_dir = normalize(hit_data.pos - light.pos);
+	//hit_data.pdf *= ;
 }
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
@@ -307,8 +320,7 @@ vec3 f_barycentricCoords(in vec3 hit_pos, in vec3 vertex_a, in vec3 vertex_b, in
 }
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
-Hit f_SceneIntersection(in Ray ray) {
-	Hit hit_data;
+void f_SceneIntersection(in Ray ray, inout Hit hit_data) {
 	hit_data.error = false;
 	hit_data.mesh_hit = false;
 	hit_data.bvh_depth = 0;
@@ -340,7 +352,7 @@ Hit f_SceneIntersection(in Ray ray) {
 						)) {
 							if (t_dist < hit_data.t_dist && t_dist > EPSILON) {
 								hit_data.t_dist = t_dist;
-								hit_data.pos = ray.origin + ray.direction * t_dist;
+								hit_data.pos = ray.origin + ray.direction * (t_dist - EPSILON);
 								hit_data.inside = false;
 								hit_data.mesh_hit = true;
 					
@@ -354,9 +366,6 @@ Hit f_SceneIntersection(in Ray ray) {
 					
 								hit_data.hit_tri = tri;
 								hit_data.hit_normal = hit_data.uvw.x * tri.normal_a + hit_data.uvw.y * tri.normal_b + hit_data.uvw.z * tri.normal_c;
-								//for (uint j = 0; j < point_lights.length(); j++) {
-								//	hit_data.pos
-								//}
 							}
 						}
 					}
@@ -364,7 +373,6 @@ Hit f_SceneIntersection(in Ray ray) {
 			}
 		}
 	}
-	return hit_data;
 }
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
@@ -375,10 +383,7 @@ vec4 f_shade(in Hit hit_data, inout Ray ray) {
 		return vec4(0.9, 0.9, 0.9, 1.0);
 	}
 	else if (hit_data.material == 0) {
-		vec2 uv =
-			hit_data.uvw.x * vec2(hit_data.hit_tri.uv_a_x, hit_data.hit_tri.uv_a_y) +
-			hit_data.uvw.y * vec2(hit_data.hit_tri.uv_b_x, hit_data.hit_tri.uv_b_y) +
-			hit_data.uvw.z * vec2(hit_data.hit_tri.uv_c_x, hit_data.hit_tri.uv_c_y);
+		vec2 uv = f_getUV(hit_data);
 		return sampleTextureRgba8u(textures[0], vec2(uv.x, 1 - uv.y));
 	}
 	// ERROR
@@ -404,7 +409,8 @@ vec4 f_pathTrace(in Ray ray, in vec2 uv, in ivec2 pixel_id) {
 	vec4 radiance;
 	float alpha = 1.0f;
 	for (uint b = 0; b < ray_bounces; b++) {
-		Hit hit_data = f_SceneIntersection(ray);
+		Hit hit_data;
+		f_SceneIntersection(ray, hit_data);
 		if (hit_data.mesh_hit) {
 			imageStore(normal_render_layer, pixel_id, vec4(abs(hit_data.hit_normal), 1));
 			radiance = f_shade(hit_data, ray);

@@ -27,6 +27,16 @@ vec2 f_mapVec2(vec2 from_min, vec2 from_max, vec2 to_min, vec2 to_max, vec2 valu
 }
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
+vec3 f_faceForward(vec3 a, vec3 b) {
+	return dot(a, b) < 0.0 ? -b : b;
+}
+//-------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
+float f_luminance(vec3 c) {
+	return 0.212671 * c.x + 0.715160 * c.y + 0.072169 * c.z;
+}
+//-------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 vec4 sampleTextureRgba8u(in Texture tex, in vec2 uv) {
 	uint x = uint(uv.x * float(tex.width));
 	uint y = uint(uv.y * float(tex.height));
@@ -84,4 +94,11 @@ vec4 sampleTextureRgba32f(in Texture tex, in vec2 uv) {
 		texture_data[index + 2],
 		texture_data[index + 3]
 	);
+}
+//-------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
+vec2 f_getUV(Hit hit_data) {
+	return hit_data.uvw.x * vec2(hit_data.hit_tri.uv_a_x, hit_data.hit_tri.uv_a_y) +
+	hit_data.uvw.y * vec2(hit_data.hit_tri.uv_b_x, hit_data.hit_tri.uv_b_y) +
+	hit_data.uvw.z * vec2(hit_data.hit_tri.uv_c_x, hit_data.hit_tri.uv_c_y);
 }
