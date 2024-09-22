@@ -4,31 +4,53 @@ struct Triangle {
 	vec3  pos_a;
 	float uv_a_x;
 	vec3  normal_a;
-	float uv_a_y; // 32
+	float uv_a_y;
+	// 32
 	vec3  pos_b;
 	float uv_b_x;
 	vec3  normal_b;
-	float uv_b_y; // 64
+	float uv_b_y;
+	// 64
 	vec3  pos_c;
 	float uv_c_x;
 	vec3  normal_c;
-	float uv_c_y; // 96
+	float uv_c_y;
+	// 96
 	vec3  padding;
-	uint  material; // 128
+	uint  material;
+	// 112
 };
 
 struct Bvh {
 	vec3 p_min;
-	uint pointer;   // 16
+	uint pointer;
 	vec3 p_max;
-	uint tri_count; // 32 // If == 0, pointer leads to other Bvh Node, else leads to Triangle Start Index
+	uint tri_count; // If == 0, pointer leads to other Bvh Node, else leads to Triangle Start Index
+	// 32
 };
 
 struct Texture {
 	uint start;
 	uint width;
 	uint height;
-	uint format; // 32
+	uint format;
+	// 16
+};
+
+struct Point_Light {
+	vec3  pos;
+	float radius;
+	vec3  color;
+	float intentsity;
+	// 32
+};
+
+struct Directional_Light {
+	vec3  rotation;
+	float angle;
+	vec3  color;
+	float intentsity;
+	// 32
 };
 
 struct Shader {
@@ -50,6 +72,7 @@ struct Ray {
 	vec3  origin;
 	vec3  direction;
 };
+
 struct Hit {
 	bool  error;
 	vec3  pos;
@@ -63,8 +86,23 @@ struct Hit {
 	vec3  hit_pos;
 	vec3  hit_normal;
 	vec3  uvw;
+	float pdf;
 
 	Triangle hit_tri;
+};
+
+struct BsdfSample {
+	vec3 L;
+	vec3 f;
+	float pdf;
+};
+
+struct LightSample {
+	vec3  normal;
+	vec3  emission;
+	vec3  direction;
+	float dist;
+	float pdf;
 };
 // DEFINITIONS ------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------

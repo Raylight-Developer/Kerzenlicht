@@ -3,16 +3,13 @@
 #include "Shared.hpp"
 
 #define GLFW_INCLUDE_NONE
-#define GLFW_EXPOSE_NATIVE_WIN32
 #include "GLFW/glfw3.h"
-#include "GLFW/glfw3native.h"
 #include "imgui-1.90/imgui.h"
 #include "imgui-1.90/imgui_impl_glfw.h"
 #include "imgui-1.90/imgui_impl_opengl3.h"
 
 #include "OpenGL.hpp"
 
-#include "Gpu_Scene.hpp"
 #include "Core/Render_File.hpp"
 
 #include "Rendering/Rasterizer.hpp"
@@ -24,7 +21,6 @@ namespace KL {
 		RASTERIZATION
 	};
 	struct Renderer {
-		HWND hwnd;
 		GLFWwindow* window;
 
 		Render_File* file;
@@ -65,7 +61,7 @@ namespace KL {
 
 		void initGlfw();
 		void initImGui();
-		void systemInfo();
+		void f_systemInfo();
 
 		void f_pipeline();
 		void f_recompile();

@@ -4,7 +4,6 @@
 
 #include "OpenGL.hpp"
 
-#include "Gpu_Scene.hpp"
 #include "Core/Render_File.hpp"
 
 namespace KL {

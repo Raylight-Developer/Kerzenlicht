@@ -4,7 +4,7 @@
 
 #include "OpenGL.hpp"
 
-#include "Gpu_Scene.hpp"
+#include "Gpu/Gpu_Scene.hpp"
 #include "Core/Render_File.hpp"
 
 namespace KL {
@@ -15,7 +15,7 @@ namespace KL {
 	struct PathTracer {
 		Renderer* renderer;
 
-		GPU_Scene* gpu_data;
+		GPU::Scene* gpu_data;
 
 		bool debug;
 		uint sample;

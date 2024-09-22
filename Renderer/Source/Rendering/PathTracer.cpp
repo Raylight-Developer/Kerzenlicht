@@ -5,7 +5,7 @@
 KL::PathTracer::PathTracer(Renderer* renderer) :
 	renderer(renderer)
 {
-	gpu_data = new GPU_Scene();
+	gpu_data = new GPU::Scene();
 
 	debug = false;
 
@@ -49,6 +49,8 @@ void KL::PathTracer::f_initialize() {
 	data["ssbo 6"] = 0;
 	data["ssbo 7"] = 0;
 	data["ssbo 8"] = 0;
+	data["ssbo 9"] = 0;
+	data["ssbo 10"] = 0;
 
 	glViewport(0, 0, resolution.x, resolution.y);
 	glClearColor(0, 0, 0, 0);
@@ -115,11 +117,15 @@ void KL::PathTracer::f_tickUpdate() {
 	glDeleteBuffers(1, &data["ssbo 6"]);
 	glDeleteBuffers(1, &data["ssbo 7"]);
 	glDeleteBuffers(1, &data["ssbo 8"]);
+	glDeleteBuffers(1, &data["ssbo 9"]);
+	glDeleteBuffers(1, &data["ssbo 10"]);
 
-	data["ssbo 5"] = ssboBinding(5, ul_to_u(gpu_data->trianglesSize())  , gpu_data->triangles);
-	data["ssbo 6"] = ssboBinding(6, ul_to_u(gpu_data->bvhNodesSize())   , gpu_data->bvh_nodes);
-	data["ssbo 7"] = ssboBinding(7, ul_to_u(gpu_data->texturesSize())   , gpu_data->textures);
-	data["ssbo 8"] = ssboBinding(8, ul_to_u(gpu_data->textureDataSize()), gpu_data->texture_data);
+	data["ssbo 5"]  = ssboBinding(5, ul_to_u(gpu_data->trianglesSize())  , gpu_data->triangles);
+	data["ssbo 6"]  = ssboBinding(6, ul_to_u(gpu_data->bvhNodesSize())   , gpu_data->bvh_nodes);
+	data["ssbo 7"]  = ssboBinding(7, ul_to_u(gpu_data->texturesSize())   , gpu_data->textures);
+	data["ssbo 8"]  = ssboBinding(8, ul_to_u(gpu_data->textureDataSize()), gpu_data->texture_data);
+	data["ssbo 9"]  = ssboBinding(9, ul_to_u(gpu_data->pointLightsSize()), gpu_data->point_lights);
+	data["ssbo 10"] = ssboBinding(10, ul_to_u(gpu_data->directionalLightsSize()), gpu_data->directional_lights);
 }
 
 void KL::PathTracer::f_recompile() {
@@ -151,6 +157,8 @@ void KL::PathTracer::f_cleanup() {
 	glDeleteBuffers(1, &data["ssbo 6"]);
 	glDeleteBuffers(1, &data["ssbo 7"]);
 	glDeleteBuffers(1, &data["ssbo 8"]);
+	glDeleteBuffers(1, &data["ssbo 9"]);
+	glDeleteBuffers(1, &data["ssbo 10"]);
 
 	glDeleteTextures(1, &data["accumulation_render_layer"]);
 	glDeleteTextures(1, &data["normal_render_layer      "]);
@@ -214,7 +222,7 @@ void KL::PathTracer::f_render() {
 	glUniform1ui(glGetUniformLocation(compute_program, "debug"), static_cast<GLuint>(debug));
 	glUniform1ui(glGetUniformLocation(compute_program, "current_sample"), sample);
 
-	glUniform1ui(glGetUniformLocation(compute_program, "ray_bounces"), 1);
+	glUniform1ui(glGetUniformLocation(compute_program, "ray_bounces"), 3);
 	glUniform1ui(glGetUniformLocation(compute_program, "samples_per_pixel"), 1);
 
 	KL::OBJECT::DATA::Camera* camera = FILE->f_activeCamera()->getCamera();

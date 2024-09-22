@@ -149,7 +149,10 @@ GLuint ssboBinding(const GLuint& binding, const GLuint& size, const vector<T>& d
 	return buffer;
 }
 
-template GLuint ssboBinding<KL::GPU_Triangle>(const GLuint&, const GLuint&, const vector<KL::GPU_Triangle>&);
-template GLuint ssboBinding<KL::GPU_Texture>(const GLuint&, const GLuint&, const vector<KL::GPU_Texture>&);
-template GLuint ssboBinding<KL::GPU_BVH>(const GLuint&, const GLuint&, const vector<KL::GPU_BVH>&);
+#include "Gpu/Gpu_Scene.hpp"
+template GLuint ssboBinding<KL::GPU::Directional_Light>(const GLuint&, const GLuint&, const vector<KL::GPU::Directional_Light>&);
+template GLuint ssboBinding<KL::GPU::Point_Light>(const GLuint&, const GLuint&, const vector<KL::GPU::Point_Light>&);
+template GLuint ssboBinding<KL::GPU::Triangle>(const GLuint&, const GLuint&, const vector<KL::GPU::Triangle>&);
+template GLuint ssboBinding<KL::GPU::Texture>(const GLuint&, const GLuint&, const vector<KL::GPU::Texture>&);
+template GLuint ssboBinding<KL::GPU::Bvh>(const GLuint&, const GLuint&, const vector<KL::GPU::Bvh>&);
 template GLuint ssboBinding<uint>(const GLuint&, const GLuint&, const vector<uint>&);

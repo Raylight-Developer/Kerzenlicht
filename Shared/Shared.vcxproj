@@ -106,13 +106,15 @@
     <Lib />
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Include\GPU\Gpu_Bvh.hpp" />
+    <ClInclude Include="Include\GPU\Gpu_Triangle.hpp" />
     <ClInclude Include="Include\Object\Nodes\Math.hpp" />
     <ClInclude Include="External\stb_image.h" />
     <ClInclude Include="Include\History.hpp" />
     <ClInclude Include="Include\Glm.hpp" />
     <ClInclude Include="Include\Data_Property.hpp" />
     <ClInclude Include="Include\File.hpp" />
-    <ClInclude Include="Include\Gpu_Scene.hpp" />
+    <ClInclude Include="Include\GPU\Gpu_Scene.hpp" />
     <ClInclude Include="Include\Include.hpp" />
     <ClInclude Include="Include\Lace.hpp" />
     <ClInclude Include="Include\Macros.hpp" />
@@ -143,12 +145,16 @@
     <ClInclude Include="Include\String.hpp" />
     <ClInclude Include="Include\Types.hpp" />
     <ClInclude Include="Include\Math\Interpolation.hpp" />
+    <ClInclude Include="Include\GPU\Bvh_Build.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\GPU\Gpu_Bvh.cpp" />
+    <ClCompile Include="Source\GPU\Gpu_Triangle.cpp" />
+    <ClCompile Include="Source\GPU\Bvh_Build.cpp" />
     <ClCompile Include="Source\Object\Nodes\Math.cpp" />
     <ClCompile Include="Source\Math\Interpolation.cpp" />
     <ClCompile Include="Source\History.cpp" />
-    <ClCompile Include="Source\Gpu_Scene.cpp" />
+    <ClCompile Include="Source\GPU\Gpu_Scene.cpp" />
     <ClCompile Include="Source\Session.cpp" />
     <ClCompile Include="Source\File.cpp" />
     <ClCompile Include="Source\Scene.cpp" />

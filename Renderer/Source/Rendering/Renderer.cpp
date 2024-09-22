@@ -183,7 +183,7 @@ dvec1 KL::Renderer::f_aspectRatio() const {
 void KL::Renderer::init() {
 	initGlfw();
 	initImGui();
-	systemInfo();
+	f_systemInfo();
 
 	f_pipeline();
 }
@@ -233,7 +233,6 @@ void KL::Renderer::initGlfw() {
 	gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
 
 	glfwSetWindowUserPointer(window, this);
-	hwnd = glfwGetWin32Window(window);
 
 	glfwSetFramebufferSizeCallback(window, glfwFramebufferSize);
 	glfwSetMouseButtonCallback(window, glfwMouseButton);
@@ -256,7 +255,7 @@ void KL::Renderer::initImGui() {
 	ImGui_ImplOpenGL3_Init("#version 460");
 }
 
-void KL::Renderer::systemInfo() {
+void KL::Renderer::f_systemInfo() {
 	GLint work_grp_cnt[3];
 	glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_COUNT, 0, &work_grp_cnt[0]);
 	glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_COUNT, 1, &work_grp_cnt[1]);
@@ -279,10 +278,6 @@ void KL::Renderer::systemInfo() {
 	glGetIntegerv(GL_MAX_COMPUTE_WORK_GROUP_INVOCATIONS, &work_grp_inv);
 	LOG ENDL << "Max invocations count per work group: " << work_grp_inv;
 
-	GLint uboMaxSize;
-	glGetIntegerv(GL_MAX_UNIFORM_BLOCK_SIZE , &uboMaxSize);
-	LOG ENDL << "Maximum UBO size: " << d_to_ul(round(i_to_d(uboMaxSize) / (1024.0 * 1024.0))) << " Mb";
-
 	GLint ssboMaxSize;
 	glGetIntegerv(GL_MAX_SHADER_STORAGE_BLOCK_SIZE, &ssboMaxSize);
 	LOG ENDL << "Maximum SSBO size per binding: " << d_to_ul(round(i_to_d(ssboMaxSize) / (1024.0 * 1024.0))) << " Mb";
@@ -294,6 +289,7 @@ void KL::Renderer::systemInfo() {
 	GLint uniformBufferOffsetAlignment;
 	glGetIntegerv(GL_SHADER_STORAGE_BUFFER_OFFSET_ALIGNMENT, &uniformBufferOffsetAlignment);
 	LOG ENDL << "SSBO struct alignment multiplier: " << uniformBufferOffsetAlignment;
+	FLUSH;
 }
 
 void KL::Renderer::glfwFramebufferSize(GLFWwindow* window, int width, int height) {

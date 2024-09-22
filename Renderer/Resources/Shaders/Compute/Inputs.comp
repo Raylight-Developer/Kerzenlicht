@@ -7,7 +7,7 @@ layout(rgba32f, binding = 1) writeonly uniform image2D raw_render_layer;
 layout(rgba32f, binding = 2) writeonly uniform image2D bvh_render_layer;
 layout(rgba32f, binding = 3) writeonly uniform image2D normal_render_layer;
 
-layout(std430, binding = 5) buffer TriangleDataBuffer {
+layout(std430, binding = 5) buffer TriangleBuffer {
 	Triangle triangles[];
 };
 layout(std430, binding = 6) buffer BvhBuffer {
@@ -18,6 +18,12 @@ layout(std430, binding = 7) buffer TextureBuffer {
 };
 layout(std430, binding = 8) buffer TextureDataBuffer {
 	uint texture_data[];
+};
+layout(std430, binding = 9) buffer PointLightBuffer {
+	Point_Light point_lights[];
+};
+layout(std430, binding = 10) buffer DirectionalLightBuffer {
+	Directional_Light directional_lights[];
 };
 
 uniform uint  frame_count;

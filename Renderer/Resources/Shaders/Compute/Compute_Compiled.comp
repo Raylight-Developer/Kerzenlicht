@@ -7,29 +7,49 @@ struct Triangle {
 	vec3  pos_a;
 	float uv_a_x;
 	vec3  normal_a;
-	float uv_a_y; // 32
+	float uv_a_y;
+	// 32
 	vec3  pos_b;
 	float uv_b_x;
 	vec3  normal_b;
-	float uv_b_y; // 64
+	float uv_b_y;
+	// 64
 	vec3  pos_c;
 	float uv_c_x;
 	vec3  normal_c;
-	float uv_c_y; // 96
+	float uv_c_y;
+	// 96
 	vec3  padding;
-	uint  material; // 128
+	uint  material;
+	// 112
 };
 struct Bvh {
 	vec3 p_min;
-	uint pointer;   // 16
+	uint pointer;
 	vec3 p_max;
-	uint tri_count; // 32 // If == 0, pointer leads to other Bvh Node, else leads to Triangle Start Index
+	uint tri_count; // If == 0, pointer leads to other Bvh Node, else leads to Triangle Start Index
+	// 32
 };
 struct Texture {
 	uint start;
 	uint width;
 	uint height;
-	uint format; // 32
+	uint format;
+	// 16
+};
+struct Point_Light {
+	vec3  pos;
+	float radius;
+	vec3  color;
+	float intentsity;
+	// 32
+};
+struct Directional_Light {
+	vec3  rotation;
+	float angle;
+	vec3  color;
+	float intentsity;
+	// 32
 };
 struct Shader {
 	vec3  baseColor;
@@ -61,7 +81,20 @@ struct Hit {
 	vec3  hit_pos;
 	vec3  hit_normal;
 	vec3  uvw;
+	float pdf;
 	Triangle hit_tri;
+};
+struct BsdfSample {
+	vec3 L;
+	vec3 f;
+	float pdf;
+};
+struct LightSample {
+	vec3  normal;
+	vec3  emission;
+	vec3  direction;
+	float dist;
+	float pdf;
 };
 // DEFINITIONS ------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
@@ -81,7 +114,7 @@ layout(rgba32f, binding = 0)           uniform image2D accumulation_render_layer
 layout(rgba32f, binding = 1) writeonly uniform image2D raw_render_layer;
 layout(rgba32f, binding = 2) writeonly uniform image2D bvh_render_layer;
 layout(rgba32f, binding = 3) writeonly uniform image2D normal_render_layer;
-layout(std430, binding = 5) buffer TriangleDataBuffer {
+layout(std430, binding = 5) buffer TriangleBuffer {
 	Triangle triangles[];
 };
 layout(std430, binding = 6) buffer BvhBuffer {
@@ -92,6 +125,12 @@ layout(std430, binding = 7) buffer TextureBuffer {
 };
 layout(std430, binding = 8) buffer TextureDataBuffer {
 	uint texture_data[];
+};
+layout(std430, binding = 9) buffer PointLightBuffer {
+	Point_Light point_lights[];
+};
+layout(std430, binding = 10) buffer DirectionalLightBuffer {
+	Directional_Light directional_lights[];
 };
 uniform uint  frame_count;
 uniform float aspect_ratio;
@@ -274,6 +313,7 @@ Hit f_SceneIntersection(in Ray ray) {
 	hit_data.mesh_hit = false;
 	hit_data.bvh_depth = 0;
 	hit_data.material = 0;
+	hit_data.pdf = 1;
 	hit_data.t_dist = MAX_DIST;
 	float t_dist = MAX_DIST;
 	float bvh_t_length = MAX_DIST;
@@ -314,6 +354,9 @@ Hit f_SceneIntersection(in Ray ray) {
 					
 								hit_data.hit_tri = tri;
 								hit_data.hit_normal = hit_data.uvw.x * tri.normal_a + hit_data.uvw.y * tri.normal_b + hit_data.uvw.z * tri.normal_c;
+								//for (uint j = 0; j < point_lights.length(); j++) {
+								//	hit_data.pos
+								//}
 							}
 						}
 					}
@@ -371,25 +414,14 @@ vec4 f_pathTrace(in Ray ray, in vec2 uv, in ivec2 pixel_id) {
 			radiance = vec4(0,0,0,1);
 		}
 		for (int i = 0; i < hit_data.bvh_depth; i++) alpha *= 0.95;
-		imageStore(bvh_render_layer, pixel_id, vec4(vec3(1-alpha), 1));
-		return radiance;
 	}
+	imageStore(bvh_render_layer, pixel_id, vec4(vec3(1-alpha), 1));
+	return radiance;
 }
 vec4 f_render(in vec2 uv, in ivec2 pixel_id) {
 	vec4 color = vec4(0);
-	//const vec2 pixel_size = 1 / resolution.xy;
-	//for (uint x = 0; x < samples_per_pixel; x++) {
-	//	for (uint y = 0; y < samples_per_pixel; y++) {
-	//		vec2 subpixelUV = uv - (vec2(0.5) * pixel_size) + (vec2(float(x) / float(samples_per_pixel), float(y) / float(samples_per_pixel)) * pixel_size);
-	//		Ray ray = f_cameraRay(subpixelUV);
-	//		color += f_pathTrace(ray);
-	//	}
-	//}
-	//color /= float(samples_per_pixel * samples_per_pixel);
 	Ray ray = f_cameraRay(uv);
 	color = f_pathTrace(ray, uv, pixel_id);
-	//Ray ray = f_cameraRay(uv);
-	//color = vec4(abs(ray.direction), 1);
 	return clamp(color, 0, 1);
 }
 //-------------------------------------------------------------------------------------------------

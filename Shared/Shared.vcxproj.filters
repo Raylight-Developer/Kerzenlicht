@@ -113,7 +113,7 @@
     <ClInclude Include="Include\Types.hpp">
       <Filter>Include</Filter>
     </ClInclude>
-    <ClInclude Include="Include\Gpu_Scene.hpp">
+    <ClInclude Include="Include\GPU\Gpu_Scene.hpp">
       <Filter>Include</Filter>
     </ClInclude>
     <ClInclude Include="Include\History.hpp">
@@ -123,6 +123,15 @@
       <Filter>Include</Filter>
     </ClInclude>
     <ClInclude Include="Include\Object\Nodes\Math.hpp">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\GPU\Bvh_Build.hpp">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\GPU\Gpu_Triangle.hpp">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\GPU\Gpu_Bvh.hpp">
       <Filter>Include</Filter>
     </ClInclude>
   </ItemGroup>
@@ -205,7 +214,7 @@
     <ClCompile Include="Source\Object\Data\Volume.cpp">
       <Filter>Source\Object</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Gpu_Scene.cpp">
+    <ClCompile Include="Source\GPU\Gpu_Scene.cpp">
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\History.cpp">
@@ -215,6 +224,15 @@
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\Object\Nodes\Math.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\GPU\Bvh_Build.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\GPU\Gpu_Triangle.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\GPU\Gpu_Bvh.cpp">
       <Filter>Source</Filter>
     </ClCompile>
   </ItemGroup>
