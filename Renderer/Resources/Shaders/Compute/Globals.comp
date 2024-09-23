@@ -139,6 +139,7 @@ Hit f_hit() {
 	Hit hit;
 	hit.error = false;
 	hit.mesh_hit = false;
+	hit.hit_normal = vec3(0);
 	hit.bvh_depth = 0;
 	hit.material = 0;
 	hit.pdf = 0;

@@ -1,18 +1,22 @@
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
 bool f_rayBvhIntersection(in Ray ray, in Bvh box, inout float ray_length) {
-	vec3 t0 = (box.p_min - ray.origin) * ray.direction;
-	vec3 t1 = (box.p_max - ray.origin) * ray.direction;
+	vec3 f = (box.p_min - ray.origin) * ray.direction;
+	vec3 n = (box.p_max - ray.origin) * ray.direction;
 
-	float tmin = max(max(min(t0.x, t1.x), min(t0.y, t1.y)), min(t0.z, t1.z));
-	float tmax = min(min(max(t0.x, t1.x), max(t0.y, t1.y)), max(t0.z, t1.z));
+	vec3 tmax = max(f, n);
+	vec3 tmin = min(f, n);
 
-	if (all(greaterThanEqual(ray.origin, box.p_min)) && all(lessThanEqual(ray.origin, box.p_max))) {
-		ray_length = tmax;
-		return true;
-	}
-	else if (tmin <= tmax) {
-		ray_length = tmin;
+	float t1 = min(tmax.x, min(tmax.y, tmax.z));
+	float t0 = max(tmin.x, max(tmin.y, tmin.z));
+
+	if (t1 >= t0) {
+		if (t0 > 0.0f) {
+			ray_length = t0;
+		}
+		else {
+			ray_length = t1;
+		}
 		return true;
 	}
 	return false;
@@ -60,7 +64,7 @@ vec3 f_barycentricCoords(in vec3 hit_pos, in vec3 vertex_a, in vec3 vertex_b, in
 }
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
-void f_sceneIntersection(in Ray ray, inout Hit hit_data) {
+void f_sceneIntersection(in Ray ray, inout Hit hit_data, inout LightSampleRec lightSample) {
 	float t_dist = MAX_DIST;
 	float bvh_t_length = MAX_DIST;
 

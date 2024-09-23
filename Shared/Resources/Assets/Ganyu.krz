@@ -46,20 +46,10 @@
   └Inputs
   ┌Code
 vec2 uv = f_getUV(hit_data);
-vec4 albedo = sampleTextureRgba8u(<inputs>[0], vec2(uv.x, 1 - uv.y));
-for (uint j = 0; j < point_lights.length(); j++) {
-	vec3 light_dir = normalize(point_lights[j].pos - hit_data.hit_pos);
-	Ray ray = Ray(hit_data.hit_pos, light_dir);
-	Hit shadow_hit_data = f_hit();
-	f_sceneIntersection(ray, shadow_hit_data);
-	if (shadow_hit_data.mesh_hit) {
-		hit_data.pdf = 0;
-	}
-	else {
-		hit_data.pdf = 1;
-	}
-}
-return albedo * hit_data.pdf;
+vec4 albedo = vec4(0,0,0,1);
+if (hit_data.mesh_hit)
+	albedo = sampleTextureRgba8u(<inputs>[0], vec2(uv.x, 1 - uv.y));
+return albedo;
   └Code
  └Shader
 └Shaders

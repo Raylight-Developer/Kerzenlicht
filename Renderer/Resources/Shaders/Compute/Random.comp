@@ -3,9 +3,9 @@
 uvec4 seed;
 ivec2 pixel;
 
-void InitRNG(vec2 p, int frame) {
+void InitRNG(vec2 p, uint frame) {
 	pixel = ivec2(p);
-	seed = uvec4(p, uint(frame), uint(p.x) + uint(p.y));
+	seed = uvec4(p, frame, uint(p.x) + uint(p.y));
 }
 
 void pcg4d(inout uvec4 v) {

@@ -1,6 +1,7 @@
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
 #version 460
+
 #include "Globals.comp"
 #include "Inputs.comp"
 #include "Utilities.comp"
@@ -9,13 +10,24 @@
 #include "Hook.comp"
 #include "Camera.comp"
 #include "Pathtrace.comp"
+
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
 void main() {
 	ivec2 pixel_id = ivec2(gl_GlobalInvocationID.xy);
 	vec2 uv = (pixel_id - 1 - vec2(resolution) / 2.0) / float(max(resolution.x, resolution.y));
 
-	vec4 color = f_render(uv, pixel_id);
+	InitRNG(uv, current_sample);
+
+	float r1 = 2.0 * rand();
+	float r2 = 2.0 * rand();
+
+	vec2 jitter;
+	jitter.x = r1 < 1.0 ? sqrt(r1) - 1.0 : 1.0 - sqrt(2.0 - r1);
+	jitter.y = r2 < 1.0 ? sqrt(r2) - 1.0 : 1.0 - sqrt(2.0 - r2);
+
+	Ray ray = f_cameraRay(uv);
+	vec4 color = f_pathTrace(ray, pixel_id);
 
 	vec4 previous_color = imageLoad(accumulation_render_layer, pixel_id);
 	if (current_sample == 0) {
