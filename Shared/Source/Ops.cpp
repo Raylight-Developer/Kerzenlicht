@@ -403,6 +403,23 @@ void KL::Transform::orbit(const dvec3& pivot, const dvec2& py_rotation) {
 	}
 }
 
+void KL::Transform::f_computeVectors() {
+	dmat4 rotation_matrix;
+	switch (rotation_type) {
+		case KL::Rotation_Type::QUATERNION: {
+			rotation_matrix = glm::mat4_cast(quat_rotation);
+			break;
+		}
+		case KL::Rotation_Type::XYZ: {
+			rotation_matrix = glm::yawPitchRoll(glm::radians(euler_rotation.y), glm::radians(euler_rotation.x), glm::radians(euler_rotation.z));
+			break;
+		}
+	}
+	x_vec = rotation_matrix[0];
+	y_vec = rotation_matrix[1];
+	z_vec = -rotation_matrix[2];
+}
+
 dmat4 KL::Transform::getMatrix() const {
 	const dmat4 translation_matrix = glm::translate(dmat4(1.0), position);
 	const dmat4 scale_matrix = glm::scale(dmat4(1.0), scale);

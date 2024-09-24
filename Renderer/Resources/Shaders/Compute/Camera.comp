@@ -1,5 +1,18 @@
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
+Ray f_cameraNormRay(vec2 uv) {
+	return Ray(camera.position, normalize(camera.p_uv + (camera.p_u * uv.x) + (camera.p_v * uv.y) - camera.position));
+}
+
 Ray f_cameraRay(vec2 uv) {
-	return Ray(camera_pos, normalize(camera_p_uv + (camera_p_u * uv.x) + (camera_p_v * uv.y) - camera_pos));
+	float pixel_size = 1.0 / resolution.x;
+
+	vec3 ray_dir = normalize(camera.p_uv + (camera.p_u * uv.x) + (camera.p_v * uv.y) - camera.position);
+	vec3 focal_point = camera.position + ray_dir * camera.focal_distance;
+
+	vec2 aperture_offset = f_randUnitDisk() * pixel_size * camera.aperture * 0.5;
+	vec3 lens_offset = camera.position + camera.x_vec * aperture_offset.x + camera.y_vec * aperture_offset.y;
+	vec3 new_direction = normalize(focal_point - lens_offset);
+
+	return Ray(camera.position, new_direction);
 }

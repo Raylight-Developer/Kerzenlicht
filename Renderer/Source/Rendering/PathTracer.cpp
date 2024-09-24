@@ -9,7 +9,7 @@ KL::PathTracer::PathTracer(Renderer* renderer) :
 
 	debug = false;
 
-	sample = 0;
+	current_sample = 0;
 
 	resolution = uvec2(0);
 	aspect_ratio = 1.0;
@@ -21,7 +21,7 @@ KL::PathTracer::PathTracer(Renderer* renderer) :
 void KL::PathTracer::f_initialize() {
 	debug = false;
 
-	sample = 0;
+	current_sample = 0;
 
 	resolution = renderer->resolution;
 	aspect_ratio = d_to_f(renderer->aspect_ratio);
@@ -224,18 +224,27 @@ void KL::PathTracer::f_render() {
 	glUniform1f (glGetUniformLocation(compute_program, "current_time"), d_to_f(renderer->current_time));
 	glUniform2ui(glGetUniformLocation(compute_program, "resolution"), r_resolution.x, r_resolution.y);
 	glUniform1ui(glGetUniformLocation(compute_program, "debug"), static_cast<GLuint>(debug));
-	glUniform1ui(glGetUniformLocation(compute_program, "current_sample"), sample);
+	glUniform1ui(glGetUniformLocation(compute_program, "current_sample"), current_sample);
 
 	glUniform1ui(glGetUniformLocation(compute_program, "ray_bounces"), 3);
 	glUniform1ui(glGetUniformLocation(compute_program, "samples_per_pixel"), 1);
 
-	KL::OBJECT::DATA::Camera* camera = FILE->f_activeCamera()->getCamera();
-	camera->f_updateRayVectors(FILE->active_scene.pointer, FILE->f_activeCamera());
+	mat3 vectors;
+	mat3 projections;
+	KL::Object* camera_object = FILE->f_activeCamera();
+	KL::OBJECT::DATA::Camera* camera = camera_object->getCamera();
+	camera->f_updateRayVectors(FILE->active_scene.pointer, camera_object, vectors, projections);
 
-	glUniform3fv(glGetUniformLocation(compute_program, "camera_pos"),  1, value_ptr(d_to_f(FILE->f_activeCamera()->transform.position)));
-	glUniform3fv(glGetUniformLocation(compute_program, "camera_p_uv"), 1, value_ptr(d_to_f(camera->projection_uv)));
-	glUniform3fv(glGetUniformLocation(compute_program, "camera_p_u"),  1, value_ptr(d_to_f(camera->projection_u)));
-	glUniform3fv(glGetUniformLocation(compute_program, "camera_p_v"),  1, value_ptr(d_to_f(camera->projection_v)));
+	glUniform3fv(glGetUniformLocation(compute_program, "camera.position"      ), 1, value_ptr(d_to_f(camera_object->transform.position)));
+	glUniform3fv(glGetUniformLocation(compute_program, "camera.x_vec"         ), 1, value_ptr(vectors[0]));
+	glUniform3fv(glGetUniformLocation(compute_program, "camera.y_vec"         ), 1, value_ptr(vectors[1]));
+	glUniform3fv(glGetUniformLocation(compute_program, "camera.z_vec"         ), 1, value_ptr(vectors[2]));
+	glUniform3fv(glGetUniformLocation(compute_program, "camera.p_uv"          ), 1, value_ptr(projections[0]));
+	glUniform3fv(glGetUniformLocation(compute_program, "camera.p_u"           ), 1, value_ptr(projections[1]));
+	glUniform3fv(glGetUniformLocation(compute_program, "camera.p_v"           ), 1, value_ptr(projections[2]));
+	glUniform1f (glGetUniformLocation(compute_program, "camera.focal_distance"), d_to_f(camera->focal_distance));
+	glUniform1f (glGetUniformLocation(compute_program, "camera.aperture"      ), d_to_f(camera->aperture));
+	glUniform1f (glGetUniformLocation(compute_program, "camera.fov"           ), d_to_f(camera->view_angle));
 
 	glBindImageTexture(0, data["accumulation_render_layer"], 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
 	glBindImageTexture(1, data["raw_render_layer         "], 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
@@ -252,10 +261,12 @@ void KL::PathTracer::f_render() {
 	glUniform1f (glGetUniformLocation(display_program, "render_aspect_ratio"), r_aspect_ratio);
 	glUniform1ui(glGetUniformLocation(display_program, "view_layer"), data["view_layer"] );
 	glUniform1ui(glGetUniformLocation(display_program, "debug"), static_cast<GLuint>(debug));
-	glUniform1ui(glGetUniformLocation(display_program, "current_sample"), sample);
+	glUniform1ui(glGetUniformLocation(display_program, "current_sample"), current_sample);
 	bindRenderLayer(display_program, 0, data["accumulation_render_layer"], "accumulation_render_layer");
 	bindRenderLayer(display_program, 1, data["raw_render_layer         "], "raw_render_layer"         );
 	bindRenderLayer(display_program, 2, data["bvh_render_layer         "], "bvh_render_layer"         );
 	bindRenderLayer(display_program, 3, data["normal_render_layer      "], "normal_render_layer"      );
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+	current_sample++;
 }

@@ -3,18 +3,25 @@
 uvec4 seed;
 ivec2 pixel;
 
-void InitRNG(vec2 p, uint frame) {
-	pixel = ivec2(p);
-	seed = uvec4(p, frame, uint(p.x) + uint(p.y));
+void f_initRNG(ivec2 p, uint frame) {
+	seed = uvec4(p.x, p.y, frame, uint(p.x) + uint(p.y));
 }
 
-void pcg4d(inout uvec4 v) {
+void f_pcg4d(inout uvec4 v) {
 	v = v * 1664525u + 1013904223u;
 	v.x += v.y * v.w; v.y += v.z * v.x; v.z += v.x * v.y; v.w += v.y * v.z;
 	v = v ^ (v >> 16u);
 	v.x += v.y * v.w; v.y += v.z * v.x; v.z += v.x * v.y; v.w += v.y * v.z;
 }
 
-float rand() {
-	pcg4d(seed); return float(seed.x) / float(0xffffffffu);
+float f_rand() {
+	f_pcg4d(seed); return float(seed.x) / float(0xffffffffu);
+}
+
+vec2 f_randUnitDisk() {
+	vec2 p;
+		do {
+			p = 2.0 * vec2(f_rand(), f_rand()) - vec2(1.0, 1.0);
+		} while (dot(p, p) >= 1.0);
+	return p;
 }

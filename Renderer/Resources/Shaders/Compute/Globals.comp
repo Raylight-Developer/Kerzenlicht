@@ -9,6 +9,20 @@ struct Medium {
 
 // LINK -------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
+struct Camera {
+	float focal_distance;
+	float aperture;
+	float fov;
+
+	vec3  position;
+	vec3  x_vec;
+	vec3  y_vec;
+	vec3  z_vec;
+	vec3  p_uv;
+	vec3  p_u;
+	vec3  p_v;
+};
+
 struct Triangle {
 	vec3  pos_a;
 	float uv_a_x;

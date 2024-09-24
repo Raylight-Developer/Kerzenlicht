@@ -36,7 +36,4 @@ uniform uint  current_sample;
 uniform uint  ray_bounces;
 uniform uint  samples_per_pixel;
 
-uniform vec3 camera_pos;
-uniform vec3 camera_p_uv;
-uniform vec3 camera_p_u;
-uniform vec3 camera_p_v;
+uniform Camera camera;

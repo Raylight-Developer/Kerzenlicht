@@ -18,7 +18,7 @@ namespace KL {
 		GPU::Scene* gpu_data;
 
 		bool debug;
-		uint sample;
+		uint current_sample;
 
 		uvec2 resolution;
 		uvec2 r_resolution;

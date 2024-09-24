@@ -43,6 +43,7 @@ void KL::Renderer::f_displayLoop() {
 		f_timings();
 
 		if (render_mode == Mode::PATHTRACING) {
+			f_inputLoop();
 			f_tickUpdate();
 			pathtracer.f_render();
 		}
@@ -102,10 +103,10 @@ void KL::Renderer::f_inputLoop() {
 	if (inputs[GLFW_KEY_A]) {
 		FILE->f_activeCamera()->transform.moveLocal(dvec3(-1.0, 0.0, 0.0) * camera_move_sensitivity * frame_time);
 	}
-	if (inputs[GLFW_KEY_E] || inputs[GLFW_KEY_SPACE]) {
+	if (inputs[GLFW_KEY_E] or inputs[GLFW_KEY_SPACE]) {
 		FILE->f_activeCamera()->transform.moveLocal(dvec3(0.0, 1.0, 0.0) * camera_move_sensitivity * frame_time);
 	}
-	if (inputs[GLFW_KEY_Q] || inputs[GLFW_KEY_LEFT_CONTROL]) {
+	if (inputs[GLFW_KEY_Q] or inputs[GLFW_KEY_LEFT_CONTROL]) {
 		FILE->f_activeCamera()->transform.moveLocal(dvec3(0.0, -1.0, 0.0) * camera_move_sensitivity * frame_time);
 	}
 	if (inputs[GLFW_KEY_W]) {
@@ -129,6 +130,21 @@ void KL::Renderer::f_inputLoop() {
 		FILE->f_activeCamera()->transform.rotate(dvec3(yoffset, xoffset, 0.0));
 
 		last_mouse = current_mouse;
+	}
+
+	if (
+		inputs[GLFW_KEY_W] or
+		inputs[GLFW_KEY_A] or
+		inputs[GLFW_KEY_S] or
+		inputs[GLFW_KEY_D] or
+		inputs[GLFW_KEY_Q] or
+		inputs[GLFW_KEY_E] or
+		inputs[GLFW_KEY_SPACE] or
+		inputs[GLFW_KEY_LEFT_CONTROL] or
+		inputs[GLFW_MOUSE_BUTTON_RIGHT] or
+		(inputs[GLFW_KEY_LEFT_ALT] and inputs[GLFW_MOUSE_BUTTON_LEFT])
+	) {
+		pathtracer.current_sample = 0;
 	}
 }
 

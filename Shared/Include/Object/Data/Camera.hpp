@@ -11,15 +11,13 @@ namespace KL {
 
 namespace KL::OBJECT::DATA {
 	struct Camera : Data {
+		dvec1 focal_distance;
 		dvec1 view_angle;
-
-		dvec3 projection_uv;
-		dvec3 projection_u;
-		dvec3 projection_v;
+		dvec1 aperture;
 
 		Camera();
 
-		void f_updateRayVectors(KL::Scene* scene, KL::Object* object);
+		void f_updateRayVectors(KL::Scene* scene, KL::Object* object, mat3& vectors, mat3& projections);
 		dmat4 glViewMatrix(const KL::Object* object) const;
 		dmat4 glProjectionMatrix(const dvec1& aspect_ratio) const;
 	};

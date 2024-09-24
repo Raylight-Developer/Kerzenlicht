@@ -49,6 +49,10 @@ namespace KL {
 		dvec3 position;
 		dvec3 scale;
 
+		dvec3 x_vec;
+		dvec3 y_vec;
+		dvec3 z_vec;
+
 		Transform(const dvec3& position = dvec3(0.0), const dvec3& rotation = dvec3(0.0), const dvec3& scale = dvec3(1.0), const Rotation_Type& type = Rotation_Type::XYZ);
 		Transform(const dvec3& position, const dvec3& axis, const dvec3& rotation, const dvec3& scale, const Rotation_Type& type = Rotation_Type::AXIS);
 		Transform(const dvec3& position, const dquat& rotation, const dvec3& scale, const Rotation_Type& type = Rotation_Type::QUATERNION);
@@ -63,6 +67,7 @@ namespace KL {
 		void moveLocal(const dvec3& value);
 		void rotate(const dvec3& value);
 		void orbit(const dvec3& pivot, const dvec2& py_rotation);
+		void f_computeVectors();
 
 		dmat4 getMatrix() const;
 		string serialize() const;
