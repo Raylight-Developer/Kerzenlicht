@@ -1,6 +1,6 @@
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
-vec4 f_hook(in Hit hit_data, inout Ray ray) {
+vec4 f_hook(inout Hit hit_data, inout State state, inout Ray ray) {
 
 	if (hit_data.material == MAX_UINT) {
 		ray.direction = reflect(ray.direction, hit_data.hit_normal);

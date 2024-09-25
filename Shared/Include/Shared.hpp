@@ -2,10 +2,11 @@
 
 #include "Include.hpp"
 
-#include "Data_Property.hpp"
-#include "Session.hpp"
-#include "History.hpp"
-#include "Scene.hpp"
-#include "Lace.hpp"
-#include "File.hpp"
-#include "Ops.hpp"
+#include "Core/Property.hpp"
+#include "Core/History.hpp"
+#include "Core/Scene.hpp"
+#include "Core/File.hpp"
+
+#include "Utils/Session.hpp"
+#include "Utils/Lace.hpp"
+#include "Utils/Ops.hpp"

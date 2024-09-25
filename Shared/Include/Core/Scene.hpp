@@ -4,6 +4,11 @@
 
 #include "Object/Object.hpp"
 
+// FWD DECL OTHER
+
+// FWD DECL THIS
+
+// DECL
 namespace KL {
 	struct Scene {
 		vector<Object*> objects;

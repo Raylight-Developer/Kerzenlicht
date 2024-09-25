@@ -1,9 +1,8 @@
 #pragma once
 
-#include "Include.hpp"
-#include "Data_Property.hpp"
+#include "Shared.hpp"
 
-#include "Nodes.hpp"
+#include "Core/Nodes.hpp"
 
 
 // FWD DECL OTHER

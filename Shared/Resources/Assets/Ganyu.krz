@@ -47,8 +47,37 @@
   ┌Code
 vec2 uv = f_getUV(hit_data);
 vec4 albedo = vec4(0,0,0,1);
-if (hit_data.mesh_hit)
+if (hit_data.mesh_hit) {
 	albedo = sampleTextureRgba8u(<inputs>[0], vec2(uv.x, 1 - uv.y));
+}
+Material ganyu_material = Material(
+	vec3(1.0)        , // baseColor
+	1.0              , // opacity
+	ALPHA_MODE_OPAQUE, // alphaMode
+	1.0              , // alphaCutoff
+	vec3(0.0)        , // emission
+	1.0              , // anisotropic
+	1.0              , // metallic
+	1.0              , // roughness
+	1.0              , // subsurface
+	1.0              , // specularTint
+	1.0              , // sheen
+	1.0              , // sheenTint
+	1.0              , // clearcoat
+	1.0              , // clearcoatRoughness
+	1.0              , // specTrans
+	1.0              , // ior
+	1.0              , // ax
+	1.0              , // ay
+	Medium(
+		MEDIUM_NONE, // type
+		1.0,         // density
+		vec3(1.0),   // color
+		1.0          // anisotropy
+	)
+);
+state.material = ganyu_material;
+
 return albedo;
   └Code
  └Shader

@@ -17,13 +17,13 @@
     <ClInclude Include="Include\Include.hpp">
       <Filter>Include</Filter>
     </ClInclude>
-    <ClInclude Include="Include\Lace.hpp">
+    <ClInclude Include="Include\Utils\Lace.hpp">
       <Filter>Include</Filter>
     </ClInclude>
-    <ClInclude Include="Include\Ops.hpp">
+    <ClInclude Include="Include\Utils\Ops.hpp">
       <Filter>Include</Filter>
     </ClInclude>
-    <ClInclude Include="Include\Data_Property.hpp">
+    <ClInclude Include="Include\Core\Property.hpp">
       <Filter>Include</Filter>
     </ClInclude>
     <ClInclude Include="Include\Object\Data\Atmosphere.hpp">
@@ -80,10 +80,10 @@
     <ClInclude Include="Include\Object\Nodes\Compiler.hpp">
       <Filter>Include</Filter>
     </ClInclude>
-    <ClInclude Include="Include\Scene.hpp">
+    <ClInclude Include="Include\Core\Scene.hpp">
       <Filter>Include</Filter>
     </ClInclude>
-    <ClInclude Include="Include\Nodes.hpp">
+    <ClInclude Include="Include\Core\Nodes.hpp">
       <Filter>Include</Filter>
     </ClInclude>
     <ClInclude Include="Include\Shader\Shader.hpp">
@@ -92,31 +92,31 @@
     <ClInclude Include="Include\Shader\Nodes\Shader_Nodes.hpp">
       <Filter>Include</Filter>
     </ClInclude>
-    <ClInclude Include="Include\File.hpp">
+    <ClInclude Include="Include\Core\File.hpp">
       <Filter>Include</Filter>
     </ClInclude>
-    <ClInclude Include="Include\Session.hpp">
+    <ClInclude Include="Include\Utils\Session.hpp">
       <Filter>Include</Filter>
     </ClInclude>
     <ClInclude Include="External\stb_image.h">
       <Filter>Include</Filter>
     </ClInclude>
-    <ClInclude Include="Include\Glm.hpp">
+    <ClInclude Include="Include\Utils\Inline\Glm.hpp">
       <Filter>Include</Filter>
     </ClInclude>
-    <ClInclude Include="Include\String.hpp">
+    <ClInclude Include="Include\Utils\Inline\String.hpp">
       <Filter>Include</Filter>
     </ClInclude>
-    <ClInclude Include="Include\Macros.hpp">
+    <ClInclude Include="Include\Utils\Inline\Macros.hpp">
       <Filter>Include</Filter>
     </ClInclude>
-    <ClInclude Include="Include\Types.hpp">
+    <ClInclude Include="Include\Utils\Inline\Types.hpp">
       <Filter>Include</Filter>
     </ClInclude>
     <ClInclude Include="Include\GPU\Gpu_Scene.hpp">
       <Filter>Include</Filter>
     </ClInclude>
-    <ClInclude Include="Include\History.hpp">
+    <ClInclude Include="Include\Core\History.hpp">
       <Filter>Include</Filter>
     </ClInclude>
     <ClInclude Include="Include\Math\Interpolation.hpp">
@@ -136,19 +136,19 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\Ops.cpp">
+    <ClCompile Include="Source\Utils\Ops.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Data_Property.cpp">
+    <ClCompile Include="Source\Core\Property.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Nodes.cpp">
+    <ClCompile Include="Source\Core\Nodes.cpp">
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\Object\Nodes\Compiler.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Scene.cpp">
+    <ClCompile Include="Source\Core\Scene.cpp">
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\Shader\Shader.cpp">
@@ -157,7 +157,7 @@
     <ClCompile Include="Source\Shader\Nodes\Shader_Nodes.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Session.cpp">
+    <ClCompile Include="Source\Utils\Session.cpp">
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\Object\Data\Atmosphere.cpp">
@@ -175,7 +175,7 @@
     <ClCompile Include="Source\Object\Data\Empty.cpp">
       <Filter>Source\Object</Filter>
     </ClCompile>
-    <ClCompile Include="Source\File.cpp">
+    <ClCompile Include="Source\Core\File.cpp">
       <Filter>Source\Object</Filter>
     </ClCompile>
     <ClCompile Include="Source\Object\Data\Force.cpp">
@@ -184,7 +184,7 @@
     <ClCompile Include="Source\Object\Data\Group.cpp">
       <Filter>Source\Object</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Lace.cpp">
+    <ClCompile Include="Source\Utils\Lace.cpp">
       <Filter>Source\Object</Filter>
     </ClCompile>
     <ClCompile Include="Source\Object\Data\Mesh.cpp">
@@ -217,7 +217,7 @@
     <ClCompile Include="Source\GPU\Gpu_Scene.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Source\History.cpp">
+    <ClCompile Include="Source\Core\History.cpp">
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\Math\Interpolation.cpp">

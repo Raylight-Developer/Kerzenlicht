@@ -1,9 +1,11 @@
 #pragma once
 
 #include "Include.hpp"
-#include "History.hpp"
-#include "Macros.hpp"
-#include "Lace.hpp"
+
+#include "Utils/Inline/Macros.hpp"
+#include "Utils//Lace.hpp"
+
+#include "Core/History.hpp"
 
 // FWD DECL OTHER
 namespace KL {

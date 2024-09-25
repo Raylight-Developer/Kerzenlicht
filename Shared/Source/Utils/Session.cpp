@@ -1,6 +1,6 @@
-#include "Session.hpp"
+#include "Utils/Session.hpp"
 
-#include "File.hpp"
+#include "Core/File.hpp"
 
 KL::Session::Session() :
 	log(nullptr),

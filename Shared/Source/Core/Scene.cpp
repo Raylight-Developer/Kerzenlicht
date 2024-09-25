@@ -1,4 +1,4 @@
-#include "Scene.hpp"
+#include "Core/Scene.hpp"
 
 KL::Scene::Scene() :
 	active_camera(nullptr),

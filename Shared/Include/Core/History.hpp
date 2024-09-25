@@ -2,9 +2,14 @@
 
 #include "Include.hpp"
 
-#include "Lace.hpp"
-#include "Ops.hpp"
+#include "Utils/Lace.hpp"
+#include "Utils/Ops.hpp"
 
+// FWD DECL OTHER
+
+// FWD DECL THIS
+
+// DECL
 namespace KL {
 	namespace HISTORY {
 		enum struct Type {

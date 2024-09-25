@@ -1,7 +1,12 @@
 #pragma once
 
-#include "Include.hpp"
+#include "Shared.hpp"
 
+// FWD DECL OTHER
+
+// FWD DECL THIS
+
+// DECL
 namespace KL::OBJECT::DATA {
 	enum struct Type {
 		NONE,

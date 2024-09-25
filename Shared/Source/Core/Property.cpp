@@ -1,4 +1,4 @@
-#include "Data_Property.hpp"
+#include "Core/Property.hpp"
 
 #include "Object/Object.hpp"
 #include "Shader/Shader.hpp"

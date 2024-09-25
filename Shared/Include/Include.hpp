@@ -45,9 +45,9 @@
 	#include <glad/glad.h>
 #endif
 
-#include "Glm.hpp"
-#include "Types.hpp"
-#include "String.hpp"
-#include "Macros.hpp"
+#include "Utils/Inline/Glm.hpp"
+#include "Utils/Inline/Types.hpp"
+#include "Utils/Inline/String.hpp"
+#include "Utils/Inline/Macros.hpp"
 
 using namespace std;

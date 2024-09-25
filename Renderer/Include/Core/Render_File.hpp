@@ -1,15 +1,6 @@
 #pragma once
 
-#include "Include.hpp"
-
-#include "Data_Property.hpp"
-#include "Session.hpp"
-#include "Scene.hpp"
-#include "File.hpp"
-#include "Lace.hpp"
-#include "Ops.hpp"
-
-#include "Nodes.hpp"
+#include "Shared.hpp"
 
 #include "Object/Object.hpp"
 #include "Object/Nodes/Object_Nodes.hpp"

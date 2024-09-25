@@ -35,6 +35,20 @@ vec3 f_faceForward(vec3 a, vec3 b) {
 float f_luminance(vec3 c) {
 	return 0.212671 * c.x + 0.715160 * c.y + 0.072169 * c.z;
 }
+
+bool f_quadratic(float A, float B, float C, out float t0, out float t1) {
+	float discriminant = B * B - 4.0 * A * C;
+
+	if (discriminant < 0.0) {
+		return false;
+	}
+
+	float sqrt_discriminant = sqrt(discriminant);
+	t0 = (-B - sqrt_discriminant) / (2.0 * A);
+	t1 = (-B + sqrt_discriminant) / (2.0 * A);
+
+	return true;
+}
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
 vec4 sampleTextureRgba8u(in Texture tex, in vec2 uv) {

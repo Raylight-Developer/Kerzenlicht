@@ -7,11 +7,11 @@
 
 #include "GPU/Bvh_Build.hpp"
 
-namespace KL {
-	namespace GPU {
-	}
-}
+// FWD DECL OTHER
 
+// FWD DECL THIS
+
+// DECL
 namespace KL {
 	namespace GPU {
 		struct Scene;

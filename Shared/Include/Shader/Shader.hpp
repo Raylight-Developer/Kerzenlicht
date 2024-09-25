@@ -1,11 +1,6 @@
 #pragma once
 
-#include "Include.hpp"
-
-#include "Ops.hpp"
-#include "Lace.hpp"
-#include "History.hpp"
-#include "Data_Property.hpp"
+#include "Shared.hpp"
 
 #include "Nodes/Shader_Nodes.hpp"
 

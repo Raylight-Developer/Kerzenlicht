@@ -5,10 +5,8 @@
 #elif COMPILE_RENDERER
 	#include "Core/Render_File.hpp"
 #else
-	#include "File.hpp"
+	#include "Core/File.hpp"
 #endif
-
-#include "Session.hpp"
 
 KL::SHADER::Texture::Texture() :
 	name("New Texture")

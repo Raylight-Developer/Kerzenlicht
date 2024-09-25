@@ -4,6 +4,8 @@ Ray f_cameraNormRay(vec2 uv) {
 	return Ray(camera.position, normalize(camera.p_uv + (camera.p_u * uv.x) + (camera.p_v * uv.y) - camera.position));
 }
 
+//-------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 Ray f_cameraRay(vec2 uv) {
 	float pixel_size = 1.0 / resolution.x;
 

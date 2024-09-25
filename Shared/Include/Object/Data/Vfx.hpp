@@ -1,10 +1,8 @@
 #pragma once
 
-#include "Include.hpp"
+#include "Shared.hpp"
 
 #include "Object/Data.hpp"
-
-#include "Data_Property.hpp"
 
 // FWD DECL OTHER
 namespace KL::OBJECT::DATA {

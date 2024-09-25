@@ -1,7 +1,7 @@
 // INTERNAL ---------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
 struct Medium {
-	int   type;
+	uint  type;
 	float density;
 	vec3  color;
 	float anisotropy;
@@ -21,6 +21,13 @@ struct Camera {
 	vec3  p_uv;
 	vec3  p_u;
 	vec3  p_v;
+};
+
+struct Lens {
+	float aperture_diameter;
+	float curvature_radius;
+	float thickness;
+	float ior;
 };
 
 struct Triangle {

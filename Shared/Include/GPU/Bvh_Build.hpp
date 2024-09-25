@@ -5,6 +5,11 @@
 #include "Gpu_Triangle.hpp"
 #include "Gpu_Bvh.hpp"
 
+// FWD DECL OTHER
+
+// FWD DECL THIS
+
+// DECL
 namespace KL {
 	namespace GPU {
 		namespace BVH {

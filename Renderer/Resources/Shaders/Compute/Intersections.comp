@@ -1,3 +1,25 @@
+bool f_rayLensIntersection(in Ray ray, in Lens lens, inout float ray_length, out vec3 normal) {
+	vec3  o = ray.origin - vec3(0, 0, lens.thickness);
+	float A = ray.direction.x * ray.direction.x + ray.direction.y * ray.direction.y + ray.direction.z * ray.direction.z;
+	float B = 2 * (ray.direction.x * o.x + ray.direction.y * o.y + ray.direction.z * o.z);
+	float C = o.x * o.x + o.y * o.y + o.z * o.z - lens.curvature_radius * lens.curvature_radius;
+	float t0, t1;
+	if (!f_quadratic(A, B, C, t0, t1)) {
+		return false;
+	}
+
+	bool useCloserT = (ray.direction.z > 0) && (lens.curvature_radius < 0);
+	ray_length = useCloserT ? min(t0, t1) : max(t0, t1);
+	if (ray_length < 0) {
+		return false;
+	}
+
+	normal = normalize(vec3(o + ray_length * ray.direction));
+	normal = f_faceForward(normal, -ray.direction);
+
+	return true;
+}
+
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
 bool f_rayBvhIntersection(in Ray ray, in Bvh box, inout float ray_length) {
@@ -21,6 +43,7 @@ bool f_rayBvhIntersection(in Ray ray, in Bvh box, inout float ray_length) {
 	}
 	return false;
 }
+
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
 bool f_rayTriangleIntersection(in Ray ray, in vec3 vertex_a, in vec3 vertex_b, in vec3 vertex_c, inout float ray_length) {
@@ -41,6 +64,7 @@ bool f_rayTriangleIntersection(in Ray ray, in vec3 vertex_a, in vec3 vertex_b, i
 	ray_length = t;
 	return true;
 }
+
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
 vec3 f_barycentricCoords(in vec3 hit_pos, in vec3 vertex_a, in vec3 vertex_b, in vec3 vertex_c) {
@@ -62,6 +86,7 @@ vec3 f_barycentricCoords(in vec3 hit_pos, in vec3 vertex_a, in vec3 vertex_b, in
 
 	return vec3(u, v, w);
 }
+
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
 void f_sceneIntersection(in Ray ray, inout Hit hit_data) {

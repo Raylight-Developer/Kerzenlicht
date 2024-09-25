@@ -1,4 +1,4 @@
-#include "Lace.hpp"
+#include "Utils/Lace.hpp"
 
 KL::Lace::Lace() :
 	character(" ")

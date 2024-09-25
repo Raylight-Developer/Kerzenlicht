@@ -1,6 +1,7 @@
-﻿#include "File.hpp"
+﻿#include "Core/File.hpp"
 
-#include "Session.hpp"
+#include "Object/Nodes/Object_Nodes.hpp"
+#include "Object/Object.hpp"
 
 KL::File::File() :
 	pointer_map(BiMap<uint64, uint64>()),

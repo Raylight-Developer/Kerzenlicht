@@ -1,8 +1,6 @@
-﻿#include "Nodes.hpp"
+﻿#include "Core/Nodes.hpp"
 
 #include "Object/Nodes/Object_Nodes.hpp"
-
-#include "Data_Property.hpp"
 
 KL::Node_Tree::Node_Tree() :
 	tick(nullptr)

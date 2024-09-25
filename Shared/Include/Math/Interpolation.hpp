@@ -2,6 +2,11 @@
 
 #include "Include.hpp"
 
+// FWD DECL OTHER
+
+// FWD DECL THIS
+
+// DECL
 namespace KL::MATH {
 	namespace INTERPOLATION {
 		enum struct Type {

@@ -4,6 +4,11 @@
 
 #include "Object/Data/Mesh.hpp"
 
+// FWD DECL OTHER
+
+// FWD DECL THIS
+
+// DECL
 namespace KL::GPU {
 	struct alignas(16) Triangle {
 		vec3 pos_a;

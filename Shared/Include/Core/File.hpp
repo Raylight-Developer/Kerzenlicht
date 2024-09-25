@@ -2,16 +2,13 @@
 
 #include "Include.hpp"
 
-#include "Data_Property.hpp"
-#include "Session.hpp"
-#include "Scene.hpp"
-#include "Lace.hpp"
-#include "Ops.hpp"
+#include "Utils/Session.hpp"
+#include "Utils/Lace.hpp"
+#include "Utils/Ops.hpp"
 
+#include "Property.hpp"
 #include "Nodes.hpp"
-
-#include "Object/Object.hpp"
-#include "Object/Nodes/Object_Nodes.hpp"
+#include "Scene.hpp"
 
 // FWD DECL OTHER
 struct Scene;

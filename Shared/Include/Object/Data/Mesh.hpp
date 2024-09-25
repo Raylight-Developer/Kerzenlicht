@@ -1,12 +1,16 @@
 #pragma once
 
-#include "Include.hpp"
-#include "Ops.hpp"
+#include "Shared.hpp"
 
 #include "Shader/Shader.hpp"
 
 #include "Object/Data.hpp"
 
+// FWD DECL OTHER
+
+// FWD DECL THIS
+
+// DECL
 namespace KL::OBJECT::DATA {
 	namespace MESH {
 		struct Vertex {

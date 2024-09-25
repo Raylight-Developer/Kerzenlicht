@@ -12,7 +12,7 @@ vec4 f_pathTrace(in Ray ray, in ivec2 pixel_id) {
 	Hit hit_data = f_hit();
 	f_sceneIntersection(ray, hit_data);
 
-	render_output = f_hook(hit_data, ray);
+	render_output = f_hook(hit_data, state, ray);
 
 
 	return render_output;

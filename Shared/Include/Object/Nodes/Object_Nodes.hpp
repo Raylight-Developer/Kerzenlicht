@@ -1,13 +1,14 @@
 #pragma once
 
-#include "Include.hpp"
-#include "Data_Property.hpp"
+#include "Shared.hpp"
 
-#include "Nodes.hpp"
+#include "Core/Nodes.hpp"
 #include "Math.hpp"
-#include "Session.hpp"
 
 // FWD DECL OTHER
+namespace KL {
+	struct File;
+}
 
 // FWD DECL THIS
 namespace KL {

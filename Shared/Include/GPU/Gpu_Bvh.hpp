@@ -2,6 +2,11 @@
 
 #include "Shared.hpp"
 
+// FWD DECL OTHER
+
+// FWD DECL THIS
+
+// DECL
 namespace KL::GPU {
 	struct alignas(16) Bvh {
 		vec3 p_min;

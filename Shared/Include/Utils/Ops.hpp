@@ -2,6 +2,12 @@
 
 #include "Include.hpp"
 
+// FWD DECL OTHER
+
+// FWD DECL THIS
+
+// DECL
+
 // string
 Tokens f_split(const string& input);
 Tokens f_split(const string& input, const string& delimiter);

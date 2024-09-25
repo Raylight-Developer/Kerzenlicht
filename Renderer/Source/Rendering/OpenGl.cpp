@@ -1,8 +1,5 @@
 #include "Rendering/OpenGl.hpp"
 
-#include "Session.hpp"
-#include "Shader/Shader.hpp"
-
 KL::Confirm<GLuint> fragmentShaderProgram(const string& vert_file_path, const string& frag_file_path) {
 	GLuint shader_program = glCreateShader(GL_VERTEX_SHADER);
 

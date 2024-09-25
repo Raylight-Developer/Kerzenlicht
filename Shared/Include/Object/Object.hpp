@@ -1,8 +1,6 @@
 #pragma once
 
-#include "Include.hpp"
-#include "Ops.hpp"
-#include "Data_Property.hpp"
+#include "Shared.hpp"
 
 #include "Nodes/Object_Nodes.hpp"
 

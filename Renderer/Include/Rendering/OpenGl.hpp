@@ -1,7 +1,8 @@
 #pragma once
 
-#include "Include.hpp"
-#include "Ops.hpp"
+#include "Shared.hpp"
+
+#include "Shader/Shader.hpp"
 
 KL::Confirm<GLuint> fragmentShaderProgram(const string& vert_file_path, const string& frag_file_path);
 KL::Confirm<GLuint> computeShaderProgram (const string& file_path);
