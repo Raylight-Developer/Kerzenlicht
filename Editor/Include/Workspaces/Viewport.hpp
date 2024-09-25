@@ -5,7 +5,7 @@
 #include "QT.hpp"
 
 #include "Core/Editor_File.hpp"
-#include "Gpu_Scene.hpp"
+#include "GPU/Gpu_Scene.hpp"
 
 // FWD DECL OTHER
 namespace GUI {

@@ -8,7 +8,6 @@
 
 #include "Core/Editor_File.hpp"
 
-#include "Nodes.hpp"
 #include "Object/Nodes/Object_Nodes.hpp"
 #include "Object/Nodes/Compiler.hpp"
 

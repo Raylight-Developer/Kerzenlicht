@@ -210,13 +210,14 @@ void GUI::WORKSPACE::Viewport::f_frameUpdate() {
 
 void GUI::WORKSPACE::Viewport::f_selectClosestObject(const dvec2& uv) {
 	KL::OBJECT::DATA::Camera* camera = FILE->f_activeCamera()->getCamera();
+	mat3 vectors, projections;
+	camera->f_updateRayVectors(FILE->f_activeScene(), FILE->f_activeCamera(), vectors, projections);
 	const vec3 ray_origin = d_to_f(FILE->f_activeCamera()->transform.position);
-	const vec3 ray_direction = d_to_f(normalize(
-			camera->projection_uv
-			+ (camera->projection_u * uv.x)
-			+ (camera->projection_v * uv.y)
-			- FILE->f_activeCamera()->transform.position
-		)
+	const vec3 ray_direction = normalize(
+		projections[0]
+		+ (projections[1] * d_to_f(uv.x))
+		+ (projections[2] * d_to_f(uv.y))
+		- d_to_f(FILE->f_activeCamera()->transform.position)
 	);
 
 	dvec1 t_dist = MAX_DIST;

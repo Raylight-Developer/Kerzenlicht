@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Include.hpp"
+#include "Shared.hpp"
 
 namespace GUI {
 	// Base Classes

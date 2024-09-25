@@ -277,6 +277,9 @@ KL::Transform::Transform(const dvec3& position, const dvec3& rotation, const dve
 {
 	quat_rotation = dquat(1.0, 0.0, 0.0, 0.0);
 	axis_rotation = dvec3(0.0);
+	x_vec = dvec3(1.0, 0.0, 0.0);
+	y_vec = dvec3(0.0, 1.0, 0.0);
+	z_vec = dvec3(0.0, 0.0, 1.0);
 }
 
 KL::Transform::Transform(const dvec3& position, const dvec3& axis, const dvec3& rotation, const dvec3& scale, const Rotation_Type& type) :
@@ -287,6 +290,9 @@ KL::Transform::Transform(const dvec3& position, const dvec3& axis, const dvec3& 
 	axis_rotation(axis)
 {
 	quat_rotation = dquat(1.0, 0.0, 0.0, 0.0);
+	x_vec = dvec3(1.0, 0.0, 0.0);
+	y_vec = dvec3(0.0, 1.0, 0.0);
+	z_vec = dvec3(0.0, 0.0, 1.0);
 }
 
 KL::Transform::Transform(const dvec3& position, const dquat& rotation, const dvec3& scale, const Rotation_Type& type) :
@@ -297,6 +303,9 @@ KL::Transform::Transform(const dvec3& position, const dquat& rotation, const dve
 {
 	euler_rotation = dvec3(0.0);
 	axis_rotation = dvec3(0.0);
+	x_vec = dvec3(1.0, 0.0, 0.0);
+	y_vec = dvec3(0.0, 1.0, 0.0);
+	z_vec = dvec3(0.0, 0.0, 1.0);
 }
 // TODO account for different rotation modes
 KL::Transform KL::Transform::operator+(const Transform& other) const {
