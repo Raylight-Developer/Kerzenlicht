@@ -211,7 +211,7 @@ void GUI::WORKSPACE::Viewport::f_frameUpdate() {
 void GUI::WORKSPACE::Viewport::f_selectClosestObject(const dvec2& uv) {
 	KL::OBJECT::DATA::Camera* camera = FILE->f_activeCamera()->getCamera();
 	mat3 vectors, projections;
-	camera->f_updateRayVectors(FILE->f_activeScene(), FILE->f_activeCamera(), vectors, projections);
+	camera->glProperties(FILE->f_activeScene(), FILE->f_activeCamera(), vectors, projections);
 	const vec3 ray_origin = d_to_f(FILE->f_activeCamera()->transform.position);
 	const vec3 ray_direction = normalize(
 		projections[0]
@@ -542,7 +542,9 @@ KL::Confirm<GLuint> GUI::WORKSPACE::Viewport::computeShaderProgram(const string&
 	GLuint shader_program;
 	string compute_code = preprocessShader("./Resources/Shaders/" + file_path + ".comp");
 	compute_code = KL::Shader::f_compileShaders(compute_code);
-	writeToFile("./Resources/Shaders/" + file_path + "_Compiled.comp", compute_code);
+	#ifdef _DEBUG
+		writeToFile("./Resources/Shaders/" + file_path + "_Compiled.comp", compute_code);
+	#endif
 	const char* compute_code_cstr = compute_code.c_str();
 	GLuint comp_shader = glCreateShader(GL_COMPUTE_SHADER);
 	glShaderSource(comp_shader, 1, &compute_code_cstr, NULL);

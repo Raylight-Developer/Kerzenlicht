@@ -137,6 +137,9 @@
     <ClInclude Include="Include\Utils\Inline\Templates.hpp">
       <Filter>Include</Filter>
     </ClInclude>
+    <ClInclude Include="Include\GPU\Gpu_Camera.hpp">
+      <Filter>Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Utils\Ops.cpp">
@@ -236,6 +239,9 @@
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\GPU\Gpu_Bvh.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\GPU\Gpu_Camera.cpp">
       <Filter>Source</Filter>
     </ClCompile>
   </ItemGroup>

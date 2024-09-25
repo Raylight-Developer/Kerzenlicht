@@ -107,6 +107,7 @@
     <Lib />
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Include\GPU\Gpu_Camera.hpp" />
     <ClInclude Include="Include\GPU\Gpu_Bvh.hpp" />
     <ClInclude Include="Include\GPU\Gpu_Triangle.hpp" />
     <ClInclude Include="Include\Object\Nodes\Math.hpp" />
@@ -150,6 +151,7 @@
     <ClInclude Include="Include\GPU\Bvh_Build.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\GPU\Gpu_Camera.cpp" />
     <ClCompile Include="Source\GPU\Gpu_Bvh.cpp" />
     <ClCompile Include="Source\GPU\Gpu_Triangle.cpp" />
     <ClCompile Include="Source\GPU\Bvh_Build.cpp" />

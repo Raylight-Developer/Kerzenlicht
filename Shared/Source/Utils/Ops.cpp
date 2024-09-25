@@ -392,9 +392,9 @@ void KL::Transform::orbit(const dvec3& pivot, const dvec2& py_rotation) {
 
 			const dvec3 forward   = glm::normalize(glm::inverse(quat_rotation) * dvec3(0, 0, -1));
 			const dvec3 direction = glm::normalize(position - pivot);
-			const dvec1 distance  = glm::length(position - pivot);
+			const dvec1 z_distance  = glm::length(position - pivot);
 
-			position = pivot - forward * distance;
+			position = pivot - forward * z_distance;
 			break;
 		}
 		case KL::Rotation_Type::XYZ: {
@@ -403,10 +403,10 @@ void KL::Transform::orbit(const dvec3& pivot, const dvec2& py_rotation) {
 			const dmat4 matrix = glm::yawPitchRoll(glm::radians(euler_rotation.y), glm::radians(euler_rotation.x), glm::radians(euler_rotation.z));
 			const dvec3 z_vector = -matrix[2];
 
-			const dvec1 distance = glm::length(pivot - position);
-			const dvec3 camera_position = position - z_vector * distance;
+			const dvec1 z_distance = glm::length(pivot - position);
+			const dvec3 camera_position = position - z_vector * z_distance;
 
-			position = pivot - z_vector * distance;
+			position = pivot - z_vector * z_distance;
 			break;
 		}
 	}
@@ -426,7 +426,7 @@ void KL::Transform::f_computeVectors() {
 	}
 	x_vec = rotation_matrix[0];
 	y_vec = rotation_matrix[1];
-	z_vec = -rotation_matrix[2];
+	z_vec = rotation_matrix[2];
 }
 
 dmat4 KL::Transform::getMatrix() const {

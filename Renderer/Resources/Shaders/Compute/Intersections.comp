@@ -1,5 +1,5 @@
-bool f_rayLensIntersection(in Ray ray, in Lens lens, inout float ray_length, out vec3 normal) {
-	vec3  o = ray.origin - vec3(0, 0, lens.thickness);
+bool f_rayLensIntersection(in Ray ray, in Camera_Lens lens, inout float ray_length, out vec3 normal) {
+	vec3  o = ray.origin - vec3(0, 0, lens.z_distance);
 	float A = ray.direction.x * ray.direction.x + ray.direction.y * ray.direction.y + ray.direction.z * ray.direction.z;
 	float B = 2 * (ray.direction.x * o.x + ray.direction.y * o.y + ray.direction.z * o.z);
 	float C = o.x * o.x + o.y * o.y + o.z * o.z - lens.curvature_radius * lens.curvature_radius;
@@ -8,11 +8,20 @@ bool f_rayLensIntersection(in Ray ray, in Lens lens, inout float ray_length, out
 		return false;
 	}
 
+	float t_dist = 0;
+
 	bool useCloserT = (ray.direction.z > 0) && (lens.curvature_radius < 0);
-	ray_length = useCloserT ? min(t0, t1) : max(t0, t1);
-	if (ray_length < 0) {
+	t_dist = useCloserT ? min(t0, t1) : max(t0, t1);
+	if (t_dist < 0) {
 		return false;
 	}
+
+	vec3 hit_point = ray.origin + ray.direction * t_dist;
+	float r2 = hit_point.x * hit_point.x + hit_point.y * hit_point.y;
+	if (r2 > lens.aperture_radius * lens.aperture_radius) {
+		return false;
+	}
+	ray_length = t_dist;
 
 	normal = normalize(vec3(o + ray_length * ray.direction));
 	normal = f_faceForward(normal, -ray.direction);

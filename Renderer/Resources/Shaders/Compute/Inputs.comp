@@ -19,10 +19,13 @@ layout(std430, binding = 7) buffer TextureBuffer {
 layout(std430, binding = 8) buffer TextureDataBuffer {
 	uint texture_data[];
 };
-layout(std430, binding = 9) buffer PointLightBuffer {
+layout(std430, binding = 9) buffer CameraLensesBuffer {
+	Camera_Lens camera_lenses[];
+};
+layout(std430, binding = 10) buffer PointLightBuffer {
 	Point_Light point_lights[];
 };
-layout(std430, binding = 10) buffer DirectionalLightBuffer {
+layout(std430, binding = 11) buffer DirectionalLightBuffer {
 	Directional_Light directional_lights[];
 };
 

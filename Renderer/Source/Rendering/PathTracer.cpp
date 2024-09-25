@@ -51,6 +51,7 @@ void KL::PathTracer::f_initialize() {
 	data["ssbo 8"] = 0;
 	data["ssbo 9"] = 0;
 	data["ssbo 10"] = 0;
+	data["ssbo 11"] = 0;
 
 	glViewport(0, 0, resolution.x, resolution.y);
 	glClearColor(0, 0, 0, 0);
@@ -119,20 +120,22 @@ void KL::PathTracer::f_tickUpdate() {
 	glDeleteBuffers(1, &data["ssbo 8"]);
 	glDeleteBuffers(1, &data["ssbo 9"]);
 	glDeleteBuffers(1, &data["ssbo 10"]);
+	glDeleteBuffers(1, &data["ssbo 11"]);
 
-	data["ssbo 5"]  = ssboBinding(5, ul_to_u(gpu_data->trianglesSize())  , gpu_data->triangles);
-	data["ssbo 6"]  = ssboBinding(6, ul_to_u(gpu_data->bvhNodesSize())   , gpu_data->bvh_nodes);
-	data["ssbo 7"]  = ssboBinding(7, ul_to_u(gpu_data->texturesSize())   , gpu_data->textures);
-	data["ssbo 8"]  = ssboBinding(8, ul_to_u(gpu_data->textureDataSize()), gpu_data->texture_data);
-	data["ssbo 9"]  = ssboBinding(9, ul_to_u(gpu_data->pointLightsSize()), gpu_data->point_lights);
-	data["ssbo 10"] = ssboBinding(10, ul_to_u(gpu_data->directionalLightsSize()), gpu_data->directional_lights);
+	data["ssbo 5"]  = ssboBinding(5,  ul_to_u(gpu_data->trianglesSize())   , gpu_data->triangles);
+	data["ssbo 6"]  = ssboBinding(6,  ul_to_u(gpu_data->bvhNodesSize())    , gpu_data->bvh_nodes);
+	data["ssbo 7"]  = ssboBinding(7,  ul_to_u(gpu_data->texturesSize())    , gpu_data->textures);
+	data["ssbo 8"]  = ssboBinding(8,  ul_to_u(gpu_data->textureDataSize()) , gpu_data->texture_data);
+	data["ssbo 9"]  = ssboBinding(9,  ul_to_u(gpu_data->cameraLensesSize()), gpu_data->camera_lenses);
+	data["ssbo 10"] = ssboBinding(10, ul_to_u(gpu_data->pointLightsSize()) , gpu_data->point_lights);
+	data["ssbo 11"] = ssboBinding(11, ul_to_u(gpu_data->directionalLightsSize()), gpu_data->directional_lights);
 }
 
 void KL::PathTracer::f_recompile() {
-	delete renderer->file;
-	renderer->file = new KL::Render_File();
-	renderer->file->f_loadAsciiFile("../Shared/Resources/Assets/Ganyu.krz");
-	Session::getInstance().setFile(renderer->file);
+	//delete renderer->file;
+	//renderer->file = new KL::Render_File();
+	//renderer->file->f_loadAsciiFile("../Shared/Resources/Assets/Ganyu.krz");
+	//Session::getInstance().setFile(renderer->file);
 	{
 		auto confirmation = computeShaderProgram("Compute/Compute");
 		if (confirmation) {
@@ -147,6 +150,7 @@ void KL::PathTracer::f_recompile() {
 			data["display_program"] = confirmation.data;
 		}
 	}
+	current_sample = 0;
 }
 
 void KL::PathTracer::f_cleanup() {
@@ -163,6 +167,7 @@ void KL::PathTracer::f_cleanup() {
 	glDeleteBuffers(1, &data["ssbo 8"]);
 	glDeleteBuffers(1, &data["ssbo 9"]);
 	glDeleteBuffers(1, &data["ssbo 10"]);
+	glDeleteBuffers(1, &data["ssbo 11"]);
 
 	glDeleteTextures(1, &data["accumulation_render_layer"]);
 	glDeleteTextures(1, &data["normal_render_layer      "]);
@@ -197,6 +202,7 @@ void KL::PathTracer::f_resize() {
 	r_resolution = renderer->f_res();
 	r_aspect_ratio = d_to_f(renderer->f_aspectRatio());
 
+	current_sample = 0;
 	glViewport(0, 0, resolution.x, resolution.y);
 
 	if (prev_res != r_resolution) {
@@ -233,7 +239,7 @@ void KL::PathTracer::f_render() {
 	mat3 projections;
 	KL::Object* camera_object = FILE->f_activeCamera();
 	KL::OBJECT::DATA::Camera* camera = camera_object->getCamera();
-	camera->f_updateRayVectors(FILE->active_scene.pointer, camera_object, vectors, projections);
+	camera->glProperties(FILE->active_scene.pointer, camera_object, vectors, projections);
 
 	glUniform3fv(glGetUniformLocation(compute_program, "camera.position"      ), 1, value_ptr(d_to_f(camera_object->transform.position)));
 	glUniform3fv(glGetUniformLocation(compute_program, "camera.x_vec"         ), 1, value_ptr(vectors[0]));

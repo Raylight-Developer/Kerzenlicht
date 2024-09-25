@@ -40,7 +40,9 @@ KL::Confirm<GLuint> computeShaderProgram(const string& file_path) {
 	GLuint shader_program;
 	string compute_code = preprocessShader("./Resources/Shaders/" + file_path + ".comp");
 	compute_code = KL::Shader::f_compileShaders(compute_code);
-	//writeToFile("./Resources/Shaders/" + file_path + "_Compiled.comp", compute_code);
+	#ifdef _DEBUG
+		writeToFile("./Resources/Shaders/" + file_path + "_Compiled.comp", compute_code);
+	#endif
 	const char* compute_code_cstr = compute_code.c_str();
 	GLuint comp_shader = glCreateShader(GL_COMPUTE_SHADER);
 	glShaderSource(comp_shader, 1, &compute_code_cstr, NULL);
@@ -148,6 +150,7 @@ GLuint ssboBinding(const GLuint& binding, const GLuint& size, const vector<T>& d
 
 #include "Gpu/Gpu_Scene.hpp"
 template GLuint ssboBinding<KL::GPU::Directional_Light>(const GLuint&, const GLuint&, const vector<KL::GPU::Directional_Light>&);
+template GLuint ssboBinding<KL::GPU::Camera_Lens>(const GLuint&, const GLuint&, const vector<KL::GPU::Camera_Lens>&);
 template GLuint ssboBinding<KL::GPU::Point_Light>(const GLuint&, const GLuint&, const vector<KL::GPU::Point_Light>&);
 template GLuint ssboBinding<KL::GPU::Triangle>(const GLuint&, const GLuint&, const vector<KL::GPU::Triangle>&);
 template GLuint ssboBinding<KL::GPU::Texture>(const GLuint&, const GLuint&, const vector<KL::GPU::Texture>&);

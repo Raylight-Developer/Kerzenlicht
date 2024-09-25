@@ -66,7 +66,11 @@ void KL::GPU::Scene::f_update() {
 		BVH::Builder bvh_build = BVH::Builder(mesh_triangles, bvh_depth);
 		bvh_nodes.insert(bvh_nodes.end(), bvh_build.node_list.begin(), bvh_build.node_list.end());
 		triangles.insert(triangles.end(), bvh_build.triangles.begin(), bvh_build.triangles.end());
-		LOG ENDL << "Triangle Count: " << mesh_triangles.size() << "  BVH Depth: " << bvh_depth << "  BVH Nodes: " << bvh_nodes.size();
+	}
+
+	camera_lenses.clear();
+	for (auto lens : FILE->f_activeCamera()->getCamera()->lenses) {
+		camera_lenses.push_back(KL::GPU::Camera_Lens(lens.curvature_radius, lens.aperture_radius, lens.z_distance, lens.ior));
 	}
 }
 
@@ -88,6 +92,10 @@ uint64 KL::GPU::Scene::textureDataSize() const {
 
 uint64 KL::GPU::Scene::pointLightsSize() const {
 	return sizeof(GPU::Point_Light) * point_lights.size();
+}
+
+uint64 KL::GPU::Scene::cameraLensesSize() const {
+	return sizeof(GPU::Camera_Lens) * camera_lenses.size();
 }
 
 uint64 KL::GPU::Scene::directionalLightsSize() const {

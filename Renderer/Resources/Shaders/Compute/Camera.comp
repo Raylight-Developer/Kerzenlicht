@@ -18,3 +18,10 @@ Ray f_cameraRay(vec2 uv) {
 
 	return Ray(camera.position, new_direction);
 }
+
+//-------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
+Ray f_cameraOrthoRay(vec2 uv) {
+	float ortho_scale = 1.0;
+	return Ray(camera.position + (camera.p_u * uv.x * ortho_scale) + (camera.p_v * uv.y* ortho_scale), camera.z_vec);
+}

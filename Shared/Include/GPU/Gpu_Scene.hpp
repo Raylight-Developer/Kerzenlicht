@@ -5,9 +5,10 @@
 #include "Core/File.hpp"
 
 #include "Gpu_Triangle.hpp"
+#include "Gpu_Camera.hpp"
 #include "Gpu_Bvh.hpp"
 
-#include "GPU/Bvh_Build.hpp"
+#include "Bvh_Build.hpp"
 
 // FWD DECL OTHER
 
@@ -28,17 +29,9 @@ namespace KL {
 			vector<Bvh>               bvh_nodes;
 			vector<Texture>           textures;
 			vector<uint>              texture_data;
+			vector<Camera_Lens>       camera_lenses;
 			vector<Point_Light>       point_lights;
 			vector<Directional_Light> directional_lights;
-
-			//Camera                    camera;
-			//vector<Material>      materials;
-			//vector<Light>         lights;
-			//vector<Spline_Point>  spline_controls;
-			//vector<Spline>        splines;
-			//vector<Curve>         curves;
-			//vector<Vertex>        vertices;
-			//vector<Mesh>          meshes;
 
 			Scene();
 
@@ -52,6 +45,7 @@ namespace KL {
 			uint64 trianglesSize() const;
 			uint64 textureDataSize() const;
 			uint64 pointLightsSize() const;
+			uint64 cameraLensesSize() const;
 			uint64 directionalLightsSize() const;
 
 			void printInfo() const;
