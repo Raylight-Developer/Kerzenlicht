@@ -1,6 +1,8 @@
 #pragma once
 
-#include "Shared.hpp"
+#include "Include.hpp"
+
+#include "Core/Property.hpp"
 
 #include "Object/Data.hpp"
 
@@ -10,6 +12,11 @@ namespace KL::OBJECT::DATA {
 }
 
 // FWD DECL THIS
+namespace KL::OBJECT::DATA {
+	namespace VFX {
+		struct Particle;
+	}
+}
 
 // DECL
 namespace KL::OBJECT::DATA {

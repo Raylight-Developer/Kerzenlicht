@@ -134,6 +134,9 @@
     <ClInclude Include="Include\GPU\Gpu_Bvh.hpp">
       <Filter>Include</Filter>
     </ClInclude>
+    <ClInclude Include="Include\Utils\Inline\Templates.hpp">
+      <Filter>Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Utils\Ops.cpp">

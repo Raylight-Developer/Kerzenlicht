@@ -1,8 +1,12 @@
 #pragma once
 
-#include "Shared.hpp"
+#include "Include.hpp"
 
+#include "Core/Property.hpp"
+#include "Core/History.hpp"
 #include "Core/Nodes.hpp"
+#include "Core/Scene.hpp"
+
 #include "Math.hpp"
 
 // FWD DECL OTHER

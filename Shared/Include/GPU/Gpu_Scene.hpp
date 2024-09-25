@@ -2,6 +2,8 @@
 
 #include "Shared.hpp"
 
+#include "Core/File.hpp"
+
 #include "Gpu_Triangle.hpp"
 #include "Gpu_Bvh.hpp"
 

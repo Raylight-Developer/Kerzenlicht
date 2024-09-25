@@ -4,6 +4,7 @@
 
 #include "Core/Property.hpp"
 #include "Core/History.hpp"
+#include "Core/Nodes.hpp"
 #include "Core/Scene.hpp"
 #include "Core/File.hpp"
 

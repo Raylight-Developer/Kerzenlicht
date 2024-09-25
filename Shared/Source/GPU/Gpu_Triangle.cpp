@@ -1,5 +1,7 @@
 #include "GPU/Gpu_Triangle.hpp"
 
+#include "Utils/Session.hpp"
+
 KL::GPU::Triangle::Triangle(const vec3& pos_a, const vec3& pos_b, const vec3& pos_c, const vec3& normal_a, const vec3& normal_b, const vec3& normal_c, const vec2& uv_a, const vec2& uv_b, const vec2& uv_c, const uint& material) :
 	pos_a(pos_a),
 	uv_a_x(uv_a.x),

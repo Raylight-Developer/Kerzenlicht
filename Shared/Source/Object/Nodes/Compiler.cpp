@@ -1,5 +1,7 @@
 #include "Object/Nodes/Compiler.hpp"
 
+#include "Utils/Session.hpp"
+
 #ifdef _DEBUG
 	#define DLL_PATH "D:/Kerzenlicht/x64/Debug/Scripting.dll"
 	#define DLL_GUI_PATH "D:/Kerzenlicht/x64/Debug/GUI-Scripting.dll"

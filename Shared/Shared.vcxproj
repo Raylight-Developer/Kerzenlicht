@@ -117,6 +117,7 @@
     <ClInclude Include="Include\Core\File.hpp" />
     <ClInclude Include="Include\GPU\Gpu_Scene.hpp" />
     <ClInclude Include="Include\Include.hpp" />
+    <ClInclude Include="Include\Utils\Inline\Templates.hpp" />
     <ClInclude Include="Include\Utils\Lace.hpp" />
     <ClInclude Include="Include\Utils\Inline\Macros.hpp" />
     <ClInclude Include="Include\Object\Nodes\Compiler.hpp" />

@@ -6,6 +6,7 @@
 #include "Utils//Lace.hpp"
 
 #include "Core/History.hpp"
+#include "Core/File.hpp"
 
 // FWD DECL OTHER
 namespace KL {

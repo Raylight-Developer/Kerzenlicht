@@ -1,5 +1,7 @@
 #include "GPU/Gpu_Bvh.hpp"
 
+#include "Utils/Session.hpp"
+
 KL::GPU::Bvh::Bvh(const vec3& p_min, const vec3& p_max, const uint& uptr, const uint& tri_count) :
 	p_min(p_min),
 	p_max(p_max),

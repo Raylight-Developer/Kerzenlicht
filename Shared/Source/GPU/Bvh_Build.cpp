@@ -1,5 +1,7 @@
 #include "GPU/Bvh_Build.hpp"
 
+#include "Utils/Session.hpp"
+
 KL::GPU::BVH::Builder::Builder(const vector<GPU::Triangle>& triangles, const uint& depth) :
 	triangles(triangles)
 {

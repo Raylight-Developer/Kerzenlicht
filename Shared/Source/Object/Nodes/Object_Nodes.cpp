@@ -1,5 +1,7 @@
 #include "Object/Nodes/Object_Nodes.hpp"
 
+#include "Utils/Session.hpp"
+
 #include "Object/Nodes/Compiler.hpp"
 
 using namespace KL::NODE;

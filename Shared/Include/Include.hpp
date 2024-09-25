@@ -49,5 +49,6 @@
 #include "Utils/Inline/Types.hpp"
 #include "Utils/Inline/String.hpp"
 #include "Utils/Inline/Macros.hpp"
+#include "Utils/Inline/Templates.hpp"
 
 using namespace std;

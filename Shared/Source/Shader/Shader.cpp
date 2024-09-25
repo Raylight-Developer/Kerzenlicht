@@ -1,12 +1,6 @@
 ﻿#include "Shader/Shader.hpp"
 
-#ifdef COMPILE_EDITOR
-	#include "Core/Editor_File.hpp"
-#elif COMPILE_RENDERER
-	#include "Core/Render_File.hpp"
-#else
-	#include "Core/File.hpp"
-#endif
+#include "Utils/Session.hpp"
 
 KL::SHADER::Texture::Texture() :
 	name("New Texture")

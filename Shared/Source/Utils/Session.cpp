@@ -1,7 +1,5 @@
 #include "Utils/Session.hpp"
 
-#include "Core/File.hpp"
-
 KL::Session::Session() :
 	log(nullptr),
 	uid(nullptr),

@@ -1,5 +1,7 @@
 ﻿#include "GPU/GPU_Scene.hpp"
 
+#include "Utils/Session.hpp"
+
 KL::GPU::Scene::Scene() {
 	triangles = {};
 	bvh_nodes = {};
