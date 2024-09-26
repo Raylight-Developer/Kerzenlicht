@@ -1,36 +1,40 @@
 bool f_rayLensIntersection(in Ray ray, in Camera_Lens lens, inout float ray_length, out vec3 normal) {
-	vec3  o = ray.origin - vec3(0, 0, lens.z_distance);
+	// Transform ray to camera space
+	lens.curvature_radius *= 1.0;
+	lens.aperture_radius *= 1.0;
+	lens.z_distance *= 1.0;
 
-	float A = ray.direction.x * ray.direction.x + ray.direction.y * ray.direction.y + ray.direction.z * ray.direction.z;
-	float B = 2 * (ray.direction.x * o.x + ray.direction.y * o.y + ray.direction.z * o.z);
-	float C = o.x * o.x + o.y * o.y + o.z * o.z - lens.curvature_radius * lens.curvature_radius;
+	vec3 lens_center = (/*camera.position + camera.z_vec * */vec3(0, 0, lens.z_distance));
+	vec3 ro = ray.origin - lens_center;
+
+	float a = dot(ray.direction, ray.direction);
+	float b = 2.0 * dot(ro, ray.direction);
+	float c = dot(ro, ro) - lens.curvature_radius * lens.curvature_radius;
 	float t0, t1;
 
-	if (!f_quadratic(A, B, C, t0, t1)) {
-		return false;
+	if (f_quadratic(a,b,c,t0,t1)) {
+		float t_dist;
+		if (lens.curvature_radius < 0) {
+			t_dist = t0;
+		}
+		else {
+			t_dist = t1;
+		}
+
+		vec3 hit_point = (ray.origin + ray.direction * t_dist);
+		float r2 = hit_point.x * hit_point.x + hit_point.y * hit_point.y;
+		if (r2 > lens.aperture_radius * lens.aperture_radius) {
+			return false;
+		}
+
+		normal = normalize(hit_point - lens_center);
+		if (lens.curvature_radius < 0) {
+			normal.z = normal.z;
+		}
+		ray_length = t_dist;
+		return true;
 	}
-
-	float t_dist = 0;
-
-	bool useCloserT = (ray.direction.z > 0) && (lens.curvature_radius < 0);
-	t_dist = useCloserT ? min(t0, t1) : max(t0, t1);
-	if (t_dist < 0) {
-
-		return false;
-	}
-
-	vec3 hit_point = ray.origin + ray.direction * t_dist;
-	float r2 = hit_point.x * hit_point.x + hit_point.y * hit_point.y;
-	if (r2 > lens.aperture_radius * lens.aperture_radius) {
-		return false;
-	}
-
-	ray_length = t_dist;
-
-	normal = normalize(vec3(o + ray_length * ray.direction));
-	normal = f_faceForward(normal, -ray.direction);
-
-	return true;
+	return false;
 }
 
 //-------------------------------------------------------------------------------------------------

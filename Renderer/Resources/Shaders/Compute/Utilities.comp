@@ -49,6 +49,30 @@ bool f_quadratic(float A, float B, float C, out float t0, out float t1) {
 
 	return true;
 }
+
+vec3 f_refract(vec3 rayDirection, vec3 normal, float iorInside, float iorOutside) {
+	float cosi = clamp(dot(normal, -rayDirection), -1.0, 1.0);
+	float etai = iorInside;
+	float etat = iorOutside;
+
+	// Check if we are entering or exiting
+	if (cosi > 0.0) {
+		// Swap IORs if we're entering the sphere
+		float temp = etai;
+		etai = etat;
+		etat = temp;
+		normal = -normal; // Flip the normal when exiting
+	}
+
+	float eta = etai / etat;
+	float k = 1.0 - eta * eta * (1.0 - cosi * cosi);
+	if (k < 0.0) {
+		// Total internal reflection; return no valid refracted ray
+		return vec3(0.0); // This could be a direction to handle reflection instead
+	} else {
+		return eta * rayDirection + (eta * cosi - sqrt(k)) * normal;
+	}
+}
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
 vec4 sampleTextureRgba8u(in Texture tex, in vec2 uv) {

@@ -22,6 +22,6 @@ Ray f_cameraRay(vec2 uv) {
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
 Ray f_cameraOrthoRay(vec2 uv) {
-	float ortho_scale = 0.1;
-	return Ray(camera.position + (camera.p_u * uv.x * ortho_scale) + (camera.p_v * uv.y* ortho_scale), camera.z_vec);
+	float ortho_scale = 0.03;
+	return Ray(camera.position + (camera.p_u * uv.x * ortho_scale) + (camera.p_v * uv.y* ortho_scale), normalize(camera.z_vec));
 }

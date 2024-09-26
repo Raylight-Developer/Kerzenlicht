@@ -41,10 +41,12 @@ F_EXEC_(Ganyu) {
 	node->getExecOutput("O Exec")->exec();
 	{
 		if (!node->hasInternalData("z_distances")) {
+			vector<dvec1> z_distances;
+			for (auto lens : file->f_activeCamera()->getCamera()->lenses) {
+				z_distances.push_back(lens.z_distance);
+			}
 			node->setInternalData("z_distances", Prop(
-				vector<dvec1>({
-					file->f_activeCamera()->getCamera()->lenses[5].z_distance
-				}),
+				z_distances,
 				Prop_Type::DOUBLE,
 				Prop_Mod::VECTOR
 			));
@@ -53,7 +55,9 @@ F_EXEC_(Ganyu) {
 	vector<dvec1> z_distances = node->getInternalData("z_distances")->getDoubleVector();
 	
 	if (file->f_activeCamera()->getCamera()->lenses.size() > 0) {
-		file->f_activeCamera()->getCamera()->lenses[5].z_distance = z_distances[0] * std::sin(session->f_runtime());
+		for (uint64 i = 2; i <= 15; i++) {
+			file->f_activeCamera()->getCamera()->lenses[i].z_distance = z_distances[i] + 2.0 * (std::sin(session->f_runtime()) * 0.5 + 0.5);
+		}
 	}
 }
 

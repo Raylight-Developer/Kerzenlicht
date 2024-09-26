@@ -21,7 +21,7 @@ KL::Renderer::Renderer() {
 	r_resolution = uvec2(2100U, 900U);
 	render_aspect_ratio = u_to_d(r_resolution.x) / u_to_d(r_resolution.y);
 
-	camera_move_sensitivity = 0.75;
+	camera_move_sensitivity = 0.05;
 	camera_view_sensitivity = 100.0;
 	camera_orbit_sensitivity = 150.0;
 	inputs = vector(348, false);

@@ -25,10 +25,10 @@ struct Camera {
 };
 
 struct Camera_Lens {
-	float curvature_radius;
-	float aperture_radius;
-	float z_distance;
-	float ior;
+	float curvature_radius; // circle radius. if positive, viewing from inside(convex), if negative, viewing from outside(concave)
+	float aperture_radius; // cutoff radius
+	float z_distance; // distance of sphere center from camera
+	float ior; // surface IOR
 };
 
 struct Triangle {
