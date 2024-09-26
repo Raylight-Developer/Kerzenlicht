@@ -16,8 +16,8 @@ namespace KL::GPU {
 		// 32
 
 		Bvh(
-			const vec3& p_min = vec3(0.0f),
-			const vec3& p_max = vec3(0.0f),
+			const vec3& p_min = vec3(MAX_VEC1),
+			const vec3& p_max = vec3(MIN_VEC1),
 			const uint& uptr = 0U,
 			const uint& tri_count = 0U
 		);

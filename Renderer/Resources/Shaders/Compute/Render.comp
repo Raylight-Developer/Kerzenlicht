@@ -15,7 +15,7 @@ void f_accumulate(in vec4 color, in ivec2 pixel_id) {
 vec4 f_render(in vec2 uv, in ivec2 pixel_id) {
 	f_debugRender(uv, pixel_id);
 
-	Ray ray = f_cameraOrthoRay(uv);
+	Ray ray = f_cameraRay(uv);
 	vec4 pixel_color = vec4(0);
 
 
@@ -24,11 +24,21 @@ vec4 f_render(in vec2 uv, in ivec2 pixel_id) {
 	for (uint i = 0; i < camera_lenses.length(); i++) {
 		t_dist = MAX_DIST;
 		if (f_rayLensIntersection(ray, camera_lenses[i], t_dist, normal)) {
-			//pixel_color = vec4(normal, 1);
-			ray.origin = ray.direction * (t_dist + EPSILON);
-			ray.direction = normalize(ray.direction + refract(ray.direction, normal, camera_lenses[i].ior) * 0.01);
+			pixel_color += vec4(normal, 0.5);
+			ray.origin = ray.origin + ray.direction * t_dist;
+			ray.direction = normalize(refract(ray.direction, normal, camera_lenses[i].ior));
 		}
 	}
+
+	//float t_dist = MAX_DIST;
+	//Sphere sphere = Sphere(vec3(0, 0, 1), 0.5);
+	//if (f_raySphereIntersection(ray, sphere, t_dist)) {
+	//	vec3 normal = normalize(ray.direction * t_dist - sphere.position);
+	//	pixel_color = vec4(normal, 1);
+	//	//ray.origin = ray.direction * (t_dist + EPSILON);
+	//	ray.direction = normalize(refract(ray.direction, normal, 1.0));
+	//}
+
 
 
 	pixel_color += f_pathTrace(ray, pixel_id);

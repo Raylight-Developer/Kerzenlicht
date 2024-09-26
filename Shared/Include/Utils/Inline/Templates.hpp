@@ -282,6 +282,15 @@ KL::Confirm<V> f_getMapValue(const map<K, V>& map, const K& key) {
 }
 
 template<typename K, typename V>
+bool f_hasKey(const map<K, V>& map, const K& key) {
+	auto it = map.find(key);
+	if (it != map.end()) {
+		return true;
+	}
+	return false;
+}
+
+template<typename K, typename V>
 KL::Confirm<V> f_getMapValue(const unordered_map<K, V>& map, const K& key) {
 	auto it = map.find(key);
 	if (it != map.end()) {

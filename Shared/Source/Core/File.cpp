@@ -19,7 +19,8 @@ KL::File::File() :
 	selected_objects(Observable_Vector<Object*>())
 {
 	active_camera.pointer = new Object();
-	active_camera.pointer->transform.position = dvec3(0, 0, 2.5);
+	active_camera.pointer->transform.position = dvec3(0, 0, 0);
+	active_camera.pointer->transform.euler_rotation = dvec3(0, 180, 0);
 	active_camera.pointer->data = new OBJECT::DATA::Camera();
 
 	version = "ERROR";

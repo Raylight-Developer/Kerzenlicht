@@ -4,10 +4,10 @@ BUILD_(Script_ID)(Gui_Script* node) {
 	node->clearIO();
 	
 	node->addExecInput("I Exec");
-	node->addDataInput("I Value", Data_Type::DOUBLE);
+	node->addDataInput("I Value", Prop_Type::DOUBLE);
 		
 	node->addExecOutput("O Exec");
-	node->addDataOutput("O Value", Data_Type::DOUBLE);
+	node->addDataOutput("O Value", Prop_Type::DOUBLE);
 }
 
 // Optional
@@ -19,5 +19,6 @@ F_BUILD_(Ganyu) {
 	node->clearIO();
 	
 	node->addExecInput("I");
+	node->addDataInput("Delta", Prop_Type::DOUBLE);
 	node->addExecOutput("O");
 }

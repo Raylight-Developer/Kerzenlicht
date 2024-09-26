@@ -57,6 +57,7 @@ namespace KL {
 		Prop(const int64& data);
 		Prop(Object* data);
 		Prop(SHADER::Texture* data);
+		Prop(vector<dvec1> data);
 
 		Prop operator+(const Prop& other) const;
 		Prop operator-(const Prop& other) const;
@@ -70,6 +71,8 @@ namespace KL {
 		KL::Scene* getScene()    const;
 		KL::Object* getObject()  const;
 		KL::SHADER::Texture* getTexture()  const;
+
+		vector<dvec1> getDoubleVector() const;
 
 
 		string to_string() const;

@@ -141,6 +141,11 @@ struct Ray {
 	vec3 direction;
 };
 
+struct Sphere {
+	vec3  position;
+	float diameter;
+};
+
 struct Hit {
 	bool  error;
 	float t_dist;

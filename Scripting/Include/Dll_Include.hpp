@@ -11,8 +11,10 @@
 
 using Prop      = KL::Prop;
 using Prop_Type = KL::PROP::Type;
+using Prop_Mod  = KL::PROP::Modifier;
 using Script    = KL::NODE::EXEC::Script_Node;
 using File      = KL::File;
+using Session   = KL::Session;
 
 #define EXPORT extern "C" __declspec(dllexport)
 #define BUILD_(name) extern "C" __declspec(dllexport) void name##_build
@@ -21,4 +23,4 @@ using File      = KL::File;
 
 #define F_BUILD_(name) extern "C" __declspec(dllexport) void name##_build(Script* node)
 #define F_FETCH_(name) extern "C" __declspec(dllexport) Prop name##_getData(Script* node, const uint16& port_request)
-#define F_EXEC_(name) extern "C" __declspec(dllexport) void name##_exec(Script* node, File* file, Lace* lace)
+#define F_EXEC_(name) extern "C" __declspec(dllexport) void name##_exec(Script* node, File* file, Session* session, Lace* lace)

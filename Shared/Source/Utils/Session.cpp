@@ -12,6 +12,16 @@ KL::Session& KL::Session::getInstance() {
 	return instance;
 }
 
+void KL::Session::start() {
+	start_time = std::chrono::high_resolution_clock::now();
+}
+
+dvec1 KL::Session::f_runtime() {
+	const auto end_time = std::chrono::high_resolution_clock::now();
+	const std::chrono::duration<dvec1> elapsed_seconds = end_time - start_time;
+	return elapsed_seconds.count();
+}
+
 void KL::Session::setUID(uint64* ptr) { uid = ptr; }
 
 uint64* KL::Session::getUID() { return uid; }

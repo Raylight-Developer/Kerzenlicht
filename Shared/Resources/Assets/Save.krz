@@ -5,15 +5,15 @@
 └Header
 ┌Node-Trees( 1 )
  ┌Node-Tree [ 0 ] #
-  * 2728684268384
+  * 1344755927456
   ┌Nodes( 2 )
    ┌Node [ 0 ] #
-    * 2728684268800
+    * 1344755926048
     ( -120.0 0.0 )
     Type EXEC :: TICK
    └Node
    ┌Node [ 1 ] #
-    * 2728630345824
+    * 1344747131888
     ( 120.0 0.0 )
     Type EXEC :: SCRIPT
     ┌Script
@@ -22,40 +22,69 @@
    └Node
   └Nodes
   ┌Build-E
-   * 2728684268800 0 0 * 2728630345824
+   * 1344755926048 0 0 * 1344747131888
   └Build-E
   ┌Build-D
+   * 1344755926048 1 1 * 1344747131888
   └Build-D
  └Node-Tree
 └Node-Trees
 ┌Textures( 1 )
  ┌Texture [ 0 ] Ganyu
-  * 2728685082448
+  * 1344754170224
   ../Shared/Resources/Textures/Ganyu.jpg
  └Texture
 └Textures
 ┌Shaders( 1 )
  ┌Shader [ 0 ] Ganyu
-  * 2728685082640
+  * 1344754171232
   Type CODE
   ┌Inputs( 1 )
    ┌Input [ 0 ]
-    * 2728685082448
+    * 1344754170224
     Type TEXTURE
    └Input
   └Inputs
   ┌Code
-vec2 uv =
-	hit_data.uvw.x * vec2(hit_data.hit_tri.uv_a_x, hit_data.hit_tri.uv_a_y) +
-	hit_data.uvw.y * vec2(hit_data.hit_tri.uv_b_x, hit_data.hit_tri.uv_b_y) +
-	hit_data.uvw.z * vec2(hit_data.hit_tri.uv_c_x, hit_data.hit_tri.uv_c_y);
-return sampleTextureRgba8u(<inputs>[0], vec2(uv.x, 1 - uv.y));
+vec2 uv = f_getUV(hit_data);
+vec4 albedo = vec4(0,0,0,1);
+if (hit_data.mesh_hit) {
+	albedo = sampleTextureRgba8u(<inputs>[0], vec2(uv.x, 1 - uv.y));
+}
+Material ganyu_material = Material(
+	vec3(1.0)        , // baseColor
+	1.0              , // opacity
+	ALPHA_MODE_OPAQUE, // alphaMode
+	1.0              , // alphaCutoff
+	vec3(0.0)        , // emission
+	1.0              , // anisotropic
+	1.0              , // metallic
+	1.0              , // roughness
+	1.0              , // subsurface
+	1.0              , // specularTint
+	1.0              , // sheen
+	1.0              , // sheenTint
+	1.0              , // clearcoat
+	1.0              , // clearcoatRoughness
+	1.0              , // specTrans
+	1.0              , // ior
+	1.0              , // ax
+	1.0              , // ay
+	Medium(
+		MEDIUM_NONE, // type
+		1.0,         // density
+		vec3(1.0),   // color
+		1.0          // anisotropy
+	)
+);
+state.material = ganyu_material;
+return albedo;
   └Code
  └Shader
 └Shaders
 ┌Data( 1 )
  ┌Data [ 0 ] Ganyu
-  * 2728725009248
+  * 1344743601504
   Type MESH
   ┌Mesh
    ┌Vertices( 5273 )
@@ -5334,7 +5363,7 @@ return sampleTextureRgba8u(<inputs>[0], vec2(uv.x, 1 - uv.y));
     5272 ( 0.095712997019291 0.289596021175385 0.291646957397461 )
    └Vertices
    ┌Shaders( 1 )
-    0 * 2728685082640
+    0 * 1344754171232
    └Shaders
    ┌Vertex-Groups( 0 )
    └Vertex-Groups
@@ -24792,31 +24821,31 @@ return sampleTextureRgba8u(<inputs>[0], vec2(uv.x, 1 - uv.y));
 └Data
 ┌Objects( 1 )
  ┌Object [ 0 ] Ganyu
-  * 2728686987600
-  Position ( 0.0 0.0 0.0 )
-  Rotation ( 0.0 0.0 0.0 )
+  * 1344723136064
+  Position ( 0.0 0.0 5.0 )
+  Rotation ( 0.0 180.0 0.0 )
   Scale    ( 1.0 1.0 1.0 )
   Type MESH
  └Object
 └Objects
 ┌Scenes( 1 )
  ┌Scene [ 0 ]
-  * 2728727208432
+  * 1344752838960
   ┌Objects
-   * 2728686987600
+   * 1344723136064
   └Objects
  └Scene
 └Scenes
 ┌Build-Steps
- Active-Scene * 2728727208432
- Active-Object * 2728686987600
+ Active-Scene * 1344752838960
+ Active-Object * 1344723136064
  ┌Data-Group
  └Data-Group
  ┌Object-Data
-  * 2728686987600 * 2728725009248
+  * 1344723136064 * 1344743601504
  └Object-Data
  ┌Object-Node
-  * 2728686987600 * 2728684268384
+  * 1344723136064 * 1344755927456
  └Object-Node
  ┌Node-Pointer
  └Node-Pointer

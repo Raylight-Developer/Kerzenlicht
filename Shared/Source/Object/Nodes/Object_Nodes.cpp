@@ -80,7 +80,7 @@ EXEC::Script::Script(const string& script_id) :
 		FARPROC dataAddress = GetProcAddress(dynlib, (script_id + "_getData").c_str());
 		FARPROC buildAddress = GetProcAddress(dynlib, (script_id + "_build").c_str());
 		if (execAddress and dataAddress and buildAddress) {
-			execFunc = (void(*)(Script_Node*, File*, Lace*))execAddress;
+			execFunc = (void(*)(Script_Node*, File*, Session*, Lace*))execAddress;
 			getDataFunc = (KL::Prop(*)(Script_Node*, const uint16&))dataAddress;
 			buildFunc = (void(*)(Script_Node*))buildAddress;
 			buildFunc(wrapper);
@@ -124,7 +124,7 @@ void EXEC::Script::reloadFunctions() {
 	FARPROC dataAddress  = GetProcAddress(dynlib, (script_id + "_getData").c_str());
 	FARPROC buildAddress = GetProcAddress(dynlib, (script_id + "_build").c_str());
 	if (execAddress and dataAddress and buildAddress) {
-		execFunc = (void(*)(Script_Node*, File*, Lace*))execAddress;
+		execFunc = (void(*)(Script_Node*, File*, Session*, Lace*))execAddress;
 		getDataFunc = (KL::Prop(*)(Script_Node*, const uint16&))dataAddress;
 		buildFunc = (void(*)(Script_Node*))buildAddress;
 		buildFunc(wrapper);
@@ -158,7 +158,7 @@ void EXEC::Script::clearIO() {
 
 void EXEC::Script::exec(const uint16& slot_id) {
 	if (execFunc) {
-		execFunc(wrapper, FILE, KL::Session::getInstance().getLog());
+		execFunc(wrapper, FILE, &KL::Session::getInstance(), KL::Session::getInstance().getLog());
 	}
 }
 
@@ -187,6 +187,15 @@ KL::NODE::EXEC::Script_Node::Script_Node(Script* node) :
 {}
 KL::Prop KL::NODE::EXEC::Script_Node::getData(const string& map_name) const {
 	return node->getPortData(map_name);
+}
+void KL::NODE::EXEC::Script_Node::setInternalData(const string& ID, const Prop& data) const {
+	node->internal_data[ID] = data;
+}
+bool KL::NODE::EXEC::Script_Node::hasInternalData(const string& ID) const {
+	return f_hasKey(node->internal_data, ID);
+}
+Prop* KL::NODE::EXEC::Script_Node::getInternalData(const string& ID) const {
+	return &node->internal_data[ID];
 }
 void KL::NODE::EXEC::Script_Node::addDataInput (const string& map_name, const PROP::Type& type, const PROP::Modifier& modifier) const {
 	node->addDataInput (static_cast<uint16>(node->inputs .size()), map_name, type, modifier);

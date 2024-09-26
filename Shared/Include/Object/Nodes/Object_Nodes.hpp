@@ -12,6 +12,7 @@
 // FWD DECL OTHER
 namespace KL {
 	struct File;
+	struct Session;
 }
 
 // FWD DECL THIS
@@ -118,7 +119,7 @@ namespace KL {
 
 				Prop (*getDataFunc)(Script_Node*, const uint16&);
 				void (*buildFunc)(Script_Node*);
-				void (*execFunc)(Script_Node*, File*, Lace*);
+				void (*execFunc)(Script_Node*, File*, Session*, Lace*);
 
 				void exec(const uint16& slot_id = 0) override;
 				Prop getData(const uint16& slot_id) const override;
@@ -152,6 +153,10 @@ namespace KL {
 				virtual PORT::Exec_O_Port* getExecOutput(const string& map_name) const;
 				// Fetch the data from a Port
 				virtual Prop getData(const string& map_name) const;
+
+				virtual void setInternalData(const string& ID, const Prop& data) const;
+				virtual bool hasInternalData(const string& ID) const;
+				virtual Prop* getInternalData(const string& ID) const;
 			};
 			struct Timer : Node {
 				PORT::Exec_O_Port* port;

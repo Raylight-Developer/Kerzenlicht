@@ -111,7 +111,7 @@ void KL::GPU::BVH::Builder::splitAxis(const GPU::Bvh& node, const uint& start, c
 }
 
 vec1 KL::GPU::BVH::Builder::splitEval(const uint8& splitAxis, const vec1& splitPos, const uint& start, const uint& count) const {
-	GPU::Bvh boundsLeft;
+	GPU::Bvh boundsLeft = GPU::Bvh();
 	GPU::Bvh boundsRight;
 	uint numOnLeft = 0;
 	uint numOnRight = 0;

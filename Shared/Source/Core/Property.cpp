@@ -38,6 +38,9 @@ KL::Prop::Prop(Object* data) : data(data) {
 KL::Prop::Prop(SHADER::Texture* data) : data(data) {
 	modifier = PROP::Modifier::SINGLE; type = PROP::Type::TEXTURE;
 }
+KL::Prop::Prop(vector<dvec1> data) : data(data) {
+	modifier = PROP::Modifier::VECTOR; type = PROP::Type::DOUBLE;
+}
 
 KL::Prop KL::Prop::operator+(const KL::Prop & other) const {
 	if (type == other.type) {
@@ -122,6 +125,10 @@ KL::Object* KL::Prop::getObject() const {
 
 KL::SHADER::Texture* KL::Prop::getTexture() const {
 	return any_cast<KL::SHADER::Texture*>(data);
+}
+
+vector<dvec1> KL::Prop::getDoubleVector() const {
+	return any_cast<vector<dvec1>>(data);
 }
 
 string KL::Prop::to_string() const {

@@ -24,6 +24,7 @@ namespace KL {
 		uint64 ram = 0;
 		uint64 vram = 0;
 		History_Manager* history;
+		std::chrono::high_resolution_clock::time_point start_time;
 
 		static Session& getInstance();
 
@@ -31,6 +32,9 @@ namespace KL {
 		~Session() = default;
 		Session(const Session&) = delete;
 		Session& operator=(const Session&) = delete;
+
+		void start();
+		dvec1 f_runtime();
 
 		void setUID(uint64* ptr);
 		uint64* getUID();
