@@ -15,10 +15,16 @@
     <ClCompile Include="main.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Database.cpp" />
+    <ClCompile Include="Source\Threading.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\Window.hpp">
       <Filter>Include</Filter>
     </ClInclude>
+    <ClInclude Include="Include\Database.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <QtMoc Include="Include\Threading.hpp" />
   </ItemGroup>
 </Project>

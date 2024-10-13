@@ -1,10 +1,8 @@
 #pragma once
 
-#include "Shared.hpp"
+#include "Database.hpp"
 
 #include "QT.hpp"
-
-//#include "Database.hpp"
 
 namespace GUI {
 	struct Main_Window;

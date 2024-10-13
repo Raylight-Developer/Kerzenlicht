@@ -1,5 +1,8 @@
 #include "Database.hpp"
 
+#undef FILE
+#include "libpq-fe.h"
+
 DB::Tag::Tag(char* name, char* category, char* description, char* filter_state, char* category_color, char* file_count) :
 	name(*name != '\0' ? name : "DB ERROR"),
 	category_name(*category != '\0' ? category : "Other"),

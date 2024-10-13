@@ -1,11 +1,8 @@
 #pragma once
 
-
-#include "Shared.hpp"
 #include "QT.hpp"
 
-#undef FILE
-#include "libpq-fe.h"
+struct pg_conn;
 
 namespace DB {
 	struct Directory {
@@ -90,7 +87,7 @@ namespace DB {
 	}
 
 	struct Database {
-		PGconn* database;
+		pg_conn* database;
 
 		Database();
 		~Database();
