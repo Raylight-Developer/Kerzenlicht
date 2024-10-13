@@ -3,6 +3,7 @@
 GUI::WORKSPACE::App::App(int argc, char* argv[]) :
 	Application(argc, argv)
 {
+	setStyleSheet(QString::fromStdString(loadFromFile("./Resources/QStylesheet.css")));
 	window = new Main_Window(this);
 	installEventFilter(window);
 }

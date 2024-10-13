@@ -370,6 +370,10 @@ void KL::Renderer::glfwKey(GLFWwindow* window, int key, int scancode, int action
 		instance->pathtracer.f_recompile();
 		instance->rasterizer.f_recompile();
 	}
+	if (key == GLFW_KEY_R && action == GLFW_PRESS) {
+		FILE->active_camera.pointer->transform.position = dvec3(0, 0, 0);
+		FILE->active_camera.pointer->transform.euler_rotation = dvec3(0, 180, 0);
+	}
 	if (key == GLFW_KEY_RIGHT  && action == GLFW_PRESS) {
 		if (instance->pathtracer.data["view_layer"] < 3)
 			instance->pathtracer.data["view_layer"]++;

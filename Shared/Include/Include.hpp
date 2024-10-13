@@ -36,9 +36,6 @@
 #if defined(COMPILE_EDITOR) || defined(COMPILE_GUI_SCRIPTING)
 	#include <QtOpenGL/qopenglfunctions_4_5_core.h>
 	#include <QtOpenGLWidgets>
-	#include <QtWidgets>
-	#include <QtCore>
-	#include <QtGui>
 #endif
 
 #if defined(COMPILE_RENDERER)
@@ -52,3 +49,4 @@
 #include "Utils/Inline/Templates.hpp"
 
 using namespace std;
+namespace fs = filesystem;

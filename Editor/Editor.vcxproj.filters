@@ -5,9 +5,6 @@
     <ClCompile Include="Source\GUI.cpp">
       <Filter>Source\Core</Filter>
     </ClCompile>
-    <ClCompile Include="Source\QT.cpp">
-      <Filter>Source\Core</Filter>
-    </ClCompile>
     <ClCompile Include="Source\GUI_Object_Nodes.cpp">
       <Filter>Source\Core</Filter>
     </ClCompile>
@@ -89,9 +86,6 @@
       <Filter>Include\Workspaces</Filter>
     </ClInclude>
     <ClInclude Include="Include\Core\Python_API.hpp">
-      <Filter>Include\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\QT.hpp">
       <Filter>Include\Core</Filter>
     </ClInclude>
     <ClInclude Include="Include\Workspaces\Shelf.hpp">

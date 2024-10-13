@@ -22,7 +22,6 @@
     <ClInclude Include="Include\Workspaces\Speadsheet_Editor.hpp" />
     <QtMoc Include="Include\GUI.hpp" />
     <ClInclude Include="Include\Main_Window.hpp" />
-    <ClInclude Include="Include\QT.hpp" />
     <ClInclude Include="Include\Workspaces\API.hpp" />
     <ClInclude Include="Include\Workspaces\File_View.hpp" />
     <ClInclude Include="Include\Workspaces\Header.hpp" />
@@ -38,7 +37,6 @@
     <ClCompile Include="Source\Workspaces\Graph_Editor.cpp" />
     <ClCompile Include="Source\GUI.cpp" />
     <ClCompile Include="Source\Main_Window.cpp" />
-    <ClCompile Include="Source\QT.cpp" />
     <ClCompile Include="Source\Workspaces\API.cpp" />
     <ClCompile Include="Source\Workspaces\File_View.cpp" />
     <ClCompile Include="Source\Workspaces\Header.cpp" />
@@ -99,10 +97,10 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(ProjectDir)\Include;$(SolutionDir)\Shared\Include;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)\Include;$(SolutionDir)\Shared\Include;$(SolutionDir)\QT\Include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(ProjectDir)\Include;$(SolutionDir)\Shared\Include;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)\Include;$(SolutionDir)\Shared\Include;$(SolutionDir)\QT\Include;$(IncludePath)</IncludePath>
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Label="Vcpkg" />
@@ -148,7 +146,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;COMPILE_EDITOR;LOG0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Programs\Coding\Lib\pybind 2.11.1\include;C:\Programs\Coding\Lib\python 3.11\include;C:\Programs\Coding\Lib\glm 0.9.9.8</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Programs\Coding\Lib\pybind 2.11.1\include;C:\Programs\Coding\Lib\python 3.11\include;C:\Programs\Coding\Lib\glm 0.9.9.8;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <OpenMPSupport>true</OpenMPSupport>
@@ -159,7 +157,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(OutDir);C:\Programs\Coding\Lib\python 3.11\libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>Shared.lib;python311.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Shared.lib;QT.lib;python311.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreLinkEvent />
     <PreLinkEvent>
@@ -174,7 +172,7 @@
       <SDLCheck>false</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;COMPILE_EDITOR;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Programs\Coding\Lib\pybind 2.11.1\include;C:\Programs\Coding\Lib\python 3.11\include;C:\Programs\Coding\Lib\glm 0.9.9.8</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Programs\Coding\Lib\pybind 2.11.1\include;C:\Programs\Coding\Lib\python 3.11\include;C:\Programs\Coding\Lib\glm 0.9.9.8;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <OpenMPSupport>true</OpenMPSupport>
@@ -187,7 +185,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(OutDir);C:\Programs\Coding\Lib\python 3.11\libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>Shared.lib;python311.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Shared.lib;QT.lib;python311.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreLinkEvent />
     <PreLinkEvent>

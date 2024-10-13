@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Shared.hpp"
-
 #include "QT.hpp"
+
+#include "Shared.hpp"
 
 #include "Core/Editor_File.hpp"
 

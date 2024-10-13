@@ -28,8 +28,8 @@ bool f_rayLensIntersection(in Ray ray, in Camera_Lens lens, inout float ray_leng
 		}
 
 		normal = normalize(hit_point - lens_center);
-		if (lens.curvature_radius < 0) {
-			normal.z = normal.z;
+		if (lens.curvature_radius > 0) {
+			normal = -normal;
 		}
 		ray_length = t_dist;
 		return true;
