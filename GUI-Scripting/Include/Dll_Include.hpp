@@ -2,7 +2,6 @@
 
 #include "pch.h"
 
-
 #include "Shared.hpp"
 
 #include "Object/Data.hpp"
@@ -10,7 +9,8 @@
 #include "GUI_Nodes.hpp"
 #include "GUI_Object_Nodes.hpp"
 
-using Prop_Type  = KL::PROP::Type;
+using Prop_Type = KL::PROP::Type;
+using Prop_Modifier = CORE::PROP::Type;
 using Gui_Script = GUI::NODE::EXEC::Script_Node;
 
 #define EXPORT extern "C" __declspec(dllexport)

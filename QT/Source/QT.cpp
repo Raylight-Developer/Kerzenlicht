@@ -550,3 +550,11 @@ dvec2 p_to_d(const QPointF& val) {
 dvec2 p_to_d(const QPoint& val) {
 	return dvec2(i_to_d(val.x()), i_to_d(val.y()));
 }
+
+string str(const QString& val) {
+	return val.toStdString();
+}
+
+QString qstr(const string& val) {
+	return QString::fromStdString(val);
+}

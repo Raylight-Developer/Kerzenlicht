@@ -14,29 +14,20 @@ GUI::Main_Window::Main_Window(GUI::Application* app) :
 	app(app)
 {
 	log = new KL::Lace();
-	KL::Session::getInstance().setLog(log);
-
+	CORE::Session::getInstance().setLog(log);
 	QFontDatabase::addApplicationFont("../Shared/Resources/Fonts/RobotoMono-Medium.ttf");
-
 	setWindowTitle("Kerzenlicht");
 	setWindowIcon(QPixmap("./Resources/Icon.png"));
-
 	LOG ENDL << "Gallery 1.0.0 Initialized"; FLUSH;
 
-	tabs = new GUI::Tabs(this);
 
-	auto viewport = new GUI::Graphics_View(this);
-	auto scene = new GUI::Graphics_Scene(this);
-	viewport->setScene(scene);
-	scene->addPixmap(f_showroomThumbnail("./Resources/0.png", "Arona", dvec2(0), dvec2(1), ShowFromat::SQUARE));
-
+	db_thread = new Database_Thread();
+	
 	auto showroom = new Showroom(this);
 
+	tabs = new GUI::Tabs(this);
 	tabs->addTab(showroom, "ShowRoom");
-	tabs->addTab(viewport, "Viewport");
-
 	setCentralWidget(tabs);
-
 	showMaximized();
 	LOG ENDL ANSI_G << "Fully Initialized" ANSI_RESET; FLUSH;
 }

@@ -11,7 +11,7 @@
 
 using Prop      = KL::Prop;
 using Prop_Type = KL::PROP::Type;
-using Prop_Mod  = KL::PROP::Modifier;
+using Prop_Mod  = CORE::PROP::Modifier;
 using Script    = KL::NODE::EXEC::Script_Node;
 using File      = KL::File;
 using Session   = KL::Session;

@@ -73,12 +73,12 @@ namespace GUI {
 			struct Data_I_Port : Port {
 				Connection* connection; // src
 
-				KL::PROP::Modifier modifier;
+				CORE::PROP::Modifier modifier;
 				KL::PROP::Type data_type;
 
 				KL::PROP::Type any_data_type;
 
-				Data_I_Port(Node* parent, const uint16& slot_id, const QString& label, const KL::PROP::Type& type, const KL::PROP::Modifier& modifier = KL::PROP::Modifier::SINGLE);
+				Data_I_Port(Node* parent, const uint16& slot_id, const QString& label, const KL::PROP::Type& type, const CORE::PROP::Modifier& modifier = CORE::PROP::Modifier::SINGLE);
 				~Data_I_Port();
 
 				void setDataType(const KL::PROP::Type& type);
@@ -88,12 +88,12 @@ namespace GUI {
 			struct Data_O_Port : Port {
 				vector<Connection*> outgoing_connections; // ref
 
-				KL::PROP::Modifier modifier;
+				CORE::PROP::Modifier modifier;
 				KL::PROP::Type data_type;
 
 				KL::PROP::Type any_data_type;
 
-				Data_O_Port(Node* parent, const uint16& slot_id, const QString& label, const KL::PROP::Type& type, const KL::PROP::Modifier& modifier = KL::PROP::Modifier::SINGLE);
+				Data_O_Port(Node* parent, const uint16& slot_id, const QString& label, const KL::PROP::Type& type, const CORE::PROP::Modifier& modifier = CORE::PROP::Modifier::SINGLE);
 				~Data_O_Port();
 
 				void setDataType(const KL::PROP::Type& type);

@@ -86,6 +86,13 @@ namespace DB {
 		};
 	}
 
+	enum struct Source_Type {
+		LOCAL,
+		DANBOORU,
+		GELBOORU,
+		SAFEBOORU
+	};
+
 	struct Database {
 		pg_conn* database;
 

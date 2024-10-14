@@ -1,0 +1,192 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{0347B4A5-C4C4-41E5-88E0-8A5766F2BE5E}</ProjectGuid>
+    <Keyword>QtVS_v304</Keyword>
+    <WindowsTargetPlatformVersion Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">10.0.22621.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">10.0.22621.0</WindowsTargetPlatformVersion>
+    <QtMsBuild Condition="'$(QtMsBuild)'=='' OR !Exists('$(QtMsBuild)\qt.targets')">$(MSBuildProjectDirectory)\QtMsBuild</QtMsBuild>
+    <ProjectName>Engine</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <ImportGroup Condition="Exists('$(QtMsBuild)\qt_defaults.props')">
+    <Import Project="$(QtMsBuild)\qt_defaults.props" />
+  </ImportGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <IncludePath>$(ProjectDir)\Include;$(ProjectDir)\External;$(SolutionDir)\Engine\Include;$(SolutionDir)\Core\Include;$(IncludePath)</IncludePath>
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\$(ProjectName)\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <IncludePath>$(ProjectDir)\Include;$(ProjectDir)\External;$(SolutionDir)\Engine\Include;$(SolutionDir)\Core\Include;$(IncludePath)</IncludePath>
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\$(ProjectName)\</OutDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalIncludeDirectories>C:\Programs\Coding\Lib\glm 0.9.9.8;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>
+      </AdditionalLibraryDirectories>
+    </Link>
+    <PreLinkEvent>
+      <Command>
+      </Command>
+    </PreLinkEvent>
+    <Lib />
+    <Lib>
+      <AdditionalLibraryDirectories>$(OutDir)..\Core;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Core.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>
+      </FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalIncludeDirectories>C:\Programs\Coding\Lib\glm 0.9.9.8;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>
+      </AdditionalLibraryDirectories>
+    </Link>
+    <PreLinkEvent>
+      <Command>
+      </Command>
+    </PreLinkEvent>
+    <Lib />
+    <Lib>
+      <AdditionalLibraryDirectories>$(OutDir)..\Core;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Core.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="Include\Core\Property.hpp" />
+    <ClInclude Include="Include\GPU\Gpu_Camera.hpp" />
+    <ClInclude Include="Include\GPU\Gpu_Bvh.hpp" />
+    <ClInclude Include="Include\GPU\Gpu_Triangle.hpp" />
+    <ClInclude Include="Include\Include.hpp" />
+    <ClInclude Include="Include\Object\Nodes\Math.hpp" />
+    <ClInclude Include="External\stb_image.h" />
+    <ClInclude Include="Include\Core\File.hpp" />
+    <ClInclude Include="Include\GPU\Gpu_Scene.hpp" />
+    <ClInclude Include="Include\Object\Nodes\Compiler.hpp" />
+    <ClInclude Include="Include\Object\Nodes\Object_Nodes.hpp" />
+    <ClInclude Include="Include\Core\Nodes.hpp" />
+    <ClInclude Include="Include\Utils\Session.hpp" />
+    <ClInclude Include="Include\Shader\Nodes\Shader_Nodes.hpp" />
+    <ClInclude Include="Include\Shader\Shader.hpp" />
+    <ClInclude Include="Include\Object\Data.hpp" />
+    <ClInclude Include="Include\Object\Data\Atmosphere.hpp" />
+    <ClInclude Include="Include\Object\Data\Camera.hpp" />
+    <ClInclude Include="Include\Object\Data\Curve.hpp" />
+    <ClInclude Include="Include\Object\Data\Empty.hpp" />
+    <ClInclude Include="Include\Object\Data\Force.hpp" />
+    <ClInclude Include="Include\Object\Data\Group.hpp" />
+    <ClInclude Include="Include\Object\Data\Light.hpp" />
+    <ClInclude Include="Include\Object\Data\Mesh.hpp" />
+    <ClInclude Include="Include\Object\Data\Primitive.hpp" />
+    <ClInclude Include="Include\Object\Data\Sfx.hpp" />
+    <ClInclude Include="Include\Object\Data\Skeleton.hpp" />
+    <ClInclude Include="Include\Object\Data\Vfx.hpp" />
+    <ClInclude Include="Include\Object\Data\Volume.hpp" />
+    <ClInclude Include="Include\Object\Object.hpp" />
+    <ClInclude Include="Include\Shared.hpp" />
+    <ClInclude Include="Include\Core\Scene.hpp" />
+    <ClInclude Include="Include\Math\Interpolation.hpp" />
+    <ClInclude Include="Include\GPU\Bvh_Build.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Source\GPU\Gpu_Camera.cpp" />
+    <ClCompile Include="Source\GPU\Gpu_Bvh.cpp" />
+    <ClCompile Include="Source\GPU\Gpu_Triangle.cpp" />
+    <ClCompile Include="Source\GPU\Bvh_Build.cpp" />
+    <ClCompile Include="Source\Object\Nodes\Math.cpp" />
+    <ClCompile Include="Source\Math\Interpolation.cpp" />
+    <ClCompile Include="Source\GPU\Gpu_Scene.cpp" />
+    <ClCompile Include="Source\Utils\Session.cpp" />
+    <ClCompile Include="Source\Core\File.cpp" />
+    <ClCompile Include="Source\Core\Scene.cpp" />
+    <ClCompile Include="Source\Core\Property.cpp" />
+    <ClCompile Include="Source\Object\Nodes\Compiler.cpp" />
+    <ClCompile Include="Source\Core\Nodes.cpp" />
+    <ClCompile Include="Source\Object\Nodes\Object_Nodes.cpp" />
+    <ClCompile Include="Source\Object\Data.cpp" />
+    <ClCompile Include="Source\Object\Data\Atmosphere.cpp" />
+    <ClCompile Include="Source\Object\Data\Camera.cpp" />
+    <ClCompile Include="Source\Object\Data\Curve.cpp" />
+    <ClCompile Include="Source\Object\Data\Empty.cpp" />
+    <ClCompile Include="Source\Object\Data\Force.cpp" />
+    <ClCompile Include="Source\Object\Data\Group.cpp" />
+    <ClCompile Include="Source\Object\Data\Light.cpp" />
+    <ClCompile Include="Source\Object\Data\Mesh.cpp" />
+    <ClCompile Include="Source\Object\Data\Primitive.cpp" />
+    <ClCompile Include="Source\Object\Data\Sfx.cpp" />
+    <ClCompile Include="Source\Object\Data\Skeleton.cpp" />
+    <ClCompile Include="Source\Object\Data\Vfx.cpp" />
+    <ClCompile Include="Source\Object\Data\Volume.cpp" />
+    <ClCompile Include="Source\Object\Object.cpp" />
+    <ClCompile Include="Source\Shader\Nodes\Shader_Nodes.cpp" />
+    <ClCompile Include="Source\Shader\Shader.cpp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">
+    <Import Project="$(QtMsBuild)\qt.targets" />
+  </ImportGroup>
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

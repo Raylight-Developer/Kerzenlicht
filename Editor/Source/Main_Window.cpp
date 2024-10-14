@@ -24,14 +24,14 @@ GUI::WORKSPACE::Main_Window::Main_Window(GUI::Application* app) :
 	history = new KL::History_Manager();
 	KL::Session::getInstance().setHistory(history);
 
-	QFontDatabase::addApplicationFont("../Shared/Resources/Fonts/RobotoMono-Medium.ttf");
+	QFontDatabase::addApplicationFont("../Core/Resources/Fonts/RobotoMono-Medium.ttf");
 
 	setWindowTitle("Kerzenlicht");
 	setWindowIcon(QPixmap("./Resources/Icon.png"));
 
 	LOG ENDL << "Kerzenlicht 1.0.0 Initialized"; FLUSH;
 
-	file->f_loadAsciiFile("../Shared/Resources/Assets/Ganyu.krz");
+	file->f_loadAsciiFile("../Engine/Resources/Assets/Ganyu.krz");
 
 	Workspace_Manager* ws_1 = new Workspace_Manager(this, Workspace_Type::OBJECT_NODE_EDITOR);
 	Workspace_Manager* ws_2 = new Workspace_Manager(this, Workspace_Type::SHELF);
@@ -59,7 +59,7 @@ void GUI::WORKSPACE::Main_Window::closeEvent(QCloseEvent* event) {
 	reply = QMessageBox::question(this, "Exit And Save Changes", "Exit And Save Changes:", QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
 
 	if (reply == QMessageBox::Yes) {
-		file->f_saveAsciiFile("../Shared/Resources/Assets/Save.krz");
+		file->f_saveAsciiFile("../Engine/Resources/Assets/Save.krz");
 		delete log;
 		event->accept();
 	}

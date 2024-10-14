@@ -28,7 +28,7 @@ public:
 
 	DB::Database* database;
 
-	Database_Thread(string* database_path = nullptr) :
+	Database_Thread() :
 		QThread(),
 		database(new DB::Database())
 	{};

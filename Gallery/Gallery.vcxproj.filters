@@ -19,6 +19,7 @@
     <ClCompile Include="Source\Threading.cpp" />
     <ClCompile Include="Source\Browser.cpp" />
     <ClCompile Include="Source\Showroom.cpp" />
+    <ClCompile Include="Source\Settings.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\Window.hpp">
@@ -27,6 +28,7 @@
     <ClInclude Include="Include\Database.hpp" />
     <ClInclude Include="Include\Browser.hpp" />
     <ClInclude Include="Include\Showroom.hpp" />
+    <ClInclude Include="Include\Settings.hpp" />
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="Include\Threading.hpp" />

@@ -5,7 +5,7 @@ KL::Renderer::Renderer() {
 	Lace* log = new Lace("\t");
 	Session::getInstance().setLog(log);
 	file = new KL::Render_File();
-	file->f_loadAsciiFile("../Shared/Resources/Assets/Ganyu.krz");
+	file->f_loadAsciiFile("../Engine/Resources/Assets/Ganyu.krz");
 	Session::getInstance().setFile(file);
 
 	rasterizer = Rasterizer(this);

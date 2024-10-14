@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Database.hpp"
+#include "Threading.hpp"
 
 #include "QT.hpp"
 
@@ -23,6 +24,7 @@ namespace GUI {
 		Application* app;
 		KL::Lace* log;
 		GUI::Tabs* tabs;
+		Database_Thread* db_thread;
 
 		Main_Window(GUI::Application* app);
 

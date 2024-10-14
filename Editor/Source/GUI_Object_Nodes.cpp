@@ -91,14 +91,14 @@ void GUI::NODE::EXEC::Script::clearIO() {
 	outputs.clear();
 }
 
-void GUI::NODE::EXEC::Script::addDataInput(const uint16& slot_id, const string& label, const KL::PROP::Type& type, const KL::PROP::Modifier& modifier) {
+void GUI::NODE::EXEC::Script::addDataInput(const uint16& slot_id, const string& label, const KL::PROP::Type& type, const CORE::PROP::Modifier& modifier) {
 	PORT::Data_I_Port* value = new PORT::Data_I_Port(this, slot_id, QString::fromStdString(label), type, modifier);
 	inputs.push_back(value);
 	value->rect.moveTopLeft(value->rect.topLeft() + QPointF(0, 20));
 	rect.setHeight(60 + max(inputs.size(), outputs.size()) * 20);
 }
 
-void GUI::NODE::EXEC::Script::addDataOutput(const uint16& slot_id, const string& label, const KL::PROP::Type& type, const KL::PROP::Modifier& modifier) {
+void GUI::NODE::EXEC::Script::addDataOutput(const uint16& slot_id, const string& label, const KL::PROP::Type& type, const CORE::PROP::Modifier& modifier) {
 	PORT::Data_O_Port* value = new PORT::Data_O_Port(this, slot_id, QString::fromStdString(label), type, modifier);
 	outputs.push_back(value);
 	value->rect.moveTopLeft(value->rect.topLeft() + QPointF(0, 20));
@@ -162,10 +162,10 @@ GUI::NODE::EXEC::Script_Node::Script_Node(Script* node) :
 void GUI::NODE::EXEC::Script_Node::clearIO() const {
 	node->clearIO();
 }
-void GUI::NODE::EXEC::Script_Node::addDataInput (const string& label, const KL::PROP::Type& type, const KL::PROP::Modifier& modifier) const {
+void GUI::NODE::EXEC::Script_Node::addDataInput (const string& label, const KL::PROP::Type& type, const CORE::PROP::Modifier& modifier) const {
 	node->addDataInput (static_cast<uint16>(node->inputs .size()), label, type, modifier);
 }
-void GUI::NODE::EXEC::Script_Node::addDataOutput(const string& label, const KL::PROP::Type& type, const KL::PROP::Modifier& modifier) const {
+void GUI::NODE::EXEC::Script_Node::addDataOutput(const string& label, const KL::PROP::Type& type, const CORE::PROP::Modifier& modifier) const {
 	node->addDataOutput(static_cast<uint16>(node->outputs.size()), label, type, modifier);
 }
 void GUI::NODE::EXEC::Script_Node::addExecInput (const string& label) const {

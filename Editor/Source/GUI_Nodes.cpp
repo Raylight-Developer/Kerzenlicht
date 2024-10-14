@@ -90,7 +90,7 @@ void GUI::NODE::Port::paint(QPainter* painter, const QStyleOptionGraphicsItem* o
 	}
 }
 
-GUI::NODE::PORT::Data_I_Port::Data_I_Port(Node* parent, const uint16& slot_id, const QString& label, const KL::PROP::Type& type, const KL::PROP::Modifier& modifier) :
+GUI::NODE::PORT::Data_I_Port::Data_I_Port(Node* parent, const uint16& slot_id, const QString& label, const KL::PROP::Type& type, const CORE::PROP::Modifier& modifier) :
 	Port(parent)
 {
 	this->type = KL::NODE::PORT::Type::DATA_I;
@@ -131,7 +131,7 @@ void GUI::NODE::PORT::Data_I_Port::paint(QPainter* painter, const QStyleOptionGr
 	painter->drawText(rect.bottomLeft() + QPointF(20, -4), label);
 }
 
-GUI::NODE::PORT::Data_O_Port::Data_O_Port(Node* parent, const uint16& slot_id, const QString& label, const KL::PROP::Type& type, const KL::PROP::Modifier& modifier) :
+GUI::NODE::PORT::Data_O_Port::Data_O_Port(Node* parent, const uint16& slot_id, const QString& label, const KL::PROP::Type& type, const CORE::PROP::Modifier& modifier) :
 	Port(parent)
 {
 	this->type = KL::NODE::PORT::Type::DATA_O;

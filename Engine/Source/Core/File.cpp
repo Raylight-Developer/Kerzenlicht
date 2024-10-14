@@ -1,0 +1,1541 @@
+﻿#include "Core/File.hpp"
+
+#include "Utils/Session.hpp"
+
+KL::File::File() :
+	pointer_map(BiMap<uint64, uint64>()),
+
+	textures(Observable_Vector<SHADER::Texture*>()),
+	shaders(Observable_Vector<KL::Shader*>()),
+	object_data(Observable_Vector<OBJECT::Data*>()),
+	node_trees(Observable_Vector<Node_Tree*> ()),
+	objects(Observable_Vector<Object*>()),
+	scenes(Observable_Vector<Scene*>()),
+
+	active_camera(Observable_Ptr<Object>()),
+	active_object(Observable_Ptr<Object>()),
+	active_scene(Observable_Ptr<Scene>()),
+
+	selected_objects(Observable_Vector<Object*>())
+{
+	active_camera.pointer = new Object();
+	active_camera.pointer->transform.position = dvec3(0, 0, 0);
+	active_camera.pointer->transform.euler_rotation = dvec3(0, 180, 0);
+	active_camera.pointer->data = new OBJECT::DATA::Camera();
+
+	version = "ERROR";
+}
+
+KL::Object* KL::File::f_activeCamera() const {
+	return active_camera.pointer;
+}
+
+KL::Object* KL::File::f_activeObject() const {
+	return active_object.pointer;
+}
+
+KL::Scene* KL::File::f_activeScene() const {
+	return active_scene.pointer;
+}
+
+KL::Confirm<KL::Object*> KL::File::f_getObject(const string& name) const {
+	for (Object* object : objects) {
+		if (object->name == name) {
+			return Confirm(object);
+		}
+	}
+	return KL::Confirm<KL::Object*>();
+}
+
+void KL::File::f_loadAsciiFile(const string& file_path) {
+	LOG ENDL ANSI_B << "[Load ASCII File]" ANSI_RESET  << " Filepath " << file_path; FLUSH;
+	ifstream file(file_path, ios::binary);
+
+	if (file.is_open()) {
+		Token_Array token_data = Token_Array();
+		Tokens line_data = Tokens();
+		string line;
+		while (getline(file, line)) {
+			Tokens tokens = f_split(line);
+			if (!tokens.empty()) {
+				token_data.push_back(tokens);
+				line_data.push_back(line);
+			}
+		}
+		f_loadAscii(token_data, line_data);
+	}
+	else {
+		LOG ENDL ANSI_R << "  [File]" ANSI_RESET << " Error Opening File"; FLUSH;
+	}
+	LOG ENDL ANSI_G << "  [File]" ANSI_RESET << " Loaded"; FLUSH;
+	f_fileStats();
+}
+
+void KL::File::f_saveAsciiFile(const string& file_path) {
+	const string data = f_printFile();
+	if (filesystem::exists(file_path) and loadFromFile(file_path) == data) {
+		return;
+	}
+	writeToFile(file_path, data);
+}
+
+void KL::File::f_loadBinaryFile(const string& file_path) {
+	LOG ENDL ANSI_B << "[Load Binary File]" ANSI_RESET  << " Filepath " << file_path; FLUSH;
+	ifstream file(file_path, ios::binary | ios::ate);
+
+	std::ifstream::pos_type fileSize = file.tellg();
+	file.seekg(0, std::ios::beg);
+	vector<Byte> buffer = vector<Byte>(fileSize);
+
+	file.read(reinterpret_cast<char*>(buffer.data()), fileSize);
+	file.close();
+
+	f_loadBinary(buffer);
+}
+
+void KL::File::f_saveBinaryFile(const string& file_path) {
+	ofstream file(file_path, ios::binary);
+	if (file.is_open()) {
+		Bin_Lace bin = Bin_Lace();
+
+		f_saveBinary(bin);
+
+		file.write(reinterpret_cast<const char*>(bin.data.data()), bin.data.size());
+		file.close();
+	}
+}
+
+void KL::File::f_importAsciiFile(const string& file_path) {
+	LOG ENDL ANSI_B << "[Import ASCII File]" ANSI_RESET  << " Filepath " << file_path; FLUSH;
+	ifstream file(file_path, ios::binary);
+	map<uint64, void*> pointer_map;
+
+	if (file.is_open()) {
+		Token_Array token_data = Token_Array();
+		Tokens line_data = Tokens();
+		string line;
+		while (getline(file, line)) {
+			Tokens tokens = f_split(line);
+			if (!tokens.empty()) {
+				token_data.push_back(tokens);
+				line_data.push_back(line);
+			}
+		}
+		f_importAscii(token_data, line_data);
+	}
+	else {
+		LOG ENDL ANSI_R << "  [File]" ANSI_RESET << " Error Opening File"; FLUSH;
+	}
+	LOG ENDL ANSI_G << "  [File]" ANSI_RESET << " Imported"; FLUSH;
+}
+
+void KL::File::f_importBinaryFile(const string& file_path) {
+}
+
+KL::File KL::File::f_getAsciiFile(const string& file_path) {
+	File file;
+	file.f_loadAsciiFile(file_path);
+	return file;
+}
+
+KL::File KL::File::f_getBinaryFile(const string& file_path) {
+	File file;
+	file.f_loadBinaryFile(file_path);
+	return file;
+}
+
+string KL::File::f_printFile() {
+	Lace lace = Lace();
+	f_saveAscii(lace);
+	return lace.str();
+}
+
+void KL::File::f_fileStats() const {
+	LOG ENDL ANSI_B << "[Stats]" ANSI_RESET;
+	LOG ENDL << "  Objects     ( " << objects.size() << " )";
+	LOG ENDL << "  Object Data ( " << object_data.size() << " )";
+	LOG ENDL << "  Textures    ( " << textures.size() << " )";
+	LOG ENDL << "  Pointer_Map ( " << pointer_map.size() << " )";
+	FLUSH;
+}
+
+uint64 KL::File::f_ptrVal(const void* key) const {
+	return pointer_map.getVal(uptr(key));
+}
+
+uint64 KL::File::f_ptrKey(const void* val) const {
+	return pointer_map.getKey(uptr(val));
+}
+
+void KL::File::f_loadAscii(const Token_Array& token_data, const Tokens& line_data) {
+	Token_Array t_data = Token_Array();
+	Tokens l_data = Tokens();
+
+	Parse_Type is_processing = Parse_Type::NONE;
+	for (uint64 i = 0; i < token_data.size(); i++) {
+		const Tokens tokens = token_data[i];
+		const string line = line_data[i];
+		if (is_processing == Parse_Type::NONE) {
+			if      (tokens[0] == "┌Build-Steps")
+				is_processing = Parse_Type::BUILD_STEPS;
+			else if (tokens[0] == "┌Node-Tree")
+				is_processing = Parse_Type::NODE_TREE;
+			else if (tokens[0] == "┌Shader")
+				is_processing = Parse_Type::SHADER;
+			else if (tokens[0] == "┌Texture")
+				is_processing = Parse_Type::TEXTURE;
+			else if (tokens[0] == "┌Header")
+				is_processing = Parse_Type::HEADER;
+			else if (tokens[0] == "┌Object")
+				is_processing = Parse_Type::OBJECT;
+			else if (tokens[0] == "┌Scene")
+				is_processing = Parse_Type::SCENE;
+			else if (tokens[0] == "┌Data")
+				is_processing = Parse_Type::PROP;
+			t_data.clear();
+			t_data.push_back(tokens);
+			l_data.clear();
+			l_data.push_back(line);
+		}
+		else {
+			if      (is_processing == Parse_Type::BUILD_STEPS and tokens[0] == "└Build-Steps") {
+				LOG ENDL ANSI_B << "  [Data-Block]" ANSI_RESET; FLUSH;
+				is_processing = Parse_Type::NONE;
+				f_loadAsciiBuild(t_data, l_data);
+			}
+			else if (is_processing == Parse_Type::NODE_TREE and tokens[0] == "└Node-Tree") {
+				LOG ENDL ANSI_B << "  [Data-Block]" ANSI_RESET; FLUSH;
+				is_processing = Parse_Type::NONE;
+				node_trees.push_back(f_loadAsciiNodeTree(t_data, l_data));
+			}
+			else if (is_processing == Parse_Type::SHADER and tokens[0] == "└Shader") {
+				LOG ENDL ANSI_B << "  [Data-Block]" ANSI_RESET; FLUSH;
+				is_processing = Parse_Type::NONE;
+				shaders.push_back(f_loadAsciiShader(t_data, l_data));
+			}
+			else if (is_processing == Parse_Type::TEXTURE and tokens[0] == "└Texture") {
+				LOG ENDL ANSI_B << "  [Data-Block]" ANSI_RESET; FLUSH;
+				is_processing = Parse_Type::NONE;
+				textures.push_back(f_loadAsciiTexture(t_data, l_data));
+			}
+			else if (is_processing == Parse_Type::HEADER and tokens[0] == "└Header") {
+				LOG ENDL ANSI_B << "  [Data-Block]" ANSI_RESET; FLUSH;
+				is_processing = Parse_Type::NONE;
+				f_loadAsciiHeader(t_data, l_data);
+			}
+			else if (is_processing == Parse_Type::OBJECT and tokens[0] == "└Object") {
+				LOG ENDL ANSI_B << "  [Data-Block]" ANSI_RESET; FLUSH;
+				is_processing = Parse_Type::NONE;
+				objects.push_back(f_loadAsciiObject(t_data, l_data));
+			}
+			else if (is_processing == Parse_Type::SCENE and tokens[0] == "└Scene") {
+				LOG ENDL ANSI_B << "  [Data-Block]" ANSI_RESET; FLUSH;
+				is_processing = Parse_Type::NONE;
+				scenes.push_back(f_loadAsciiScene(t_data, l_data));
+			}
+			else if (is_processing == Parse_Type::PROP and tokens[0] == "└Data") {
+				LOG ENDL ANSI_B << "  [Data-Block]" ANSI_RESET; FLUSH;
+				is_processing = Parse_Type::NONE;
+				object_data.push_back(f_loadAsciiData(t_data, l_data));
+			}
+			else {
+				t_data.push_back(tokens);
+				l_data.push_back(line);
+			}
+		}
+	}
+}
+
+void KL::File::f_loadAsciiHeader(const Token_Array& token_data, const Tokens& line_data) {
+	LOG ENDL ANSI_B << "    [Header]" ANSI_RESET; FLUSH;
+	for (const Tokens& tokens : token_data) {
+		if (tokens[0] == "Version") {
+			version = tokens[1];
+		}
+		else if (tokens[0] == "Type") {
+			string file_type = tokens[1];
+		}
+	}
+}
+
+KL::Node_Tree* KL::File::f_loadAsciiNodeTree(const Token_Array& token_data, const Tokens& line_data) {
+	auto node_tree = new KL::Node_Tree();
+	node_tree->name = f_join(token_data[0], 4);
+
+	LOG ENDL ANSI_B << "    [Node-Tree]" ANSI_RESET; FLUSH;
+	LOG ENDL << "      " ANSI_PURPLE  << node_tree->name ANSI_RESET; FLUSH;
+
+	bool is_processing = false;
+	Token_Array read_data = Token_Array();
+	for (const Tokens& tokens : token_data) {
+		if (tokens[0] == "┌Node") {
+			is_processing = true;
+			read_data.clear();
+			read_data.push_back(tokens);
+		}
+		else if (tokens[0] == "┌Build-E") {
+			is_processing = true;
+			read_data.clear();
+		}
+		else if (tokens[0] == "┌Build-D") {
+			is_processing = true;
+			read_data.clear();
+		}
+		else if (tokens[0] == "└Node") {
+			is_processing = false;
+			const string name = f_join(read_data[0], 4);
+			const uint64 pointer = str_to_ul(read_data[1][1]);
+			const ivec2  pos = str_to_i(read_data[2][1], read_data[2][2]);
+
+			KL::Node* node = nullptr;
+			if      (read_data[3][1] == "CONSTRAINT") {
+			}
+			else if (read_data[3][1] == "GENERATE") {
+			}
+			else if (read_data[3][1] == "PHYSICS") {
+			}
+			else if (read_data[3][1] == "MODIFY") {
+			}
+			else if (read_data[3][1] == "EXEC") {
+				if (read_data[3][3] == "SCRIPT") {
+					LOG ENDL ANSI_B << "      [Node]" ANSI_RESET; FLUSH;
+					LOG ENDL << "        " ANSI_PURPLE << name ANSI_RESET; FLUSH;
+					node = new NODE::EXEC::Script(f_join(read_data[5]));
+				}
+				else if (read_data[3][3] == "TICK") {
+					LOG ENDL ANSI_B << "      [Node]" ANSI_RESET; FLUSH;
+					LOG ENDL << "        " ANSI_PURPLE << name ANSI_RESET; FLUSH;
+					node = new NODE::EXEC::Tick();
+					node_tree->tick = static_cast<NODE::EXEC::Tick*>(node);
+				}
+			}
+			else if (read_data[3][1] == "LINK") {
+				if      (read_data[3][3] == "POINTER") {
+					LOG ENDL ANSI_B << "      [Node]" ANSI_RESET; FLUSH;
+					LOG ENDL << "        " ANSI_PURPLE << name ANSI_RESET; FLUSH;
+					auto node_t = new NODE::LINK::Pointer();
+					node_t->pointer_type = PROP::fromString(read_data[5][1]);
+					node = node_t;
+				}
+				else if (read_data[3][3] == "GET") {
+					if      (read_data[3][5] == "FIELD") {
+						LOG ENDL ANSI_B << "      [Node]" ANSI_RESET; FLUSH;
+						LOG ENDL << "        " ANSI_PURPLE << name ANSI_RESET; FLUSH;
+						auto node_t = new NODE::LINK::GET::Field();
+						node_t->field = f_join(read_data[5]);
+						node = node_t;
+					}
+				}
+				else if (read_data[3][3] == "SET") {
+					if      (read_data[3][5] == "TRANSFORM") {
+						if      (read_data[3][7] == "EULER_ROTATION") {
+							if      (read_data[3][9] == "X") {
+								LOG ENDL ANSI_B << "      [Node]" ANSI_RESET; FLUSH;
+								LOG ENDL << "        " ANSI_PURPLE << name ANSI_RESET; FLUSH;
+								node = new NODE::LINK::SET::Euler_Rotation_X();
+							}
+							if      (read_data[3][9] == "Y") {
+								LOG ENDL ANSI_B << "      [Node]" ANSI_RESET; FLUSH;
+								LOG ENDL << "        " ANSI_PURPLE << name ANSI_RESET; FLUSH;
+								node = new NODE::LINK::SET::Euler_Rotation_Y();
+							}
+							if      (read_data[3][9] == "Z") {
+								LOG ENDL ANSI_B << "      [Node]" ANSI_RESET; FLUSH;
+								LOG ENDL << "        " ANSI_PURPLE << name ANSI_RESET; FLUSH;
+								node = new NODE::LINK::SET::Euler_Rotation_Z();
+							}
+						}
+					}
+				}
+			}
+			else if (read_data[3][1] == "MATH") {
+				if (read_data[3][3] == "ARITHMETIC") {
+					if      (read_data[3][5] == "MUL") {
+						LOG ENDL ANSI_B << "      [Node]" ANSI_RESET; FLUSH;
+						LOG ENDL << "        " ANSI_PURPLE << name ANSI_RESET; FLUSH;
+						node = new NODE::MATH::ARITHMETIC::Multiplication();
+					}
+					else if (read_data[3][5] == "SUB") {
+						LOG ENDL ANSI_B << "      [Node]" ANSI_RESET; FLUSH;
+						LOG ENDL << "        " ANSI_PURPLE << name ANSI_RESET; FLUSH;
+						node = new NODE::MATH::ARITHMETIC::Subtraction();
+					}
+					else if (read_data[3][5] == "ADD") {
+						LOG ENDL ANSI_B << "      [Node]" ANSI_RESET; FLUSH;
+						LOG ENDL << "        " ANSI_PURPLE << name ANSI_RESET; FLUSH;
+						node = new NODE::MATH::ARITHMETIC::Addition();
+					}
+					else if (read_data[3][5] == "DIV") {
+						LOG ENDL ANSI_B << "      [Node]" ANSI_RESET; FLUSH;
+						LOG ENDL << "        " ANSI_PURPLE << name ANSI_RESET; FLUSH;
+						node = new NODE::MATH::ARITHMETIC::Division();
+					}
+					else if (read_data[3][5] == "POW") {
+						LOG ENDL ANSI_B << "      [Node]" ANSI_RESET; FLUSH;
+						LOG ENDL << "        " ANSI_PURPLE << name ANSI_RESET; FLUSH;
+						node = new NODE::MATH::ARITHMETIC::Power();
+					}
+				}
+			}
+			else if (read_data[3][1] == "UTIL") {
+				if (read_data[3][3] == "PRINT") {
+					LOG ENDL ANSI_B << "      [Node]" ANSI_RESET; FLUSH;
+					LOG ENDL << "        " ANSI_PURPLE << name ANSI_RESET; FLUSH;
+					node = new NODE::UTIL::Print();
+				}
+				if (read_data[3][3] == "CAST") {
+					if (read_data[3][5] == "UINT_TO_DOUBLE") {
+						LOG ENDL ANSI_B << "      [Node]" ANSI_RESET; FLUSH;
+						LOG ENDL << "        " ANSI_PURPLE << name ANSI_RESET; FLUSH;
+						node = new NODE::UTIL::CAST::Uint_To_Double();
+					}
+					else if (read_data[3][5] == "INT_TO_DOUBLE") {
+						LOG ENDL ANSI_B << "      [Node]" ANSI_RESET; FLUSH;
+						LOG ENDL << "        " ANSI_PURPLE << name ANSI_RESET; FLUSH;
+						node = new NODE::UTIL::CAST::Int_To_Double();
+					}
+				}
+			}
+			else {
+				// TODO load "unkown" node from newer version
+			}
+			if (node) {
+				node->name = name;
+
+				pointer_map.insert(pointer, uptr(node));
+				node_tree->nodes.push_back(node);
+			}
+		}
+		else if (tokens[0] == "└Build-E") {
+			LOG ENDL ANSI_B << "      [Build-E]" ANSI_RESET; FLUSH;
+			is_processing = false;
+			for (const Tokens& sub_tokens : read_data) {
+				auto node_l = ptr<KL::Node*>(pointer_map.getVal(str_to_ul(sub_tokens[1])));
+				auto port_l = static_cast<NODE::PORT::Exec_O_Port*>(
+					node_l->outputs[str_to_ul(sub_tokens[2])]
+					);
+				auto node_r = ptr<KL::Node*>(pointer_map.getVal(str_to_ul(sub_tokens[5])));
+				auto port_r = static_cast<NODE::PORT::Exec_I_Port*>(
+					node_r->inputs[str_to_ul(sub_tokens[3])]
+					);
+				port_l->connection = port_r;
+				port_r->incoming_connections.push_back(port_l);
+			}
+		}
+		else if (tokens[0] == "└Build-D") {
+			LOG ENDL ANSI_B << "      [Build-D]" ANSI_RESET; FLUSH;
+			is_processing = false;
+			for (const Tokens& sub_tokens : read_data) {
+				auto node_l = ptr<KL::Node*>(pointer_map.getVal(str_to_ul(sub_tokens[1])));
+				auto port_l = static_cast<NODE::PORT::Data_O_Port*>(
+					node_l->outputs[str_to_ul(sub_tokens[2])]
+					);
+				auto node_r = ptr<KL::Node*>(pointer_map.getVal(str_to_ul(sub_tokens[5])));
+				auto port_r = static_cast<NODE::PORT::Data_I_Port*>(
+					node_r->inputs[str_to_ul(sub_tokens[3])]
+					);
+				port_r->connection = port_l;
+				port_l->outgoing_connections.push_back(port_r);
+			}
+		}
+		else if (is_processing) {
+			read_data.push_back(tokens);
+		}
+	}
+	pointer_map.insert(str_to_ul(token_data[1][1]), uptr(node_tree));
+	return node_tree;
+}
+
+KL::SHADER::Texture* KL::File::f_loadAsciiTexture(const Token_Array& token_data, const Tokens& line_data) {
+	SHADER::Texture* texture = new SHADER::Texture();
+	texture->name = f_join(token_data[0], 4);
+
+	LOG ENDL ANSI_B << "    [Texture]" ANSI_RESET; FLUSH;
+	LOG ENDL << "      " ANSI_PURPLE  << texture->name ANSI_RESET; FLUSH;
+
+	texture->loadFromFile(f_join(token_data[2]));
+
+	pointer_map.insert(str_to_ul(token_data[1][1]), uptr(texture));
+	return texture;
+}
+
+KL::Shader* KL::File::f_loadAsciiShader(const Token_Array& token_data, const Tokens& line_data) {
+	KL::Shader* shader = new KL::Shader();
+	shader->name = f_join(token_data[0], 4);
+
+	LOG ENDL ANSI_B << "    [Shader]" ANSI_RESET; FLUSH;
+	LOG ENDL << "      " ANSI_PURPLE  << shader->name ANSI_RESET; FLUSH;
+
+	if      (token_data[2][1] == "NONE")
+		shader->type = SHADER::Type::NONE;
+	else if (token_data[2][1] == "CODE")
+		shader->type = SHADER::Type::CODE;
+	else if (token_data[2][1] == "NODES")
+		shader->type = SHADER::Type::NODES;
+
+	if (shader->type == SHADER::Type::CODE)
+		shader->shader_code = f_closingPair(line_data, "┌Code", "└Code");
+
+	LOG ENDL << shader->shader_code; FLUSH;
+
+	bool is_processing = false;
+	Token_Array read_data = Token_Array();
+	for (const Tokens& tokens : token_data) {
+		if (tokens[0] == "┌Input") {
+			is_processing = true;
+			read_data.clear();
+		}
+		else if (tokens[0] == "└Input") {
+			is_processing = false;
+			if (read_data[1][1] == "OBJECT") {
+				shader->inputs.push_back(Prop(ptr<Object*>(pointer_map.getVal(str_to_ul(read_data[0][1])))));
+			}
+			else if (read_data[1][1] == "TEXTURE") {
+				shader->inputs.push_back(Prop(ptr<SHADER::Texture*>(pointer_map.getVal(str_to_ul(read_data[0][1])))));
+			}
+		}
+		else if (is_processing) {
+			read_data.push_back(tokens);
+		}
+	}
+
+	pointer_map.insert(str_to_ul(token_data[1][1]), uptr(shader));
+	return shader;
+}
+
+KL::OBJECT::Data* KL::File::f_loadAsciiData(const Token_Array& token_data, const Tokens& line_data) {
+	if      (token_data[2][1] == "ATMOSPHERE")
+		return f_loadAsciiAtmosphere(token_data, line_data);
+	else if (token_data[2][1] == "PRIMITIVE")
+		return f_loadAsciiPrimitive (token_data, line_data);
+	else if (token_data[2][1] == "SKELETON")
+		return f_loadAsciiSkeleton  (token_data, line_data);
+	else if (token_data[2][1] == "CAMERA")
+		return f_loadAsciiCamera    (token_data, line_data);
+	else if (token_data[2][1] == "VOLUME")
+		return f_loadAsciiVolume    (token_data, line_data);
+	else if (token_data[2][1] == "CURVE")
+		return f_loadAsciiCurve     (token_data, line_data);
+	else if (token_data[2][1] == "EMPTY")
+		return f_loadAsciiEmpty     (token_data, line_data);
+	else if (token_data[2][1] == "FORCE")
+		return f_loadAsciiForce     (token_data, line_data);
+	else if (token_data[2][1] == "GROUP")
+		return f_loadAsciiGroup     (token_data, line_data);
+	else if (token_data[2][1] == "LIGHT")
+		return f_loadAsciiLight     (token_data, line_data);
+	else if (token_data[2][1] == "MESH")
+		return f_loadAsciiMesh      (token_data, line_data);
+	else if (token_data[2][1] == "SFX")
+		return f_loadAsciiSfx       (token_data, line_data);
+	else if (token_data[2][1] == "VFX")
+		return f_loadAsciiVfx       (token_data, line_data);
+	return new KL::OBJECT::Data();
+}
+
+KL::OBJECT::Data* KL::File::f_loadAsciiAtmosphere(const Token_Array& token_data, const Tokens& line_data) {
+	KL::OBJECT::Data* data = new KL::OBJECT::Data();
+	data->name = f_join(token_data[0], 4);
+	data->type = KL::OBJECT::DATA::Type::ATMOSPHERE;
+	pointer_map.insert(str_to_ul(token_data[1][1]), uptr(data));
+	return data;
+}
+
+KL::OBJECT::Data* KL::File::f_loadAsciiPrimitive(const Token_Array& token_data, const Tokens& line_data) {
+	KL::OBJECT::Data* data = new KL::OBJECT::Data();
+	data->name = f_join(token_data[0], 4);
+	data->type = KL::OBJECT::DATA::Type::PRIMITIVE;
+	pointer_map.insert(str_to_ul(token_data[1][1]), uptr(data));
+	return data;
+}
+
+KL::OBJECT::Data* KL::File::f_loadAsciiSkeleton(const Token_Array& token_data, const Tokens& line_data) {
+	KL::OBJECT::Data* data = new KL::OBJECT::Data();
+	data->name = f_join(token_data[0], 4);
+	data->type = KL::OBJECT::DATA::Type::SKELETON;
+	pointer_map.insert(str_to_ul(token_data[1][1]), uptr(data));
+	return data;
+}
+
+KL::OBJECT::Data* KL::File::f_loadAsciiCamera(const Token_Array& token_data, const Tokens& line_data) {
+	KL::OBJECT::DATA::Camera* camera = new KL::OBJECT::DATA::Camera();
+	camera->name = f_join(token_data[0], 4);
+	camera->type = KL::OBJECT::DATA::Type::CAMERA;
+	pointer_map.insert(str_to_ul(token_data[1][1]), uptr(camera));
+	return camera;
+}
+
+KL::OBJECT::Data* KL::File::f_loadAsciiVolume(const Token_Array& token_data, const Tokens& line_data) {
+	KL::OBJECT::Data* data = new KL::OBJECT::Data();
+	data->name = f_join(token_data[0], 4);
+	data->type = KL::OBJECT::DATA::Type::VOLUME;
+	pointer_map.insert(str_to_ul(token_data[1][1]), uptr(data));
+	return data;
+}
+
+KL::OBJECT::Data* KL::File::f_loadAsciiCurve(const Token_Array& token_data, const Tokens& line_data) {
+	KL::OBJECT::Data* data = new KL::OBJECT::Data();
+	data->name = f_join(token_data[0], 4);
+	data->type = KL::OBJECT::DATA::Type::CURVE;
+	pointer_map.insert(str_to_ul(token_data[1][1]), uptr(data));
+	return data;
+}
+
+KL::OBJECT::Data* KL::File::f_loadAsciiEmpty(const Token_Array& token_data, const Tokens& line_data) {
+	KL::OBJECT::Data* data = new KL::OBJECT::Data();
+	data->name = f_join(token_data[0], 4);
+	data->type = KL::OBJECT::DATA::Type::EMPTY;
+	pointer_map.insert(str_to_ul(token_data[1][1]), uptr(data));
+	return data;
+}
+
+KL::OBJECT::Data* KL::File::f_loadAsciiForce(const Token_Array& token_data, const Tokens& line_data) {
+	KL::OBJECT::Data* data = new KL::OBJECT::Data();
+	data->name = f_join(token_data[0], 4);
+	data->type = KL::OBJECT::DATA::Type::FORCE;
+	pointer_map.insert(str_to_ul(token_data[1][1]), uptr(data));
+	return data;
+}
+
+KL::OBJECT::Data* KL::File::f_loadAsciiGroup(const Token_Array& token_data, const Tokens& line_data) {
+	KL::OBJECT::DATA::Group* group = new KL::OBJECT::DATA::Group();
+	group->name = f_join(token_data[0], 4);
+	group->type = KL::OBJECT::DATA::Type::GROUP;
+
+	pointer_map.insert(str_to_ul(token_data[1][1]), uptr(group));
+	return group;
+}
+
+KL::OBJECT::Data* KL::File::f_loadAsciiLight(const Token_Array& token_data, const Tokens& line_data) {
+	KL::OBJECT::Data* data = new KL::OBJECT::Data();
+	data->name = f_join(token_data[0], 4);
+	data->type = KL::OBJECT::DATA::Type::LIGHT;
+	pointer_map.insert(str_to_ul(token_data[1][1]), uptr(data));
+	return data;
+}
+
+KL::OBJECT::Data* KL::File::f_loadAsciiMesh(const Token_Array& token_data, const Tokens& line_data) {
+	KL::OBJECT::DATA::Mesh * mesh = new KL::OBJECT::DATA::Mesh();
+	mesh->name = f_join(token_data[0], 4);
+	mesh->type = KL::OBJECT::DATA::Type::MESH;
+
+	LOG ENDL ANSI_B << "    [Data] " ANSI_RESET; FLUSH;
+	LOG ENDL << "      " ANSI_PURPLE  << mesh->name ANSI_RESET; FLUSH;
+	LOG ENDL ANSI_B << "      [Mesh]" ANSI_RESET; FLUSH;
+
+	bool is_processing = false;
+	Token_Array read_data = Token_Array();
+	for (const Tokens& tokens : token_data) {
+		if (
+			tokens[0] == "┌Vertices(" or
+			tokens[0] == "┌Normals(" or
+			tokens[0] == "┌Shaders(" or
+			tokens[0] == "┌Faces(" or
+			tokens[0] == "┌UVs("
+		) {
+			is_processing = true;
+			read_data.clear();
+		}
+		else if (
+			tokens[0] == "┌Vertex-Group"
+		) {
+			is_processing = true;
+			read_data.clear();
+			read_data.push_back(tokens);
+		}
+		else if (tokens[0] == "└Vertices") {
+			is_processing = false;
+			LOG ENDL << "        Vertices"; FLUSH;
+			for (const Tokens& token_data : read_data) {
+				mesh->vertices.push_back(new KL::OBJECT::DATA::MESH::Vertex(str_to_d(token_data[2], token_data[3], token_data[4])));
+			}
+		}
+		else if (tokens[0] == "└Vertex-Group") {
+			is_processing = false;
+			LOG ENDL << "        Vertex-Group"; FLUSH;
+			read_data[1].erase(read_data[1].begin());
+			read_data[1].erase(read_data[1].end()-1);
+			for (const string& index : read_data[1]) {
+				mesh->vertex_groups[f_join(read_data[0], 4)].push_back(mesh->vertices[str_to_ul(index)]);
+			}
+		}
+		else if (tokens[0] == "└Faces") {
+			is_processing = false;
+			LOG ENDL << "        Faces"; FLUSH;
+			for (const Tokens& token_data : read_data) {
+				KL::OBJECT::DATA::MESH::Face* face = new KL::OBJECT::DATA::MESH::Face();
+				for (uint64 i = 0; i < str_to_ul(token_data[1]); i++) {
+					face->vertices.push_back(mesh->vertices[str_to_ul(token_data[i + 3])]);
+				}
+				mesh->faces.push_back(face);
+				if (str_to_ul(token_data[1]) + 4 < token_data.size()) {
+					mesh->shaders[face] = str_to_u(token_data.back());
+				}
+			}
+		}
+		else if (tokens[0] == "└Normals") {
+			is_processing = false;
+			LOG ENDL << "       Normals"; FLUSH;
+			for (const Tokens& token_data : read_data) {
+				for (uint64 i = 0; i < str_to_u(token_data[1]); i ++) {
+					mesh->normals[mesh->faces[str_to_ul(token_data[0])]].push_back(str_to_d(token_data[3 + i * 5], token_data[4 + i * 5], token_data[5 + i * 5]));
+				}
+			}
+		}
+		else if (tokens[0] == "└UVs") {
+			is_processing = false;
+			LOG ENDL << "        UVs"; FLUSH;
+			for (const Tokens& token_data : read_data) {
+				for (uint64 i = 0; i < str_to_u(token_data[1]); i ++) {
+					mesh->uvs[mesh->faces[str_to_ul(token_data[0])]].push_back(str_to_d(token_data[3 + i * 4], token_data[4 + i * 4]));
+				}
+			}
+		}
+		else if (tokens[0] == "└Shaders") {
+			is_processing = false;
+			LOG ENDL << "        Shaders"; FLUSH;
+			for (const Tokens& token_data : read_data) {
+				mesh->shader_slots.push_back(ptr<KL::Shader*>(pointer_map.getVal(str_to_ul(token_data[2]))));
+			}
+		}
+		else if (is_processing) {
+			read_data.push_back(tokens);
+		}
+	}
+	pointer_map.insert(str_to_ul(token_data[1][1]), uptr(mesh));
+	return mesh;
+}
+
+KL::OBJECT::Data* KL::File::f_loadAsciiSfx(const Token_Array& token_data, const Tokens& line_data) {
+	KL::OBJECT::Data* data = new KL::OBJECT::Data();
+	data->name = f_join(token_data[0], 4);
+	data->type = KL::OBJECT::DATA::Type::SFX;
+	pointer_map.insert(str_to_ul(token_data[1][1]), uptr(data));
+	return data;
+}
+
+KL::OBJECT::Data* KL::File::f_loadAsciiVfx(const Token_Array& token_data, const Tokens& line_data) {
+	KL::OBJECT::Data* data = new KL::OBJECT::Data();
+	data->name = f_join(token_data[0], 4);
+	data->type = KL::OBJECT::DATA::Type::VFX;
+	pointer_map.insert(str_to_ul(token_data[1][1]), uptr(data));
+	return data;
+}
+
+KL::Object* KL::File::f_loadAsciiObject(const Token_Array& token_data, const Tokens& line_data) {
+	KL::Object* object = new KL::Object();
+	object->name = f_join(token_data[0], 4);
+
+	LOG ENDL ANSI_B << "    [Object] " ANSI_RESET; FLUSH;
+	LOG ENDL << "      " ANSI_PURPLE << object->name ANSI_RESET; FLUSH;
+
+	KL::Transform transform;
+
+	bool is_processing = false;
+	Token_Array read_data = Token_Array();
+	for (const Tokens& tokens : token_data) {
+		if (tokens[0] == "Position") {
+			transform.position = str_to_d(tokens[2], tokens[3], tokens[4]);
+		}
+		else if (tokens[0] == "Rotation") {
+			transform.euler_rotation = str_to_d(tokens[2], tokens[3], tokens[4]);
+		}
+		else if (tokens[0] == "Scale") {
+			transform.scale = str_to_d(tokens[2], tokens[3], tokens[4]);
+		}
+		else if (is_processing) {
+			read_data.push_back(tokens);
+		}
+	}
+	object->transform = transform;
+	pointer_map.insert(str_to_ul(token_data[1][1]), uptr(object));
+	return object;
+};
+
+KL::Scene* KL::File::f_loadAsciiScene(const Token_Array& token_data, const Tokens& line_data) {
+	LOG ENDL ANSI_B << "    [Scene]" ANSI_RESET; FLUSH;
+
+	KL::Scene* scene = new KL::Scene();
+
+	bool is_processing = false;
+	Token_Array read_data = Token_Array();
+	for (const Tokens& tokens : token_data) {
+		if (tokens[0] == "Active-Camera") {
+			scene->active_camera = objects[str_to_ul(tokens[1])];
+		}
+		else if (tokens[0] == "┌Objects") {
+			is_processing = true;
+			read_data.clear();
+		}
+		else if (tokens[0] == "└Objects") {
+			is_processing = false;
+			for (const Tokens& sub_tokens : read_data) {
+				scene->objects.push_back(ptr<KL::Object*>(pointer_map.getVal(str_to_ul(sub_tokens[1]))));
+			}
+		}
+		else if (is_processing) {
+			read_data.push_back(tokens);
+		}
+	}
+	pointer_map.insert(str_to_ul(token_data[1][1]), uptr(scene));
+	return scene;
+}
+
+void KL::File::f_loadAsciiHistory(const Token_Array& token_data, const Tokens& line_Data) {
+	for (const Tokens& tokens : token_data) {
+
+	}
+}
+
+void KL::File::f_loadAsciiBuild(const Token_Array& token_data, const Tokens& line_data) {
+	LOG ENDL ANSI_B << "    [Build]" ANSI_RESET; FLUSH;
+
+	bool is_processing = false;
+	Token_Array read_data = Token_Array();
+	for (const Tokens& tokens : token_data) {
+		if (tokens[0] == "Active-Scene") {
+			active_scene.set(ptr<KL::Scene*>(pointer_map.getVal(str_to_ul(tokens[2]))));
+		}
+		else if (tokens[0] == "Active-Object") {
+			active_object.set(ptr<KL::Object*>(pointer_map.getVal(str_to_ul(tokens[2]))));
+		}
+		else if (tokens[0] == "┌Data-Group") {
+			is_processing = true;
+			read_data.clear();
+		}
+		else if (tokens[0] == "└Data-Group") {
+			is_processing = false;
+			for (const Tokens& sub_tokens : read_data) {
+				ptr<KL::OBJECT::DATA::Group*>(pointer_map.getVal(str_to_ul(sub_tokens[1])))->objects.push_back(ptr<KL::Object*>(pointer_map.getVal(str_to_ul(sub_tokens[3]))));
+			}
+		}
+		else if (tokens[0] == "┌Object-Data") {
+			is_processing = true;
+			read_data.clear();
+		}
+		else if (tokens[0] == "└Object-Data") {
+			is_processing = false;
+			for (const Tokens& sub_tokens : read_data) {
+				ptr<KL::Object*>(pointer_map.getVal(str_to_ul(sub_tokens[1])))->data = ptr<KL::OBJECT::Data*>(pointer_map.getVal(str_to_ul(sub_tokens[3])));
+			}
+		}
+		else if (tokens[0] == "┌Object-Node") {
+			is_processing = true;
+			read_data.clear();
+		}
+		else if (tokens[0] == "└Object-Node") {
+			is_processing = false;
+			for (const Tokens& sub_tokens : read_data) {
+				ptr<KL::Object*>(pointer_map.getVal(str_to_ul(sub_tokens[1])))->node_tree = ptr<KL::Node_Tree*>(pointer_map.getVal(str_to_ul(sub_tokens[3])));
+			}
+		}
+		else if (tokens[0] == "┌Node-Pointer") {
+			is_processing = true;
+			read_data.clear();
+		}
+		else if (tokens[0] == "└Node-Pointer") {
+			is_processing = false;
+			for (const Tokens& sub_tokens : read_data) {
+				auto pointer = ptr<NODE::LINK::Pointer*>(pointer_map.getVal(str_to_ul(sub_tokens[1])));
+				pointer->pointer = ptr<KL::Object*>(pointer_map.getVal(str_to_ul(sub_tokens[3])));
+			}
+		}
+		else if (is_processing) {
+			read_data.push_back(tokens);
+		}
+	}
+}
+
+void KL::File::f_loadBinary(const vector<Byte>& byte_data) {
+	map<uint64, void*> pointer_map;
+
+	version = f_readBinary<string>(byte_data, 0, 5);
+	type    = f_readBinary<string>(byte_data, 5, 4);
+
+	//const uint64 start_materials   = f_readBinary<uint64>(byte_data, 11);
+	//const uint64 start_node_trees  = f_readBinary<uint64>(byte_data, 19);
+	//const uint64 start_object_data = f_readBinary<uint64>(byte_data, 27);
+	//const uint64 start_objects     = f_readBinary<uint64>(byte_data, 35);
+	//const uint64 start_scenes      = f_readBinary<uint64>(byte_data, 43);
+	//
+	//const uint64 end_materials   = f_readBinary<uint64>(byte_data, 51);
+	//const uint64 end_node_trees  = f_readBinary<uint64>(byte_data, 59);
+	//const uint64 end_object_data = f_readBinary<uint64>(byte_data, 67);
+	//const uint64 end_objects     = f_readBinary<uint64>(byte_data, 75);
+	//const uint64 end_scenes      = f_readBinary<uint64>(byte_data, 83);
+}
+
+void KL::File::f_importAscii(const Token_Array& token_data, const Tokens& line_data) {
+
+}
+
+void KL::File::f_saveAscii(Lace & lace) {
+	f_saveAsciiHeader(lace);
+	uint64 count = 0;
+
+	count = 0;
+	lace NL << "┌Node-Trees( " << node_trees.size() << " )";
+	lace++;
+	for (const KL::Node_Tree* node : node_trees)
+		f_saveAsciiNodeTree(lace, node, count++);
+	lace--;
+	lace NL << "└Node-Trees";
+
+	count = 0;
+	lace NL << "┌Textures( " << textures.size() << " )";
+	lace++;
+	for (const KL::SHADER::Texture* texture : textures)
+		f_saveAsciiTexture(lace, texture, count++);
+	lace--;
+	lace NL << "└Textures";
+
+	count = 0;
+	lace NL << "┌Shaders( " << shaders.size() << " )";
+	lace++;
+	for (const KL::Shader* shader : shaders)
+		f_saveAsciiShader(lace, shader, count++);
+	lace--;
+	lace NL << "└Shaders";
+
+	lace NL << "┌Data( " << object_data.size() << " )";
+	lace++;
+	f_saveAsciiData(lace);
+	lace--;
+	lace NL << "└Data";
+
+	count = 0;
+	lace NL << "┌Objects( " << objects.size() << " )";
+	lace++;
+	for (const KL::Object* object : objects)
+		f_saveAsciiObject(lace, object, count++);
+	lace--;
+	lace NL << "└Objects";
+
+	count = 0;
+	lace NL << "┌Scenes( " << scenes.size() << " )";
+	lace++;
+	for (const KL::Scene* scene : scenes)
+		f_saveAsciiScene(lace, scene, count++);
+	lace--;
+	lace NL << "└Scenes";
+
+	f_saveAsciiBuild(lace);
+}
+
+void KL::File::f_saveAsciiHeader(Lace& lace) {
+	lace NL << "┌Header";
+	lace++;
+	lace NL << "Version 1.0.0";
+	lace NL << "Type FILE";
+	lace--;
+	lace NL << "└Header";
+}
+
+void KL::File::f_saveAsciiNodeTree(Lace& lace, const KL::Node_Tree* data, const uint64& i) {
+	uint64 j = 0;
+	lace NL << "┌Node-Tree [ " << i << " ] " << data->name;
+	lace++;
+	lace NL PTR << uptr(data);
+	lace NL << "┌Nodes( " << data->nodes.size() << " )";
+	lace++;
+	for (KL::Node* node : data->nodes) {
+		lace NL << "┌Node [ " << j++ << " ] " << node->name;
+		lace++;
+		lace NL PTR << uptr(node);
+		switch (node->type) {
+			case NODE::Type::CONSTRAINT: {
+				switch (static_cast<NODE::CONSTRAINT::Type>(node->sub_type)) {
+					case NODE::CONSTRAINT::Type::PARENT: {
+						lace NL <<"Type CONSTRAINT :: PARENT";
+						break;
+					}
+				}
+				break;
+			}
+			case NODE::Type::EXEC: {
+				switch (static_cast<NODE::EXEC::Type>(node->sub_type)) {
+					case NODE::EXEC::Type::COUNTER: {
+						lace NL << "Type EXEC :: COUNTER";
+						break;
+					}
+					case NODE::EXEC::Type::SCRIPT: {
+						lace NL << "Type EXEC :: SCRIPT";
+						lace NL << "┌Script";
+						lace NL << Lace_S() << static_cast<KL::NODE::EXEC::Script*>(node)->script_id;
+						lace NL << "└Script";
+						break;
+					}
+					case NODE::EXEC::Type::TICK: {
+						lace NL << "Type EXEC :: TICK";
+						break;
+					}
+				}
+				break;
+			}
+			case NODE::Type::LINK: {
+				switch (static_cast<NODE::LINK::Type>(node->sub_type)) {
+					case NODE::LINK::Type::POINTER: {
+						lace NL << "Type LINK :: POINTER";
+						lace NL << "┌Pointer";
+						lace NL << Lace_S() << "Type " << serialize(static_cast<NODE::LINK::Pointer*>(node)->pointer_type);
+						lace NL << "└Pointer";
+						break;
+					}
+					case NODE::LINK::Type::GET: {
+						switch (static_cast<KL::NODE::LINK::Get*>(node)->mini_type) {
+						case NODE::LINK::GET::Type::FIELD: {
+							lace NL << "Type LINK :: GET :: FIELD";
+							lace NL << "┌Field";
+							lace NL << Lace_S() << static_cast<NODE::LINK::GET::Field*>(node)->field;
+							lace NL << "└Field";
+							break;
+						}
+						}
+						break;
+					}
+					case NODE::LINK::Type::SET: {
+						switch (static_cast<KL::NODE::LINK::Set*>(node)->mini_type) {
+							case NODE::LINK::SET::Type::EULER_ROTATION_X: {
+								lace NL << "Type LINK :: SET :: TRANSFORM :: EULER_ROTATION :: X";
+								break;
+							}
+							case NODE::LINK::SET::Type::EULER_ROTATION_Y: {
+								lace NL << "Type LINK :: SET :: TRANSFORM :: EULER_ROTATION :: Y";
+								break;
+							}
+							case NODE::LINK::SET::Type::EULER_ROTATION_Z: {
+								lace NL << "Type LINK :: SET :: TRANSFORM :: EULER_ROTATION :: Z";
+								break;
+							}
+						}
+						break;
+					}
+				}
+				break;
+			}
+			case NODE::Type::MATH: {
+				switch (static_cast<NODE::MATH::Type>(node->sub_type)) {
+					case NODE::MATH::Type::ARITHMETIC: {
+						switch (static_cast<NODE::MATH::Arithmetic*>(node)->mini_type) {
+							case NODE::MATH::ARITHMETIC::Type::MULTIPLICATION: {
+								lace NL << "Type MATH :: MUL";
+								break;
+							}
+							case NODE::MATH::ARITHMETIC::Type::SUBTRACTION: {
+								lace NL << "Type MATH :: SUB";
+								break;
+							}
+							case NODE::MATH::ARITHMETIC::Type::ADDITION: {
+								lace NL << "Type MATH :: ADD";
+								break;
+							}
+							case NODE::MATH::ARITHMETIC::Type::DIVISION: {
+								lace NL << "Type MATH :: DIV";
+								break;
+							}
+							case NODE::MATH::ARITHMETIC::Type::POWER: {
+								lace NL << "Type MATH :: POW";
+								break;
+							}
+						}
+					}
+				}
+				break;
+			}
+			case NODE::Type::UTIL: {
+				switch (static_cast<NODE::UTIL::Type>(node->sub_type)) {
+					case NODE::UTIL::Type::PRINT: {
+						break;
+					}
+					case NODE::UTIL::Type::CAST: {
+						switch (static_cast<NODE::UTIL::Cast*>(node)->mini_type) {
+							case NODE::UTIL::CAST::Type::UINT_TO_DOUBLE: {
+								lace NL << "Type UTIL :: CAST :: UINT_TO_DOUBLE";
+								break;
+							}
+							case NODE::UTIL::CAST::Type::INT_TO_DOUBLE: {
+								lace NL << "Type UTIL :: CAST :: INT_TO_DOUBLE";
+								break;
+							}
+							break;
+						}
+						break;
+					}
+					case NODE::UTIL::Type::VIEW: {
+						lace NL << "Type UTIL :: VIEW";
+						break;
+					}
+				}
+				break;
+			}
+		}
+		lace--;
+		lace NL << "└Node";
+	}
+	lace--;
+		lace NL << "└Nodes";
+	lace NL << "┌Build-E"; // [Node L Pointer] [Slot] [Slot] [Node R Pointer]
+	lace++;
+	for (const auto node_l : data->nodes) {
+		for (const auto& port : node_l->outputs) {
+			if (port->type == NODE::PORT::Type::EXEC_O) {
+				const auto port_l = static_cast<KL::NODE::PORT::Exec_O_Port*>(port);
+				if (port_l->connection) {
+					const auto port_r = port_l->connection;
+					const auto node_r = port_r->node;
+					const uint64 port_l_id = distance(node_l->outputs.begin(), find(node_l->outputs.begin(), node_l->outputs.end(), port_l));
+					const uint64 port_r_id = distance(node_r->inputs.begin(), find(node_r->inputs.begin(), node_r->inputs.end(), port_r));
+					//const uint64 node_r_id = distance(data->nodes.begin(), find(data->nodes.begin(), data->nodes.end(), node_r));
+					//lace NL << node_l_id SP port_l_id SP node_r_id SP port_r_id;
+					lace NL PTR << uptr(node_l) SP << port_l_id SP << port_r_id SP PTR << uptr(node_r);
+				}
+			}
+		}
+	}
+	lace--;
+		lace NL << "└Build-E";
+	lace NL << "┌Build-D"; // [Node L Pointer] [Slot] [Slot] [Node R Pointer]
+	lace++;
+		for (const auto node_r : data->nodes) {
+			for (const auto& port : node_r->inputs) {
+				if (port->type == NODE::PORT::Type::DATA_I) {
+					const auto port_r = static_cast<KL::NODE::PORT::Data_I_Port*>(port);
+					if (port_r->connection) {
+						const auto port_l = port_r->connection;
+						const auto node_l = port_l->node;
+						const uint64 port_l_id = distance(node_l->outputs.begin(), find(node_l->outputs.begin(), node_l->outputs.end(), port_l));
+						const uint64 port_r_id = distance(node_r->inputs.begin(), find(node_r->inputs.begin(), node_r->inputs.end(), port_r));
+						//const uint64 node_l_id = distance(data->nodes.begin(), find(data->nodes.begin(), data->nodes.end(), node_l));
+						//lace NL << node_l_id SP port_l_id SP node_r_id SP port_r_id;
+						lace NL PTR << uptr(node_l) SP << port_l_id SP << port_r_id SP PTR << uptr(node_r);
+					}
+				}
+			}
+		}
+	lace--;
+		lace NL << "└Build-D";
+	lace--;
+		lace NL << "└Node-Tree";
+}
+
+void KL::File::f_saveAsciiTexture(Lace& lace, const SHADER::Texture* data, const uint64& i) {
+	lace NL << "┌Texture [ " << i << " ] " << data->name;
+	lace++;
+	lace NL PTR << uptr(data);
+	lace NL << data->file_path;
+	lace--;
+	lace NL << "└Texture";
+}
+
+void KL::File::f_saveAsciiShader(Lace& lace, const KL::Shader* data, const uint64& i) {
+	lace NL << "┌Shader [ " << i << " ] " << data->name;
+	lace++;
+	lace NL PTR << uptr(data);
+	switch (data->type) {
+		case SHADER::Type::NONE: lace NL << "Type " << "NONE";  break;
+		case SHADER::Type::CODE: {
+			lace NL << "Type " << "CODE";
+			lace NL << "┌Inputs( " << data->inputs.size() << " )";
+			lace++;
+			for (uint64 i = 0; i < data->inputs.size(); i++) {
+				lace NL << "┌Input [ " << i << " ]";
+				switch (data->inputs[i].type) {
+					case PROP::Type::TEXTURE: {
+						lace NL SP PTR << uptr(data->inputs[i].getTexture());
+						lace NL SP << "Type TEXTURE";
+						break;
+					}
+				}
+				lace NL << "└Input";
+			}
+			lace--;
+			lace NL << "└Inputs";
+			lace NL << "┌Code";
+			lace << "\n" << data->shader_code;
+			lace NL << "└Code";
+			break;
+		}
+		case SHADER::Type::NODES: {
+			lace NL << "Type " << "NODES";
+			break;
+		}
+	}
+	lace--;
+	lace NL << "└Shader";
+}
+
+void KL::File::f_saveAsciiData(Lace& lace) {
+	for (uint64 i = 0; i < object_data.size(); i++) {
+		switch (object_data[i]->type) {
+			case KL::OBJECT::DATA::Type::ATMOSPHERE: f_saveAsciiAtmosphere(lace, object_data[i], i); break;
+			case KL::OBJECT::DATA::Type::PRIMITIVE:  f_saveAsciiPrimitive (lace, object_data[i], i); break;
+			case KL::OBJECT::DATA::Type::SKELETON:   f_saveAsciiSkeleton  (lace, object_data[i], i); break;
+			case KL::OBJECT::DATA::Type::CAMERA:     f_saveAsciiCamera    (lace, object_data[i], i); break;
+			case KL::OBJECT::DATA::Type::VOLUME:     f_saveAsciiVolume    (lace, object_data[i], i); break;
+			case KL::OBJECT::DATA::Type::CURVE:      f_saveAsciiCurve     (lace, object_data[i], i); break;
+			case KL::OBJECT::DATA::Type::EMPTY:      f_saveAsciiEmpty     (lace, object_data[i], i); break;
+			case KL::OBJECT::DATA::Type::FORCE:      f_saveAsciiForce     (lace, object_data[i], i); break;
+			case KL::OBJECT::DATA::Type::GROUP:      f_saveAsciiGroup     (lace, object_data[i], i); break;
+			case KL::OBJECT::DATA::Type::LIGHT:      f_saveAsciiLight     (lace, object_data[i], i); break;
+			case KL::OBJECT::DATA::Type::MESH:       f_saveAsciiMesh      (lace, object_data[i], i); break;
+			case KL::OBJECT::DATA::Type::SFX:        f_saveAsciiSfx       (lace, object_data[i], i); break;
+			case KL::OBJECT::DATA::Type::VFX:        f_saveAsciiVfx       (lace, object_data[i], i); break;
+		}
+	}
+}
+
+void KL::File::f_saveAsciiAtmosphere(Lace& lace, const KL::OBJECT::Data* data, const uint64& i) {
+	lace NL << "┌Data [ " << i << " ] " << data->name;
+	lace++;
+	lace NL PTR << uptr(data);
+	lace NL << "Type ATMOSPHERE";
+	lace--;
+	lace NL << "└Data";
+}
+
+void KL::File::f_saveAsciiPrimitive(Lace& lace, const KL::OBJECT::Data* data, const uint64& i) {
+	lace NL << "┌Data [ " << i << " ] " << data->name;
+	lace++;
+	lace NL PTR << uptr(data);
+	lace NL << "Type PRIMITIVE";
+	lace--;
+	lace NL << "└Data";
+}
+
+void KL::File::f_saveAsciiSkeleton(Lace& lace, const KL::OBJECT::Data* data, const uint64& i) {
+	lace NL << "┌Data [ " << i << " ] " << data->name;
+	lace++;
+	lace NL PTR << uptr(data);
+	lace NL << "Type SKELETON";
+	lace--;
+	lace NL << "└Data";
+}
+
+void KL::File::f_saveAsciiCamera(Lace& lace, const KL::OBJECT::Data* data, const uint64& i) {
+	lace NL << "┌Data [ " << i << " ] " << data->name;
+	lace++;
+	lace NL PTR << uptr(data);
+	lace NL << "Type CAMERA";
+	lace--;
+	lace NL << "└Data";
+}
+
+void KL::File::f_saveAsciiVolume(Lace& lace, const KL::OBJECT::Data* data, const uint64& i) {
+	lace NL << "┌Data [ " << i << " ] " << data->name;
+	lace++;
+	lace NL PTR << uptr(data);
+	lace NL << "Type VOLUME";
+	lace--;
+	lace NL << "└Data";
+}
+
+void KL::File::f_saveAsciiCurve(Lace& lace, const KL::OBJECT::Data* data, const uint64& i) {
+	lace NL << "┌Data [ " << i << " ] " << data->name;
+	lace++;
+	lace NL PTR << uptr(data);
+	lace NL << "Type CURVE";
+	lace--;
+	lace NL << "└Data";
+}
+
+void KL::File::f_saveAsciiEmpty(Lace& lace, const KL::OBJECT::Data* data, const uint64& i) {
+	lace NL << "┌Data [ " << i << " ] " << data->name;
+	lace++;
+	lace NL PTR << uptr(data);
+	lace NL << "Type EMPTY";
+	lace--;
+	lace NL << "└Data";
+}
+
+void KL::File::f_saveAsciiForce(Lace& lace, const KL::OBJECT::Data* data, const uint64& i) {
+	lace NL << "┌Data [ " << i << " ] " << data->name;
+	lace++;
+	lace NL PTR << uptr(data);
+	lace NL << "Type FORCE";
+	lace--;
+	lace NL << "└Data";
+}
+
+void KL::File::f_saveAsciiGroup(Lace& lace, const KL::OBJECT::Data* data, const uint64& i) {
+	lace NL << "┌Data [ " << i << " ] " << data->name;
+	lace++;
+	lace NL PTR << uptr(data);
+	lace NL << "Type GROUP";
+	lace--;
+	lace NL << "└Data";
+}
+
+void KL::File::f_saveAsciiLight(Lace& lace, const KL::OBJECT::Data* data, const uint64& i) {
+	lace NL << "┌Data [ " << i << " ] " << data->name;
+	lace++;
+	lace NL PTR << uptr(data);
+	lace NL << "Type LIGHT";
+	lace--;
+	lace NL << "└Data";
+}
+
+void KL::File::f_saveAsciiMesh(Lace& lace, const KL::OBJECT::Data* data, const uint64& i) {
+	const KL::OBJECT::DATA::Mesh* mesh = static_cast<const KL::OBJECT::DATA::Mesh*>(data);
+	lace NL << "┌Data [ " << i << " ] " << data->name;
+	lace++;
+	lace NL PTR << uptr(data);
+	lace NL << "Type MESH";
+	lace NL << "┌Mesh";
+	lace++;
+	lace NL << "┌Vertices( " << mesh->vertices.size() << " )";
+	lace++;
+	for (uint64 i = 0; i < mesh->vertices.size(); i++) {
+		lace NL << i << " ( " << mesh->vertices[i]->position << " )";
+	}
+	lace--;
+	lace NL << "└Vertices";
+	lace NL << "┌Shaders( "<< mesh->shader_slots.size() <<" )";
+	lace++;
+	for (uint64 i = 0; i < mesh->shader_slots.size(); i++) {
+		lace NL << i SP PTR << uptr(mesh->shader_slots[i]);
+	}
+	lace--;
+	lace NL << "└Shaders";
+	lace NL << "┌Vertex-Groups( " << mesh->vertex_groups.size() << " )";
+	lace NL << "└Vertex-Groups";
+	lace NL << "┌Faces( " << mesh->faces.size() << " )";
+	lace++;
+	for (uint64 i = 0; i < mesh->faces.size(); i++) {
+		lace NL << i SP << mesh->faces[i]->vertices.size() SP << "[";
+		for (uint64 j = 0; j < mesh->faces[i]->vertices.size(); j++)
+			for (uint64 k = 0; k < mesh->vertices.size(); k++)
+				if (mesh->faces[i]->vertices[j] == mesh->vertices[k])
+					lace SP << k;
+		lace SP << "]";
+		auto exists = f_getMapValue(mesh->shaders, mesh->faces[i]);
+		if (exists) {
+			lace SP << exists.data;
+		}
+	}
+	lace--;
+	lace NL << "└Faces";
+	lace NL << "┌Normals( " << mesh->normals.size() << " )";
+	lace++;
+	// TODO Fix crash if no normal layers are present or only certain faces contain data
+	for (uint64 i = 0; i < mesh->faces.size(); i++) {
+		auto exists = f_getMapValue(mesh->normals, mesh->faces[i]);
+		if (exists) {
+			lace NL << i SP << mesh->normals.at(mesh->faces[i]).size();
+			for (uint64 j = 0; j < mesh->normals.at(mesh->faces[i]).size(); j++) {
+				lace SP << "(" SP << mesh->normals.at(mesh->faces[i])[j] SP << ")";
+			}
+		}
+	}
+	lace--;
+	lace NL << "└Normals";
+	lace NL << "┌UVs( "<< mesh->uvs.size() <<" )";
+	lace++;
+	// TODO Fix crash if no uv layers are present or only certain faces contain data
+	for (uint64 i = 0; i < mesh->faces.size(); i++) {
+		auto exists = f_getMapValue(mesh->uvs, mesh->faces[i]);
+		if (exists) {
+			lace NL << i SP << mesh->uvs.at(mesh->faces[i]).size();
+			for (uint64 j = 0; j < mesh->uvs.at(mesh->faces[i]).size(); j++) {
+				lace SP << "(" SP << mesh->uvs.at(mesh->faces[i])[j] SP << ")";
+			}
+		}
+	}
+	lace--;
+	lace NL << "└UVs";
+	lace--;
+	lace NL << "└Mesh";
+	lace--;
+	lace NL << "└Data";
+}
+
+void KL::File::f_saveAsciiSfx(Lace& lace, const KL::OBJECT::Data* data, const uint64& i) {
+	lace NL << "┌Data [ " << i << " ] " << data->name;
+	lace++;
+	lace NL PTR << uptr(data);
+	lace NL << "Type SFX";
+	lace--;
+	lace NL << "└Data";
+}
+
+void KL::File::f_saveAsciiVfx(Lace& lace, const KL::OBJECT::Data* data, const uint64& i) {
+	lace NL << "┌Data [ " << i << " ] " << data->name;
+	lace++;
+	lace NL PTR << uptr(data);
+	lace NL << "Type VFX";
+	lace--;
+	lace NL << "└Data";
+}
+
+void KL::File::f_saveAsciiObject(Lace& lace, const KL::Object* data, const uint64& i) {
+	lace NL << "┌Object [ " << i << " ] " << data->name;
+	lace++;
+	lace NL PTR << uptr(data);
+	lace NL << "Position ( " << data->transform.position << " )";
+	lace NL << "Rotation ( " << data->transform.euler_rotation << " )";
+	lace NL << "Scale    ( " << data->transform.scale << " )";
+	switch (data->data->type) {
+		case OBJECT::DATA::Type::NONE      : lace NL << "Type " << "NONE";       break;
+		case OBJECT::DATA::Type::ATMOSPHERE: lace NL << "Type " << "ATMOSPHERE"; break;
+		case OBJECT::DATA::Type::PRIMITIVE : lace NL << "Type " << "PRIMITIVE";  break;
+		case OBJECT::DATA::Type::SKELETON  : lace NL << "Type " << "SKELETON";   break;
+		case OBJECT::DATA::Type::CAMERA    : lace NL << "Type " << "CAMERA";     break;
+		case OBJECT::DATA::Type::VOLUME    : lace NL << "Type " << "VOLUME";     break;
+		case OBJECT::DATA::Type::CURVE     : lace NL << "Type " << "CURVE";      break;
+		case OBJECT::DATA::Type::EMPTY     : lace NL << "Type " << "EMPTY";      break;
+		case OBJECT::DATA::Type::FORCE     : lace NL << "Type " << "FORCE";      break;
+		case OBJECT::DATA::Type::GROUP     : lace NL << "Type " << "GROUP";      break;
+		case OBJECT::DATA::Type::LIGHT     : lace NL << "Type " << "LIGHT";      break;
+		case OBJECT::DATA::Type::MESH      : lace NL << "Type " << "MESH";       break;
+		case OBJECT::DATA::Type::SFX       : lace NL << "Type " << "SFX";        break;
+		case OBJECT::DATA::Type::VFX       : lace NL << "Type " << "VFX";        break;
+	}
+	lace--;
+	lace NL << "└Object";
+}
+
+void KL::File::f_saveAsciiScene(Lace& lace, const KL::Scene* data, const uint64& i) {
+	lace NL << "┌Scene [ " << i << " ]";
+	lace++;
+	lace NL PTR << uptr(data);
+	lace NL << "┌Objects";
+	lace++;
+	for (auto object : data->objects)
+		lace NL PTR << uptr(object);
+	lace--;
+	lace NL << "└Objects";
+	lace--;
+	lace NL << "└Scene";
+}
+
+void KL::File::f_saveAsciiHistory(Lace& lace) {
+	lace NL << "┌History( " << KL::Session::getInstance().getHistory()->history_stack.size() << " )";
+	lace++;
+	uint64 i = 0;
+	for (const  History_Command* command : KL::Session::getInstance().getHistory()->history_stack) {
+		lace NL << "┌Cmd[ " << i << " ]";
+		lace++;
+		switch (command->type) {
+			case HISTORY::Type::SHADER: {
+				auto pointer = static_cast<const SHADER_CMD::Shader_Code*>(command);
+				switch (static_cast<SHADER_CMD::Type>(pointer->sub_type)) {
+					case SHADER_CMD::Type::CODE: {
+						lace NL << "Type SHADER :: CODE";
+						lace NL PTR << uptr(pointer->ptr);
+						break;
+					}
+				}
+				break;
+			}
+		}
+		lace NL << "┌Serialized";
+		lace++;
+		command->serialize(lace);
+		lace--;
+		lace NL << "└Serialized";
+		lace--;
+		lace NL << "└Cmd";
+	}
+	lace--;
+	lace NL << "└History";
+}
+
+void KL::File::f_saveAsciiBuild(Lace& lace) {
+	lace NL << "┌Build-Steps";
+	lace++;
+	lace NL << "Active-Scene " PTR << uptr(active_scene.pointer);
+	lace NL << "Active-Object " PTR << uptr(active_object.pointer);
+	lace NL << "┌Data-Group";
+	lace++;
+	for (auto object : objects) {
+		if (object->data->type == OBJECT::DATA::Type::GROUP) {
+			for (auto child : object->getGroup()->objects) {
+				lace NL PTR << uptr(object->data) SP PTR << uptr(child);
+			}
+		}
+	}
+	lace--;
+	lace NL << "└Data-Group";
+	lace NL << "┌Object-Data";
+	lace++;
+	for (auto object : objects) {
+		if (object->data and object->data->type != OBJECT::DATA::Type::NONE) {
+			lace NL PTR << uptr(object) SP PTR << uptr(object->data);
+		}
+	}
+	lace--;
+	lace NL << "└Object-Data";
+	lace NL << "┌Object-Node";
+	lace++;
+	for (auto object: objects) {
+		if (object->data->type != OBJECT::DATA::Type::NONE and object->node_tree) {
+			lace NL PTR << uptr(object) SP PTR << uptr(object->node_tree);
+		}
+	}
+	lace--;
+	lace NL << "└Object-Node";
+	lace NL << "┌Node-Pointer";
+	lace++;
+	for (auto object : objects) {
+		if (object->data->type != OBJECT::DATA::Type::NONE and object->node_tree) {
+			for (auto node : object->node_tree->nodes) {
+				if (node->type == KL::NODE::Type::LINK and node->sub_type == e_to_us(KL::NODE::LINK::Type::POINTER)) {
+					lace NL PTR << uptr(node) SP PTR << uptr(static_cast<KL::NODE::LINK::Pointer*>(node)->pointer);
+				}
+			}
+		}
+	}
+	lace--;
+	lace NL << "└Node-Pointer";
+	lace--;
+	lace NL << "└Build-Steps";
+}
+
+void KL::File::f_saveBinary(Bin_Lace & bin) {
+	f_saveBinaryHeader(bin);
+
+	bin << node_trees.size();
+	for (KL::Node_Tree* node : node_trees) {
+		f_saveBinaryNodeTree(bin, node);
+	}
+
+	bin << shaders.size();
+
+	bin << object_data.size();
+
+	bin << objects.size();
+
+	bin << scenes.size();
+}
+
+void KL::File::f_saveBinaryHeader(Bin_Lace & bin) {
+	bin << string("1.0.0");
+	bin << string("FILE");
+}
+
+void KL::File::f_saveBinaryNodeTree(Bin_Lace & bin, Node_Tree* data) {
+	uint64 size = 0;
+	Bin_Lace bytes;
+
+	bytes << ul_to_u(data->name.size());
+	bytes << data->name;
+	bytes << uptr(data);
+	bytes << ul_to_uh(data->nodes.size());
+
+	size += 4;
+	size += data->name.size();
+	size += 8;
+	size += 2;
+
+	for (KL::Node* node : data->nodes) {
+		bytes << ul_to_uh(node->name.size());
+		bytes << node->name;
+		bytes << uptr(node);
+
+		size += 2;
+		size += node->name.size();
+		size += 8;
+	}
+
+	bin << size;
+	bin << bytes;
+}

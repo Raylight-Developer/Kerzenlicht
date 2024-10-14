@@ -1,0 +1,215 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Include">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Source\Object">
+      <UniqueIdentifier>{be8a2c7b-1aa8-4d16-a6f4-fb5fab5c4404}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Include\Object\Data\Atmosphere.hpp">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Object\Data\Camera.hpp">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Object\Data\Curve.hpp">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Object\Data\Empty.hpp">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Object\Data\Force.hpp">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Object\Data\Group.hpp">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Object\Data\Light.hpp">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Object\Data\Mesh.hpp">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Object\Data\Primitive.hpp">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Object\Data\Sfx.hpp">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Object\Data\Skeleton.hpp">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Object\Data\Vfx.hpp">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Object\Data\Volume.hpp">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Object\Data.hpp">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Object\Object.hpp">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Shared.hpp">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Object\Nodes\Object_Nodes.hpp">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Object\Nodes\Compiler.hpp">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Core\Scene.hpp">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Core\Nodes.hpp">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Shader\Shader.hpp">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Shader\Nodes\Shader_Nodes.hpp">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Core\File.hpp">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Utils\Session.hpp">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="External\stb_image.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\GPU\Gpu_Scene.hpp">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Math\Interpolation.hpp">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Object\Nodes\Math.hpp">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\GPU\Bvh_Build.hpp">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\GPU\Gpu_Triangle.hpp">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\GPU\Gpu_Bvh.hpp">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\GPU\Gpu_Camera.hpp">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Core\Property.hpp">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Include.hpp">
+      <Filter>Include</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Source\Core\Property.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Nodes.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Object\Nodes\Compiler.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Scene.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Shader\Shader.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Shader\Nodes\Shader_Nodes.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Utils\Session.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Object\Data\Atmosphere.cpp">
+      <Filter>Source\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Object\Data\Camera.cpp">
+      <Filter>Source\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Object\Data\Curve.cpp">
+      <Filter>Source\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Object\Data.cpp">
+      <Filter>Source\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Object\Data\Empty.cpp">
+      <Filter>Source\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\File.cpp">
+      <Filter>Source\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Object\Data\Force.cpp">
+      <Filter>Source\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Object\Data\Group.cpp">
+      <Filter>Source\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Object\Data\Mesh.cpp">
+      <Filter>Source\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Object\Data\Light.cpp">
+      <Filter>Source\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Object\Object.cpp">
+      <Filter>Source\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Object\Nodes\Object_Nodes.cpp">
+      <Filter>Source\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Object\Data\Primitive.cpp">
+      <Filter>Source\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Object\Data\Sfx.cpp">
+      <Filter>Source\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Object\Data\Vfx.cpp">
+      <Filter>Source\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Object\Data\Skeleton.cpp">
+      <Filter>Source\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Object\Data\Volume.cpp">
+      <Filter>Source\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\GPU\Gpu_Scene.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Math\Interpolation.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Object\Nodes\Math.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\GPU\Bvh_Build.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\GPU\Gpu_Triangle.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\GPU\Gpu_Bvh.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\GPU\Gpu_Camera.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

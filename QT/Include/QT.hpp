@@ -4,7 +4,7 @@
 #include <QtCore>
 #include <QtGui>
 
-#include "Shared.hpp"
+#include "Core.hpp"
 
 namespace GUI {
 	// Base Classes
@@ -227,3 +227,5 @@ namespace GUI {
 ivec2 p_to_i(const QPoint& val);
 dvec2 p_to_d(const QPointF& val);
 dvec2 p_to_d(const QPoint& val);
+string str(const QString& val);
+QString qstr(const string& val);

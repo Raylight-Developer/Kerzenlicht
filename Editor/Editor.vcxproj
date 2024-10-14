@@ -97,10 +97,10 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(ProjectDir)\Include;$(SolutionDir)\Shared\Include;$(SolutionDir)\QT\Include;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)\Include;$(SolutionDir)\Engine\Include;$(SolutionDir)\Core\Include;$(SolutionDir)\QT\Include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(ProjectDir)\Include;$(SolutionDir)\Shared\Include;$(SolutionDir)\QT\Include;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)\Include;$(SolutionDir)\Engine\Include;$(SolutionDir)\Core\Include;$(SolutionDir)\QT\Include;$(IncludePath)</IncludePath>
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Label="Vcpkg" />
@@ -156,8 +156,8 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(OutDir);C:\Programs\Coding\Lib\python 3.11\libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>Shared.lib;QT.lib;python311.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(OutDir);$(OutDir)\Core;$(OutDir)\Engine;$(OutDir)\QT;C:\Programs\Coding\Lib\python 3.11\libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Core.lib;Engine.lib;QT.lib;python311.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreLinkEvent />
     <PreLinkEvent>
@@ -184,8 +184,8 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(OutDir);C:\Programs\Coding\Lib\python 3.11\libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>Shared.lib;QT.lib;python311.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(OutDir);$(OutDir)\Core;$(OutDir)\Engine;$(OutDir)\QT;C:\Programs\Coding\Lib\python 3.11\libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Core.lib;Engine.lib;QT.lib;python311.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreLinkEvent />
     <PreLinkEvent>

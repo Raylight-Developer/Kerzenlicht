@@ -1,0 +1,66 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClInclude Include="Include\Core\Utils\Inline\Types.hpp">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Core\Utils\Session.hpp">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Core\Utils\Inline\String.hpp">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Core\Utils\Inline\Templates.hpp">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Core\Core\Property.hpp">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Core\Utils\Ops.hpp">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Core\Utils\Inline\Macros.hpp">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Core\Utils\Lace.hpp">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Core\Include.hpp">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Core\Core\History.hpp">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Core\Utils\Inline\Glm.hpp">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Core.hpp">
+      <Filter>Include</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Source\Core\Utils\Session.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Core\History.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Utils\Lace.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Utils\Ops.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Core\Property.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Include">
+      <UniqueIdentifier>{9cb77dfe-e075-4a5c-bb93-5ad8587c280f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source">
+      <UniqueIdentifier>{a4bdf0a6-0bb6-4c86-b479-1c044945eb14}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

@@ -56,8 +56,8 @@ QPixmap f_showroomThumbnail(const string& file_path, const string& name, const d
 }
 
 Showroom::Showroom(QWidget* parent) :
-	parent(parent),
-	GUI::Linear_Contents(parent, QBoxLayout::Direction::TopToBottom)
+	GUI::Linear_Contents(parent, QBoxLayout::Direction::TopToBottom),
+	parent(parent)
 {
 	header = new GUI::Header(this);
 	search_bar = new GUI::Value_Input(this);
