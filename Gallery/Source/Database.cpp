@@ -40,7 +40,7 @@ DB::File::File(char* name, char* directory, char* display_name, char* date, char
 {}
 
 DB::Database::Database() {
-	database = PQconnectdb("dbname=Booru user=postgres password=123 host=localhost");
+	database = PQconnectdb("dbname=Gallery user=postgres password=123 host=localhost");
 }
 
 DB::Database::~Database() {
@@ -114,6 +114,8 @@ bool DB::Database::createDatabase() {
 				category_name VARCHAR(128) DEFAULT 'Other',
 				display_name VARCHAR(128),
 				cover_file_name VARCHAR(128),
+				transform VARCHAR(128) DEFAULT '0 0 0 1 1',
+				format VARCHAR(1) DEFAULT '0',
 				description TEXT DEFAULT '',
 				FOREIGN KEY (tag_name, category_name) REFERENCES tags(tag_name, category_name),
 				FOREIGN KEY (category_name) REFERENCES categories(category_name),

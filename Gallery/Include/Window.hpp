@@ -4,6 +4,9 @@
 
 #include "QT.hpp"
 
+#include "Browser.hpp"
+#include "Showroom.hpp"
+
 namespace GUI {
 	struct Main_Window;
 	struct App;
@@ -19,6 +22,7 @@ namespace GUI {
 	struct Main_Window : Window {
 		Application* app;
 		KL::Lace* log;
+		GUI::Tabs* tabs;
 
 		Main_Window(GUI::Application* app);
 

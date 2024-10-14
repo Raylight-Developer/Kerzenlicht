@@ -3,10 +3,10 @@
 GUI::App::App(int argc, char* argv[]) :
 	Application(argc, argv)
 {
+	setStyleSheet(QString::fromStdString(loadFromFile("./Resources/QStylesheet.css")));
 	window = new Main_Window(this);
 	installEventFilter(window);
 }
-
 
 GUI::Main_Window::Main_Window(GUI::Application* app) :
 	GUI::Window(),
@@ -21,29 +21,26 @@ GUI::Main_Window::Main_Window(GUI::Application* app) :
 	setWindowTitle("Kerzenlicht");
 	setWindowIcon(QPixmap("./Resources/Icon.png"));
 
-	LOG ENDL << "Kerzenlicht 1.0.0 Initialized"; FLUSH;
+	LOG ENDL << "Gallery 1.0.0 Initialized"; FLUSH;
+
+	tabs = new GUI::Tabs(this);
+
+	auto viewport = new GUI::Graphics_View(this);
+	auto scene = new GUI::Graphics_Scene(this);
+	viewport->setScene(scene);
+	scene->addPixmap(f_showroomThumbnail("./Resources/0.png", "Arona", dvec2(0), dvec2(1), ShowFromat::SQUARE));
+
+	auto showroom = new Showroom(this);
+
+	tabs->addTab(showroom, "ShowRoom");
+	tabs->addTab(viewport, "Viewport");
+
+	setCentralWidget(tabs);
 
 	showMaximized();
-
 	LOG ENDL ANSI_G << "Fully Initialized" ANSI_RESET; FLUSH;
 }
 
 void GUI::Main_Window::closeEvent(QCloseEvent* event) {
-	//if (!app->database_thread->work_queue.isEmpty() || !app->online_download_threads.isEmpty()) {
-	//	for (Online_Download_Thread* thread : app->online_download_threads) {
-	//		app->log->append(qstr("Still Downloading: " + thread->work.params.at("ID")));
-	//	}
-	//	for (const Database_Query& work : app->database_thread->work_queue) {
-	//		app->log->append(qstr("Still Querying: " + work.params.at("Query")));
-	//	}
-	//	QMessageBox::warning(this, "Confirmation", "Threads haven't finished processing");
-	//	event->ignore();
-	//	return;
-	//}
-	//if (PQisBusy(app->database_thread->database->database)) {
-	//	QMessageBox::warning(this, "Confirmation", "Threads haven't finished processing");
-	//	event->ignore();
-	//	return;
-	//}
 	event->accept();
 }

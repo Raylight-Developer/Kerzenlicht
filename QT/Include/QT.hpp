@@ -70,6 +70,7 @@ namespace GUI {
 		void zoom(float scaleFactor);
 		void zoomIn();
 		void zoomOut();
+		void fitContents();
 
 		Graphics_View(QWidget* parent = nullptr);
 
@@ -114,6 +115,10 @@ namespace GUI {
 		~Linear_Contents() { delete layout; };
 
 		void addWidget(QWidget* widget);
+	};
+
+	struct Header : Linear_Contents {
+		Header(QWidget* parent = nullptr);
 	};
 
 	struct List : QListWidget {

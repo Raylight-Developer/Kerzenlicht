@@ -89,3 +89,6 @@
 #else
 	#define FILE KL::Session::getInstance().getFile()
 #endif
+
+#define TIMER_START auto start = std::chrono::high_resolution_clock::now()
+#define TIMER_END auto end = std::chrono::high_resolution_clock::now(); std::chrono::duration<double> deltaTime = end - start; *KL::Session::getInstance().getLog() <<  KL::Lace_NL() << "Delta time: " << deltaTime.count() << " seconds"; FLUSH

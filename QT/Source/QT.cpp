@@ -133,6 +133,13 @@ void GUI::Graphics_View::zoomOut() {
 	zoom (1 - zoom_sensitivity);
 }
 
+void GUI::Graphics_View::fitContents() {
+	auto bounding_rect = scene()->itemsBoundingRect();
+	centerOn(bounding_rect.center());
+	fitInView(bounding_rect, Qt::AspectRatioMode::KeepAspectRatio);
+	update();
+}
+
 void GUI::Graphics_View::pan(QPointF delta) {
 	delta *= view_scale;
 
@@ -215,6 +222,12 @@ GUI::Linear_Contents::Linear_Contents(QWidget* parent, const QBoxLayout::Directi
 
 void GUI::Linear_Contents::addWidget(QWidget* widget) {
 	layout->addWidget(widget);
+}
+
+GUI::Header::Header(QWidget* parent) :
+	GUI::Linear_Contents(parent, QBoxLayout::Direction::LeftToRight)
+{
+	setFixedHeight(30);
 }
 
 GUI::List::List(QWidget* parent, const bool& icon_list) :
