@@ -50,3 +50,16 @@ signals:
 
 	void logMsg(const QString& message);
 };
+
+class Image_Thread : public QRunnable {
+public:
+	const QString file_path;
+	unordered_map<string, CORE::Prop> args;
+	function<QPixmap(const QPixmap&)> processImage;
+	Image_Thread(const QString& file_path);
+
+	void run() override;
+
+signals:
+	void result(const unordered_map<string, CORE::Prop>& args, const QIcon& icon);
+};

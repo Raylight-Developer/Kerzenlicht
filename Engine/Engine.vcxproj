@@ -149,8 +149,10 @@
     <ClInclude Include="Include\Core\Scene.hpp" />
     <ClInclude Include="Include\Math\Interpolation.hpp" />
     <ClInclude Include="Include\GPU\Bvh_Build.hpp" />
+    <ClInclude Include="Include\GPU\Octree.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\GPU\Octree.cpp" />
     <ClCompile Include="Source\GPU\Gpu_Camera.cpp" />
     <ClCompile Include="Source\GPU\Gpu_Bvh.cpp" />
     <ClCompile Include="Source\GPU\Gpu_Triangle.cpp" />

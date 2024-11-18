@@ -39,3 +39,16 @@ void Database_Thread::cancelWork(const DB::Query_Type& i_type) {
 	}
 	condition.wakeOne();
 }
+
+Image_Thread::Image_Thread(const QString& file_path) :
+	file_path(file_path)
+{}
+
+void Image_Thread::run() {
+	if (processImage) {
+		emit result(args, QIcon(processImage(QPixmap(file_path))));
+	}
+	else {
+		emit result(args, QIcon(QPixmap(file_path)));
+	}
+}

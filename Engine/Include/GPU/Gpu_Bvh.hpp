@@ -23,7 +23,7 @@ namespace KL::GPU {
 		);
 
 		void growToInclude(const vec3& min, const vec3& max);
-		vec3 getSize();
-		vec3 getCenter();
+		vec3 getSize() const;
+		vec3 getCenter() const;
 	};
 }

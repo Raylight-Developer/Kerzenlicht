@@ -30,10 +30,6 @@ vector<uint> KL::SHADER::Texture::toRgba8Texture() const {
 	return packedData;
 }
 
-#undef STB_IMAGE_IMPLEMENTATION
-#undef FILE
-#define FILE Session::getInstance().getFile()
-
 KL::Shader::Shader() :
 	name("New Material"),
 	node_tree(nullptr),

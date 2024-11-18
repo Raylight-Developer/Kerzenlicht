@@ -116,6 +116,9 @@
     <ClInclude Include="Include\Include.hpp">
       <Filter>Include</Filter>
     </ClInclude>
+    <ClInclude Include="Include\GPU\Octree.hpp">
+      <Filter>Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Core\Property.cpp">
@@ -209,6 +212,9 @@
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\GPU\Gpu_Camera.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\GPU\Octree.cpp">
       <Filter>Source</Filter>
     </ClCompile>
   </ItemGroup>

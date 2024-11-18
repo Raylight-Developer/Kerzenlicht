@@ -32,7 +32,7 @@
 ┌Textures( 1 )
  ┌Texture [ 0 ] Ganyu
   * 2078896178480
-  ../Shared/Resources/Textures/Ganyu.jpg
+  ../Engine/Resources/Textures/Ganyu.jpg
  └Texture
 └Textures
 ┌Shaders( 1 )
@@ -24823,8 +24823,8 @@ return albedo;
 ┌Objects( 1 )
  ┌Object [ 0 ] Ganyu
   * 2079009586528
-  Position ( 0.0 0.0 5.0 )
-  Rotation ( 0.0 180.0 0.0 )
+  Position ( 0.0 0.0 0.0 )
+  Rotation ( 0.0 0.0 0.0 )
   Scale    ( 1.0 1.0 1.0 )
   Type MESH
  └Object

@@ -58,7 +58,6 @@ void KL::Renderer::f_displayLoop() {
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
-
 	}
 }
 
@@ -367,8 +366,7 @@ void KL::Renderer::glfwKey(GLFWwindow* window, int key, int scancode, int action
 	Renderer* instance = static_cast<Renderer*>(glfwGetWindowUserPointer(window));
 	// Input Handling
 	if (key == GLFW_KEY_F5 && action == GLFW_PRESS) {
-		instance->pathtracer.f_recompile();
-		instance->rasterizer.f_recompile();
+		instance->f_recompile();
 	}
 	if (key == GLFW_KEY_R && action == GLFW_PRESS) {
 		FILE->active_camera.pointer->transform.position = dvec3(0, 0, 0);

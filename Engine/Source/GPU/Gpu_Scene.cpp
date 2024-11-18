@@ -69,7 +69,7 @@ void KL::GPU::Scene::f_update() {
 	}
 
 	camera_lenses.clear();
-	for (auto lens : FILE->f_activeCamera()->getCamera()->lenses) {
+	for (const auto& lens : FILE->f_activeCamera()->getCamera()->lenses) {
 		camera_lenses.push_back(KL::GPU::Camera_Lens(lens.curvature_radius, lens.aperture_radius, lens.z_distance, lens.ior));
 	}
 }

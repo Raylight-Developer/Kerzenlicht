@@ -18,10 +18,10 @@ void KL::GPU::Bvh::growToInclude(const vec3& min, const vec3& max) {
 	p_max.z = max.z > p_max.z ? max.z : p_max.z;
 }
 
-vec3 KL::GPU::Bvh::getSize() {
+vec3 KL::GPU::Bvh::getSize() const {
 	return p_max - p_min;
 }
 
-vec3 KL::GPU::Bvh::getCenter() {
+vec3 KL::GPU::Bvh::getCenter() const {
 	return (p_min + p_max) / 2.0f;
 }

@@ -20,7 +20,6 @@ GUI::Main_Window::Main_Window(GUI::Application* app) :
 	setWindowIcon(QPixmap("./Resources/Icon.png"));
 	LOG ENDL << "Gallery 1.0.0 Initialized"; FLUSH;
 
-
 	db_thread = new Database_Thread();
 	
 	auto showroom = new Showroom(this);
