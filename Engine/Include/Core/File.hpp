@@ -39,18 +39,18 @@ namespace KL {
 		//TODO store pointer map as old if there are no duplicated pointers for conflict and to avoid re-writing files for versioning systems
 		BiMap<uint64, uint64> pointer_map; // hash - pointer_address
 
-		Observable_Vector<SHADER::Texture*> textures;
-		Observable_Vector<KL::Shader*> shaders;
+		Observable_List<SHADER::Texture*> textures;
+		Observable_List<KL::Shader*> shaders;
 
-		Observable_Vector<OBJECT::Data*> object_data;
-		Observable_Vector<Node_Tree*> node_trees;
-		Observable_Vector<Object*> objects;
-		Observable_Vector<Scene*> scenes;
+		Observable_List<OBJECT::Data*> object_data;
+		Observable_List<Node_Tree*> node_trees;
+		Observable_List<Object*> objects;
+		Observable_List<Scene*> scenes;
 
 		Observable_Ptr<Object> active_camera;
 		Observable_Ptr<Object> active_object;
 		Observable_Ptr<Scene> active_scene;
-		Observable_Vector<Object*> selected_objects;
+		Observable_List<Object*> selected_objects;
 
 		string version;
 		string type;

@@ -5,20 +5,20 @@
 KL::File::File() :
 	pointer_map(BiMap<uint64, uint64>()),
 
-	textures(Observable_Vector<SHADER::Texture*>()),
-	shaders(Observable_Vector<KL::Shader*>()),
-	object_data(Observable_Vector<OBJECT::Data*>()),
-	node_trees(Observable_Vector<Node_Tree*> ()),
-	objects(Observable_Vector<Object*>()),
-	scenes(Observable_Vector<Scene*>()),
+	textures(Observable_List<SHADER::Texture*>()),
+	shaders(Observable_List<KL::Shader*>()),
+	object_data(Observable_List<OBJECT::Data*>()),
+	node_trees(Observable_List<Node_Tree*> ()),
+	objects(Observable_List<Object*>()),
+	scenes(Observable_List<Scene*>()),
 
 	active_camera(Observable_Ptr<Object>()),
 	active_object(Observable_Ptr<Object>()),
 	active_scene(Observable_Ptr<Scene>()),
 
-	selected_objects(Observable_Vector<Object*>())
+	selected_objects(Observable_List<Object*>())
 {
-	active_camera.pointer = new Object();
+	active_camera = new Object();
 	active_camera.pointer->transform.position = dvec3(0, 0, 5);
 	active_camera.pointer->transform.euler_rotation = dvec3(0, 0, 0);
 	active_camera.pointer->data = new OBJECT::DATA::Camera();
@@ -206,17 +206,17 @@ void KL::File::f_loadAscii(const Token_Array& token_data, const Tokens& line_dat
 			else if (is_processing == Parse_Type::NODE_TREE and tokens[0] == "└Node-Tree") {
 				LOG ENDL ANSI_B << "  [Data-Block]" ANSI_RESET; FLUSH;
 				is_processing = Parse_Type::NONE;
-				node_trees.push_back(f_loadAsciiNodeTree(t_data, l_data));
+				node_trees.push(f_loadAsciiNodeTree(t_data, l_data));
 			}
 			else if (is_processing == Parse_Type::SHADER and tokens[0] == "└Shader") {
 				LOG ENDL ANSI_B << "  [Data-Block]" ANSI_RESET; FLUSH;
 				is_processing = Parse_Type::NONE;
-				shaders.push_back(f_loadAsciiShader(t_data, l_data));
+				shaders.push(f_loadAsciiShader(t_data, l_data));
 			}
 			else if (is_processing == Parse_Type::TEXTURE and tokens[0] == "└Texture") {
 				LOG ENDL ANSI_B << "  [Data-Block]" ANSI_RESET; FLUSH;
 				is_processing = Parse_Type::NONE;
-				textures.push_back(f_loadAsciiTexture(t_data, l_data));
+				textures.push(f_loadAsciiTexture(t_data, l_data));
 			}
 			else if (is_processing == Parse_Type::HEADER and tokens[0] == "└Header") {
 				LOG ENDL ANSI_B << "  [Data-Block]" ANSI_RESET; FLUSH;
@@ -226,17 +226,17 @@ void KL::File::f_loadAscii(const Token_Array& token_data, const Tokens& line_dat
 			else if (is_processing == Parse_Type::OBJECT and tokens[0] == "└Object") {
 				LOG ENDL ANSI_B << "  [Data-Block]" ANSI_RESET; FLUSH;
 				is_processing = Parse_Type::NONE;
-				objects.push_back(f_loadAsciiObject(t_data, l_data));
+				objects.push(f_loadAsciiObject(t_data, l_data));
 			}
 			else if (is_processing == Parse_Type::SCENE and tokens[0] == "└Scene") {
 				LOG ENDL ANSI_B << "  [Data-Block]" ANSI_RESET; FLUSH;
 				is_processing = Parse_Type::NONE;
-				scenes.push_back(f_loadAsciiScene(t_data, l_data));
+				scenes.push(f_loadAsciiScene(t_data, l_data));
 			}
 			else if (is_processing == Parse_Type::PROP and tokens[0] == "└Data") {
 				LOG ENDL ANSI_B << "  [Data-Block]" ANSI_RESET; FLUSH;
 				is_processing = Parse_Type::NONE;
-				object_data.push_back(f_loadAsciiData(t_data, l_data));
+				object_data.push(f_loadAsciiData(t_data, l_data));
 			}
 			else {
 				t_data.push_back(tokens);
@@ -402,7 +402,7 @@ KL::Node_Tree* KL::File::f_loadAsciiNodeTree(const Token_Array& token_data, cons
 			if (node) {
 				node->name = name;
 
-				pointer_map.insert(pointer, uptr(node));
+				pointer_map.push(pointer, uptr(node));
 				node_tree->nodes.push_back(node);
 			}
 		}
@@ -442,7 +442,7 @@ KL::Node_Tree* KL::File::f_loadAsciiNodeTree(const Token_Array& token_data, cons
 			read_data.push_back(tokens);
 		}
 	}
-	pointer_map.insert(str_to_ul(token_data[1][1]), uptr(node_tree));
+	pointer_map.push(str_to_ul(token_data[1][1]), uptr(node_tree));
 	return node_tree;
 }
 
@@ -455,7 +455,7 @@ KL::SHADER::Texture* KL::File::f_loadAsciiTexture(const Token_Array& token_data,
 
 	texture->loadFromFile(f_join(token_data[2]));
 
-	pointer_map.insert(str_to_ul(token_data[1][1]), uptr(texture));
+	pointer_map.push(str_to_ul(token_data[1][1]), uptr(texture));
 	return texture;
 }
 
@@ -499,7 +499,7 @@ KL::Shader* KL::File::f_loadAsciiShader(const Token_Array& token_data, const Tok
 		}
 	}
 
-	pointer_map.insert(str_to_ul(token_data[1][1]), uptr(shader));
+	pointer_map.push(str_to_ul(token_data[1][1]), uptr(shader));
 	return shader;
 }
 
@@ -537,7 +537,7 @@ KL::OBJECT::Data* KL::File::f_loadAsciiAtmosphere(const Token_Array& token_data,
 	KL::OBJECT::Data* data = new KL::OBJECT::Data();
 	data->name = f_join(token_data[0], 4);
 	data->type = KL::OBJECT::DATA::Type::ATMOSPHERE;
-	pointer_map.insert(str_to_ul(token_data[1][1]), uptr(data));
+	pointer_map.push(str_to_ul(token_data[1][1]), uptr(data));
 	return data;
 }
 
@@ -545,7 +545,7 @@ KL::OBJECT::Data* KL::File::f_loadAsciiPrimitive(const Token_Array& token_data, 
 	KL::OBJECT::Data* data = new KL::OBJECT::Data();
 	data->name = f_join(token_data[0], 4);
 	data->type = KL::OBJECT::DATA::Type::PRIMITIVE;
-	pointer_map.insert(str_to_ul(token_data[1][1]), uptr(data));
+	pointer_map.push(str_to_ul(token_data[1][1]), uptr(data));
 	return data;
 }
 
@@ -553,7 +553,7 @@ KL::OBJECT::Data* KL::File::f_loadAsciiSkeleton(const Token_Array& token_data, c
 	KL::OBJECT::Data* data = new KL::OBJECT::Data();
 	data->name = f_join(token_data[0], 4);
 	data->type = KL::OBJECT::DATA::Type::SKELETON;
-	pointer_map.insert(str_to_ul(token_data[1][1]), uptr(data));
+	pointer_map.push(str_to_ul(token_data[1][1]), uptr(data));
 	return data;
 }
 
@@ -561,7 +561,7 @@ KL::OBJECT::Data* KL::File::f_loadAsciiCamera(const Token_Array& token_data, con
 	KL::OBJECT::DATA::Camera* camera = new KL::OBJECT::DATA::Camera();
 	camera->name = f_join(token_data[0], 4);
 	camera->type = KL::OBJECT::DATA::Type::CAMERA;
-	pointer_map.insert(str_to_ul(token_data[1][1]), uptr(camera));
+	pointer_map.push(str_to_ul(token_data[1][1]), uptr(camera));
 	return camera;
 }
 
@@ -569,7 +569,7 @@ KL::OBJECT::Data* KL::File::f_loadAsciiVolume(const Token_Array& token_data, con
 	KL::OBJECT::Data* data = new KL::OBJECT::Data();
 	data->name = f_join(token_data[0], 4);
 	data->type = KL::OBJECT::DATA::Type::VOLUME;
-	pointer_map.insert(str_to_ul(token_data[1][1]), uptr(data));
+	pointer_map.push(str_to_ul(token_data[1][1]), uptr(data));
 	return data;
 }
 
@@ -577,7 +577,7 @@ KL::OBJECT::Data* KL::File::f_loadAsciiCurve(const Token_Array& token_data, cons
 	KL::OBJECT::Data* data = new KL::OBJECT::Data();
 	data->name = f_join(token_data[0], 4);
 	data->type = KL::OBJECT::DATA::Type::CURVE;
-	pointer_map.insert(str_to_ul(token_data[1][1]), uptr(data));
+	pointer_map.push(str_to_ul(token_data[1][1]), uptr(data));
 	return data;
 }
 
@@ -585,7 +585,7 @@ KL::OBJECT::Data* KL::File::f_loadAsciiEmpty(const Token_Array& token_data, cons
 	KL::OBJECT::Data* data = new KL::OBJECT::Data();
 	data->name = f_join(token_data[0], 4);
 	data->type = KL::OBJECT::DATA::Type::EMPTY;
-	pointer_map.insert(str_to_ul(token_data[1][1]), uptr(data));
+	pointer_map.push(str_to_ul(token_data[1][1]), uptr(data));
 	return data;
 }
 
@@ -593,7 +593,7 @@ KL::OBJECT::Data* KL::File::f_loadAsciiForce(const Token_Array& token_data, cons
 	KL::OBJECT::Data* data = new KL::OBJECT::Data();
 	data->name = f_join(token_data[0], 4);
 	data->type = KL::OBJECT::DATA::Type::FORCE;
-	pointer_map.insert(str_to_ul(token_data[1][1]), uptr(data));
+	pointer_map.push(str_to_ul(token_data[1][1]), uptr(data));
 	return data;
 }
 
@@ -602,7 +602,7 @@ KL::OBJECT::Data* KL::File::f_loadAsciiGroup(const Token_Array& token_data, cons
 	group->name = f_join(token_data[0], 4);
 	group->type = KL::OBJECT::DATA::Type::GROUP;
 
-	pointer_map.insert(str_to_ul(token_data[1][1]), uptr(group));
+	pointer_map.push(str_to_ul(token_data[1][1]), uptr(group));
 	return group;
 }
 
@@ -610,7 +610,7 @@ KL::OBJECT::Data* KL::File::f_loadAsciiLight(const Token_Array& token_data, cons
 	KL::OBJECT::Data* data = new KL::OBJECT::Data();
 	data->name = f_join(token_data[0], 4);
 	data->type = KL::OBJECT::DATA::Type::LIGHT;
-	pointer_map.insert(str_to_ul(token_data[1][1]), uptr(data));
+	pointer_map.push(str_to_ul(token_data[1][1]), uptr(data));
 	return data;
 }
 
@@ -702,7 +702,7 @@ KL::OBJECT::Data* KL::File::f_loadAsciiMesh(const Token_Array& token_data, const
 			read_data.push_back(tokens);
 		}
 	}
-	pointer_map.insert(str_to_ul(token_data[1][1]), uptr(mesh));
+	pointer_map.push(str_to_ul(token_data[1][1]), uptr(mesh));
 	return mesh;
 }
 
@@ -710,7 +710,7 @@ KL::OBJECT::Data* KL::File::f_loadAsciiSfx(const Token_Array& token_data, const 
 	KL::OBJECT::Data* data = new KL::OBJECT::Data();
 	data->name = f_join(token_data[0], 4);
 	data->type = KL::OBJECT::DATA::Type::SFX;
-	pointer_map.insert(str_to_ul(token_data[1][1]), uptr(data));
+	pointer_map.push(str_to_ul(token_data[1][1]), uptr(data));
 	return data;
 }
 
@@ -718,7 +718,7 @@ KL::OBJECT::Data* KL::File::f_loadAsciiVfx(const Token_Array& token_data, const 
 	KL::OBJECT::Data* data = new KL::OBJECT::Data();
 	data->name = f_join(token_data[0], 4);
 	data->type = KL::OBJECT::DATA::Type::VFX;
-	pointer_map.insert(str_to_ul(token_data[1][1]), uptr(data));
+	pointer_map.push(str_to_ul(token_data[1][1]), uptr(data));
 	return data;
 }
 
@@ -748,7 +748,7 @@ KL::Object* KL::File::f_loadAsciiObject(const Token_Array& token_data, const Tok
 		}
 	}
 	object->transform = transform;
-	pointer_map.insert(str_to_ul(token_data[1][1]), uptr(object));
+	pointer_map.push(str_to_ul(token_data[1][1]), uptr(object));
 	return object;
 };
 
@@ -777,7 +777,7 @@ KL::Scene* KL::File::f_loadAsciiScene(const Token_Array& token_data, const Token
 			read_data.push_back(tokens);
 		}
 	}
-	pointer_map.insert(str_to_ul(token_data[1][1]), uptr(scene));
+	pointer_map.push(str_to_ul(token_data[1][1]), uptr(scene));
 	return scene;
 }
 
@@ -794,10 +794,10 @@ void KL::File::f_loadAsciiBuild(const Token_Array& token_data, const Tokens& lin
 	Token_Array read_data = Token_Array();
 	for (const Tokens& tokens : token_data) {
 		if (tokens[0] == "Active-Scene") {
-			active_scene.set(ptr<KL::Scene*>(pointer_map.getVal(str_to_ul(tokens[2]))));
+			active_scene = ptr<KL::Scene*>(pointer_map.getVal(str_to_ul(tokens[2])));
 		}
 		else if (tokens[0] == "Active-Object") {
-			active_object.set(ptr<KL::Object*>(pointer_map.getVal(str_to_ul(tokens[2]))));
+			active_object = ptr<KL::Object*>(pointer_map.getVal(str_to_ul(tokens[2])));
 		}
 		else if (tokens[0] == "┌Data-Group") {
 			is_processing = true;

@@ -249,7 +249,7 @@ KL::Node_Tree* KL::Editor_File::f_loadAsciiNodeTree(const Token_Array&token_data
 			if (node) {
 				node->name = name;
 
-				pointer_map.insert(pointer, uptr(node));
+				pointer_map.push(pointer, uptr(node));
 				gui_node_tree->nodes.push_back(gui_node);
 				node_tree->nodes.push_back(node);
 				node_map[node] = gui_node;
@@ -310,7 +310,7 @@ KL::Node_Tree* KL::Editor_File::f_loadAsciiNodeTree(const Token_Array&token_data
 		}
 	}
 	this->nodetree_map[node_tree] = gui_node_tree;
-	pointer_map.insert(str_to_ul(token_data[1][1]), uptr(node_tree));
+	pointer_map.push(str_to_ul(token_data[1][1]), uptr(node_tree));
 	return node_tree;
 }
 
@@ -321,10 +321,10 @@ void KL::Editor_File::f_loadAsciiBuild(const Token_Array& token_data, const Toke
 	Token_Array read_data = Token_Array();
 	for (const Tokens& tokens : token_data) {
 		if (tokens[0] == "Active-Scene") {
-			active_scene.set(ptr<KL::Scene*>(pointer_map.getVal(str_to_ul(tokens[2]))));
+			active_scene = ptr<KL::Scene*>(pointer_map.getVal(str_to_ul(tokens[2])));
 		}
 		else if (tokens[0] == "Active-Object") {
-			active_object.set(ptr<KL::Object*>(pointer_map.getVal(str_to_ul(tokens[2]))));
+			active_object = ptr<KL::Object*>(pointer_map.getVal(str_to_ul(tokens[2])));
 		}
 		else if (tokens[0] == "┌Data-Group") {
 			is_processing = true;

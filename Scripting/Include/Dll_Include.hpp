@@ -16,11 +16,14 @@ using Script    = KL::NODE::EXEC::Script_Node;
 using File      = KL::File;
 using Session   = KL::Session;
 
-#define EXPORT extern "C" __declspec(dllexport)
-#define BUILD_(name) extern "C" __declspec(dllexport) void name##_build
-#define FETCH_(name) extern "C" __declspec(dllexport) Prop name##_getData
-#define EXEC_(name) extern "C" __declspec(dllexport) void name##_exec
+#undef FILE
+#undef SESSION
 
-#define F_BUILD_(name) extern "C" __declspec(dllexport) void name##_build(Script* node)
-#define F_FETCH_(name) extern "C" __declspec(dllexport) Prop name##_getData(Script* node, const uint16& port_request)
-#define F_EXEC_(name) extern "C" __declspec(dllexport) void name##_exec(Script* node, File* file, Session* session, Lace* lace)
+#define EXPORT extern "C" __declspec(dllexport)
+#define BUILD_(name) EXPORT void name##_build
+#define FETCH_(name) EXPORT Prop name##_getData
+#define EXEC_(name)  EXPORT void name##_exec
+
+#define F_BUILD_(name) EXPORT void name##_build(Script* NODE)
+#define F_FETCH_(name) EXPORT Prop name##_getData(Script* NODE, const uint16& PORT)
+#define F_EXEC_(name)  EXPORT void name##_exec(Script* NODE, File* FILE, Session* SESSION, Lace* LACE)

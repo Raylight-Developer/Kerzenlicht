@@ -238,11 +238,11 @@ void GUI::WORKSPACE::Viewport::f_selectClosestObject(const dvec2& uv) {
 		}
 	}
 	if (closest) {
-		FILE->active_object.set(closest);
+		FILE->active_object = closest;
 		cout << endl << "Selected Closest: " << closest->name;
 	}
 	else {
-		FILE->active_object.set(nullptr);
+		FILE->active_object = nullptr;
 		cout << endl << "Deselected";
 	}
 }

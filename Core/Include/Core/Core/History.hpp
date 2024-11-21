@@ -30,7 +30,7 @@ namespace KL {
 	};
 
 	struct History_Manager {
-		Observable_Vector<History_Command*> history_stack;
+		Observable_List<History_Command*> history_stack;
 
 		void execute(History_Command* cmd);
 		void undo(const uint64& count);
