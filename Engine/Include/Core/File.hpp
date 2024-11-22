@@ -36,7 +36,7 @@ namespace KL {
 	};
 
 	struct File {
-		//TODO store pointer map as old if there are no duplicated pointers for conflict and to avoid re-writing files for versioning systems
+		//TODO store pointer map as old if there are no duplicated pointers for conflict and to avoid re-writing files unnecessarily for versioning systems
 		BiMap<uint64, uint64> pointer_map; // hash - pointer_address
 
 		Observable_List<SHADER::Texture*> textures;
@@ -47,9 +47,11 @@ namespace KL {
 		Observable_List<Object*> objects;
 		Observable_List<Scene*> scenes;
 
+		Observable_Map<OBJECT::Data*, Observable_List<Object*>> instances;
+
 		Observable_Ptr<Object> active_camera;
 		Observable_Ptr<Object> active_object;
-		Observable_Ptr<Scene> active_scene;
+		Observable_Ptr<Scene>  active_scene;
 		Observable_List<Object*> selected_objects;
 
 		string version;
@@ -105,9 +107,7 @@ namespace KL {
 		virtual void              f_loadAsciiHistory    (const Token_Array& token_data, const Tokens& line_Data); // TODO
 		virtual void              f_loadAsciiBuild      (const Token_Array& token_data, const Tokens& line_data);
 
-		virtual void              f_loadBinary          (const vector<Byte>& byte_data);
-
-		virtual void              f_importAscii         (const Token_Array& token_data, const Tokens& line_data);
+		virtual void f_importAscii(const Token_Array& token_data, const Tokens& line_data);
 
 		virtual void f_saveAscii           (Lace& lace);
 		virtual void f_saveAsciiHeader     (Lace& lace);
@@ -133,10 +133,12 @@ namespace KL {
 		virtual void f_saveAsciiHistory    (Lace& lace); //TODO
 		virtual void f_saveAsciiBuild      (Lace& lace);
 
+		virtual void f_loadBinary(const vector<Byte>& byte_data);
+
 		virtual void f_saveBinary           (Bin_Lace& bin);
 		virtual void f_saveBinaryHeader     (Bin_Lace& bin);
-		virtual void f_saveBinaryNodeTree   (Bin_Lace& bin, Node_Tree*            data);
-		virtual void f_saveBinaryMaterial   (Bin_Lace& bin, const KL::Shader*   data, const uint64& i) {};
+		virtual void f_saveBinaryNodeTree   (Bin_Lace& bin, Node_Tree*              data);
+		virtual void f_saveBinaryMaterial   (Bin_Lace& bin, const KL::Shader*       data, const uint64& i) {};
 		virtual void f_saveBinaryData       (Bin_Lace& bin) {};
 		virtual void f_saveBinaryAtmosphere (Bin_Lace& bin, const OBJECT::Data*     data, const uint64& i) {};
 		virtual void f_saveBinaryPrimitive  (Bin_Lace& bin, const OBJECT::Data*     data, const uint64& i) {};

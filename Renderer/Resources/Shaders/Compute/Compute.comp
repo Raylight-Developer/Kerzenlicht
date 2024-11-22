@@ -21,5 +21,6 @@ void main() {
 	f_initRNG(pixel_id, frame_count);
 
 	vec4 pixel_color = f_render(uv, pixel_id);
+	//vec4 pixel_color = mesh_instances.length() > 0 ? vec4(1) : vec4(1,0,1,1);
 	imageStore(raw_render_layer, pixel_id, pixel_color);
 }

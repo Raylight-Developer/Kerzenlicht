@@ -21,7 +21,7 @@ namespace KL::GPU {
 			const vec3& p_min = vec3(MAX_VEC1),
 			const vec3& p_max = vec3(MIN_VEC1),
 			const uint& uptr = 0U,
-			const uint& tri_count = 0U
+			const uint& tri_count = MAX_UINT32
 		);
 
 		void growToInclude(const vec3& min, const vec3& max);

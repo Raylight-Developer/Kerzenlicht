@@ -47,10 +47,8 @@
   └Inputs
   ┌Code
 vec2 uv = f_getUV(hit_data);
-vec4 albedo = vec4(0,0,0,1);
-if (hit_data.mesh_hit) {
-	albedo = sampleTextureRgba8u(<inputs>[0], vec2(uv.x, 1 - uv.y));
-}
+vec4 albedo = sampleTextureRgba8u(<inputs>[0], vec2(uv.x, 1 - uv.y));
+
 Material ganyu_material = Material(
 	vec3(1.0)        , // baseColor
 	1.0              , // opacity

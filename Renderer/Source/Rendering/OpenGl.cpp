@@ -137,23 +137,3 @@ void printShaderErrorWithContext(const string& shaderSource, const string& error
 	LOG ENDL ENDL;
 	FLUSH;
 }
-
-template <typename T>
-GLuint ssboBinding(const GLuint& binding, const GLuint& size, const vector<T>& data) {
-	GLuint buffer;
-	glGenBuffers(1, &buffer);
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, buffer);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, size, data.data(), GL_STATIC_DRAW);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, binding, buffer);
-	return buffer;
-}
-
-#include "Gpu/Gpu_Scene.hpp"
-template GLuint ssboBinding<KL::GPU::Directional_Light>(const GLuint&, const GLuint&, const vector<KL::GPU::Directional_Light>&);
-template GLuint ssboBinding<KL::GPU::Camera_Lens>(const GLuint&, const GLuint&, const vector<KL::GPU::Camera_Lens>&);
-template GLuint ssboBinding<KL::GPU::Point_Light>(const GLuint&, const GLuint&, const vector<KL::GPU::Point_Light>&);
-template GLuint ssboBinding<KL::GPU::Instance>(const GLuint&, const GLuint&, const vector<KL::GPU::Instance>&);
-template GLuint ssboBinding<KL::GPU::Triangle>(const GLuint&, const GLuint&, const vector<KL::GPU::Triangle>&);
-template GLuint ssboBinding<KL::GPU::Texture>(const GLuint&, const GLuint&, const vector<KL::GPU::Texture>&);
-template GLuint ssboBinding<KL::GPU::Bvh>(const GLuint&, const GLuint&, const vector<KL::GPU::Bvh>&);
-template GLuint ssboBinding<uint>(const GLuint&, const GLuint&, const vector<uint>&);

@@ -25,10 +25,15 @@ struct Camera {
 	vec3  p_v;
 };
 struct Camera_Lens {
-	float curvature_radius;
-	float aperture_radius;
-	float z_distance;
-	float ior;
+	float curvature_radius; // circle radius. if positive, viewing from inside(convex), if negative, viewing from outside(concave)
+	float aperture_radius; // cutoff radius
+	float z_distance; // distance of sphere center from camera
+	float ior; // surface IOR
+};
+struct Object_Instance {
+	uint object_index;
+	vec3 padding;
+	// 16
 };
 struct Triangle {
 	vec3  pos_a;
@@ -126,10 +131,15 @@ struct Material {
 struct Ray {
 	vec3 origin;
 	vec3 direction;
+	vec3 inv_direction;
 };
 struct Sphere {
 	vec3  position;
 	float diameter;
+};
+struct Triangle_Hit_Info {
+	uint  triangle_index;
+	float hit_distance;
 };
 struct Hit {
 	bool  error;
@@ -150,7 +160,7 @@ Hit f_hit() {
 	hit.mesh_hit = false;
 	hit.hit_normal = vec3(0);
 	hit.bvh_depth = 0;
-	hit.material = 0;
+	hit.material = MAX_UINT;
 	hit.pdf = 0;
 	hit.t_dist = MAX_DIST;
 	return hit;
@@ -189,25 +199,28 @@ layout(rgba32f, binding = 0)           uniform image2D accumulation_render_layer
 layout(rgba32f, binding = 1) writeonly uniform image2D raw_render_layer;
 layout(rgba32f, binding = 2) writeonly uniform image2D bvh_render_layer;
 layout(rgba32f, binding = 3) writeonly uniform image2D normal_render_layer;
-layout(std430, binding = 5) buffer TriangleBuffer {
-	Triangle triangles[];
+layout(std430, binding = 4) buffer Mesh_Instance_Buffer {
+	Object_Instance mesh_instances[];
 };
-layout(std430, binding = 6) buffer BvhBuffer {
-	Bvh bvh_nodes[];
+layout(std430, binding = 5) buffer Mesh_Triangle_Buffer {
+	Triangle mesh_triangles[];
 };
-layout(std430, binding = 7) buffer TextureBuffer {
+layout(std430, binding = 6) buffer Mesh_Bvh_Buffer {
+	Bvh mesh_bvh[];
+};
+layout(std430, binding = 7) buffer Texture_Buffer {
 	Texture textures[];
 };
-layout(std430, binding = 8) buffer TextureDataBuffer {
+layout(std430, binding = 8) buffer Texture_Data_Buffer {
 	uint texture_data[];
 };
-layout(std430, binding = 9) buffer CameraLensesBuffer {
+layout(std430, binding = 9) buffer Camera_Lenses_Buffer {
 	Camera_Lens camera_lenses[];
 };
-layout(std430, binding = 10) buffer PointLightBuffer {
+layout(std430, binding = 10) buffer Point_Light_Buffer {
 	Point_Light point_lights[];
 };
-layout(std430, binding = 11) buffer DirectionalLightBuffer {
+layout(std430, binding = 11) buffer Directional_Light_Buffer {
 	Directional_Light directional_lights[];
 };
 uniform uint  frame_count;
@@ -265,6 +278,27 @@ bool f_quadratic(float A, float B, float C, out float t0, out float t1) {
 	t0 = (-B - sqrt_discriminant) / (2.0 * A);
 	t1 = (-B + sqrt_discriminant) / (2.0 * A);
 	return true;
+}
+vec3 f_refract(vec3 rayDirection, vec3 normal, float iorInside, float iorOutside) {
+	float cosi = clamp(dot(normal, -rayDirection), -1.0, 1.0);
+	float etai = iorInside;
+	float etat = iorOutside;
+	// Check if we are entering or exiting
+	if (cosi > 0.0) {
+		// Swap IORs if we're entering the sphere
+		float temp = etai;
+		etai = etat;
+		etat = temp;
+		normal = -normal; // Flip the normal when exiting
+	}
+	float eta = etai / etat;
+	float k = 1.0 - eta * eta * (1.0 - cosi * cosi);
+	if (k < 0.0) {
+		// Total internal reflection; return no valid refracted ray
+		return vec3(0.0); // This could be a direction to handle reflection instead
+	} else {
+		return eta * rayDirection + (eta * cosi - sqrt(k)) * normal;
+	}
 }
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
@@ -355,38 +389,42 @@ vec2 f_randUnitDisk() {
 	return p;
 }
 bool f_rayLensIntersection(in Ray ray, in Camera_Lens lens, inout float ray_length, out vec3 normal) {
-	vec3  o = ray.origin - vec3(0, 0, lens.z_distance);
+	// Transform ray to camera space
+	lens.curvature_radius *= 1.0;
+	lens.aperture_radius *= 1.0;
+	lens.z_distance *= 1.0;
 
-	float A = ray.direction.x * ray.direction.x + ray.direction.y * ray.direction.y + ray.direction.z * ray.direction.z;
-	float B = 2 * (ray.direction.x * o.x + ray.direction.y * o.y + ray.direction.z * o.z);
-	float C = o.x * o.x + o.y * o.y + o.z * o.z - lens.curvature_radius * lens.curvature_radius;
+	vec3 lens_center = (/*camera.position + camera.z_vec * */vec3(0, 0, lens.z_distance));
+	vec3 ro = ray.origin - lens_center;
+
+	float a = dot(ray.direction, ray.direction);
+	float b = 2.0 * dot(ro, ray.direction);
+	float c = dot(ro, ro) - lens.curvature_radius * lens.curvature_radius;
 	float t0, t1;
 
-	if (!f_quadratic(A, B, C, t0, t1)) {
-		return false;
+	if (f_quadratic(a,b,c,t0,t1)) {
+		float t_dist;
+		if (lens.curvature_radius < 0) {
+			t_dist = t0;
+		}
+		else {
+			t_dist = t1;
+		}
+
+		vec3 hit_point = (ray.origin + ray.direction * t_dist);
+		float r2 = hit_point.x * hit_point.x + hit_point.y * hit_point.y;
+		if (r2 > lens.aperture_radius * lens.aperture_radius) {
+			return false;
+		}
+
+		normal = normalize(hit_point - lens_center);
+		if (lens.curvature_radius > 0) {
+			normal = -normal;
+		}
+		ray_length = t_dist;
+		return true;
 	}
-
-	float t_dist = 0;
-
-	bool useCloserT = (ray.direction.z > 0) && (lens.curvature_radius < 0);
-	t_dist = useCloserT ? min(t0, t1) : max(t0, t1);
-	if (t_dist < 0) {
-
-		return false;
-	}
-
-	vec3 hit_point = ray.origin + ray.direction * t_dist;
-	float r2 = hit_point.x * hit_point.x + hit_point.y * hit_point.y;
-	if (r2 > lens.aperture_radius * lens.aperture_radius) {
-		return false;
-	}
-
-	ray_length = t_dist;
-
-	normal = normalize(vec3(o + ray_length * ray.direction));
-	normal = f_faceForward(normal, -ray.direction);
-
-	return true;
+	return false;
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -416,8 +454,8 @@ bool f_raySphereIntersection(in Ray ray, in Sphere sphere, inout float ray_lengt
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
 bool f_rayBvhIntersection(in Ray ray, in Bvh box, inout float ray_length) {
-	vec3 f = (box.p_min - ray.origin) * ray.direction;
-	vec3 n = (box.p_max - ray.origin) * ray.direction;
+	vec3 f = (box.p_min - ray.origin) * ray.inv_direction;
+	vec3 n = (box.p_max - ray.origin) * ray.inv_direction;
 
 	vec3 tmax = max(f, n);
 	vec3 tmin = min(f, n);
@@ -460,6 +498,42 @@ bool f_rayTriangleIntersection(in Ray ray, in vec3 vertex_a, in vec3 vertex_b, i
 
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
+bool f_rayTriangleIntersection(in Ray ray, in Triangle tri, inout float ray_length) {
+	vec3 v1v0 = tri.pos_b - tri.pos_a;
+	vec3 v2v0 = tri.pos_c - tri.pos_a;
+	vec3 rov0 = ray.origin- tri.pos_a;
+
+	vec3  normal = cross(v1v0, v2v0);
+	vec3  q = cross(rov0, ray.direction);
+	float d = 1.0 / dot(ray.direction, normal);
+	float u = d * dot(-q, v2v0);
+	float v = d * dot(q, v1v0);
+	float t = d * dot(-normal, rov0);
+
+	if (u < 0.0 || v < 0.0 || (u + v) > 1.0)
+		return false;
+
+	ray_length = t;
+	return true;
+}
+
+//-------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
+float f_rayBvhDist(in Ray ray, in vec3 boxMin, vec3 boxMax) {
+	vec3 tMin = (boxMin - ray.origin) * ray.inv_direction;
+	vec3 tMax = (boxMax - ray.origin) * ray.inv_direction;
+	vec3 t1 = min(tMin, tMax);
+	vec3 t2 = max(tMin, tMax);
+	float tNear = max(max(t1.x, t1.y), t1.z);
+	float tFar = min(min(t2.x, t2.y), t2.z);
+
+	bool hit = tFar >= tNear && tFar > 0;
+	float dst = hit ? tNear > 0 ? tNear : 0 : MAX_DIST;
+	return dst;
+};
+
+//-------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 vec3 f_barycentricCoords(in vec3 hit_pos, in vec3 vertex_a, in vec3 vertex_b, in vec3 vertex_c) {
 	vec3 v0 = vertex_b - vertex_a;
 	vec3 v1 = vertex_c - vertex_a;
@@ -482,53 +556,79 @@ vec3 f_barycentricCoords(in vec3 hit_pos, in vec3 vertex_a, in vec3 vertex_b, in
 
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
+Triangle_Hit_Info f_closestTriangle(in Ray ray, in uint root_node_index) {
+	Triangle_Hit_Info result;
+	result.triangle_index = MAX_UINT;
+	result.hit_distance = MAX_DIST;
+
+	uint stack[32];
+	uint stackIndex = 0;
+	stack[stackIndex++] = root_node_index + 0;
+	
+	while (stackIndex > 0) {
+		Bvh node = mesh_bvh[stack[--stackIndex]];
+		bool isLeaf = node.tri_count < MAX_UINT;
+
+		if (isLeaf) {
+			for (uint i = 0; i < node.tri_count; i++) {
+				Triangle tri = mesh_triangles[node.pointer + i];
+				float dist = MAX_DIST;
+				if (f_rayTriangleIntersection(ray, tri, dist)) {
+					if (dist < result.hit_distance) {
+						result.hit_distance = dist;
+						result.triangle_index = node.pointer + i;
+					}
+				}
+			}
+		}
+		else {
+			uint childIndexA = root_node_index + node.pointer + 0;
+			uint childIndexB = root_node_index + node.pointer + 1;
+			Bvh childA = mesh_bvh[childIndexA];
+			Bvh childB = mesh_bvh[childIndexB];
+
+			float dstA = f_rayBvhDist(ray, childA.p_min, childA.p_max);
+			float dstB = f_rayBvhDist(ray, childB.p_min, childB.p_max);
+
+			bool  isNearestA = dstA <= dstB;
+			float dstNear = isNearestA ? dstA : dstB;
+			float dstFar  = isNearestA ? dstB : dstA;
+			uint   childIndexNear = isNearestA ? childIndexA : childIndexB;
+			uint   childIndexFar  = isNearestA ? childIndexB : childIndexA;
+
+			if (dstFar  < result.hit_distance) stack[stackIndex++] = childIndexFar;
+			if (dstNear < result.hit_distance) stack[stackIndex++] = childIndexNear;
+		}
+	}
+
+	return result;
+}
+
+//-------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 void f_sceneIntersection(in Ray ray, inout Hit hit_data) {
 	float t_dist = MAX_DIST;
 	float bvh_t_length = MAX_DIST;
 
-	Ray bvh_ray = Ray(ray.origin, 1.0 / ray.direction);
+	for (uint i = 0; i <= mesh_instances.length(); i++) {
+		Triangle_Hit_Info triangle_hit = f_closestTriangle(ray, mesh_instances[i].object_index);
+		if (triangle_hit.triangle_index < mesh_triangles.length()) {
+			Triangle tri = mesh_triangles[triangle_hit.triangle_index];
+			hit_data.t_dist = triangle_hit.hit_distance;
+			hit_data.hit_pos = ray.origin + ray.direction * ( triangle_hit.hit_distance - EPSILON);
+			hit_data.inside = false;
+			hit_data.mesh_hit = true;
 
-	// Bvh Top-Down traversal
-	for (uint i = 0; i < bvh_nodes.length(); i++) {
-		Bvh node = bvh_nodes[i];
-		if (f_rayBvhIntersection(
-			bvh_ray,
-			node,
-			bvh_t_length
-		)) {
-			if (bvh_t_length < MAX_DIST && bvh_t_length > EPSILON) {
-				hit_data.bvh_depth++;
-				if (node.tri_count > 0) {
-					for (uint i = node.pointer; i < node.pointer + node.tri_count; i++) {
-						Triangle tri = triangles[i];
-						if (f_rayTriangleIntersection(
-							ray,
-							tri.pos_a,
-							tri.pos_b,
-							tri.pos_c,
-							t_dist
-						)) {
-							if (t_dist < hit_data.t_dist && t_dist > EPSILON) {
-								hit_data.t_dist = t_dist;
-								hit_data.hit_pos = ray.origin + ray.direction * (t_dist - EPSILON);
-								hit_data.inside = false;
-								hit_data.mesh_hit = true;
-					
-								hit_data.uvw = f_barycentricCoords(
-									hit_data.hit_pos,
-									tri.pos_a,
-									tri.pos_b,
-									tri.pos_c
-								);
-								hit_data.material = tri.material;
-					
-								hit_data.hit_tri = tri;
-								hit_data.hit_normal = hit_data.uvw.x * tri.normal_a + hit_data.uvw.y * tri.normal_b + hit_data.uvw.z * tri.normal_c;
-							}
-						}
-					}
-				}
-			}
+			hit_data.uvw = f_barycentricCoords(
+				hit_data.hit_pos,
+				tri.pos_a,
+				tri.pos_b,
+				tri.pos_c
+			);
+			hit_data.material = tri.material;
+
+			hit_data.hit_tri = tri;
+			hit_data.hit_normal = hit_data.uvw.x * tri.normal_a + hit_data.uvw.y * tri.normal_b + hit_data.uvw.z * tri.normal_c;
 		}
 	}
 }
@@ -538,14 +638,11 @@ vec4 f_hook(inout Hit hit_data, inout State state, inout Ray ray) {
 	if (hit_data.material == MAX_UINT) {
 		ray.direction = reflect(ray.direction, hit_data.hit_normal);
 		ray.origin = hit_data.hit_pos + ray.direction * EPSILON;
-		return vec4(0.9, 0.9, 0.9, 1.0);
+		return vec4(0.2, 0.0, 0.2, 1.0);
 	}
 	else if (hit_data.material == 0) {
 		vec2 uv = f_getUV(hit_data);
-		vec4 albedo = vec4(0,0,0,1);
-		if (hit_data.mesh_hit) {
-			albedo = sampleTextureRgba8u(textures[0], vec2(uv.x, 1 - uv.y));
-		}
+		vec4 albedo = sampleTextureRgba8u(textures[0], vec2(uv.x, 1 - uv.y));
 		Material ganyu_material = Material(
 			vec3(1.0)        , // baseColor
 			1.0              , // opacity
@@ -582,7 +679,8 @@ vec4 f_hook(inout Hit hit_data, inout State state, inout Ray ray) {
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
 Ray f_cameraNormRay(vec2 uv) {
-	return Ray(camera.position, normalize(camera.p_uv + (camera.p_u * uv.x) + (camera.p_v * uv.y) - camera.position));
+	vec3 dir = normalize(camera.p_uv + (camera.p_u * uv.x) + (camera.p_v * uv.y) - camera.position);
+	return Ray(camera.position, dir, 1.0 / dir);
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -597,14 +695,14 @@ Ray f_cameraRay(vec2 uv) {
 	vec3 lens_offset = camera.position + camera.x_vec * aperture_offset.x + camera.y_vec * aperture_offset.y;
 	vec3 new_direction = normalize(focal_point - lens_offset);
 
-	return Ray(camera.position, new_direction);
+	return Ray(camera.position, new_direction, 1.0 / new_direction);
 }
 
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
 Ray f_cameraOrthoRay(vec2 uv) {
-	float ortho_scale = 0.1;
-	return Ray(camera.position + (camera.p_u * uv.x * ortho_scale) + (camera.p_v * uv.y* ortho_scale), camera.z_vec);
+	float ortho_scale = 0.05;
+	return Ray(camera.position + (camera.p_u * uv.x * ortho_scale) + (camera.p_v * uv.y* ortho_scale), normalize(camera.z_vec), 1.0 / normalize(camera.z_vec));
 }
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
@@ -621,7 +719,6 @@ vec4 f_pathTrace(in Ray ray, in ivec2 pixel_id) {
 	f_sceneIntersection(ray, hit_data);
 
 	render_output = f_hook(hit_data, state, ray);
-
 
 	return render_output;
 }
@@ -656,31 +753,27 @@ void f_accumulate(in vec4 color, in ivec2 pixel_id) {
 vec4 f_render(in vec2 uv, in ivec2 pixel_id) {
 	f_debugRender(uv, pixel_id);
 
-	Ray ray = f_cameraRay(uv);
+	Ray ray;
 	vec4 pixel_color = vec4(0);
 
+	if (camera_lenses.length() == 0) {
+		ray = f_cameraRay(uv);
+	}
+	else {
+		ray = f_cameraNormRay(uv);
 
-	float t_dist = MAX_DIST;
-	vec3 normal;
-	for (uint i = 0; i < camera_lenses.length(); i++) {
-		t_dist = MAX_DIST;
-		if (f_rayLensIntersection(ray, camera_lenses[i], t_dist, normal)) {
-			pixel_color += vec4(normal, 0.5);
-			ray.origin = ray.origin + ray.direction * t_dist;
-			ray.direction = normalize(refract(ray.direction, normal, camera_lenses[i].ior));
+		float t_dist = MAX_DIST;
+		vec3 normal;
+		for (uint i = 0; i < camera_lenses.length(); i++) {
+
+			if (f_rayLensIntersection(ray, camera_lenses[i], t_dist, normal)) {
+				//pixel_color += vec4(vec3(dot(ray.direction,normal)), 0.5);
+				pixel_color += vec4(abs(normal) * 10.1, 1);
+				//ray.origin = ray.origin + ray.direction * t_dist;
+				//ray.direction = f_refract(ray.direction, normal, 1.0 / camera_lenses[i].ior, 1.0);
+			}
 		}
 	}
-
-	//float t_dist = MAX_DIST;
-	//Sphere sphere = Sphere(vec3(0, 0, 1), 0.5);
-	//if (f_raySphereIntersection(ray, sphere, t_dist)) {
-	//	vec3 normal = normalize(ray.direction * t_dist - sphere.position);
-	//	pixel_color = vec4(normal, 1);
-	//	//ray.origin = ray.direction * (t_dist + EPSILON);
-	//	ray.direction = normalize(refract(ray.direction, normal, 1.0));
-	//}
-
-
 
 	pixel_color += f_pathTrace(ray, pixel_id);
 	f_accumulate(pixel_color, pixel_id);
@@ -694,5 +787,6 @@ void main() {
 	vec2 uv = (pixel_id - 1 - vec2(resolution) / 2.0) / float(max(resolution.x, resolution.y));
 	f_initRNG(pixel_id, frame_count);
 	vec4 pixel_color = f_render(uv, pixel_id);
+	//vec4 pixel_color = mesh_instances.length() > 0 ? vec4(1) : vec4(1,0,1,1);
 	imageStore(raw_render_layer, pixel_id, pixel_color);
 }

@@ -11,17 +11,14 @@
 // DECL
 namespace KL {
 	template<typename T>
-	struct Observable_Ptr {
-		T* pointer;
-		unordered_map<void*, function<void(T*)>> callbacks;
+	struct Observable {
+		T value;
+		unordered_map<void*, function<void(const T&)>> callbacks;
 
-		Observable_Ptr() : pointer(nullptr) {}
-		Observable_Ptr(T* pointer) : pointer(pointer) {}
-		~Observable_Ptr() {
-			delete pointer;
-		}
+		Observable() : value() {}
+		Observable(const T& value) : value(value) {}
 
-		void addCallback(void* key, function<void(T*)> func) {
+		void addCallback(void* key, function<void(const T&)> func) {
 			callbacks[key] = std::move(func);
 		}
 
@@ -33,10 +30,10 @@ namespace KL {
 			callbacks.clear();
 		}
 
-		Observable_Ptr& operator=(T* pointer) {
-			this->pointer = pointer;
+		Observable& operator=(const T& value) {
+			this->value = value;
 			for (const auto& [key, func] : callbacks) {
-				func(pointer);
+				func(value);
 			}
 			return *this;
 		}

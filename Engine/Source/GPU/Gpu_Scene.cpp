@@ -3,8 +3,10 @@
 #include "Utils/Session.hpp"
 
 KL::GPU::Scene::Scene() {
+	mesh_instances = {};
 	mesh_triangles = {};
 	mesh_bvh = {};
+
 	textures = {};
 	texture_data = {};
 
@@ -12,16 +14,20 @@ KL::GPU::Scene::Scene() {
 }
 
 void KL::GPU::Scene::f_init() {
+	mesh_instances.clear();
 	mesh_triangles.clear();
 	mesh_bvh.clear();
+
 	textures.clear();
 	texture_data.clear();
 }
 
 void KL::GPU::Scene::printInfo() const {
 	cout << endl << "GPU Data:" << endl;
-	printSize("  Triangles    ", mesh_triangles);
-	printSize("  BVHs         ", mesh_bvh);
+	printSize("  Mesh Instances    ", mesh_instances);
+	printSize("  Mesh Triangles    ", mesh_triangles);
+	printSize("  Mesh BVHs         ", mesh_bvh);
+
 	printSize("  Textures     ", textures);
 	printSize("  Texture Data ", texture_data);
 }
@@ -35,11 +41,15 @@ void KL::GPU::Scene::updateTextures() { // TODO handle different formats
 }
 
 void KL::GPU::Scene::f_update() {
+	mesh_instances.clear();
 	mesh_triangles.clear();
 	mesh_bvh.clear();
 
+	//mesh_instances.push_back(Object_Instance(mat4(1.0), ul_to_u(mesh_bvh.size())));
 	for (KL::Object* object : FILE->active_scene.pointer->objects) {
 		object->f_compileMatrix();
+		mesh_instances.push_back(Object_Instance(d_to_f(object->transform_matrix), ul_to_u(mesh_bvh.size())));
+
 		vector<GPU::Triangle> triangles;
 		if (object->data->type == KL::OBJECT::DATA::Type::MESH) {
 			KL::OBJECT::DATA::Mesh* mesh = object->getMesh();
@@ -68,40 +78,8 @@ void KL::GPU::Scene::f_update() {
 		mesh_triangles.insert(mesh_triangles.end(), bvh_build.triangles.begin(), bvh_build.triangles.end());
 	}
 
-	camera_lenses.clear();
-	for (const auto& lens : FILE->f_activeCamera()->getCamera()->lenses) {
-		camera_lenses.push_back(KL::GPU::Camera_Lens(lens.curvature_radius, lens.aperture_radius, lens.z_distance, lens.ior));
-	}
-}
-
-uint64 KL::GPU::Scene::meshInstancesSize() const {
-	return sizeof(GPU::Instance) * mesh_instances.size();
-}
-
-uint64 KL::GPU::Scene::meshTrianglesSize() const {
-	return sizeof(GPU::Triangle) * mesh_triangles.size();
-}
-
-uint64 KL::GPU::Scene::meshBvhSize() const {
-	return sizeof(GPU::Bvh) * mesh_bvh.size();
-}
-
-uint64 KL::GPU::Scene::texturesSize() const {
-	return sizeof(GPU::Texture) * textures.size();
-}
-
-uint64 KL::GPU::Scene::textureDataSize() const {
-	return sizeof(uint) * texture_data.size();
-}
-
-uint64 KL::GPU::Scene::pointLightsSize() const {
-	return sizeof(GPU::Point_Light) * point_lights.size();
-}
-
-uint64 KL::GPU::Scene::cameraLensesSize() const {
-	return sizeof(GPU::Camera_Lens) * camera_lenses.size();
-}
-
-uint64 KL::GPU::Scene::directionalLightsSize() const {
-	return sizeof(GPU::Directional_Light) * directional_lights.size();
+	//camera_lenses.clear();
+	//for (const auto& lens : FILE->f_activeCamera()->getCamera()->lenses) {
+	//	camera_lenses.push_back(KL::GPU::Camera_Lens(lens.curvature_radius, lens.aperture_radius, lens.z_distance, lens.ior));
+	//}
 }

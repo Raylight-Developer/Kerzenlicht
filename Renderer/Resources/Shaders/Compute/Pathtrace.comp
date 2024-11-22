@@ -14,6 +14,5 @@ vec4 f_pathTrace(in Ray ray, in ivec2 pixel_id) {
 
 	render_output = f_hook(hit_data, state, ray);
 
-
 	return render_output;
 }

@@ -5,6 +5,7 @@
 #include "Templates/List.hpp"
 #include "Templates/BiMap.hpp"
 
+#include "Templates/Observable.hpp"
 #include "Templates/Observable_Map.hpp"
 #include "Templates/Observable_BiMap.hpp"
 #include "Templates/Observable_Vector.hpp"
@@ -56,7 +57,7 @@ uint len32(const vector<T>& vector) {
 
 template<typename T>
 void printSize(const string& label, const vector<T>& value) {
-	cout << fixed << setprecision(2) << label << " | " << static_cast<double>(sizeof(T) * value.size()) / (1024.0 * 1024.0) << " mb | " << static_cast<double>(sizeof(T) * value.size()) / 1024.0 << " kb | " << sizeof(T) * value.size() << " b" << endl;
+	cout << fixed << setprecision(2) << label << "<" << value.size() << "> | " << static_cast<double>(sizeof(T) * value.size()) / (1024.0 * 1024.0) << " mb | " << static_cast<double>(sizeof(T) * value.size()) / 1024.0 << " kb | " << sizeof(T) * value.size() << " b" << endl;
 };
 
 template<typename T>

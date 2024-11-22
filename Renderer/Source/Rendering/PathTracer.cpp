@@ -29,30 +29,30 @@ void KL::PathTracer::f_initialize() {
 	r_resolution = renderer->f_res();
 	r_aspect_ratio = d_to_f(renderer->f_aspectRatio());
 
-	data["VAO"] = 0;
-	data["VBO"] = 0;
-	data["EBO"] = 0;
+	data["VAO"] = MAX_UINT32;
+	data["VBO"] = MAX_UINT32;
+	data["EBO"] = MAX_UINT32;
 
-	data["compute_program"] = 0;
-	data["display_program"] = 0;
+	data["compute_program"] = MAX_UINT32;
+	data["display_program"] = MAX_UINT32;
 
-	data["compute_layout.x"] = 0;
-	data["compute_layout.y"] = 0;
+	data["compute_layout.x"] = MAX_UINT32;
+	data["compute_layout.y"] = MAX_UINT32;
 
-	data["view_layer"] = 0;
-	data["accumulation_render_layer"] = 0;
-	data["normal_render_layer      "] = 0;
-	data["bvh_render_layer         "] = 0;
-	data["raw_render_layer         "] = 0;
+	data["view_layer"] = 1;
+	data["accumulation_render_layer"] = MAX_UINT32;
+	data["normal_render_layer      "] = MAX_UINT32;
+	data["bvh_render_layer         "] = MAX_UINT32;
+	data["raw_render_layer         "] = MAX_UINT32;
 
-	data["ssbo 5"] = 0;
-	data["ssbo 6"] = 0;
-	data["ssbo 7"] = 0;
-	data["ssbo 8"] = 0;
-	data["ssbo 9"] = 0;
-	data["ssbo 10"] = 0;
-	data["ssbo 11"] = 0;
-	data["ssbo 12"] = 0;
+	data["ssbo 4"]  = MAX_UINT32;
+	data["ssbo 5"]  = MAX_UINT32;
+	data["ssbo 6"]  = MAX_UINT32;
+	data["ssbo 7"]  = MAX_UINT32;
+	data["ssbo 8"]  = MAX_UINT32;
+	data["ssbo 9"]  = MAX_UINT32;
+	data["ssbo 10"] = MAX_UINT32;
+	data["ssbo 11"] = MAX_UINT32;
 
 	glViewport(0, 0, resolution.x, resolution.y);
 	glClearColor(0, 0, 0, 0);
@@ -112,27 +112,23 @@ void KL::PathTracer::f_initialize() {
 void KL::PathTracer::f_tickUpdate() {
 	gpu_data->f_update();
 
-	GLint ssboMaxSize;
-	glGetIntegerv(GL_MAX_SHADER_STORAGE_BLOCK_SIZE, &ssboMaxSize);
-
-
+	glDeleteBuffers(1, &data["ssbo 4"]);
 	glDeleteBuffers(1, &data["ssbo 5"]);
 	glDeleteBuffers(1, &data["ssbo 6"]);
-	glDeleteBuffers(1, &data["ssbo 7"]);
-	data["ssbo 5"]  = ssboBinding(5, ul_to_u(gpu_data->meshInstancesSize()) , gpu_data->mesh_instances);
-	data["ssbo 6"]  = ssboBinding(6, ul_to_u(gpu_data->meshTrianglesSize()) , gpu_data->mesh_triangles);
-	data["ssbo 7"]  = ssboBinding(7, ul_to_u(gpu_data->meshBvhSize())       , gpu_data->mesh_bvh);
+	data["ssbo 4"] = ssboData(gpu_data->mesh_instances);
+	data["ssbo 5"] = ssboData(gpu_data->mesh_triangles);
+	data["ssbo 6"] = ssboData(gpu_data->mesh_bvh);
 
+	glDeleteBuffers(1, &data["ssbo 7"]);
 	glDeleteBuffers(1, &data["ssbo 8"]);
 	glDeleteBuffers(1, &data["ssbo 9"]);
 	glDeleteBuffers(1, &data["ssbo 10"]);
 	glDeleteBuffers(1, &data["ssbo 11"]);
-	glDeleteBuffers(1, &data["ssbo 12"]);
-	data["ssbo 8"]  = ssboBinding(8,  ul_to_u(gpu_data->texturesSize())    , gpu_data->textures);
-	data["ssbo 9"]  = ssboBinding(9,  ul_to_u(gpu_data->textureDataSize()) , gpu_data->texture_data);
-	data["ssbo 10"] = ssboBinding(10, ul_to_u(gpu_data->cameraLensesSize()), gpu_data->camera_lenses);
-	data["ssbo 11"] = ssboBinding(11, ul_to_u(gpu_data->pointLightsSize()) , gpu_data->point_lights);
-	data["ssbo 12"] = ssboBinding(12, ul_to_u(gpu_data->directionalLightsSize()), gpu_data->directional_lights);
+	data["ssbo 7"]  = ssboData(gpu_data->textures);
+	data["ssbo 8"]  = ssboData(gpu_data->texture_data);
+	data["ssbo 9"]  = ssboData(gpu_data->camera_lenses);
+	data["ssbo 10"] = ssboData(gpu_data->point_lights);
+	data["ssbo 11"] = ssboData(gpu_data->directional_lights);
 }
 
 void KL::PathTracer::f_recompile() {
@@ -165,6 +161,7 @@ void KL::PathTracer::f_cleanup() {
 	glDeleteProgram(data["compute_program"]);
 	glDeleteProgram(data["display_program"]);
 
+	glDeleteBuffers(1, &data["ssbo 4"]);
 	glDeleteBuffers(1, &data["ssbo 5"]);
 	glDeleteBuffers(1, &data["ssbo 6"]);
 	glDeleteBuffers(1, &data["ssbo 7"]);
@@ -172,7 +169,6 @@ void KL::PathTracer::f_cleanup() {
 	glDeleteBuffers(1, &data["ssbo 9"]);
 	glDeleteBuffers(1, &data["ssbo 10"]);
 	glDeleteBuffers(1, &data["ssbo 11"]);
-	glDeleteBuffers(1, &data["ssbo 12"]);
 
 	glDeleteTextures(1, &data["accumulation_render_layer"]);
 	glDeleteTextures(1, &data["normal_render_layer      "]);
@@ -261,10 +257,19 @@ void KL::PathTracer::f_render() {
 	glBindImageTexture(1, data["raw_render_layer         "], 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
 	glBindImageTexture(2, data["bvh_render_layer         "], 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
 	glBindImageTexture(3, data["normal_render_layer      "], 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 4,  data["ssbo 4"]);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 5,  data["ssbo 5"]);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 6,  data["ssbo 6"]);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 7,  data["ssbo 7"]);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 8,  data["ssbo 8"]);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 9,  data["ssbo 9"]);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 10, data["ssbo 10"]);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 11, data["ssbo 11"]);
 
 	glDispatchCompute(data["compute_layout.x"], data["compute_layout.y"], 1);
 
 	glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+	//glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
 
 	glUseProgram(display_program);
 	glClear(GL_COLOR_BUFFER_BIT);

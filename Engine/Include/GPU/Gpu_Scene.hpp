@@ -25,7 +25,7 @@ namespace KL {
 
 		struct Scene {
 			// Meshes
-			vector<Instance>          mesh_instances;
+			vector<Object_Instance>          mesh_instances;
 			vector<Triangle>          mesh_triangles;
 			vector<Bvh>               mesh_bvh;
 
@@ -41,16 +41,6 @@ namespace KL {
 
 			void updateTextures();
 			void f_update();
-
-			uint64 meshInstancesSize() const;
-			uint64 meshTrianglesSize() const;
-			uint64 meshBvhSize() const;
-
-			uint64 texturesSize() const;
-			uint64 textureDataSize() const;
-			uint64 pointLightsSize() const;
-			uint64 cameraLensesSize() const;
-			uint64 directionalLightsSize() const;
 
 			void printInfo() const;
 		};

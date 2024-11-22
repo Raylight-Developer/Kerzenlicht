@@ -78,15 +78,4 @@ namespace KL {
 		dmat4 getMatrix() const;
 		string serialize() const;
 	};
-
-	struct Observable {
-		unordered_map<void*, function<void()>> callbacks;
-
-		Observable();
-
-		void call();
-		void addCallback(void* key, function<void()> func);
-		void removeCallback(void* key);
-		void clearCallbacks();
-	};
 }

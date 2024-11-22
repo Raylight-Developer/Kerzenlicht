@@ -43,6 +43,8 @@
     <ClInclude Include="Include\Core\Utils\Inline\Templates\BiMap.hpp" />
     <ClInclude Include="Include\Core\Utils\Inline\Templates\Observable_Map.hpp" />
     <ClInclude Include="Include\Core\Utils\Inline\Templates\Observable_BiMap.hpp" />
+    <ClInclude Include="Include\Core\Utils\Inline\Templates\Observable.hpp" />
+    <ClInclude Include="Include\Core\Utils\Base.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Core\Utils\Session.cpp">

@@ -168,7 +168,7 @@ vec3 f_barycentricCoords(in vec3 hit_pos, in vec3 vertex_a, in vec3 vertex_b, in
 //-------------------------------------------------------------------------------------------------
 Triangle_Hit_Info f_closestTriangle(in Ray ray, in uint root_node_index) {
 	Triangle_Hit_Info result;
-	result.triangle_index = -1;
+	result.triangle_index = MAX_UINT;
 	result.hit_distance = MAX_DIST;
 
 	uint stack[32];
@@ -177,7 +177,7 @@ Triangle_Hit_Info f_closestTriangle(in Ray ray, in uint root_node_index) {
 	
 	while (stackIndex > 0) {
 		Bvh node = mesh_bvh[stack[--stackIndex]];
-		bool isLeaf = node.tri_count > 0;
+		bool isLeaf = node.tri_count < MAX_UINT;
 
 		if (isLeaf) {
 			for (uint i = 0; i < node.tri_count; i++) {
@@ -220,47 +220,25 @@ void f_sceneIntersection(in Ray ray, inout Hit hit_data) {
 	float t_dist = MAX_DIST;
 	float bvh_t_length = MAX_DIST;
 
-	// Bvh Top-Down traversal
-	for (uint i = 0; i < mesh_bvh.length(); i++) {
-		Bvh node = mesh_bvh[i];
-		if (f_rayBvhIntersection(
-			ray,
-			node,
-			bvh_t_length
-		)) {
-			if (bvh_t_length < MAX_DIST && bvh_t_length > EPSILON) {
-				hit_data.bvh_depth++;
-				if (node.tri_count > 0) {
-					for (uint i = node.pointer; i < node.pointer + node.tri_count; i++) {
-						Triangle tri = mesh_triangles[i];
-						if (f_rayTriangleIntersection(
-							ray,
-							tri.pos_a,
-							tri.pos_b,
-							tri.pos_c,
-							t_dist
-						)) {
-							if (t_dist < hit_data.t_dist && t_dist > EPSILON) {
-								hit_data.t_dist = t_dist;
-								hit_data.hit_pos = ray.origin + ray.direction * (t_dist - EPSILON);
-								hit_data.inside = false;
-								hit_data.mesh_hit = true;
-					
-								hit_data.uvw = f_barycentricCoords(
-									hit_data.hit_pos,
-									tri.pos_a,
-									tri.pos_b,
-									tri.pos_c
-								);
-								hit_data.material = tri.material;
-					
-								hit_data.hit_tri = tri;
-								hit_data.hit_normal = hit_data.uvw.x * tri.normal_a + hit_data.uvw.y * tri.normal_b + hit_data.uvw.z * tri.normal_c;
-							}
-						}
-					}
-				}
-			}
+	for (uint i = 0; i <= mesh_instances.length(); i++) {
+		Triangle_Hit_Info triangle_hit = f_closestTriangle(ray, mesh_instances[i].object_index);
+		if (triangle_hit.triangle_index < mesh_triangles.length()) {
+			Triangle tri = mesh_triangles[triangle_hit.triangle_index];
+			hit_data.t_dist = triangle_hit.hit_distance;
+			hit_data.hit_pos = ray.origin + ray.direction * ( triangle_hit.hit_distance - EPSILON);
+			hit_data.inside = false;
+			hit_data.mesh_hit = true;
+
+			hit_data.uvw = f_barycentricCoords(
+				hit_data.hit_pos,
+				tri.pos_a,
+				tri.pos_b,
+				tri.pos_c
+			);
+			hit_data.material = tri.material;
+
+			hit_data.hit_tri = tri;
+			hit_data.hit_normal = hit_data.uvw.x * tri.normal_a + hit_data.uvw.y * tri.normal_b + hit_data.uvw.z * tri.normal_c;
 		}
 	}
 }

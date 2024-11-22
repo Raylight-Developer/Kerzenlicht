@@ -11,6 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Include\Core\Utils\Base.hpp" />
     <ClInclude Include="Include\Core\Utils\Inline\Templates\BiMap.hpp" />
     <ClInclude Include="Include\Core.hpp" />
     <ClInclude Include="Include\Core\Core\History.hpp" />
@@ -21,6 +22,7 @@
     <ClInclude Include="Include\Core\Utils\Inline\String.hpp" />
     <ClInclude Include="Include\Core\Utils\Inline\Templates.hpp" />
     <ClInclude Include="Include\Core\Utils\Inline\Templates\List.hpp" />
+    <ClInclude Include="Include\Core\Utils\Inline\Templates\Observable.hpp" />
     <ClInclude Include="Include\Core\Utils\Inline\Templates\Observable_BiMap.hpp" />
     <ClInclude Include="Include\Core\Utils\Inline\Templates\Observable_Map.hpp" />
     <ClInclude Include="Include\Core\Utils\Inline\Templates\Observable_Pointer.hpp" />

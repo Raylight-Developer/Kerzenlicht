@@ -455,23 +455,3 @@ string KL::Transform::serialize() const {
 	value << position << " | " << euler_rotation << " | " << scale;
 	return value.str();
 }
-
-KL::Observable::Observable() {}
-
-void KL::Observable::call() {
-	for (const auto& [key, func] : callbacks) {
-		func();
-	}
-}
-
-void KL::Observable::addCallback(void* key, function<void()> func) {
-	callbacks[key] = std::move(func);
-}
-
-void KL::Observable::removeCallback(void* key) {
-	callbacks.erase(key);
-}
-
-void KL::Observable::clearCallbacks() {
-	callbacks.clear();
-}
