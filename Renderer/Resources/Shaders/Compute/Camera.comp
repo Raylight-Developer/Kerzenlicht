@@ -1,7 +1,8 @@
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
 Ray f_cameraNormRay(vec2 uv) {
-	return Ray(camera.position, normalize(camera.p_uv + (camera.p_u * uv.x) + (camera.p_v * uv.y) - camera.position));
+	vec3 dir = normalize(camera.p_uv + (camera.p_u * uv.x) + (camera.p_v * uv.y) - camera.position);
+	return Ray(camera.position, dir, 1.0 / dir);
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -16,12 +17,12 @@ Ray f_cameraRay(vec2 uv) {
 	vec3 lens_offset = camera.position + camera.x_vec * aperture_offset.x + camera.y_vec * aperture_offset.y;
 	vec3 new_direction = normalize(focal_point - lens_offset);
 
-	return Ray(camera.position, new_direction);
+	return Ray(camera.position, new_direction, 1.0 / new_direction);
 }
 
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
 Ray f_cameraOrthoRay(vec2 uv) {
 	float ortho_scale = 0.05;
-	return Ray(camera.position + (camera.p_u * uv.x * ortho_scale) + (camera.p_v * uv.y* ortho_scale), normalize(camera.z_vec));
+	return Ray(camera.position + (camera.p_u * uv.x * ortho_scale) + (camera.p_v * uv.y* ortho_scale), normalize(camera.z_vec), 1.0 / normalize(camera.z_vec));
 }

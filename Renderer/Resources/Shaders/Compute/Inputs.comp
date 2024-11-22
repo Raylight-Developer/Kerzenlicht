@@ -7,25 +7,29 @@ layout(rgba32f, binding = 1) writeonly uniform image2D raw_render_layer;
 layout(rgba32f, binding = 2) writeonly uniform image2D bvh_render_layer;
 layout(rgba32f, binding = 3) writeonly uniform image2D normal_render_layer;
 
-layout(std430, binding = 5) buffer TriangleBuffer {
-	Triangle triangles[];
+layout(std430, binding = 5) buffer MeshInstanceBuffer {
+	Instance mesh_instances[];
 };
-layout(std430, binding = 6) buffer BvhBuffer {
-	Bvh bvh_nodes[];
+layout(std430, binding = 6) buffer MeshTriangleBuffer {
+	Triangle mesh_triangles[];
 };
-layout(std430, binding = 7) buffer TextureBuffer {
+layout(std430, binding = 7) buffer MeshBvhBuffer {
+	Bvh mesh_bvh[];
+};
+
+layout(std430, binding = 8) buffer TextureBuffer {
 	Texture textures[];
 };
-layout(std430, binding = 8) buffer TextureDataBuffer {
+layout(std430, binding = 9) buffer TextureDataBuffer {
 	uint texture_data[];
 };
-layout(std430, binding = 9) buffer CameraLensesBuffer {
+layout(std430, binding = 10) buffer CameraLensesBuffer {
 	Camera_Lens camera_lenses[];
 };
-layout(std430, binding = 10) buffer PointLightBuffer {
+layout(std430, binding = 11) buffer PointLightBuffer {
 	Point_Light point_lights[];
 };
-layout(std430, binding = 11) buffer DirectionalLightBuffer {
+layout(std430, binding = 12) buffer DirectionalLightBuffer {
 	Directional_Light directional_lights[];
 };
 

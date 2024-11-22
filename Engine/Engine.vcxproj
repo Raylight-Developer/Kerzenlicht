@@ -115,6 +115,7 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Include\GPU\Gpu_Instance.hpp" />
     <ClInclude Include="Include\Core\Property.hpp" />
     <ClInclude Include="Include\GPU\Gpu_Camera.hpp" />
     <ClInclude Include="Include\GPU\Gpu_Bvh.hpp" />
@@ -148,15 +149,14 @@
     <ClInclude Include="Include\Shared.hpp" />
     <ClInclude Include="Include\Core\Scene.hpp" />
     <ClInclude Include="Include\Math\Interpolation.hpp" />
-    <ClInclude Include="Include\GPU\Bvh_Build.hpp" />
-    <ClInclude Include="Include\GPU\Octree.hpp" />
+    <ClInclude Include="Include\GPU\Gpu_Octree.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\GPU\Octree.cpp" />
+    <ClCompile Include="Source\GPU\Gpu_Instance.cpp" />
+    <ClCompile Include="Source\GPU\Gpu_Octree.cpp" />
     <ClCompile Include="Source\GPU\Gpu_Camera.cpp" />
     <ClCompile Include="Source\GPU\Gpu_Bvh.cpp" />
     <ClCompile Include="Source\GPU\Gpu_Triangle.cpp" />
-    <ClCompile Include="Source\GPU\Bvh_Build.cpp" />
     <ClCompile Include="Source\Object\Nodes\Math.cpp" />
     <ClCompile Include="Source\Math\Interpolation.cpp" />
     <ClCompile Include="Source\GPU\Gpu_Scene.cpp" />

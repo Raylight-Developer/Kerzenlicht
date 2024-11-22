@@ -98,9 +98,6 @@
     <ClInclude Include="Include\Object\Nodes\Math.hpp">
       <Filter>Include</Filter>
     </ClInclude>
-    <ClInclude Include="Include\GPU\Bvh_Build.hpp">
-      <Filter>Include</Filter>
-    </ClInclude>
     <ClInclude Include="Include\GPU\Gpu_Triangle.hpp">
       <Filter>Include</Filter>
     </ClInclude>
@@ -116,7 +113,10 @@
     <ClInclude Include="Include\Include.hpp">
       <Filter>Include</Filter>
     </ClInclude>
-    <ClInclude Include="Include\GPU\Octree.hpp">
+    <ClInclude Include="Include\GPU\Gpu_Octree.hpp">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\GPU\Gpu_Instance.hpp">
       <Filter>Include</Filter>
     </ClInclude>
   </ItemGroup>
@@ -202,9 +202,6 @@
     <ClCompile Include="Source\Object\Nodes\Math.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Source\GPU\Bvh_Build.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
     <ClCompile Include="Source\GPU\Gpu_Triangle.cpp">
       <Filter>Source</Filter>
     </ClCompile>
@@ -214,7 +211,10 @@
     <ClCompile Include="Source\GPU\Gpu_Camera.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Source\GPU\Octree.cpp">
+    <ClCompile Include="Source\GPU\Gpu_Octree.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\GPU\Gpu_Instance.cpp">
       <Filter>Source</Filter>
     </ClCompile>
   </ItemGroup>

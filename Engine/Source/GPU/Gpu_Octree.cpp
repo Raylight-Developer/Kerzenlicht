@@ -1,4 +1,4 @@
-#include "GPU/Octree.hpp"
+#include "GPU/Gpu_Octree.hpp"
 
 KL::CPU::Octree::Octree() {
 }

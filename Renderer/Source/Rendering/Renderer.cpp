@@ -356,9 +356,11 @@ void KL::Renderer::glfwScroll(GLFWwindow* window, dvec1 xoffset, dvec1 yoffset) 
 	Renderer* instance = static_cast<Renderer*>(glfwGetWindowUserPointer(window));
 	if (yoffset < 0) {
 		FILE->f_activeCamera()->transform.moveLocal(dvec3(0.0, 0.0,  25.0) * instance->camera_move_sensitivity * instance->frame_time);
+		instance->pathtracer.current_sample = 0;
 	}
 	if (yoffset > 0) {
 		FILE->f_activeCamera()->transform.moveLocal(dvec3(0.0, 0.0, -25.0) * instance->camera_move_sensitivity * instance->frame_time);
+		instance->pathtracer.current_sample = 0;
 	}
 }
 

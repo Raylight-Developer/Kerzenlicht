@@ -4,11 +4,10 @@
 
 #include "Core/File.hpp"
 
+#include "Gpu_Instance.hpp"
 #include "Gpu_Triangle.hpp"
 #include "Gpu_Camera.hpp"
 #include "Gpu_Bvh.hpp"
-
-#include "Bvh_Build.hpp"
 
 // FWD DECL OTHER
 
@@ -25,8 +24,11 @@ namespace KL {
 		struct alignas(16) Directional_Light;
 
 		struct Scene {
-			vector<Triangle>          triangles;
-			vector<Bvh>               bvh_nodes;
+			// Meshes
+			vector<Instance>          mesh_instances;
+			vector<Triangle>          mesh_triangles;
+			vector<Bvh>               mesh_bvh;
+
 			vector<Texture>           textures;
 			vector<uint>              texture_data;
 			vector<Camera_Lens>       camera_lenses;
@@ -40,9 +42,11 @@ namespace KL {
 			void updateTextures();
 			void f_update();
 
-			uint64 bvhNodesSize() const;
+			uint64 meshInstancesSize() const;
+			uint64 meshTrianglesSize() const;
+			uint64 meshBvhSize() const;
+
 			uint64 texturesSize() const;
-			uint64 trianglesSize() const;
 			uint64 textureDataSize() const;
 			uint64 pointLightsSize() const;
 			uint64 cameraLensesSize() const;

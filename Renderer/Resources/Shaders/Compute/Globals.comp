@@ -31,6 +31,12 @@ struct Camera_Lens {
 	float ior; // surface IOR
 };
 
+struct Instance {
+	mat4 object_matrix;
+	uint object_index;
+	vec3 padding;
+};
+
 struct Triangle {
 	vec3  pos_a;
 	float uv_a_x;
@@ -139,11 +145,17 @@ struct Material {
 struct Ray {
 	vec3 origin;
 	vec3 direction;
+	vec3 inv_direction;
 };
 
 struct Sphere {
 	vec3  position;
 	float diameter;
+};
+
+struct Triangle_Hit_Info {
+	uint  triangle_index;
+	float hit_distance;
 };
 
 struct Hit {

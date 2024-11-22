@@ -152,6 +152,7 @@ GLuint ssboBinding(const GLuint& binding, const GLuint& size, const vector<T>& d
 template GLuint ssboBinding<KL::GPU::Directional_Light>(const GLuint&, const GLuint&, const vector<KL::GPU::Directional_Light>&);
 template GLuint ssboBinding<KL::GPU::Camera_Lens>(const GLuint&, const GLuint&, const vector<KL::GPU::Camera_Lens>&);
 template GLuint ssboBinding<KL::GPU::Point_Light>(const GLuint&, const GLuint&, const vector<KL::GPU::Point_Light>&);
+template GLuint ssboBinding<KL::GPU::Instance>(const GLuint&, const GLuint&, const vector<KL::GPU::Instance>&);
 template GLuint ssboBinding<KL::GPU::Triangle>(const GLuint&, const GLuint&, const vector<KL::GPU::Triangle>&);
 template GLuint ssboBinding<KL::GPU::Texture>(const GLuint&, const GLuint&, const vector<KL::GPU::Texture>&);
 template GLuint ssboBinding<KL::GPU::Bvh>(const GLuint&, const GLuint&, const vector<KL::GPU::Bvh>&);

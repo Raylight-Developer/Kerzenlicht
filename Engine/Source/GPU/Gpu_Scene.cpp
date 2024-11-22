@@ -3,8 +3,8 @@
 #include "Utils/Session.hpp"
 
 KL::GPU::Scene::Scene() {
-	triangles = {};
-	bvh_nodes = {};
+	mesh_triangles = {};
+	mesh_bvh = {};
 	textures = {};
 	texture_data = {};
 
@@ -12,16 +12,16 @@ KL::GPU::Scene::Scene() {
 }
 
 void KL::GPU::Scene::f_init() {
-	triangles.clear();
-	bvh_nodes.clear();
+	mesh_triangles.clear();
+	mesh_bvh.clear();
 	textures.clear();
 	texture_data.clear();
 }
 
 void KL::GPU::Scene::printInfo() const {
 	cout << endl << "GPU Data:" << endl;
-	printSize("  Triangles    ", triangles);
-	printSize("  BVHs         ", bvh_nodes);
+	printSize("  Triangles    ", mesh_triangles);
+	printSize("  BVHs         ", mesh_bvh);
 	printSize("  Textures     ", textures);
 	printSize("  Texture Data ", texture_data);
 }
@@ -35,16 +35,16 @@ void KL::GPU::Scene::updateTextures() { // TODO handle different formats
 }
 
 void KL::GPU::Scene::f_update() {
-	triangles.clear();
-	bvh_nodes.clear();
+	mesh_triangles.clear();
+	mesh_bvh.clear();
 
 	for (KL::Object* object : FILE->active_scene.pointer->objects) {
 		object->f_compileMatrix();
-		vector<GPU::Triangle> mesh_triangles;
+		vector<GPU::Triangle> triangles;
 		if (object->data->type == KL::OBJECT::DATA::Type::MESH) {
 			KL::OBJECT::DATA::Mesh* mesh = object->getMesh();
 			for (KL::OBJECT::DATA::MESH::Face* face : mesh->faces) {
-				mesh_triangles.push_back(faceToGpuTri(object->transform_matrix, mesh, face));
+				triangles.push_back(faceToGpuTri(object->transform_matrix, mesh, face));
 			}
 		}
 		else if (object->data->type == KL::OBJECT::DATA::Type::GROUP) {
@@ -55,17 +55,17 @@ void KL::GPU::Scene::f_update() {
 				if (sub_object->data->type == KL::OBJECT::DATA::Type::MESH) {
 					KL::OBJECT::DATA::Mesh* mesh = sub_object->getMesh();
 					for (KL::OBJECT::DATA::MESH::Face* face : mesh->faces) {
-						mesh_triangles.push_back(faceToGpuTri(sub_object->transform_matrix, mesh, face));
+						triangles.push_back(faceToGpuTri(sub_object->transform_matrix, mesh, face));
 					}
 				}
 			}
 		}
-		const uint64 triangle_offset = triangles.size();
-		const uint bvh_depth = d_to_u(glm::log2(ul_to_d(mesh_triangles.size()) / 64.0));
+		const uint64 triangle_offset = mesh_triangles.size();
+		const uint bvh_depth = d_to_u(glm::log2(ul_to_d(triangles.size()) / 64.0));
 
-		BVH::Builder bvh_build = BVH::Builder(mesh_triangles, bvh_depth);
-		bvh_nodes.insert(bvh_nodes.end(), bvh_build.node_list.begin(), bvh_build.node_list.end());
-		triangles.insert(triangles.end(), bvh_build.triangles.begin(), bvh_build.triangles.end());
+		BVH::Builder bvh_build = BVH::Builder(triangles, bvh_depth);
+		mesh_bvh.insert(mesh_bvh.end(), bvh_build.node_list.begin(), bvh_build.node_list.end());
+		mesh_triangles.insert(mesh_triangles.end(), bvh_build.triangles.begin(), bvh_build.triangles.end());
 	}
 
 	camera_lenses.clear();
@@ -74,16 +74,20 @@ void KL::GPU::Scene::f_update() {
 	}
 }
 
-uint64 KL::GPU::Scene::bvhNodesSize() const {
-	return sizeof(GPU::Bvh) * bvh_nodes.size();
+uint64 KL::GPU::Scene::meshInstancesSize() const {
+	return sizeof(GPU::Instance) * mesh_instances.size();
+}
+
+uint64 KL::GPU::Scene::meshTrianglesSize() const {
+	return sizeof(GPU::Triangle) * mesh_triangles.size();
+}
+
+uint64 KL::GPU::Scene::meshBvhSize() const {
+	return sizeof(GPU::Bvh) * mesh_bvh.size();
 }
 
 uint64 KL::GPU::Scene::texturesSize() const {
 	return sizeof(GPU::Texture) * textures.size();
-}
-
-uint64 KL::GPU::Scene::trianglesSize() const {
-	return sizeof(GPU::Triangle) * triangles.size();
 }
 
 uint64 KL::GPU::Scene::textureDataSize() const {

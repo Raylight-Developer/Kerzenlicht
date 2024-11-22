@@ -40,7 +40,7 @@
     <ClInclude Include="Include\Core\Utils\Inline\Templates\Observable_Pointer.hpp" />
     <ClInclude Include="Include\Core\Utils\Inline\Templates\Observable_Vector.hpp" />
     <ClInclude Include="Include\Core\Utils\Inline\Templates\List.hpp" />
-    <ClInclude Include="Include\Core\Utils\Inline\Templates\Bidirectional_Map.hpp" />
+    <ClInclude Include="Include\Core\Utils\Inline\Templates\BiMap.hpp" />
     <ClInclude Include="Include\Core\Utils\Inline\Templates\Observable_Map.hpp" />
     <ClInclude Include="Include\Core\Utils\Inline\Templates\Observable_BiMap.hpp" />
   </ItemGroup>

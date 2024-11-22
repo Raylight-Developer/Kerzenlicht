@@ -52,6 +52,7 @@ void KL::PathTracer::f_initialize() {
 	data["ssbo 9"] = 0;
 	data["ssbo 10"] = 0;
 	data["ssbo 11"] = 0;
+	data["ssbo 12"] = 0;
 
 	glViewport(0, 0, resolution.x, resolution.y);
 	glClearColor(0, 0, 0, 0);
@@ -114,21 +115,24 @@ void KL::PathTracer::f_tickUpdate() {
 	GLint ssboMaxSize;
 	glGetIntegerv(GL_MAX_SHADER_STORAGE_BLOCK_SIZE, &ssboMaxSize);
 
+
 	glDeleteBuffers(1, &data["ssbo 5"]);
 	glDeleteBuffers(1, &data["ssbo 6"]);
 	glDeleteBuffers(1, &data["ssbo 7"]);
+	data["ssbo 5"]  = ssboBinding(5, ul_to_u(gpu_data->meshInstancesSize()) , gpu_data->mesh_instances);
+	data["ssbo 6"]  = ssboBinding(6, ul_to_u(gpu_data->meshTrianglesSize()) , gpu_data->mesh_triangles);
+	data["ssbo 7"]  = ssboBinding(7, ul_to_u(gpu_data->meshBvhSize())       , gpu_data->mesh_bvh);
+
 	glDeleteBuffers(1, &data["ssbo 8"]);
 	glDeleteBuffers(1, &data["ssbo 9"]);
 	glDeleteBuffers(1, &data["ssbo 10"]);
 	glDeleteBuffers(1, &data["ssbo 11"]);
-
-	data["ssbo 5"]  = ssboBinding(5,  ul_to_u(gpu_data->trianglesSize())   , gpu_data->triangles);
-	data["ssbo 6"]  = ssboBinding(6,  ul_to_u(gpu_data->bvhNodesSize())    , gpu_data->bvh_nodes);
-	data["ssbo 7"]  = ssboBinding(7,  ul_to_u(gpu_data->texturesSize())    , gpu_data->textures);
-	data["ssbo 8"]  = ssboBinding(8,  ul_to_u(gpu_data->textureDataSize()) , gpu_data->texture_data);
-	data["ssbo 9"]  = ssboBinding(9,  ul_to_u(gpu_data->cameraLensesSize()), gpu_data->camera_lenses);
-	data["ssbo 10"] = ssboBinding(10, ul_to_u(gpu_data->pointLightsSize()) , gpu_data->point_lights);
-	data["ssbo 11"] = ssboBinding(11, ul_to_u(gpu_data->directionalLightsSize()), gpu_data->directional_lights);
+	glDeleteBuffers(1, &data["ssbo 12"]);
+	data["ssbo 8"]  = ssboBinding(8,  ul_to_u(gpu_data->texturesSize())    , gpu_data->textures);
+	data["ssbo 9"]  = ssboBinding(9,  ul_to_u(gpu_data->textureDataSize()) , gpu_data->texture_data);
+	data["ssbo 10"] = ssboBinding(10, ul_to_u(gpu_data->cameraLensesSize()), gpu_data->camera_lenses);
+	data["ssbo 11"] = ssboBinding(11, ul_to_u(gpu_data->pointLightsSize()) , gpu_data->point_lights);
+	data["ssbo 12"] = ssboBinding(12, ul_to_u(gpu_data->directionalLightsSize()), gpu_data->directional_lights);
 }
 
 void KL::PathTracer::f_recompile() {
@@ -168,6 +172,7 @@ void KL::PathTracer::f_cleanup() {
 	glDeleteBuffers(1, &data["ssbo 9"]);
 	glDeleteBuffers(1, &data["ssbo 10"]);
 	glDeleteBuffers(1, &data["ssbo 11"]);
+	glDeleteBuffers(1, &data["ssbo 12"]);
 
 	glDeleteTextures(1, &data["accumulation_render_layer"]);
 	glDeleteTextures(1, &data["normal_render_layer      "]);

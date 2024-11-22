@@ -3,7 +3,10 @@
 #include "Types.hpp"
 
 #include "Templates/List.hpp"
-#include "Templates/Bidirectional_Map.hpp"
+#include "Templates/BiMap.hpp"
+
+#include "Templates/Observable_Map.hpp"
+#include "Templates/Observable_BiMap.hpp"
 #include "Templates/Observable_Vector.hpp"
 #include "Templates/Observable_Pointer.hpp"
 
@@ -17,7 +20,6 @@ namespace KL {
 	struct Confirm {
 		bool confirmed;
 		T data;
-
 		Confirm() {
 			data = T();
 			confirmed = false;

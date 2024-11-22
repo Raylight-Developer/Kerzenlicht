@@ -18,8 +18,6 @@ namespace KL {
 		unordered_map<void*, function<void(const T*)>> item_removed_callbacks;
 		unordered_map<void*, function<void(const T*)>> item_replaced_callbacks;
 
-		Observable_List() : internal_vector({}) {}
-
 		void onItemAddedCallback(void* key, function<void(const T*)> func) {
 			item_added_callbacks[key] = std::move(func);
 		}
