@@ -48,7 +48,8 @@ namespace KL {
 			bool loadFromFile(const string& file_path);
 			static Texture fromFile(const string& file_path);
 
-			vector<uint> toRgba8Texture() const;
+			vector<uint> toPackedRgba8Texture() const;
+			vector<unsigned char> toRgba8Texture() const;
 		};
 	}
 

@@ -17,17 +17,25 @@ KL::SHADER::Texture KL::SHADER::Texture::fromFile(const string& file_path) {
 	return tex;
 }
 
-vector<uint> KL::SHADER::Texture::toRgba8Texture() const {
-	vector<uint> packedData;
+vector<uint> KL::SHADER::Texture::toPackedRgba8Texture() const {
+	vector<uint> result;
 	for (uint i = 0; i < resolution.x * resolution.y; i++) {
 		uint r = data[i * 4 + 0];
 		uint g = data[i * 4 + 1];
 		uint b = data[i * 4 + 2];
 		uint a = data[i * 4 + 3];
 		uint rgba = (r << 24) | (g << 16) | (b << 8) | a;
-		packedData.push_back(rgba);
+		result.push_back(rgba);
 	}
-	return packedData;
+	return result;
+}
+
+vector<unsigned char> KL::SHADER::Texture::toRgba8Texture() const {
+	vector<unsigned char> result;
+	for (uint i = 0; i < resolution.x * resolution.y * 4; i++) {
+		result.push_back(static_cast<unsigned char>(data[i]));
+	}
+	return result;
 }
 
 KL::Shader::Shader() :
@@ -136,7 +144,7 @@ bool KL::SHADER::Texture::loadFromFile(const string & file_path) { // TODO handl
 	}
 	uint64 totalPixels = width * height * 4;
 	data = vector<uint>(totalPixels);
-	for (uint64 i = 0; i < totalPixels; ++i) {
+	for (uint64 i = 0; i < totalPixels; i++) {
 		data[i] = static_cast<uint>(tex_data[i]);
 	}
 

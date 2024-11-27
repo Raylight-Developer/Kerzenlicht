@@ -5,7 +5,7 @@
 KL::GPU::Scene::Scene() {
 	mesh_instances = {};
 	mesh_triangles = {};
-	mesh_bvh = {};
+	mesh_blas = {};
 
 	textures = {};
 	texture_data = {};
@@ -16,25 +16,28 @@ KL::GPU::Scene::Scene() {
 void KL::GPU::Scene::f_init() {
 	mesh_instances.clear();
 	mesh_triangles.clear();
-	mesh_bvh.clear();
+	mesh_blas.clear();
 
 	textures.clear();
 	texture_data.clear();
 }
 
 void KL::GPU::Scene::printInfo() const {
-	cout << endl << "GPU Data:" << endl;
-	printSize("  Mesh Instances    ", mesh_instances);
-	printSize("  Mesh Triangles    ", mesh_triangles);
-	printSize("  Mesh BVHs         ", mesh_bvh);
+	cout << endl << "GPU Vram Information" << endl;
+	const uint label_size = 16;
+	printSizeHeader(label_size);
 
-	printSize("  Textures     ", textures);
-	printSize("  Texture Data ", texture_data);
+	printSizeRow("Mesh Instances ", label_size, mesh_instances);
+	printSizeRow("Mesh Triangles ", label_size, mesh_triangles);
+	printSizeRow("Mesh BVHs      ", label_size, mesh_blas);
+
+	printSizeRow("Textures       ", label_size, textures);
+	printSizeRow("Texture Data   ", label_size, texture_data);
 }
 
 void KL::GPU::Scene::updateTextures() { // TODO handle different formats
 	for (SHADER::Texture* texture : FILE->textures) {
-		vector<uint> data = texture->toRgba8Texture();
+		vector<uint> data = texture->toPackedRgba8Texture();
 		textures.push_back(GPU::Texture(ul_to_u(texture_data.size()), texture->resolution.x, texture->resolution.y, 0));
 		texture_data.insert(texture_data.end(), data.begin(), data.end());
 	}
@@ -43,12 +46,14 @@ void KL::GPU::Scene::updateTextures() { // TODO handle different formats
 void KL::GPU::Scene::f_update() {
 	mesh_instances.clear();
 	mesh_triangles.clear();
-	mesh_bvh.clear();
+	mesh_blas.clear();
+
+	vector<uint64> blas_tracker;
 
 	//mesh_instances.push_back(Object_Instance(mat4(1.0), ul_to_u(mesh_bvh.size())));
 	for (KL::Object* object : FILE->active_scene.pointer->objects) {
 		object->f_compileMatrix();
-		mesh_instances.push_back(Object_Instance(d_to_f(object->transform_matrix), ul_to_u(mesh_bvh.size())));
+		mesh_instances.push_back(Object_Instance(d_to_f(object->transform_matrix), ul_to_u(mesh_blas.size())));
 
 		vector<GPU::Triangle> triangles;
 		if (object->data->type == KL::OBJECT::DATA::Type::MESH) {
@@ -71,11 +76,12 @@ void KL::GPU::Scene::f_update() {
 			}
 		}
 		const uint64 triangle_offset = mesh_triangles.size();
-		const uint bvh_depth = d_to_u(glm::log2(ul_to_d(triangles.size()) / 64.0));
+		const uint bvh_depth = max(1u, min(32u, d_to_u(pow(ul_to_d(triangles.size()), 0.25))));
 
-		BVH::Builder bvh_build = BVH::Builder(triangles, bvh_depth);
-		mesh_bvh.insert(mesh_bvh.end(), bvh_build.node_list.begin(), bvh_build.node_list.end());
-		mesh_triangles.insert(mesh_triangles.end(), bvh_build.triangles.begin(), bvh_build.triangles.end());
+		BVH::BLAS blas = BVH::BLAS(triangles, bvh_depth);
+		blas_tracker.push_back(mesh_blas.size());
+		mesh_blas.insert(mesh_blas.end(), blas.mesh_blas.begin(), blas.mesh_blas.end());
+		mesh_triangles.insert(mesh_triangles.end(), blas.mesh_triangles.begin(), blas.mesh_triangles.end());
 	}
 
 	//camera_lenses.clear();

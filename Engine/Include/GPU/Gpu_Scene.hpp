@@ -25,9 +25,9 @@ namespace KL {
 
 		struct Scene {
 			// Meshes
-			vector<Object_Instance>          mesh_instances;
+			vector<Object_Instance>   mesh_instances;
 			vector<Triangle>          mesh_triangles;
-			vector<Bvh>               mesh_bvh;
+			vector<Bvh>               mesh_blas;
 
 			vector<Texture>           textures;
 			vector<uint>              texture_data;

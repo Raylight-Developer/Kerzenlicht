@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "Types.hpp"
 
@@ -58,6 +58,20 @@ uint len32(const vector<T>& vector) {
 template<typename T>
 void printSize(const string& label, const vector<T>& value) {
 	cout << fixed << setprecision(2) << label << "<" << value.size() << "> | " << static_cast<double>(sizeof(T) * value.size()) / (1024.0 * 1024.0) << " mb | " << static_cast<double>(sizeof(T) * value.size()) / 1024.0 << " kb | " << sizeof(T) * value.size() << " b" << endl;
+};
+
+inline void printSizeHeader(const uint& label_len) {
+	uint len = label_len > 5 ? label_len : 6;
+
+	cout << std::setw(len) << std::left << "Label" << " │ Count       │ Mb          │ Kb            │ b               " << endl;
+	for (uint i = 0; i < len - 6; i++) {
+		cout << "─";
+	}
+	cout << "───────┼─────────────┼─────────────┼───────────────┼─────────────────" << endl;
+}
+template<typename T>
+void printSizeRow(const string& label, const uint& label_len, const vector<T>& value) {
+	cout << std::setw(label_len) << std::left << label << " │ " << std::setw(11) << std::left << value.size() << " │ " << std::setw(11) << std::left << d_to_ul(round(ul_to_d(sizeof(T) * value.size()) / (1024.0 * 1024.0))) << " │ " << std::setw(13) << std::left  << d_to_ul(round(ul_to_d(sizeof(T) * value.size()) / 1024.0)) << " │ " << std::setw(15) << std::left  << sizeof(T) * value.size() << endl;
 };
 
 template<typename T>

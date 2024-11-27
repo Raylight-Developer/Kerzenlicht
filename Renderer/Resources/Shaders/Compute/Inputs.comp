@@ -1,38 +1,45 @@
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
-layout(local_size_x = 32, local_size_y = 32, local_size_z = 1) in;
+layout(local_size_x = 8, local_size_y = 8, local_size_z = 1) in;
 
+// Render Layers
 layout(rgba32f, binding = 0)           uniform image2D accumulation_render_layer;
 layout(rgba32f, binding = 1) writeonly uniform image2D raw_render_layer;
 layout(rgba32f, binding = 2) writeonly uniform image2D bvh_render_layer;
 layout(rgba32f, binding = 3) writeonly uniform image2D normal_render_layer;
 
+// SSBOs
 layout(std430, binding = 4) buffer Mesh_Instance_Buffer {
 	Object_Instance mesh_instances[];
 };
 layout(std430, binding = 5) buffer Mesh_Triangle_Buffer {
 	Triangle mesh_triangles[];
 };
-layout(std430, binding = 6) buffer Mesh_Bvh_Buffer {
-	Bvh mesh_bvh[];
+layout(std430, binding = 6) buffer Mesh_Blas_Buffer {
+	Bvh mesh_blas[];
+};
+layout(std430, binding = 7) buffer Mesh_Tlas_Buffer {
+	Bvh mesh_tlas[];
 };
 
-layout(std430, binding = 7) buffer Texture_Buffer {
+
+layout(std430, binding = 8) buffer Texture_Buffer {
 	Texture textures[];
 };
-layout(std430, binding = 8) buffer Texture_Data_Buffer {
+layout(std430, binding = 9) buffer Texture_Data_Buffer {
 	uint texture_data[];
 };
-layout(std430, binding = 9) buffer Camera_Lenses_Buffer {
+layout(std430, binding = 10) buffer Camera_Lenses_Buffer {
 	Camera_Lens camera_lenses[];
 };
-layout(std430, binding = 10) buffer Point_Light_Buffer {
+layout(std430, binding = 11) buffer Point_Light_Buffer {
 	Point_Light point_lights[];
 };
-layout(std430, binding = 11) buffer Directional_Light_Buffer {
+layout(std430, binding = 12) buffer Directional_Light_Buffer {
 	Directional_Light directional_lights[];
 };
 
+// Uniforms
 uniform uint  frame_count;
 uniform float aspect_ratio;
 uniform float current_time;

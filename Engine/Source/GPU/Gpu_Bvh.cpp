@@ -26,8 +26,16 @@ vec3 KL::GPU::Bvh::getCenter() const {
 	return (p_min + p_max) / 2.0f;
 }
 
-KL::GPU::BVH::Builder::Builder(const vector<GPU::Triangle>& triangles, const uint& depth) :
-	triangles(triangles)
+KL::GPU::BVH::Tri::Tri(const vec3& p_min, const vec3& p_max, const vec3& center, const uint64& index, const GPU::Triangle& tri) :
+	center(center),
+	p_min(p_min),
+	p_max(p_max),
+	index(index),
+	tri(tri)
+{}
+
+KL::GPU::BVH::BLAS::BLAS(const vector<GPU::Triangle>& triangles, const uint& depth) :
+	mesh_triangles(triangles)
 {
 	for (uint i = 0; i < len32(triangles); i++) {
 		const vec3 a = triangles[i].pos_a;
@@ -40,17 +48,17 @@ KL::GPU::BVH::Builder::Builder(const vector<GPU::Triangle>& triangles, const uin
 		mesh_bounds.growToInclude(min, max);
 	}
 
-	node_list.push_back(mesh_bounds);
+	mesh_blas.push_back(mesh_bounds);
 	splitBvh(0, 0, len32(triangles), depth);
 
-	this->triangles.clear();
+	this->mesh_triangles.clear();
 	for (uint i = 0; i < len32(bvh_tris); i++) {
-		this->triangles.push_back(bvh_tris[i].tri);
+		this->mesh_triangles.push_back(bvh_tris[i].tri);
 	}
 }
 
-void KL::GPU::BVH::Builder::splitBvh(const uint& parentIndex, const uint& triGlobalStart, const uint& triNum, const uint& depth) {
-	GPU::Bvh parent = node_list[parentIndex];
+void KL::GPU::BVH::BLAS::splitBvh(const uint& parentIndex, const uint& triGlobalStart, const uint& triNum, const uint& depth) {
+	GPU::Bvh parent = mesh_blas[parentIndex];
 	vec3 size = parent.getSize();
 	vec1 parentCost = nodeCost(size, triNum);
 
@@ -84,13 +92,13 @@ void KL::GPU::BVH::Builder::splitBvh(const uint& parentIndex, const uint& triGlo
 		uint triStartLeft = triGlobalStart;
 		uint triStartRight = triGlobalStart + numOnLeft;
 
-		node_list.push_back(GPU::Bvh(boundsLeft.p_min, boundsLeft.p_max, triStartLeft));
-		uint childIndexRight = len32(node_list);
+		mesh_blas.push_back(GPU::Bvh(boundsLeft.p_min, boundsLeft.p_max, triStartLeft));
+		uint childIndexRight = len32(mesh_blas);
 		uint childIndexLeft = childIndexRight - 1;
-		node_list.push_back(GPU::Bvh(boundsRight.p_min, boundsRight.p_max, triStartRight));
+		mesh_blas.push_back(GPU::Bvh(boundsRight.p_min, boundsRight.p_max, triStartRight));
 
 		parent.uptr = childIndexLeft;
-		node_list[parentIndex] = parent;
+		mesh_blas[parentIndex] = parent;
 
 		splitBvh(childIndexLeft, triGlobalStart, numOnLeft, depth - 1);
 		splitBvh(childIndexRight, triGlobalStart + numOnLeft, numOnRight, depth - 1);
@@ -98,11 +106,11 @@ void KL::GPU::BVH::Builder::splitBvh(const uint& parentIndex, const uint& triGlo
 	else {
 		parent.uptr = triGlobalStart;
 		parent.tri_count = triNum;
-		node_list[parentIndex] = parent;
+		mesh_blas[parentIndex] = parent;
 	}
 }
 
-void KL::GPU::BVH::Builder::splitAxis(const GPU::Bvh& node, const uint& start, const uint& count, uint8& axis, vec1& pos, vec1& cost) const {
+void KL::GPU::BVH::BLAS::splitAxis(const GPU::Bvh& node, const uint& start, const uint& count, uint8& axis, vec1& pos, vec1& cost) const {
 	if (count <= 1) {
 		axis = 0;
 		pos = 0.0f;
@@ -134,7 +142,7 @@ void KL::GPU::BVH::Builder::splitAxis(const GPU::Bvh& node, const uint& start, c
 	cost = bestCost;
 }
 
-vec1 KL::GPU::BVH::Builder::splitEval(const uint8& splitAxis, const vec1& splitPos, const uint& start, const uint& count) const {
+vec1 KL::GPU::BVH::BLAS::splitEval(const uint8& splitAxis, const vec1& splitPos, const uint& start, const uint& count) const {
 	GPU::Bvh boundsLeft = GPU::Bvh();
 	GPU::Bvh boundsRight;
 	uint numOnLeft = 0;
@@ -157,15 +165,12 @@ vec1 KL::GPU::BVH::Builder::splitEval(const uint8& splitAxis, const vec1& splitP
 	return costA + costB;
 }
 
-vec1 KL::GPU::BVH::Builder::nodeCost(const vec3& size, const uint& numTriangles) {
+vec1 KL::GPU::BVH::BLAS::nodeCost(const vec3& size, const uint& numTriangles) {
 	const vec1 halfArea = size.x * size.y + size.x * size.z + size.y * size.z;
 	return halfArea * numTriangles;
 }
 
-KL::GPU::BVH::Tri::Tri(const vec3& p_min, const vec3& p_max, const vec3& center, const uint64& index, const KL::GPU::Triangle& tri) :
-	center(center),
-	p_min(p_min),
-	p_max(p_max),
-	index(index),
-	tri(tri)
-{}
+KL::GPU::BVH::TLAS::TLAS(const vector<GPU::Bvh>&mesh_blas, const uint& depth) :
+	mesh_blas(mesh_blas)
+{
+}

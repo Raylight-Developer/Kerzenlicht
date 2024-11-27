@@ -31,7 +31,7 @@ namespace KL {
 		dvec1 aspect_ratio;
 		dvec1 render_aspect_ratio;
 		uvec2 resolution;
-		uvec2 r_resolution;
+		uvec2 render_resolution;
 
 		uint   frame_counter;
 		uint   frame_count;
@@ -56,15 +56,16 @@ namespace KL {
 
 		Renderer();
 
-		void init();
-		void exit();
+		void f_init();
+		void f_exit();
 
-		void initGlfw();
-		void initImGui();
+		void f_initGlfw();
+		void f_initImGui();
 		void f_systemInfo();
 
 		void f_pipeline();
 		void f_recompile();
+		void f_resize(const uint& width, const uint& height);
 
 		void f_tickUpdate();
 

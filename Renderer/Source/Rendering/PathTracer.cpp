@@ -45,14 +45,14 @@ void KL::PathTracer::f_initialize() {
 	data["bvh_render_layer         "] = MAX_UINT32;
 	data["raw_render_layer         "] = MAX_UINT32;
 
-	data["ssbo 4"]  = MAX_UINT32;
-	data["ssbo 5"]  = MAX_UINT32;
-	data["ssbo 6"]  = MAX_UINT32;
-	data["ssbo 7"]  = MAX_UINT32;
-	data["ssbo 8"]  = MAX_UINT32;
-	data["ssbo 9"]  = MAX_UINT32;
-	data["ssbo 10"] = MAX_UINT32;
-	data["ssbo 11"] = MAX_UINT32;
+	data["mesh_instances"]  = MAX_UINT32;
+	data["mesh_triangles"]  = MAX_UINT32;
+	data["mesh_blas"]  = MAX_UINT32;
+	data["textures"]  = MAX_UINT32;
+	data["texture_data"]  = MAX_UINT32;
+	data["camera_lenses"]  = MAX_UINT32;
+	data["point_lights"] = MAX_UINT32;
+	data["directional_lights"] = MAX_UINT32;
 
 	glViewport(0, 0, resolution.x, resolution.y);
 	glClearColor(0, 0, 0, 0);
@@ -94,8 +94,8 @@ void KL::PathTracer::f_initialize() {
 
 	f_recompile();
 
-	data["compute_layout.x"] = d_to_u(ceil(u_to_d(r_resolution.x) / 32.0));
-	data["compute_layout.y"] = d_to_u(ceil(u_to_d(r_resolution.y) / 32.0));
+	data["compute_layout.x"] = d_to_u(ceil(u_to_d(r_resolution.x) / 8.0));
+	data["compute_layout.y"] = d_to_u(ceil(u_to_d(r_resolution.y) / 8.0));
 
 	// Compute Output
 	data["accumulation_render_layer"] = renderLayer(r_resolution, renderer->display_filter);
@@ -107,28 +107,36 @@ void KL::PathTracer::f_initialize() {
 	gpu_data->updateTextures();
 	gpu_data->f_update();
 	gpu_data->printInfo();
+	data["mesh_instances"] = ssboData(gpu_data->mesh_instances);
+	data["mesh_triangles"] = ssboData(gpu_data->mesh_triangles);
+	data["mesh_blas"] = ssboData(gpu_data->mesh_blas);
+	data["textures"]  = ssboData(gpu_data->textures);
+	data["texture_data"]  = ssboData(gpu_data->texture_data);
+	data["camera_lenses"]  = ssboData(gpu_data->camera_lenses);
+	data["point_lights"] = ssboData(gpu_data->point_lights);
+	data["directional_lights"] = ssboData(gpu_data->directional_lights);
 }
 
 void KL::PathTracer::f_tickUpdate() {
-	gpu_data->f_update();
-
-	glDeleteBuffers(1, &data["ssbo 4"]);
-	glDeleteBuffers(1, &data["ssbo 5"]);
-	glDeleteBuffers(1, &data["ssbo 6"]);
-	data["ssbo 4"] = ssboData(gpu_data->mesh_instances);
-	data["ssbo 5"] = ssboData(gpu_data->mesh_triangles);
-	data["ssbo 6"] = ssboData(gpu_data->mesh_bvh);
-
-	glDeleteBuffers(1, &data["ssbo 7"]);
-	glDeleteBuffers(1, &data["ssbo 8"]);
-	glDeleteBuffers(1, &data["ssbo 9"]);
-	glDeleteBuffers(1, &data["ssbo 10"]);
-	glDeleteBuffers(1, &data["ssbo 11"]);
-	data["ssbo 7"]  = ssboData(gpu_data->textures);
-	data["ssbo 8"]  = ssboData(gpu_data->texture_data);
-	data["ssbo 9"]  = ssboData(gpu_data->camera_lenses);
-	data["ssbo 10"] = ssboData(gpu_data->point_lights);
-	data["ssbo 11"] = ssboData(gpu_data->directional_lights);
+	//gpu_data->f_update();
+	//
+	//glDeleteBuffers(1, &data["mesh_instances"]);
+	//glDeleteBuffers(1, &data["mesh_triangles"]);
+	//glDeleteBuffers(1, &data["mesh_blas"]);
+	//data["mesh_instances"] = ssboData(gpu_data->mesh_instances);
+	//data["mesh_triangles"] = ssboData(gpu_data->mesh_triangles);
+	//data["mesh_blas"] = ssboData(gpu_data->mesh_bvh);
+	//
+	//glDeleteBuffers(1, &data["textures"]);
+	//glDeleteBuffers(1, &data["texture_data"]);
+	//glDeleteBuffers(1, &data["camera_lenses"]);
+	//glDeleteBuffers(1, &data["point_lights"]);
+	//glDeleteBuffers(1, &data["directional_lights"]);
+	//data["textures"]  = ssboData(gpu_data->textures);
+	//data["texture_data"]  = ssboData(gpu_data->texture_data);
+	//data["camera_lenses"]  = ssboData(gpu_data->camera_lenses);
+	//data["point_lights"] = ssboData(gpu_data->point_lights);
+	//data["directional_lights"] = ssboData(gpu_data->directional_lights);
 }
 
 void KL::PathTracer::f_recompile() {
@@ -161,14 +169,17 @@ void KL::PathTracer::f_cleanup() {
 	glDeleteProgram(data["compute_program"]);
 	glDeleteProgram(data["display_program"]);
 
-	glDeleteBuffers(1, &data["ssbo 4"]);
-	glDeleteBuffers(1, &data["ssbo 5"]);
-	glDeleteBuffers(1, &data["ssbo 6"]);
-	glDeleteBuffers(1, &data["ssbo 7"]);
-	glDeleteBuffers(1, &data["ssbo 8"]);
-	glDeleteBuffers(1, &data["ssbo 9"]);
-	glDeleteBuffers(1, &data["ssbo 10"]);
-	glDeleteBuffers(1, &data["ssbo 11"]);
+	glDeleteBuffers(1, &data["mesh_instances"]);
+	glDeleteBuffers(1, &data["mesh_triangles"]);
+	glDeleteBuffers(1, &data["mesh_blas"]);
+	glDeleteBuffers(1, &data["mesh_tlas"]);
+
+	glDeleteBuffers(1, &data["textures"]);
+	glDeleteBuffers(1, &data["texture_data"]);
+
+	glDeleteBuffers(1, &data["camera_lenses"]);
+	glDeleteBuffers(1, &data["point_lights"]);
+	glDeleteBuffers(1, &data["directional_lights"]);
 
 	glDeleteTextures(1, &data["accumulation_render_layer"]);
 	glDeleteTextures(1, &data["normal_render_layer      "]);
@@ -206,9 +217,10 @@ void KL::PathTracer::f_resize() {
 	current_sample = 0;
 	glViewport(0, 0, resolution.x, resolution.y);
 
-	if (prev_res != r_resolution) {
-		data["compute_layout.x"] = d_to_u(ceil(u_to_d(r_resolution.x) / 32.0));
-		data["compute_layout.y"] = d_to_u(ceil(u_to_d(r_resolution.y) / 32.0));
+	if (prev_res != r_resolution) { 
+
+		data["compute_layout.x"] = d_to_u(ceil(u_to_d(r_resolution.x) / 8.0));
+		data["compute_layout.y"] = d_to_u(ceil(u_to_d(r_resolution.y) / 8.0));
 
 		glDeleteTextures(1, &data["accumulation_render_layer"]);
 		glDeleteTextures(1, &data["normal_render_layer      "]);
@@ -226,15 +238,6 @@ void KL::PathTracer::f_render() {
 	const GLuint display_program = data["display_program"];
 
 	glUseProgram(compute_program);
-	glUniform1ui(glGetUniformLocation(compute_program, "frame_count"), ul_to_u(renderer->runframe));
-	glUniform1f (glGetUniformLocation(compute_program, "aspect_ratio"), r_aspect_ratio);
-	glUniform1f (glGetUniformLocation(compute_program, "current_time"), d_to_f(renderer->current_time));
-	glUniform2ui(glGetUniformLocation(compute_program, "resolution"), r_resolution.x, r_resolution.y);
-	glUniform1ui(glGetUniformLocation(compute_program, "debug"), static_cast<GLuint>(debug));
-	glUniform1ui(glGetUniformLocation(compute_program, "current_sample"), current_sample);
-
-	glUniform1ui(glGetUniformLocation(compute_program, "ray_bounces"), 3);
-	glUniform1ui(glGetUniformLocation(compute_program, "samples_per_pixel"), 1);
 
 	mat3 vectors;
 	mat3 projections;
@@ -242,34 +245,54 @@ void KL::PathTracer::f_render() {
 	KL::OBJECT::DATA::Camera* camera = camera_object->getCamera();
 	camera->glProperties(FILE->active_scene.pointer, camera_object, vectors, projections);
 
-	glUniform3fv(glGetUniformLocation(compute_program, "camera.position"      ), 1, value_ptr(d_to_f(camera_object->transform.position)));
-	glUniform3fv(glGetUniformLocation(compute_program, "camera.x_vec"         ), 1, value_ptr(vectors[0]));
-	glUniform3fv(glGetUniformLocation(compute_program, "camera.y_vec"         ), 1, value_ptr(vectors[1]));
-	glUniform3fv(glGetUniformLocation(compute_program, "camera.z_vec"         ), 1, value_ptr(vectors[2]));
-	glUniform3fv(glGetUniformLocation(compute_program, "camera.p_uv"          ), 1, value_ptr(projections[0]));
-	glUniform3fv(glGetUniformLocation(compute_program, "camera.p_u"           ), 1, value_ptr(projections[1]));
-	glUniform3fv(glGetUniformLocation(compute_program, "camera.p_v"           ), 1, value_ptr(projections[2]));
-	glUniform1f (glGetUniformLocation(compute_program, "camera.focal_distance"), d_to_f(camera->focal_distance));
-	glUniform1f (glGetUniformLocation(compute_program, "camera.aperture"      ), d_to_f(camera->aperture));
-	glUniform1f (glGetUniformLocation(compute_program, "camera.fov"           ), d_to_f(camera->view_angle));
+	// Uniforms
+	{
+		glUniform1ui(glGetUniformLocation(compute_program, "frame_count"      ), ul_to_u(renderer->runframe));
+		glUniform1f (glGetUniformLocation(compute_program, "aspect_ratio"     ), r_aspect_ratio);
+		glUniform1f (glGetUniformLocation(compute_program, "current_time"     ), d_to_f(renderer->current_time));
+		glUniform2ui(glGetUniformLocation(compute_program, "resolution"       ), r_resolution.x, r_resolution.y);
+		glUniform1ui(glGetUniformLocation(compute_program, "debug"            ), static_cast<GLuint>(debug));
+		glUniform1ui(glGetUniformLocation(compute_program, "current_sample"   ), current_sample);
+		glUniform1ui(glGetUniformLocation(compute_program, "ray_bounces"      ), 3);
+		glUniform1ui(glGetUniformLocation(compute_program, "samples_per_pixel"), 1);
 
-	glBindImageTexture(0, data["accumulation_render_layer"], 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
-	glBindImageTexture(1, data["raw_render_layer         "], 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
-	glBindImageTexture(2, data["bvh_render_layer         "], 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
-	glBindImageTexture(3, data["normal_render_layer      "], 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 4,  data["ssbo 4"]);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 5,  data["ssbo 5"]);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 6,  data["ssbo 6"]);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 7,  data["ssbo 7"]);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 8,  data["ssbo 8"]);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 9,  data["ssbo 9"]);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 10, data["ssbo 10"]);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 11, data["ssbo 11"]);
+		glUniform3fv(glGetUniformLocation(compute_program, "camera.position"      ), 1, value_ptr(d_to_f(camera_object->transform.position)));
+		glUniform3fv(glGetUniformLocation(compute_program, "camera.x_vec"         ), 1, value_ptr(vectors[0]));
+		glUniform3fv(glGetUniformLocation(compute_program, "camera.y_vec"         ), 1, value_ptr(vectors[1]));
+		glUniform3fv(glGetUniformLocation(compute_program, "camera.z_vec"         ), 1, value_ptr(vectors[2]));
+		glUniform3fv(glGetUniformLocation(compute_program, "camera.p_uv"          ), 1, value_ptr(projections[0]));
+		glUniform3fv(glGetUniformLocation(compute_program, "camera.p_u"           ), 1, value_ptr(projections[1]));
+		glUniform3fv(glGetUniformLocation(compute_program, "camera.p_v"           ), 1, value_ptr(projections[2]));
+		glUniform1f (glGetUniformLocation(compute_program, "camera.focal_distance"), d_to_f(camera->focal_distance));
+		glUniform1f (glGetUniformLocation(compute_program, "camera.aperture"      ), d_to_f(camera->aperture));
+		glUniform1f (glGetUniformLocation(compute_program, "camera.fov"           ), d_to_f(camera->view_angle));
+	}
+	// Render Layers
+	{
+		glBindImageTexture(0, data["accumulation_render_layer"], 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
+		glBindImageTexture(1, data["raw_render_layer         "], 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
+		glBindImageTexture(2, data["bvh_render_layer         "], 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
+		glBindImageTexture(3, data["normal_render_layer      "], 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
+	}
+	// SSBOs
+	{
+		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 4, data["mesh_instances"]);
+		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 5, data["mesh_triangles"]);
+		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 6, data["mesh_blas"]);
+		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 7, data["mesh_tlas"]);
+
+		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 8, data["textures"]);
+		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 9, data["texture_data"]);
+
+		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 10, data["camera_lenses"]);
+		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 11, data["point_lights"]);
+		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 12, data["directional_lights"]);
+	}
 
 	glDispatchCompute(data["compute_layout.x"], data["compute_layout.y"], 1);
 
 	glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
-	//glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
+	glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
 
 	glUseProgram(display_program);
 	glClear(GL_COLOR_BUFFER_BIT);

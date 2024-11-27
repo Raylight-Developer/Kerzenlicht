@@ -18,8 +18,8 @@ KL::Renderer::Renderer() {
 	resolution = uvec2(3840U, 2160U);
 	aspect_ratio = u_to_d(resolution.x) / u_to_d(resolution.y);
 
-	r_resolution = uvec2(2100U, 900U);
-	render_aspect_ratio = u_to_d(r_resolution.x) / u_to_d(r_resolution.y);
+	render_resolution = uvec2(2100U, 900U);
+	render_aspect_ratio = u_to_d(render_resolution.x) / u_to_d(render_resolution.y);
 
 	camera_move_sensitivity = 0.05;
 	camera_view_sensitivity = 100.0;
@@ -33,8 +33,8 @@ KL::Renderer::Renderer() {
 	frame_time = FPS_60;
 	last_time = 0.0;
 
-	render_mode = Mode::RASTERIZATION;
-	direct_render = true;
+	render_mode = Mode::PATHTRACING;
+	direct_render = false;
 	display_filter = GL_NEAREST; // GL_LINEAR for no filtering
 }
 
@@ -181,11 +181,26 @@ void KL::Renderer::f_recompile() {
 	rasterizer.f_recompile();
 }
 
+void KL::Renderer::f_resize(const uint& width, const uint& height) {
+	resolution.x = width;
+	resolution.y = height;
+	aspect_ratio = u_to_d(resolution.x) / u_to_d(resolution.y);
+	current_mouse = dvec2(resolution) / 2.0;
+	last_mouse = current_mouse;
+	runframe = 0;
+	if (render_mode == Mode::PATHTRACING) {
+		pathtracer.f_resize();
+	}
+	else if (render_mode == Mode::RASTERIZATION) {
+		rasterizer.f_resize();
+	}
+}
+
 uvec2 KL::Renderer::f_res() const {
 	if (direct_render) {
 		return resolution;
 	}
-	return r_resolution;
+	return render_resolution;
 }
 
 dvec1 KL::Renderer::f_aspectRatio() const {
@@ -195,15 +210,15 @@ dvec1 KL::Renderer::f_aspectRatio() const {
 	return render_aspect_ratio;
 }
 
-void KL::Renderer::init() {
-	initGlfw();
-	initImGui();
+void KL::Renderer::f_init() {
+	f_initGlfw();
+	f_initImGui();
 	f_systemInfo();
 
 	f_pipeline();
 }
 
-void KL::Renderer::exit() {
+void KL::Renderer::f_exit() {
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplGlfw_Shutdown();
 	ImGui::DestroyContext();
@@ -212,7 +227,7 @@ void KL::Renderer::exit() {
 	glfwTerminate();
 }
 
-void KL::Renderer::initGlfw() {
+void KL::Renderer::f_initGlfw() {
 	glfwInit();
 
 	glfwWindowHint(GLFW_MAXIMIZED, GLFW_TRUE);
@@ -223,7 +238,10 @@ void KL::Renderer::initGlfw() {
 	GLFWmonitor* monitor = glfwGetPrimaryMonitor();
 	const GLFWvidmode* mode = glfwGetVideoMode(monitor);
 
-	resolution = uvec2(mode->width, mode->height);
+	int x, y, width, height;
+	glfwGetMonitorWorkarea(monitor, &x, &y, &width, &height);
+
+	resolution = uvec2(width, height);
 	aspect_ratio = u_to_d(resolution.x) / u_to_d(resolution.y);
 	last_mouse = glm::dvec2(resolution) / 2.0;
 
@@ -231,10 +249,10 @@ void KL::Renderer::initGlfw() {
 
 	//SHADER::Texture icon = SHADER::Texture();
 	//if (icon.loadFromFile("./Resources/Icon.png")) {
-	//	GLFWimage image_icon;
+	//	GLFWimage image_icon = GLFWimage();
 	//	image_icon.width = icon.resolution.x;
 	//	image_icon.height = icon.resolution.y;
-	//	image_icon.pixels = icon.data.data();
+	//	image_icon.pixels = icon.toRgba8Texture().data();
 	//	glfwSetWindowIcon(window, 1, &image_icon);
 	//}
 
@@ -244,7 +262,7 @@ void KL::Renderer::initGlfw() {
 	}
 
 	glfwMakeContextCurrent(window);
-	glfwSwapInterval(true); // Frame-rate Cap
+	glfwSwapInterval(false); // Frame-rate Cap
 	gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
 
 	glfwSetWindowUserPointer(window, this);
@@ -256,12 +274,12 @@ void KL::Renderer::initGlfw() {
 	glfwSetKeyCallback(window, glfwKey);
 }
 
-void KL::Renderer::initImGui() {
+void KL::Renderer::f_initImGui() {
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 	ImGuiIO& io = ImGui::GetIO(); (void)io;
-	io.FontGlobalScale = 1.25f;// 2.25f;
-	io.IniFilename = "./Resources/GUI_state.ini";// nullptr;
+	io.FontGlobalScale = f_map((1920.0f * 1080.0f), (3840.0f * 2160.0f), 1.0f, 2.25f, vec1(resolution.x * resolution.y));
+	io.IniFilename = nullptr; // "./Resources/GUI_state.ini"
 	//io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
 	//io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
 
@@ -308,19 +326,7 @@ void KL::Renderer::f_systemInfo() {
 }
 
 void KL::Renderer::glfwFramebufferSize(GLFWwindow* window, int width, int height) {
-	Renderer* instance = static_cast<Renderer*>(glfwGetWindowUserPointer(window));
-	instance->resolution.x = width;
-	instance->resolution.y = height;
-	instance->aspect_ratio = u_to_d(instance->resolution.x) / u_to_d(instance->resolution.y);
-	instance->current_mouse = dvec2(instance->resolution) / 2.0;
-	instance->last_mouse = instance->current_mouse;
-	instance->runframe = 0;
-	if (instance->render_mode == Mode::PATHTRACING) {
-		instance->pathtracer.f_resize();
-	}
-	else if (instance->render_mode == Mode::RASTERIZATION) {
-		instance->rasterizer.f_resize();
-	}
+	static_cast<Renderer*>(glfwGetWindowUserPointer(window))->f_resize(i_to_u(width), i_to_u(height));
 }
 
 void KL::Renderer::glfwMouseButton(GLFWwindow* window, int button, int action, int mods) {
