@@ -75,16 +75,7 @@ vec3 f_refract(vec3 rayDirection, vec3 normal, float iorInside, float iorOutside
 }
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
-vec4 sampleTextureRgba8u(in Texture tex, in vec2 uv) {
-	uint x = uint(uv.x * float(tex.width));
-	uint y = uint(uv.y * float(tex.height));
-
-	x = clamp(x, 0, tex.width - 1);
-	y = clamp(y, 0, tex.height - 1);
-
-	uint index = tex.start + y * tex.width + x;
-	uint color = texture_data[index];
-
+vec4 f_unpackRgba8u(uint color) {
 	return vec4(
 		float((color >> 24) & 0xFF) / 255.0,
 		float((color >> 16) & 0xFF) / 255.0,
@@ -94,7 +85,68 @@ vec4 sampleTextureRgba8u(in Texture tex, in vec2 uv) {
 }
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
-vec4 sampleTextureRgba16f(in Texture tex, in vec2 uv) {
+vec4 f_bilinearSampleTextureRgba8u(in Texture tex, in vec2 uv) {
+	// Scale UVs to pixel space
+	float x = uv.x * float(tex.width) - 0.5;
+	float y = uv.y * float(tex.height) - 0.5;
+
+	// Integer coordinates of the top-left texel
+	uint x0 = uint(floor(x));
+	uint y0 = uint(floor(y));
+
+	// Fractional parts for interpolation
+	float fx = fract(x);
+	float fy = fract(y);
+
+	// Clamp coordinates to texture bounds
+	x0 = clamp(x0, 0u, tex.width - 1u);
+	y0 = clamp(y0, 0u, tex.height - 1u);
+	uint x1 = min(x0 + 1u, tex.width - 1u);
+	uint y1 = min(y0 + 1u, tex.height - 1u);
+
+	// Fetch the four surrounding texels
+	uint idx00 = tex.start + y0 * tex.width + x0;
+	uint idx10 = tex.start + y0 * tex.width + x1;
+	uint idx01 = tex.start + y1 * tex.width + x0;
+	uint idx11 = tex.start + y1 * tex.width + x1;
+
+	vec4 color00 = f_unpackRgba8u(texture_data[idx00]);
+	vec4 color10 = f_unpackRgba8u(texture_data[idx10]);
+	vec4 color01 = f_unpackRgba8u(texture_data[idx01]);
+	vec4 color11 = f_unpackRgba8u(texture_data[idx11]);
+
+	// Perform bilinear interpolation
+	vec4 color0 = mix(color00, color10, fx);
+	vec4 color1 = mix(color01, color11, fx);
+	vec4 result = mix(color0, color1, fy);
+
+	return result;
+}
+//-------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
+vec4 f_sampleTextureRgba8u(in Texture tex, in vec2 uv) {
+	uint filtering;
+	uint format;
+	f_unpackUint(tex.format, format, filtering);
+
+	if (filtering == 1) {
+		return f_bilinearSampleTextureRgba8u(tex, uv);
+	}
+
+	uint x = uint(uv.x * float(tex.width));
+	uint y = uint(uv.y * float(tex.height));
+
+	x = clamp(x, 0, tex.width - 1);
+	y = clamp(y, 0, tex.height - 1);
+
+	uint index = tex.start + y * tex.width + x;
+	uint color = texture_data[index];
+
+	return f_unpackRgba8u(color);
+}
+//-------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
+vec4 f_sampleTextureRgba16f(in Texture tex, in vec2 uv) {
 	uint x = uint(uv.x * float(tex.width));
 	uint y = uint(uv.y * float(tex.height));
 
@@ -117,7 +169,7 @@ vec4 sampleTextureRgba16f(in Texture tex, in vec2 uv) {
 }
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
-vec4 sampleTextureRgba32f(in Texture tex, in vec2 uv) {
+vec4 f_sampleTextureRgba32f(in Texture tex, in vec2 uv) {
 	uint x = uint(uv.x * float(tex.width));
 	uint y = uint(uv.y * float(tex.height));
 
@@ -132,6 +184,20 @@ vec4 sampleTextureRgba32f(in Texture tex, in vec2 uv) {
 		texture_data[index + 2],
 		texture_data[index + 3]
 	);
+}
+//-------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
+vec4 f_sampleTexture(in Texture tex, in vec2 uv) {
+	if (tex.format == TEXTURE_FORMAT_RGBA8u) {
+		return f_sampleTextureRgba8u(tex, uv);
+	}
+	if (tex.format == TEXTURE_FORMAT_RGBA16f) {
+		return f_sampleTextureRgba16f(tex, uv);
+	}
+	if (tex.format == TEXTURE_FORMAT_RGBA32f) {
+		return f_sampleTextureRgba32f(tex, uv);
+	}
+	return vec4(1,0,1,1);
 }
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------

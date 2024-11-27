@@ -4,6 +4,7 @@
 
 #include "Globals.comp"
 #include "Inputs.comp"
+#include "Bits.comp"
 #include "Utilities.comp"
 #include "Random.comp"
 #include "Intersections.comp"

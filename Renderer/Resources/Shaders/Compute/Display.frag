@@ -42,7 +42,8 @@ void main() {
 	if (debug) {
 		switch      (view_layer) {
 			case 0:
-				color_out = vec4(ColorGrade(texture(accumulation_render_layer, uv_coords).rgb), 1);
+				//color_out = vec4(ColorGrade(texture(accumulation_render_layer, uv_coords).rgb), 1);
+				color_out = texture(accumulation_render_layer, uv_coords);
 				break;
 			case 1:
 				color_out = texture(raw_render_layer, uv_coords);
@@ -56,6 +57,7 @@ void main() {
 		}
 	}
 	else {
-		color_out = vec4(ColorGrade(texture(accumulation_render_layer, uv_coords).rgb), 1);
+		//color_out = vec4(ColorGrade(texture(accumulation_render_layer, uv_coords).rgb), 1);
+		color_out = texture(accumulation_render_layer, uv_coords);
 	}
 }

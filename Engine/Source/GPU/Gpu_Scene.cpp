@@ -38,7 +38,7 @@ void KL::GPU::Scene::printInfo() const {
 void KL::GPU::Scene::updateTextures() { // TODO handle different formats
 	for (SHADER::Texture* texture : FILE->textures) {
 		vector<uint> data = texture->toPackedRgba8Texture();
-		textures.push_back(GPU::Texture(ul_to_u(texture_data.size()), texture->resolution.x, texture->resolution.y, 0));
+		textures.push_back(GPU::Texture(ul_to_u(texture_data.size()), texture->resolution.x, texture->resolution.y, SHADER::TEXTURE::Format::RGBA8u, SHADER::TEXTURE::Filtering::RAW));
 		texture_data.insert(texture_data.end(), data.begin(), data.end());
 	}
 }

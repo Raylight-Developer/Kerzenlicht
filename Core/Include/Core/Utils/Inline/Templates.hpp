@@ -41,6 +41,11 @@ uint16 e_to_us(const T& enumerator) {
 };
 
 template<typename T>
+uint16 e_to_u(const T& enumerator) {
+	return static_cast<uint>(enumerator);
+};
+
+template<typename T>
 T ptr(const uint64& hash) {
 	return reinterpret_cast<T>(hash);
 }

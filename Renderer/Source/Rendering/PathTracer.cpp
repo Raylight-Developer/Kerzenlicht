@@ -10,24 +10,12 @@ KL::PathTracer::PathTracer(Renderer* renderer) :
 	debug = false;
 
 	current_sample = 0;
-
-	resolution = uvec2(0);
-	aspect_ratio = 1.0;
-
-	r_resolution = uvec2(0);
-	r_aspect_ratio = 1.0;
 }
 
 void KL::PathTracer::f_initialize() {
 	debug = false;
 
 	current_sample = 0;
-
-	resolution = renderer->resolution;
-	aspect_ratio = d_to_f(renderer->aspect_ratio);
-
-	r_resolution = renderer->f_res();
-	r_aspect_ratio = d_to_f(renderer->f_aspectRatio());
 
 	data["VAO"] = MAX_UINT32;
 	data["VBO"] = MAX_UINT32;
@@ -54,7 +42,7 @@ void KL::PathTracer::f_initialize() {
 	data["point_lights"] = MAX_UINT32;
 	data["directional_lights"] = MAX_UINT32;
 
-	glViewport(0, 0, resolution.x, resolution.y);
+	glViewport(0, 0, renderer->resolution.x, renderer->resolution.y);
 	glClearColor(0, 0, 0, 0);
 
 	const GLfloat vertices[16] = {
@@ -94,14 +82,14 @@ void KL::PathTracer::f_initialize() {
 
 	f_recompile();
 
-	data["compute_layout.x"] = d_to_u(ceil(u_to_d(r_resolution.x) / 8.0));
-	data["compute_layout.y"] = d_to_u(ceil(u_to_d(r_resolution.y) / 8.0));
+	data["compute_layout.x"] = d_to_u(ceil(u_to_d(renderer->render_resolution.x) / 8.0));
+	data["compute_layout.y"] = d_to_u(ceil(u_to_d(renderer->render_resolution.y) / 8.0));
 
 	// Compute Output
-	data["accumulation_render_layer"] = renderLayer(r_resolution, renderer->display_filter);
-	data["normal_render_layer      "] = renderLayer(r_resolution, renderer->display_filter);
-	data["bvh_render_layer         "] = renderLayer(r_resolution, renderer->display_filter);
-	data["raw_render_layer         "] = renderLayer(r_resolution, renderer->display_filter);
+	data["accumulation_render_layer"] = renderLayer(renderer->render_resolution, renderer->display_filter);
+	data["normal_render_layer      "] = renderLayer(renderer->render_resolution, renderer->display_filter);
+	data["bvh_render_layer         "] = renderLayer(renderer->render_resolution, renderer->display_filter);
+	data["raw_render_layer         "] = renderLayer(renderer->render_resolution, renderer->display_filter);
 
 	gpu_data->f_init();
 	gpu_data->updateTextures();
@@ -207,30 +195,21 @@ void KL::PathTracer::f_cleanup() {
 }
 
 void KL::PathTracer::f_resize() {
-	auto prev_res = r_resolution;
-	resolution = renderer->resolution;
-	aspect_ratio = d_to_f(renderer->aspect_ratio);
-
-	r_resolution = renderer->f_res();
-	r_aspect_ratio = d_to_f(renderer->f_aspectRatio());
-
 	current_sample = 0;
-	glViewport(0, 0, resolution.x, resolution.y);
+	glViewport(0, 0, renderer->resolution.x, renderer->resolution.y);
 
-	if (prev_res != r_resolution) { 
+	data["compute_layout.x"] = d_to_u(ceil(u_to_d(renderer->render_resolution.x) / 8.0));
+	data["compute_layout.y"] = d_to_u(ceil(u_to_d(renderer->render_resolution.y) / 8.0));
 
-		data["compute_layout.x"] = d_to_u(ceil(u_to_d(r_resolution.x) / 8.0));
-		data["compute_layout.y"] = d_to_u(ceil(u_to_d(r_resolution.y) / 8.0));
-
-		glDeleteTextures(1, &data["accumulation_render_layer"]);
-		glDeleteTextures(1, &data["normal_render_layer      "]);
-		glDeleteTextures(1, &data["bvh_render_layer         "]);
-		glDeleteTextures(1, &data["raw_render_layer         "]);
-		data["accumulation_render_layer"] = renderLayer(r_resolution, renderer->display_filter);
-		data["normal_render_layer      "] = renderLayer(r_resolution, renderer->display_filter);
-		data["bvh_render_layer         "] = renderLayer(r_resolution, renderer->display_filter);
-		data["raw_render_layer         "] = renderLayer(r_resolution, renderer->display_filter);
-	}
+	glDeleteTextures(1, &data["accumulation_render_layer"]);
+	glDeleteTextures(1, &data["normal_render_layer      "]);
+	glDeleteTextures(1, &data["bvh_render_layer         "]);
+	glDeleteTextures(1, &data["raw_render_layer         "]);
+	data["accumulation_render_layer"] = renderLayer(renderer->render_resolution, renderer->display_filter);
+	data["normal_render_layer      "] = renderLayer(renderer->render_resolution, renderer->display_filter);
+	data["bvh_render_layer         "] = renderLayer(renderer->render_resolution, renderer->display_filter);
+	data["raw_render_layer         "] = renderLayer(renderer->render_resolution, renderer->display_filter);
+	
 }
 
 void KL::PathTracer::f_render() {
@@ -248,10 +227,9 @@ void KL::PathTracer::f_render() {
 	// Uniforms
 	{
 		glUniform1ui(glGetUniformLocation(compute_program, "frame_count"      ), ul_to_u(renderer->runframe));
-		glUniform1f (glGetUniformLocation(compute_program, "aspect_ratio"     ), r_aspect_ratio);
+		glUniform1f (glGetUniformLocation(compute_program, "aspect_ratio"     ), renderer->render_aspect_ratio);
 		glUniform1f (glGetUniformLocation(compute_program, "current_time"     ), d_to_f(renderer->current_time));
-		glUniform2ui(glGetUniformLocation(compute_program, "resolution"       ), r_resolution.x, r_resolution.y);
-		glUniform1ui(glGetUniformLocation(compute_program, "debug"            ), static_cast<GLuint>(debug));
+		glUniform2ui(glGetUniformLocation(compute_program, "resolution"       ), renderer->render_resolution.x, renderer->render_resolution.y);
 		glUniform1ui(glGetUniformLocation(compute_program, "current_sample"   ), current_sample);
 		glUniform1ui(glGetUniformLocation(compute_program, "ray_bounces"      ), 3);
 		glUniform1ui(glGetUniformLocation(compute_program, "samples_per_pixel"), 1);
@@ -296,15 +274,23 @@ void KL::PathTracer::f_render() {
 
 	glUseProgram(display_program);
 	glClear(GL_COLOR_BUFFER_BIT);
-	glUniform1f (glGetUniformLocation(display_program, "display_aspect_ratio"), aspect_ratio);
-	glUniform1f (glGetUniformLocation(display_program, "render_aspect_ratio"), r_aspect_ratio);
-	glUniform1ui(glGetUniformLocation(display_program, "view_layer"), data["view_layer"] );
-	glUniform1ui(glGetUniformLocation(display_program, "debug"), static_cast<GLuint>(debug));
-	glUniform1ui(glGetUniformLocation(display_program, "current_sample"), current_sample);
-	bindRenderLayer(display_program, 0, data["accumulation_render_layer"], "accumulation_render_layer");
-	bindRenderLayer(display_program, 1, data["raw_render_layer         "], "raw_render_layer"         );
-	bindRenderLayer(display_program, 2, data["bvh_render_layer         "], "bvh_render_layer"         );
-	bindRenderLayer(display_program, 3, data["normal_render_layer      "], "normal_render_layer"      );
+
+	// Uniforms
+	{
+		glUniform1f (glGetUniformLocation(display_program, "display_aspect_ratio"), renderer->aspect_ratio);
+		glUniform1f (glGetUniformLocation(display_program, "render_aspect_ratio" ), renderer->render_aspect_ratio);
+		glUniform1ui(glGetUniformLocation(display_program, "view_layer"          ), data["view_layer"] );
+		glUniform1ui(glGetUniformLocation(display_program, "debug"               ), debug);
+		glUniform1ui(glGetUniformLocation(display_program, "current_sample"      ), current_sample);
+	}
+	// Render Layers
+	{
+		bindRenderLayer(display_program, 0, data["accumulation_render_layer"], "accumulation_render_layer");
+		bindRenderLayer(display_program, 1, data["raw_render_layer         "], "raw_render_layer");
+		bindRenderLayer(display_program, 2, data["bvh_render_layer         "], "bvh_render_layer");
+		bindRenderLayer(display_program, 3, data["normal_render_layer      "], "normal_render_layer");
+	}
+
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
 	current_sample++;

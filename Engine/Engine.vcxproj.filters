@@ -119,6 +119,9 @@
     <ClInclude Include="Include\GPU\Gpu_Instance.hpp">
       <Filter>Include</Filter>
     </ClInclude>
+    <ClInclude Include="Include\GPU\Gpu_Texture.hpp">
+      <Filter>Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Core\Property.cpp">
@@ -215,6 +218,9 @@
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\GPU\Gpu_Instance.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\GPU\Gpu_Texture.cpp">
       <Filter>Source</Filter>
     </ClCompile>
   </ItemGroup>

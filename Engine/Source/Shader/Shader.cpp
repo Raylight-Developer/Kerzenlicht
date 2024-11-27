@@ -5,7 +5,7 @@
 KL::SHADER::Texture::Texture() :
 	name("New Texture")
 {
-	format = TEXTURE::Format::RGBAUINT8;
+	format = TEXTURE::Format::RGBA8u;
 	file_path = "";
 	resolution = uvec2(0, 0);
 	data = {};

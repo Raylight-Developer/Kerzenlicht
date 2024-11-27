@@ -6,6 +6,7 @@
 
 #include "Gpu_Instance.hpp"
 #include "Gpu_Triangle.hpp"
+#include "Gpu_Texture.hpp"
 #include "Gpu_Camera.hpp"
 #include "Gpu_Bvh.hpp"
 
@@ -44,33 +45,6 @@ namespace KL {
 
 			void printInfo() const;
 		};
-
-		enum struct Texture_Fromat {
-			RGBA8,
-			RGBA16,
-			RGBA32
-		};
-
-		struct alignas(16) Texture {
-			uint start;
-			uint width;
-			uint height;
-			uint format;
-			// 16
-
-			Texture(
-				const uint& start = 0U,
-				const uint& width = 0U,
-				const uint& height = 0U,
-				const uint& format = 0U
-			) :
-				start(start),
-				width(width),
-				height(height),
-				format(format)
-			{}
-		};
-
 
 		struct alignas(16) Point_Light {
 			vec3 pos;

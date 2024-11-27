@@ -140,6 +140,14 @@ struct Material {
 #define ALPHA_MODE_BLEND 1
 #define ALPHA_MODE_MASK 2
 
+#define TEXTURE_FILTERING_RAW 0
+#define TEXTURE_FILTERING_BILINEAR 1
+
+#define TEXTURE_FORMAT_NONE    0
+#define TEXTURE_FORMAT_RGBA8u  1
+#define TEXTURE_FORMAT_RGBA16f 2
+#define TEXTURE_FORMAT_RGBA32f 3
+
 // INTERNAL ---------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
 struct Ray {
@@ -159,7 +167,6 @@ struct Triangle_Hit_Info {
 };
 
 struct Hit {
-	bool  error;
 	float t_dist;
 	bool  inside;
 	bool  mesh_hit;
@@ -176,7 +183,6 @@ struct Hit {
 };
 Hit f_hit() {
 	Hit hit;
-	hit.error = false;
 	hit.mesh_hit = false;
 	hit.hit_normal = vec3(0);
 	hit.bvh_depth = 0;

@@ -16,14 +16,14 @@ KL::Renderer::Renderer() {
 	runframe = 0;
 
 	resolution = uvec2(3840U, 2160U);
-	aspect_ratio = u_to_d(resolution.x) / u_to_d(resolution.y);
+	aspect_ratio = u_to_f(resolution.x) / u_to_f(resolution.y);
 
 	render_resolution = uvec2(2100U, 900U);
-	render_aspect_ratio = u_to_d(render_resolution.x) / u_to_d(render_resolution.y);
+	render_aspect_ratio = u_to_f(render_resolution.x) / u_to_f(render_resolution.y);
 
-	camera_move_sensitivity = 0.05;
-	camera_view_sensitivity = 100.0;
-	camera_orbit_sensitivity = 150.0;
+	camera_move_sensitivity = 1.0;
+	camera_view_sensitivity = 25.0;
+	camera_orbit_sensitivity = 75.0;
 	inputs = vector(348, false);
 	current_mouse = dvec2(resolution) / 2.0;
 	last_mouse = dvec2(resolution) / 2.0;
@@ -184,7 +184,7 @@ void KL::Renderer::f_recompile() {
 void KL::Renderer::f_resize(const uint& width, const uint& height) {
 	resolution.x = width;
 	resolution.y = height;
-	aspect_ratio = u_to_d(resolution.x) / u_to_d(resolution.y);
+	aspect_ratio = u_to_f(resolution.x) / u_to_f(resolution.y);
 	current_mouse = dvec2(resolution) / 2.0;
 	last_mouse = current_mouse;
 	runframe = 0;
@@ -194,20 +194,6 @@ void KL::Renderer::f_resize(const uint& width, const uint& height) {
 	else if (render_mode == Mode::RASTERIZATION) {
 		rasterizer.f_resize();
 	}
-}
-
-uvec2 KL::Renderer::f_res() const {
-	if (direct_render) {
-		return resolution;
-	}
-	return render_resolution;
-}
-
-dvec1 KL::Renderer::f_aspectRatio() const {
-	if (direct_render) {
-		return aspect_ratio;
-	}
-	return render_aspect_ratio;
 }
 
 void KL::Renderer::f_init() {
@@ -242,7 +228,7 @@ void KL::Renderer::f_initGlfw() {
 	glfwGetMonitorWorkarea(monitor, &x, &y, &width, &height);
 
 	resolution = uvec2(width, height);
-	aspect_ratio = u_to_d(resolution.x) / u_to_d(resolution.y);
+	aspect_ratio = u_to_f(resolution.x) / u_to_f(resolution.y);
 	last_mouse = glm::dvec2(resolution) / 2.0;
 
 	window = glfwCreateWindow(resolution.x, resolution.y, "Runtime", NULL, NULL);

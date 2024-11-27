@@ -115,6 +115,7 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Include\GPU\Gpu_Texture.hpp" />
     <ClInclude Include="Include\GPU\Gpu_Instance.hpp" />
     <ClInclude Include="Include\Core\Property.hpp" />
     <ClInclude Include="Include\GPU\Gpu_Camera.hpp" />
@@ -152,6 +153,7 @@
     <ClInclude Include="Include\GPU\Gpu_Octree.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\GPU\Gpu_Texture.cpp" />
     <ClCompile Include="Source\GPU\Gpu_Instance.cpp" />
     <ClCompile Include="Source\GPU\Gpu_Octree.cpp" />
     <ClCompile Include="Source\GPU\Gpu_Camera.cpp" />

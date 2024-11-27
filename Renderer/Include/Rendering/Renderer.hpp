@@ -28,8 +28,8 @@ namespace KL {
 		Rasterizer rasterizer;
 		PathTracer pathtracer;
 
-		dvec1 aspect_ratio;
-		dvec1 render_aspect_ratio;
+		vec1  aspect_ratio;
+		vec1  render_aspect_ratio;
 		uvec2 resolution;
 		uvec2 render_resolution;
 
@@ -74,9 +74,6 @@ namespace KL {
 		void f_inputLoop();
 		void f_displayLoop();
 		void f_frameUpdate();
-
-		uvec2 f_res() const;
-		dvec1 f_aspectRatio() const;
 
 		static void glfwFramebufferSize(GLFWwindow* window, int width, int height);
 		static void glfwMouseButton    (GLFWwindow* window, int button, int action, int mods);

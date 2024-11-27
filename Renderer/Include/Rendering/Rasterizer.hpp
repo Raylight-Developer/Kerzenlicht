@@ -14,11 +14,6 @@ namespace KL {
 	struct Rasterizer {
 		Renderer* renderer;
 
-		uvec2 resolution;
-		uvec2 r_resolution;
-		vec1 aspect_ratio;
-		vec1 r_aspect_ratio;
-
 		unordered_map<string, GLuint> data;
 		unordered_map<uint64, vector<vec1>> gl_triangle_cache;
 		unordered_map<KL::Object*, unordered_map<string, GLuint>> gl_data;

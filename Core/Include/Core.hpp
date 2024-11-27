@@ -7,4 +7,5 @@
 
 #include "Core/Utils/Session.hpp"
 #include "Core/Utils/Lace.hpp"
+#include "Core/Utils/Bits.hpp"
 #include "Core/Utils/Ops.hpp"

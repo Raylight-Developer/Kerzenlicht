@@ -14,26 +14,22 @@ namespace KL {
 // DECL
 namespace KL {
 	namespace SHADER {
-		enum struct Type {
+		enum struct Type: uint16 {
 			NONE,
 			CODE,
 			NODES
 		};
 		namespace TEXTURE {
-			enum struct Format {
+			enum struct Format: uint16 {
 				NONE,
-				RGBUINT8,
-				RGBUINT10,
-				RGBFLOAT16,
-				RGBFLOAT32,
-				RGBAUINT8,
-				RGBAUINT10,
-				RGBAFLOAT16,
-				RGBAFLOAT32,
-				MONOUINT8,
-				MONOUINT10,
-				MONOFLOAT16,
-				MONOFLOAT32
+				RGBA8u,
+				RGBA16f,
+				RGBA32f,
+			};
+
+			enum struct Filtering: uint16 {
+				RAW,
+				BILINEAR
 			};
 		}
 		struct Texture {
@@ -41,6 +37,7 @@ namespace KL {
 			string file_path;
 			uvec2 resolution;
 			TEXTURE::Format format;
+			TEXTURE::Filtering filtering;
 			vector<uint> data;
 
 			Texture();

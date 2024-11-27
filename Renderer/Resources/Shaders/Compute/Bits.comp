@@ -1,0 +1,43 @@
+//-------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
+
+void f_unpackUint(in uint bits, out uint low, out uint high) {
+	low = bits & 0xFFFFu;
+	high = (bits >> 16u) & 0xFFFFu;
+}
+
+void f_unpackUint(in uint bits, out float low, out float high) {
+	uint lowBits = bits & 0xFFFFu;
+	uint highBits = (bits >> 16u) & 0xFFFFu;
+	
+	low = uintBitsToFloat(lowBits);
+	high = uintBitsToFloat(highBits);
+}
+
+//-------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
+void f_unpackUint(in uint bits, out uvec2 value) {
+	value = uvec2(
+		(bits       ) & 0xFFFFu,
+		(bits >> 16u) & 0xFFFFu
+	);
+}
+
+void f_unpackUint(in uint bits, out vec2 value) {
+	uint lowBits = bits & 0xFFFFu;
+	uint highBits = (bits >> 16u) & 0xFFFFu;
+	
+	value = vec2(
+		uintBitsToFloat(lowBits),
+		uintBitsToFloat(highBits)
+	);
+}
+
+void f_unpackUint(in uint bits, out uvec4 value) {
+	value = uvec4(
+		(bits >> 24) & 0xFF,
+		(bits >> 16) & 0xFF,
+		(bits >> 8 ) & 0xFF,
+		(bits      ) & 0xFF
+	);
+}

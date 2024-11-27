@@ -20,11 +20,6 @@ namespace KL {
 		bool debug;
 		uint current_sample;
 
-		uvec2 resolution;
-		uvec2 r_resolution;
-		vec1 aspect_ratio;
-		vec1 r_aspect_ratio;
-
 		unordered_map<string, GLuint> data;
 
 		PathTracer(Renderer* renderer = nullptr);

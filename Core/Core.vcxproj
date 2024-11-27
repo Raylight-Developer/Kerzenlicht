@@ -21,6 +21,7 @@
     <ClInclude Include="Include\Core\Utils\Inline\Macros.hpp" />
     <ClInclude Include="Include\Core\Utils\Inline\String.hpp" />
     <ClInclude Include="Include\Core\Utils\Inline\Templates.hpp" />
+    <ClInclude Include="Include\Core\Utils\Bits.hpp" />
     <ClInclude Include="Include\Core\Utils\Inline\Templates\List.hpp" />
     <ClInclude Include="Include\Core\Utils\Inline\Templates\Observable.hpp" />
     <ClInclude Include="Include\Core\Utils\Inline\Templates\Observable_BiMap.hpp" />
@@ -33,6 +34,7 @@
     <ClInclude Include="Include\Core\Utils\Session.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\Core\Utils\Bits.cpp" />
     <ClCompile Include="Source\Core\Core\History.cpp" />
     <ClCompile Include="Source\Core\Core\Property.cpp" />
     <ClCompile Include="Source\Core\Utils\Lace.cpp" />

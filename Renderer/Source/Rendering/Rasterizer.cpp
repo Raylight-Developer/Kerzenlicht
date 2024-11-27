@@ -4,21 +4,9 @@
 
 KL::Rasterizer::Rasterizer(Renderer* renderer) :
 	renderer(renderer)
-{
-	resolution = uvec2(0);
-	aspect_ratio = 1.0;
-
-	r_resolution = uvec2(0);
-	r_aspect_ratio = 1.0;
-}
+{}
 
 void KL::Rasterizer::f_initialize() {
-	resolution = renderer->resolution;
-	aspect_ratio = d_to_f(renderer->aspect_ratio);
-
-	r_resolution = renderer->f_res();
-	r_aspect_ratio = d_to_f(renderer->f_aspectRatio());
-
 	data["display_program"] = 0;
 	data["mesh_program"] = 0;
 	data["curve_program"] = 0;
@@ -78,7 +66,7 @@ void KL::Rasterizer::f_initialize() {
 	glGenTextures(1, &data["FBT"]);
 	const GLuint fbt = data["FBT"];
 	glBindTexture(GL_TEXTURE_2D, fbt);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, r_resolution.x, r_resolution.y, 0, GL_RGBA, GL_FLOAT, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, renderer->render_resolution.x, renderer->render_resolution.y, 0, GL_RGBA, GL_FLOAT, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, renderer->display_filter);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, renderer->display_filter);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -88,7 +76,7 @@ void KL::Rasterizer::f_initialize() {
 	glGenRenderbuffers(1, &data["RBO"]);
 	const GLuint rbo = data["RBO"];
 	glBindRenderbuffer(GL_RENDERBUFFER, rbo);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, r_resolution.x, r_resolution.y);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, renderer->render_resolution.x, renderer->render_resolution.y);
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -156,39 +144,31 @@ void KL::Rasterizer::f_cleanup() {
 }
 
 void KL::Rasterizer::f_resize() {
-	resolution = renderer->resolution;
-	aspect_ratio = d_to_f(renderer->aspect_ratio);
+	glDeleteRenderbuffers(1, &data["RBO"]);
+	glDeleteFramebuffers(1, &data["FBO"]);
+	glDeleteTextures(1, &data["FBT"]);
 
-	r_resolution = renderer->f_res();
-	r_aspect_ratio = d_to_f(renderer->f_aspectRatio());
+	glGenFramebuffers(1, &data["FBO"]);
+	const GLuint fbo = data["FBO"];
+	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 
-	if (true) {
-		glDeleteRenderbuffers(1, &data["RBO"]);
-		glDeleteFramebuffers(1, &data["FBO"]);
-		glDeleteTextures(1, &data["FBT"]);
+	glGenTextures(1, &data["FBT"]);
+	const GLuint fbt = data["FBT"];
+	glBindTexture(GL_TEXTURE_2D, fbt);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, renderer->render_resolution.x, renderer->render_resolution.y, 0, GL_RGBA, GL_FLOAT, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, renderer->display_filter);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, renderer->display_filter);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, fbt, 0);
 
-		glGenFramebuffers(1, &data["FBO"]);
-		const GLuint fbo = data["FBO"];
-		glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+	glGenRenderbuffers(1, &data["RBO"]);
+	const GLuint rbo = data["RBO"];
+	glBindRenderbuffer(GL_RENDERBUFFER, rbo);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, renderer->render_resolution.x, renderer->render_resolution.y);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
 
-		glGenTextures(1, &data["FBT"]);
-		const GLuint fbt = data["FBT"];
-		glBindTexture(GL_TEXTURE_2D, fbt);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, r_resolution.x, r_resolution.y, 0, GL_RGBA, GL_FLOAT, NULL);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, renderer->display_filter);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, renderer->display_filter);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, fbt, 0);
-
-		glGenRenderbuffers(1, &data["RBO"]);
-		const GLuint rbo = data["RBO"];
-		glBindRenderbuffer(GL_RENDERBUFFER, rbo);
-		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, r_resolution.x, r_resolution.y);
-		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
-
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	}
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 void KL::Rasterizer::f_render() {
@@ -196,7 +176,7 @@ void KL::Rasterizer::f_render() {
 	const GLuint curve_program = data["curve_program"];
 	const GLuint mesh_program = data["mesh_program"];
 
-	glViewport(0, 0, r_resolution.x, r_resolution.y);
+	glViewport(0, 0, renderer->render_resolution.x, renderer->render_resolution.y);
 	glBindFramebuffer(GL_FRAMEBUFFER, data["FBO"]);
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -206,7 +186,7 @@ void KL::Rasterizer::f_render() {
 	KL::OBJECT::DATA::Camera* camera = FILE->f_activeCamera()->getCamera();
 	glUniform3fv(glGetUniformLocation(mesh_program, "camera_pos" ), 1, value_ptr(d_to_f(FILE->f_activeCamera()->transform.position)));
 	glUniformMatrix4fv(glGetUniformLocation(mesh_program, "view_matrix"), 1, GL_FALSE, value_ptr(d_to_f(camera->glViewMatrix(FILE->f_activeCamera()))));
-	glUniformMatrix4fv(glGetUniformLocation(mesh_program, "projection_matrix"), 1, GL_FALSE, value_ptr(d_to_f(camera->glProjectionMatrix(r_aspect_ratio))));
+	glUniformMatrix4fv(glGetUniformLocation(mesh_program, "projection_matrix"), 1, GL_FALSE, value_ptr(d_to_f(camera->glProjectionMatrix(renderer->render_aspect_ratio))));
 
 	for (KL::Object* object : FILE->active_scene.pointer->objects) {
 		if (object->data->type == KL::OBJECT::DATA::Type::MESH) {
@@ -220,11 +200,11 @@ void KL::Rasterizer::f_render() {
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	glViewport(0, 0, resolution.x, resolution.y);
+	glViewport(0, 0, renderer->resolution.x, renderer->resolution.y);
 	glUseProgram(display_program);
 
-	glUniform1f (glGetUniformLocation(display_program, "display_aspect_ratio"), aspect_ratio);
-	glUniform1f (glGetUniformLocation(display_program, "render_aspect_ratio"), r_aspect_ratio);
+	glUniform1f (glGetUniformLocation(display_program, "display_aspect_ratio"), renderer->aspect_ratio);
+	glUniform1f (glGetUniformLocation(display_program, "render_aspect_ratio"), renderer->render_aspect_ratio);
 	bindRenderLayer(display_program, 0, data["FBT"], "render");
 
 	glBindVertexArray(data["VAO"]);
