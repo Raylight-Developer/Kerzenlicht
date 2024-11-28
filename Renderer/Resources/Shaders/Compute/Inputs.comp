@@ -10,33 +10,33 @@ layout(rgba32f, binding = 3) writeonly uniform image2D KL_normal_render_layer;
 
 // SSBOs
 layout(std430, binding = 4) buffer Mesh_Instance_Buffer {
-	Object_Instance mesh_instances[];
+	Object_Instance KL_BUFFER_mesh_instances[];
 };
 layout(std430, binding = 5) buffer Mesh_Triangle_Buffer {
-	Triangle mesh_triangles[];
+	Triangle KL_BUFFER_mesh_triangles[];
 };
 layout(std430, binding = 6) buffer Mesh_Blas_Buffer {
-	Bvh mesh_blas[];
+	Bvh KL_BUFFER_mesh_blas[];
 };
 layout(std430, binding = 7) buffer Mesh_Tlas_Buffer {
-	Bvh mesh_tlas[];
+	Bvh KL_BUFFER_mesh_tlas[];
 };
 
 
 layout(std430, binding = 8) buffer Texture_Buffer {
-	Texture textures[];
+	Texture KL_BUFFER_textures[];
 };
 layout(std430, binding = 9) buffer Texture_Data_Buffer {
-	uint texture_data[];
+	uint KL_BUFFER_texture_data[];
 };
 layout(std430, binding = 10) buffer Camera_Lenses_Buffer {
-	Camera_Lens camera_lenses[];
+	Camera_Lens KL_BUFFER_camera_lenses[];
 };
 layout(std430, binding = 11) buffer Point_Light_Buffer {
-	Point_Light point_lights[];
+	Point_Light KL_BUFFER_point_lights[];
 };
 layout(std430, binding = 12) buffer Directional_Light_Buffer {
-	Directional_Light directional_lights[];
+	Directional_Light KL_BUFFER_directional_lights[];
 };
 
 // Uniforms

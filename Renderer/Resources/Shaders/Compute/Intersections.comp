@@ -178,12 +178,12 @@ Triangle_Hit_Info f_closestTriangle(in Ray ray, in uint root_node_index, inout H
 	stack[stackIndex++] = root_node_index; // + instance offset
 	
 	while (stackIndex > 0) {
-		Bvh node = mesh_blas[stack[--stackIndex]];
+		Bvh node = KL_BUFFER_mesh_blas[stack[--stackIndex]];
 		bool isLeaf = node.tri_count != MAX_UINT;
 
 		if (isLeaf) {
 			for (uint i = 0; i < node.tri_count; i++) {
-				Triangle tri = mesh_triangles[node.pointer + i];
+				Triangle tri = KL_BUFFER_mesh_triangles[node.pointer + i];
 				float dist = MAX_DIST;
 				if (f_rayTriangleIntersection(ray, tri, dist)) {
 					if (dist < result.hit_distance) {
@@ -196,8 +196,8 @@ Triangle_Hit_Info f_closestTriangle(in Ray ray, in uint root_node_index, inout H
 		else {
 			uint childIndexA = root_node_index + node.pointer + 0;
 			uint childIndexB = root_node_index + node.pointer + 1;
-			Bvh childA = mesh_blas[childIndexA];
-			Bvh childB = mesh_blas[childIndexB];
+			Bvh childA = KL_BUFFER_mesh_blas[childIndexA];
+			Bvh childB = KL_BUFFER_mesh_blas[childIndexB];
 
 			float dstA = f_rayBvhDist(ray, childA.p_min, childA.p_max);
 			float dstB = f_rayBvhDist(ray, childB.p_min, childB.p_max);
@@ -223,10 +223,10 @@ void f_sceneIntersection(in Ray ray, inout Hit hit_data) {
 	float t_dist = MAX_DIST;
 	float bvh_t_length = MAX_DIST;
 
-	for (uint i = 0; i <= mesh_instances.length(); i++) { // TODO i <= WHY ????
-		Triangle_Hit_Info triangle_hit = f_closestTriangle(ray, mesh_instances[i].object_index, hit_data);
+	for (uint i = 0; i <= KL_BUFFER_mesh_instances.length(); i++) { // TODO i <= WHY ????
+		Triangle_Hit_Info triangle_hit = f_closestTriangle(ray, KL_BUFFER_mesh_instances[i].object_index, hit_data);
 		if (triangle_hit.triangle_index != MAX_UINT) {
-			Triangle tri = mesh_triangles[triangle_hit.triangle_index];
+			Triangle tri = KL_BUFFER_mesh_triangles[triangle_hit.triangle_index];
 			hit_data.t_dist = triangle_hit.hit_distance;
 			hit_data.hit_pos = ray.origin + ray.direction * ( triangle_hit.hit_distance - EPSILON);
 			hit_data.inside = false;
