@@ -1,14 +1,14 @@
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
 void f_accumulate(in vec4 color, in ivec2 pixel_id) {
-	vec4 previous_color = imageLoad(accumulation_render_layer, pixel_id);
-	if (current_sample == 0) {
+	vec4 previous_color = imageLoad(KL_accumulation_render_layer, pixel_id);
+	if (KL_current_sample == 0) {
 		previous_color = vec4(0);
 	}
 
-	float weight = float(current_sample);
+	float weight = float(KL_current_sample);
 	vec4 full_color = (previous_color * weight + color) / (weight + 1.0);
-	imageStore(accumulation_render_layer, pixel_id, vec4(full_color.rgb / full_color.a, 1.0));
+	imageStore(KL_accumulation_render_layer, pixel_id, vec4(full_color.rgb / full_color.a, 1.0));
 }
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------

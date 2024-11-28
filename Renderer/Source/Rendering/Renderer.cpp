@@ -33,23 +33,21 @@ KL::Renderer::Renderer() {
 	frame_time = FPS_60;
 	last_time = 0.0;
 
-	render_mode = Mode::PATHTRACING;
-	direct_render = false;
-	display_filter = GL_NEAREST; // GL_LINEAR for no filtering
+	render_mode = Mode::RASTERIZATION;
+	direct_render = true;
+	display_filter = GL_NEAREST; // GL_LINEAR
 }
 
 void KL::Renderer::f_displayLoop() {
 	while (!glfwWindowShouldClose(window)) {
 		f_timings();
+		f_inputLoop();
+		f_tickUpdate();
 
 		if (render_mode == Mode::PATHTRACING) {
-			f_inputLoop();
-			f_tickUpdate();
 			pathtracer.f_render();
 		}
 		else if (render_mode == Mode::RASTERIZATION) {
-			f_inputLoop();
-			f_tickUpdate();
 			rasterizer.f_render();
 		}
 
@@ -62,10 +60,12 @@ void KL::Renderer::f_displayLoop() {
 }
 
 void KL::Renderer::f_tickUpdate() {
+	// Re-evaluate nodes
+	// TODO if geometry does not change do not rebuild gpu data
 	for (KL::Object* object : FILE->active_scene.pointer->objects) {
 		if (object->node_tree) {
 			object->node_tree->exec(&frame_time);
-			object->cpu_update = true;
+			object->cpu_update = false; // Set flag to rebuild GPU data
 		}
 	}
 
@@ -367,16 +367,16 @@ void KL::Renderer::glfwKey(GLFWwindow* window, int key, int scancode, int action
 		FILE->active_camera.pointer->transform.euler_rotation = dvec3(0, 180, 0);
 	}
 	if (key == GLFW_KEY_RIGHT  && action == GLFW_PRESS) {
-		if (instance->pathtracer.data["view_layer"] < 3)
-			instance->pathtracer.data["view_layer"]++;
+		if (instance->pathtracer.view_layer < 3)
+			instance->pathtracer.view_layer++;
 		else
-			instance->pathtracer.data["view_layer"] = 0;
+			instance->pathtracer.view_layer = 0;
 	}
 	if (key == GLFW_KEY_LEFT  && action == GLFW_PRESS) {
-		if (instance->pathtracer.data["view_layer"] > 0)
-			instance->pathtracer.data["view_layer"]--;
+		if (instance->pathtracer.view_layer > 0)
+			instance->pathtracer.view_layer--;
 		else
-			instance->pathtracer.data["view_layer"] = 3;
+			instance->pathtracer.view_layer = 3;
 	}
 	if (key == GLFW_KEY_V && action == GLFW_PRESS) {
 		instance->direct_render = !instance->direct_render;
@@ -389,8 +389,8 @@ void KL::Renderer::glfwKey(GLFWwindow* window, int key, int scancode, int action
 	}
 	if (key == GLFW_KEY_B && action == GLFW_PRESS) {
 		instance->pathtracer.debug = !instance->pathtracer.debug;
-		if (instance->pathtracer.data["view_layer"] == 0) {
-			instance->pathtracer.data["view_layer"] = 1;
+		if (instance->pathtracer.view_layer == 0) {
+			instance->pathtracer.view_layer = 1;
 		}
 	}
 	if (key == GLFW_KEY_N && action == GLFW_PRESS) {

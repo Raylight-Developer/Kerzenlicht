@@ -3,10 +3,10 @@
 layout(local_size_x = 8, local_size_y = 8, local_size_z = 1) in;
 
 // Render Layers
-layout(rgba32f, binding = 0)           uniform image2D accumulation_render_layer;
-layout(rgba32f, binding = 1) writeonly uniform image2D raw_render_layer;
-layout(rgba32f, binding = 2) writeonly uniform image2D bvh_render_layer;
-layout(rgba32f, binding = 3) writeonly uniform image2D normal_render_layer;
+layout(rgba32f, binding = 0)           uniform image2D KL_accumulation_render_layer;
+layout(rgba32f, binding = 1) writeonly uniform image2D KL_raw_render_layer;
+layout(rgba32f, binding = 2) writeonly uniform image2D KL_bvh_render_layer;
+layout(rgba32f, binding = 3) writeonly uniform image2D KL_normal_render_layer;
 
 // SSBOs
 layout(std430, binding = 4) buffer Mesh_Instance_Buffer {
@@ -40,12 +40,11 @@ layout(std430, binding = 12) buffer Directional_Light_Buffer {
 };
 
 // Uniforms
-uniform uint  frame_count;
-uniform float aspect_ratio;
-uniform float current_time;
-uniform uvec2 resolution;
-uniform uint  current_sample;
-uniform uint  ray_bounces;
-uniform uint  samples_per_pixel;
-
-uniform Camera camera;
+uniform uint   KL_frame_count;
+uniform float  KL_aspect_ratio;
+uniform float  KL_current_time;
+uniform uvec2  KL_resolution;
+uniform uint   KL_current_sample;
+uniform uint   KL_ray_bounces;
+uniform uint   KL_samples_per_pixel;
+uniform Camera KL_camera;

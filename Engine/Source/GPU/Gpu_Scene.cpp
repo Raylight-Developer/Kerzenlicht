@@ -35,10 +35,11 @@ void KL::GPU::Scene::printInfo() const {
 	printSizeRow("Texture Data   ", label_size, texture_data);
 }
 
-void KL::GPU::Scene::updateTextures() { // TODO handle different formats
+// TODO handle different formats
+void KL::GPU::Scene::updateTextures() {
 	for (SHADER::Texture* texture : FILE->textures) {
-		vector<uint> data = texture->toPackedRgba8Texture();
-		textures.push_back(GPU::Texture(ul_to_u(texture_data.size()), texture->resolution.x, texture->resolution.y, SHADER::TEXTURE::Format::RGBA8u, SHADER::TEXTURE::Filtering::RAW));
+		textures.push_back(GPU::Texture(*texture, ul_to_u(texture_data.size())));
+		const vector<uint> data = texture->toPacked();
 		texture_data.insert(texture_data.end(), data.begin(), data.end());
 	}
 }
@@ -50,7 +51,6 @@ void KL::GPU::Scene::f_update() {
 
 	vector<uint64> blas_tracker;
 
-	//mesh_instances.push_back(Object_Instance(mat4(1.0), ul_to_u(mesh_bvh.size())));
 	for (KL::Object* object : FILE->active_scene.pointer->objects) {
 		object->f_compileMatrix();
 		mesh_instances.push_back(Object_Instance(d_to_f(object->transform_matrix), ul_to_u(mesh_blas.size())));

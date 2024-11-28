@@ -1,13 +1,10 @@
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
 vec4 f_hook(inout Hit hit_data, inout State state, inout Ray ray) {
-	// Environment Hit (Ray MISS)
+	// Error
 	if (hit_data.material == MAX_UINT) {
-		ray.direction = reflect(ray.direction, hit_data.hit_normal);
-		ray.origin = hit_data.hit_pos + ray.direction * EPSILON;
-		return vec4(0.2, 0.2, 0.2, 1.0);
+		return vec4(1, 0, 1, 1);
 	}//---INSERT-SHADERS---//
 
-	// ERROR
 	return vec4(1, 0, 1, 1);
 }

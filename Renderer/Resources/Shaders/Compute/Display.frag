@@ -1,18 +1,18 @@
 #version 460 core
 
-uniform float display_aspect_ratio;
-uniform float render_aspect_ratio;
-uniform uint  view_layer;
-uniform bool  debug;
-uniform uint  current_sample;
+uniform float KL_display_aspect_ratio;
+uniform float KL_render_aspect_ratio;
+uniform uint  KL_view_layer;
+uniform bool  KL_debug;
+uniform uint  KL_current_sample;
 
-uniform sampler2D accumulation_render_layer;
-uniform sampler2D raw_render_layer;
-uniform sampler2D bvh_render_layer;
-uniform sampler2D normal_render_layer;
+uniform sampler2D KL_accumulation_render_layer;
+uniform sampler2D KL_raw_render_layer;
+uniform sampler2D KL_bvh_render_layer;
+uniform sampler2D KL_normal_render_layer;
 
-in vec2 uv_coords;
-out vec4 color_out;
+in  vec2 KL_uv_coords;
+out vec4 KL_color_out;
 
 float f_mapFloat(float from_min, float from_max, float to_min, float to_max, float value) {
 	return (to_min + ((to_max - to_min) / (from_max - from_min)) * (value - from_min));
@@ -39,25 +39,25 @@ vec3 ColorGrade( vec3 vColor ) {
 }
 
 void main() {
-	if (debug) {
-		switch      (view_layer) {
+	if (KL_debug) {
+		switch (KL_view_layer) {
 			case 0:
-				//color_out = vec4(ColorGrade(texture(accumulation_render_layer, uv_coords).rgb), 1);
-				color_out = texture(accumulation_render_layer, uv_coords);
+				//KL_color_out = vec4(ColorGrade(texture(KL_accumulation_render_layer, KL_uv_coords).rgb), 1);
+				KL_color_out = texture(KL_accumulation_render_layer, KL_uv_coords);
 				break;
 			case 1:
-				color_out = texture(raw_render_layer, uv_coords);
+				KL_color_out = texture(KL_raw_render_layer, KL_uv_coords);
 				break;
 			case 2:
-				color_out = texture(bvh_render_layer, uv_coords);
+				KL_color_out = texture(KL_bvh_render_layer, KL_uv_coords);
 				break;
 			case 3:
-				color_out = texture(normal_render_layer, uv_coords);
+				KL_color_out = texture(KL_normal_render_layer, KL_uv_coords);
 				break;
 		}
 	}
 	else {
-		//color_out = vec4(ColorGrade(texture(accumulation_render_layer, uv_coords).rgb), 1);
-		color_out = texture(accumulation_render_layer, uv_coords);
+		//KL_color_out = vec4(ColorGrade(texture(KL_accumulation_render_layer, KL_uv_coords).rgb), 1);
+		KL_color_out = texture(KL_accumulation_render_layer, KL_uv_coords);
 	}
 }

@@ -23,6 +23,11 @@ KL::File::File() :
 	active_camera.pointer->transform.euler_rotation = dvec3(0, 0, 0);
 	active_camera.pointer->data = new OBJECT::DATA::Camera();
 
+	environment_shader = new Shader();
+	environment_shader->type = SHADER::Type::CODE;
+	environment_shader->shader_code = "return vec4(0.2, 0.2, 0.2, 1.0);";
+	shaders.push(environment_shader);
+
 	version = "ERROR";
 }
 

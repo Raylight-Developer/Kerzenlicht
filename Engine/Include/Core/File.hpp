@@ -41,6 +41,7 @@ namespace KL {
 
 		Observable_List<SHADER::Texture*> textures;
 		Observable_List<KL::Shader*> shaders;
+		KL::Shader* environment_shader;
 
 		Observable_List<OBJECT::Data*> object_data;
 		Observable_List<Node_Tree*> node_trees;

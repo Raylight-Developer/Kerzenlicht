@@ -19,6 +19,7 @@ namespace KL {
 
 		bool debug;
 		uint current_sample;
+		uint view_layer;
 
 		unordered_map<string, GLuint> data;
 

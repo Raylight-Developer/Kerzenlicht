@@ -1,3 +1,5 @@
+//-------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 bool f_rayLensIntersection(in Ray ray, in Camera_Lens lens, inout float ray_length, out vec3 normal) {
 	// Transform ray to camera space
 	lens.curvature_radius *= 1.0;
@@ -173,7 +175,7 @@ Triangle_Hit_Info f_closestTriangle(in Ray ray, in uint root_node_index, inout H
 
 	uint stack[32];
 	uint stackIndex = 0;
-	stack[stackIndex++] = root_node_index + 0;
+	stack[stackIndex++] = root_node_index; // + instance offset
 	
 	while (stackIndex > 0) {
 		Bvh node = mesh_blas[stack[--stackIndex]];

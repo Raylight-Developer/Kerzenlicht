@@ -29,6 +29,7 @@ namespace KL {
 			vector<Object_Instance>   mesh_instances;
 			vector<Triangle>          mesh_triangles;
 			vector<Bvh>               mesh_blas;
+			vector<Bvh>               mesh_tlas;
 
 			vector<Texture>           textures;
 			vector<uint>              texture_data;

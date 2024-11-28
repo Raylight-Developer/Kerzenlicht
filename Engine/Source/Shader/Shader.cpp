@@ -6,6 +6,7 @@ KL::SHADER::Texture::Texture() :
 	name("New Texture")
 {
 	format = TEXTURE::Format::RGBA8u;
+	filtering = TEXTURE::Filtering::RAW;
 	file_path = "";
 	resolution = uvec2(0, 0);
 	data = {};
@@ -15,6 +16,13 @@ KL::SHADER::Texture KL::SHADER::Texture::fromFile(const string& file_path) {
 	Texture tex;
 	tex.loadFromFile(file_path);
 	return tex;
+}
+
+vector<uint> KL::SHADER::Texture::toPacked() const {
+	switch (format) {
+		case TEXTURE::Format::RGBA8u: return toPackedRgba8Texture();
+	}
+	return {};
 }
 
 vector<uint> KL::SHADER::Texture::toPackedRgba8Texture() const {
@@ -50,7 +58,7 @@ string KL::Shader::f_compileShaders(const string & code) {
 	string hooked_code = code;
 	vector<string> material_code;
 
-	uint64 id = 0;
+	uint64 id = 0; // 0 should be World Hit
 	for (KL::Shader* shader : FILE->shaders) {
 		string process_shader = shader->shader_code;
 

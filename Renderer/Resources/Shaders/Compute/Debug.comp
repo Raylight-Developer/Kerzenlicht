@@ -9,6 +9,6 @@ void f_debugRender(in vec2 uv, in ivec2 pixel_id) {
 	for (int i = 0; i < hit_data.bvh_depth; i++) {
 		bvh_alpha *= 0.95;
 	}
-	imageStore(bvh_render_layer, pixel_id, vec4(vec3(1-bvh_alpha), 1));
-	imageStore(normal_render_layer, pixel_id, vec4(abs(hit_data.hit_normal), 1));
+	imageStore(KL_bvh_render_layer, pixel_id, vec4(vec3(1-bvh_alpha), 1));
+	imageStore(KL_normal_render_layer, pixel_id, vec4(abs(hit_data.hit_normal), 1));
 }

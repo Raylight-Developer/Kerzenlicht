@@ -19,7 +19,6 @@ void KL::Rasterizer::f_initialize() {
 	data["EBO"] = 0;
 
 	glEnable(GL_DEPTH_TEST);
-	glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
 
 	f_recompile();
 
@@ -179,6 +178,7 @@ void KL::Rasterizer::f_render() {
 	glViewport(0, 0, renderer->render_resolution.x, renderer->render_resolution.y);
 	glBindFramebuffer(GL_FRAMEBUFFER, data["FBO"]);
 
+	glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glUseProgram(mesh_program);
@@ -198,6 +198,7 @@ void KL::Rasterizer::f_render() {
 	}
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
+	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glViewport(0, 0, renderer->resolution.x, renderer->resolution.y);
