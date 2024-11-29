@@ -70,7 +70,7 @@ string KL::Shader::f_compileShaders(const string & code) {
 
 			switch (shader->inputs[index].type) {
 				case (PROP::Type::TEXTURE) : {
-					const string section = "KL_BUFFER_textures[";
+					const string section = "KL_BUFFER_TEXTURE_CONTAINERS[";
 					process_shader.replace(input_pos, input.length(), section);
 					auto exists = f_getVectorIndex(FILE->textures, shader->inputs[index].getTexture());
 					if (exists) {

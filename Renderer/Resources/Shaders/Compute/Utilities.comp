@@ -110,10 +110,10 @@ vec4 f_bilinearSampleTextureRgba8u(in Texture tex, in vec2 uv) {
 	uint idx01 = tex.start + y1 * tex.width + x0;
 	uint idx11 = tex.start + y1 * tex.width + x1;
 
-	vec4 color00 = f_unpackRgba8u(KL_BUFFER_texture_data[idx00]);
-	vec4 color10 = f_unpackRgba8u(KL_BUFFER_texture_data[idx10]);
-	vec4 color01 = f_unpackRgba8u(KL_BUFFER_texture_data[idx01]);
-	vec4 color11 = f_unpackRgba8u(KL_BUFFER_texture_data[idx11]);
+	vec4 color00 = f_unpackRgba8u(KL_BUFFER_TEXTURE_PIXEL_DATA[idx00]);
+	vec4 color10 = f_unpackRgba8u(KL_BUFFER_TEXTURE_PIXEL_DATA[idx10]);
+	vec4 color01 = f_unpackRgba8u(KL_BUFFER_TEXTURE_PIXEL_DATA[idx01]);
+	vec4 color11 = f_unpackRgba8u(KL_BUFFER_TEXTURE_PIXEL_DATA[idx11]);
 
 	// Perform bilinear interpolation
 	vec4 color0 = mix(color00, color10, fx);
@@ -140,7 +140,7 @@ vec4 f_sampleTextureRgba8u(in Texture tex, in vec2 uv) {
 	y = clamp(y, 0, tex.height - 1);
 
 	uint index = tex.start + y * tex.width + x;
-	uint color = KL_BUFFER_texture_data[index];
+	uint color = KL_BUFFER_TEXTURE_PIXEL_DATA[index];
 
 	return f_unpackRgba8u(color);
 }
@@ -154,8 +154,8 @@ vec4 f_sampleTextureRgba16f(in Texture tex, in vec2 uv) {
 	y = clamp(y, 0, tex.height - 1);
 
 	uint index = tex.start + (y * tex.width + x) * 2;
-	uint color_a = KL_BUFFER_texture_data[index];
-	uint color_b = KL_BUFFER_texture_data[index+1];
+	uint color_a = KL_BUFFER_TEXTURE_PIXEL_DATA[index];
+	uint color_b = KL_BUFFER_TEXTURE_PIXEL_DATA[index+1];
 
 	vec2 rg = unpackHalf2x16(color_a);
 	vec2 ba = unpackHalf2x16(color_b);
@@ -179,10 +179,10 @@ vec4 f_sampleTextureRgba32f(in Texture tex, in vec2 uv) {
 	uint index = tex.start + (y * tex.width + x) * 4;
 
 	return vec4(
-		KL_BUFFER_texture_data[index],
-		KL_BUFFER_texture_data[index + 1],
-		KL_BUFFER_texture_data[index + 2],
-		KL_BUFFER_texture_data[index + 3]
+		KL_BUFFER_TEXTURE_PIXEL_DATA[index],
+		KL_BUFFER_TEXTURE_PIXEL_DATA[index + 1],
+		KL_BUFFER_TEXTURE_PIXEL_DATA[index + 2],
+		KL_BUFFER_TEXTURE_PIXEL_DATA[index + 3]
 	);
 }
 //-------------------------------------------------------------------------------------------------

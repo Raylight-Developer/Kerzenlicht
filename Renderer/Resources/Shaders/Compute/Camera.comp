@@ -1,28 +1,28 @@
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
 Ray f_cameraNormRay(vec2 uv) {
-	vec3 dir = normalize(KL_camera.p_uv + (KL_camera.p_u * uv.x) + (KL_camera.p_v * uv.y) - KL_camera.position);
-	return Ray(KL_camera.position, dir, 1.0 / dir);
+	vec3 dir = normalize(KL_UNIFORM_CAMERA.p_uv + (KL_UNIFORM_CAMERA.p_u * uv.x) + (KL_UNIFORM_CAMERA.p_v * uv.y) - KL_UNIFORM_CAMERA.position);
+	return Ray(KL_UNIFORM_CAMERA.position, dir, 1.0 / dir);
 }
 
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
 Ray f_cameraRay(vec2 uv) {
-	float pixel_size = 1.0 / KL_resolution.x;
+	float pixel_size = 1.0 / KL_UNIFORM_RESOLUTION.x;
 
-	vec3 ray_dir = normalize(KL_camera.p_uv + (KL_camera.p_u * uv.x) + (KL_camera.p_v * uv.y) - KL_camera.position);
-	vec3 focal_point = KL_camera.position + ray_dir * KL_camera.focal_distance;
+	vec3 ray_dir = normalize(KL_UNIFORM_CAMERA.p_uv + (KL_UNIFORM_CAMERA.p_u * uv.x) + (KL_UNIFORM_CAMERA.p_v * uv.y) - KL_UNIFORM_CAMERA.position);
+	vec3 focal_point = KL_UNIFORM_CAMERA.position + ray_dir * KL_UNIFORM_CAMERA.focal_distance;
 
-	vec2 aperture_offset = f_randUnitDisk() * pixel_size * KL_camera.aperture * 0.5;
-	vec3 lens_offset = KL_camera.position + KL_camera.x_vec * aperture_offset.x + KL_camera.y_vec * aperture_offset.y;
+	vec2 aperture_offset = f_randUnitDisk() * pixel_size * KL_UNIFORM_CAMERA.aperture * 0.5;
+	vec3 lens_offset = KL_UNIFORM_CAMERA.position + KL_UNIFORM_CAMERA.x_vec * aperture_offset.x + KL_UNIFORM_CAMERA.y_vec * aperture_offset.y;
 	vec3 new_direction = normalize(focal_point - lens_offset);
 
-	return Ray(KL_camera.position, new_direction, 1.0 / new_direction);
+	return Ray(KL_UNIFORM_CAMERA.position, new_direction, 1.0 / new_direction);
 }
 
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
 Ray f_cameraOrthoRay(vec2 uv) {
 	float ortho_scale = 0.05;
-	return Ray(KL_camera.position + (KL_camera.p_u * uv.x * ortho_scale) + (KL_camera.p_v * uv.y* ortho_scale), normalize(KL_camera.z_vec), 1.0 / normalize(KL_camera.z_vec));
+	return Ray(KL_UNIFORM_CAMERA.position + (KL_UNIFORM_CAMERA.p_u * uv.x * ortho_scale) + (KL_UNIFORM_CAMERA.p_v * uv.y* ortho_scale), normalize(KL_UNIFORM_CAMERA.z_vec), 1.0 / normalize(KL_UNIFORM_CAMERA.z_vec));
 }

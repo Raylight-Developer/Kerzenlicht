@@ -226,29 +226,26 @@ void KL::PathTracer::f_render() {
 
 	// Uniforms
 	{
-		glUniform1ui(glGetUniformLocation(compute_program, "KL_frame_count"      ), ul_to_u(renderer->runframe));
-		glUniform1f (glGetUniformLocation(compute_program, "KL_aspect_ratio"     ), renderer->render_aspect_ratio);
-		glUniform1f (glGetUniformLocation(compute_program, "KL_current_time"     ), d_to_f(renderer->current_time));
-		glUniform2ui(glGetUniformLocation(compute_program, "KL_resolution"       ), renderer->render_resolution.x, renderer->render_resolution.y);
-		glUniform1ui(glGetUniformLocation(compute_program, "KL_current_sample"   ), current_sample);
-		glUniform1ui(glGetUniformLocation(compute_program, "KL_ray_bounces"      ), 3);
-		glUniform1ui(glGetUniformLocation(compute_program, "KL_samples_per_pixel"), 1);
+		glUniform2ui(glGetUniformLocation(compute_program, "KL_UNIFORM_RESOLUTION"           ), renderer->render_resolution.x, renderer->render_resolution.y);
+		glUniform1ui(glGetUniformLocation(compute_program, "KL_UNIFORM_CURRENT_SAMPLE"       ), current_sample);
+		glUniform1ui(glGetUniformLocation(compute_program, "KL_UNIFORM_SPP"                  ), 1);
 
-		glUniform3fv(glGetUniformLocation(compute_program, "KL_camera.position"      ), 1, value_ptr(d_to_f(camera_object->transform.position)));
-		glUniform3fv(glGetUniformLocation(compute_program, "KL_camera.x_vec"         ), 1, value_ptr(vectors[0]));
-		glUniform3fv(glGetUniformLocation(compute_program, "KL_camera.y_vec"         ), 1, value_ptr(vectors[1]));
-		glUniform3fv(glGetUniformLocation(compute_program, "KL_camera.z_vec"         ), 1, value_ptr(vectors[2]));
-		glUniform3fv(glGetUniformLocation(compute_program, "KL_camera.p_uv"          ), 1, value_ptr(projections[0]));
-		glUniform3fv(glGetUniformLocation(compute_program, "KL_camera.p_u"           ), 1, value_ptr(projections[1]));
-		glUniform3fv(glGetUniformLocation(compute_program, "KL_camera.p_v"           ), 1, value_ptr(projections[2]));
-		glUniform1f (glGetUniformLocation(compute_program, "KL_camera.focal_distance"), d_to_f(camera->focal_distance));
-		glUniform1f (glGetUniformLocation(compute_program, "KL_camera.aperture"      ), d_to_f(camera->aperture));
-		glUniform1f (glGetUniformLocation(compute_program, "KL_camera.fov"           ), d_to_f(camera->view_angle));
+		glUniform3fv(glGetUniformLocation(compute_program, "KL_UNIFORM_CAMERA.position"      ), 1, value_ptr(d_to_f(camera_object->transform.position)));
+		glUniform3fv(glGetUniformLocation(compute_program, "KL_UNIFORM_CAMERA.x_vec"         ), 1, value_ptr(vectors[0]));
+		glUniform3fv(glGetUniformLocation(compute_program, "KL_UNIFORM_CAMERA.y_vec"         ), 1, value_ptr(vectors[1]));
+		glUniform3fv(glGetUniformLocation(compute_program, "KL_UNIFORM_CAMERA.z_vec"         ), 1, value_ptr(vectors[2]));
+		glUniform3fv(glGetUniformLocation(compute_program, "KL_UNIFORM_CAMERA.p_uv"          ), 1, value_ptr(projections[0]));
+		glUniform3fv(glGetUniformLocation(compute_program, "KL_UNIFORM_CAMERA.p_u"           ), 1, value_ptr(projections[1]));
+		glUniform3fv(glGetUniformLocation(compute_program, "KL_UNIFORM_CAMERA.p_v"           ), 1, value_ptr(projections[2]));
+		glUniform1f (glGetUniformLocation(compute_program, "KL_UNIFORM_CAMERA.focal_distance"), d_to_f(camera->focal_distance));
+		glUniform1f (glGetUniformLocation(compute_program, "KL_UNIFORM_CAMERA.aperture"      ), d_to_f(camera->aperture));
+		glUniform1f (glGetUniformLocation(compute_program, "KL_UNIFORM_CAMERA.fov"           ), d_to_f(camera->view_angle));
 	}
 	// Render Layers
 	{
-		glBindImageTexture(0, data["accumulation_render_layer"], 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
-		glBindImageTexture(1, data["raw_render_layer"         ], 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
+		glBindImageTexture(0, data["raw_render_layer"         ], 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
+		glBindImageTexture(1, data["accumulation_render_layer"], 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
+
 		glBindImageTexture(2, data["bvh_render_layer"         ], 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
 		glBindImageTexture(3, data["normal_render_layer"      ], 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
 	}
@@ -277,18 +274,19 @@ void KL::PathTracer::f_render() {
 
 	// Uniforms
 	{
-		glUniform1f (glGetUniformLocation(display_program, "KL_display_aspect_ratio"), renderer->aspect_ratio);
-		glUniform1f (glGetUniformLocation(display_program, "KL_render_aspect_ratio" ), renderer->render_aspect_ratio);
-		glUniform1ui(glGetUniformLocation(display_program, "KL_view_layer"          ), view_layer );
-		glUniform1ui(glGetUniformLocation(display_program, "KL_debug"               ), static_cast<GLuint>(debug));
-		glUniform1ui(glGetUniformLocation(display_program, "KL_current_sample"      ), current_sample);
+		glUniform1f (glGetUniformLocation(display_program, "KL_UNIFORM_DISPLAY_RATIO" ), renderer->aspect_ratio);
+		glUniform1f (glGetUniformLocation(display_program, "KL_UNIFORM_RENDER_RATIO"  ), renderer->render_aspect_ratio);
+		glUniform1ui(glGetUniformLocation(display_program, "KL_UNIFORM_DEBUG_LAYER"   ), view_layer);
+		glUniform1ui(glGetUniformLocation(display_program, "KL_UNIFORM_USE_DEBUG_VIEW"), debug);
+		glUniform1ui(glGetUniformLocation(display_program, "KL_UNIFORM_CURRENT_SAMPLE"), current_sample);
 	}
 	// Render Layers
 	{
-		bindRenderLayer(display_program, 0, data["accumulation_render_layer"], "KL_accumulation_render_layer");
-		bindRenderLayer(display_program, 1, data["raw_render_layer"         ], "KL_raw_render_layer");
-		bindRenderLayer(display_program, 2, data["bvh_render_layer"         ], "KL_bvh_render_layer");
-		bindRenderLayer(display_program, 3, data["normal_render_layer"      ], "KL_normal_render_layer");
+		bindRenderLayer(display_program, 0, data["raw_render_layer"         ], "KL_RENDER_TEXTURE_RAW");
+		bindRenderLayer(display_program, 1, data["accumulation_render_layer"], "KL_RENDER_TEXTURE_ACCUMULATION");
+
+		bindRenderLayer(display_program, 2, data["bvh_render_layer"         ], "KL_RENDER_TEXTURE_DEBUG_BVH");
+		bindRenderLayer(display_program, 3, data["normal_render_layer"      ], "KL_RENDER_TEXTURE_DEBUG_NORMAL");
 	}
 
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);

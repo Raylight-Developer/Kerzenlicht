@@ -3,48 +3,45 @@
 layout(local_size_x = 8, local_size_y = 8, local_size_z = 1) in;
 
 // Render Layers
-layout(rgba32f, binding = 0)           uniform image2D KL_accumulation_render_layer;
-layout(rgba32f, binding = 1) writeonly uniform image2D KL_raw_render_layer;
-layout(rgba32f, binding = 2) writeonly uniform image2D KL_bvh_render_layer;
-layout(rgba32f, binding = 3) writeonly uniform image2D KL_normal_render_layer;
+layout(rgba32f, binding = 0) writeonly uniform image2D KL_RENDER_TEXTURE_RAW;
+layout(rgba32f, binding = 1)           uniform image2D KL_RENDER_TEXTURE_ACCUMULATION;
+
+layout(rgba32f, binding = 2) writeonly uniform image2D KL_RENDER_TEXTURE_DEBUG_BVH;
+layout(rgba32f, binding = 3) writeonly uniform image2D KL_RENDER_TEXTURE_DEBUG_NORMAL;
 
 // SSBOs
 layout(std430, binding = 4) buffer Mesh_Instance_Buffer {
-	Object_Instance KL_BUFFER_mesh_instances[];
+	Object_Instance KL_BUFFER_MESH_INSTANCES[];
 };
 layout(std430, binding = 5) buffer Mesh_Triangle_Buffer {
-	Triangle KL_BUFFER_mesh_triangles[];
+	Triangle KL_BUFFER_MESH_TRIANGLES[];
 };
 layout(std430, binding = 6) buffer Mesh_Blas_Buffer {
-	Bvh KL_BUFFER_mesh_blas[];
+	Bvh KL_BUFFER_MESH_BLAS[];
 };
 layout(std430, binding = 7) buffer Mesh_Tlas_Buffer {
-	Bvh KL_BUFFER_mesh_tlas[];
+	Bvh KL_BUFFER_MESH_TLAS[];
 };
 
 
 layout(std430, binding = 8) buffer Texture_Buffer {
-	Texture KL_BUFFER_textures[];
+	Texture KL_BUFFER_TEXTURE_CONTAINERS[];
 };
 layout(std430, binding = 9) buffer Texture_Data_Buffer {
-	uint KL_BUFFER_texture_data[];
+	uint KL_BUFFER_TEXTURE_PIXEL_DATA[];
 };
 layout(std430, binding = 10) buffer Camera_Lenses_Buffer {
-	Camera_Lens KL_BUFFER_camera_lenses[];
+	Camera_Lens KL_BUFFER_CAMERA_LENSES[];
 };
 layout(std430, binding = 11) buffer Point_Light_Buffer {
-	Point_Light KL_BUFFER_point_lights[];
+	Point_Light KL_BUFFER_LIGHT_POINT[];
 };
 layout(std430, binding = 12) buffer Directional_Light_Buffer {
-	Directional_Light KL_BUFFER_directional_lights[];
+	Directional_Light KL_BUFFER_LIGHT_DIRECTIONAL[];
 };
 
 // Uniforms
-uniform uint   KL_frame_count;
-uniform float  KL_aspect_ratio;
-uniform float  KL_current_time;
-uniform uvec2  KL_resolution;
-uniform uint   KL_current_sample;
-uniform uint   KL_ray_bounces;
-uniform uint   KL_samples_per_pixel;
-uniform Camera KL_camera;
+uniform uvec2  KL_UNIFORM_RESOLUTION;
+uniform uint   KL_UNIFORM_CURRENT_SAMPLE;
+uniform uint   KL_UNIFORM_SPP;
+uniform Camera KL_UNIFORM_CAMERA;

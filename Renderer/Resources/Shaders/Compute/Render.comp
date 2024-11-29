@@ -1,14 +1,14 @@
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
 void f_accumulate(in vec4 color, in ivec2 pixel_id) {
-	vec4 previous_color = imageLoad(KL_accumulation_render_layer, pixel_id);
-	if (KL_current_sample == 0) {
+	vec4 previous_color = imageLoad(KL_RENDER_TEXTURE_ACCUMULATION, pixel_id);
+	if (KL_UNIFORM_CURRENT_SAMPLE == 0) {
 		previous_color = vec4(0);
 	}
 
-	float weight = float(KL_current_sample);
+	float weight = float(KL_UNIFORM_CURRENT_SAMPLE);
 	vec4 full_color = (previous_color * weight + color) / (weight + 1.0);
-	imageStore(KL_accumulation_render_layer, pixel_id, vec4(full_color.rgb / full_color.a, 1.0));
+	imageStore(KL_RENDER_TEXTURE_ACCUMULATION, pixel_id, vec4(full_color.rgb / full_color.a, 1.0));
 }
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
@@ -18,7 +18,7 @@ vec4 f_render(in vec2 uv, in ivec2 pixel_id) {
 	Ray ray;
 	vec4 pixel_color = vec4(0);
 
-	if (KL_BUFFER_camera_lenses.length() == 0) {
+	if (KL_BUFFER_CAMERA_LENSES.length() == 0) {
 		ray = f_cameraRay(uv);
 	}
 	else {
@@ -26,13 +26,13 @@ vec4 f_render(in vec2 uv, in ivec2 pixel_id) {
 
 		float t_dist = MAX_DIST;
 		vec3 normal;
-		for (uint i = 0; i < KL_BUFFER_camera_lenses.length(); i++) {
+		for (uint i = 0; i < KL_BUFFER_CAMERA_LENSES.length(); i++) {
 
-			if (f_rayLensIntersection(ray, KL_BUFFER_camera_lenses[i], t_dist, normal)) {
+			if (f_rayLensIntersection(ray, KL_BUFFER_CAMERA_LENSES[i], t_dist, normal)) {
 				//pixel_color += vec4(vec3(dot(ray.direction,normal)), 0.5);
 				pixel_color += vec4(abs(normal) * 10.1, 1);
 				//ray.origin = ray.origin + ray.direction * t_dist;
-				//ray.direction = f_refract(ray.direction, normal, 1.0 / KL_BUFFER_camera_lenses[i].ior, 1.0);
+				//ray.direction = f_refract(ray.direction, normal, 1.0 / KL_BUFFER_CAMERA_LENSES[i].ior, 1.0);
 			}
 		}
 	}

@@ -10,7 +10,7 @@ vec4 f_pathTrace(in Ray ray, in ivec2 pixel_id) {
 	vec4 render_output = vec4(0);
 
 	Hit hit_data = f_hit();
-	//for (uint i = 0; i < KL_ray_bounces; i++) {
+	//for (uint i = 0; i < KL_UNIFORM_SPP; i++) {
 		
 		f_sceneIntersection(ray, hit_data);
 		render_output += f_hook(hit_data, state, ray);

@@ -184,8 +184,8 @@ void KL::Rasterizer::f_render() {
 	glUseProgram(mesh_program);
 
 	KL::OBJECT::DATA::Camera* camera = FILE->f_activeCamera()->getCamera();
-	glUniform3fv(glGetUniformLocation(mesh_program, "camera_pos" ), 1, value_ptr(d_to_f(FILE->f_activeCamera()->transform.position)));
-	glUniformMatrix4fv(glGetUniformLocation(mesh_program, "view_matrix"), 1, GL_FALSE, value_ptr(d_to_f(camera->glViewMatrix(FILE->f_activeCamera()))));
+	glUniform3fv      (glGetUniformLocation(mesh_program, "camera_pos"       ), 1, value_ptr(d_to_f(FILE->f_activeCamera()->transform.position)));
+	glUniformMatrix4fv(glGetUniformLocation(mesh_program, "view_matrix"      ), 1, GL_FALSE, value_ptr(d_to_f(camera->glViewMatrix(FILE->f_activeCamera()))));
 	glUniformMatrix4fv(glGetUniformLocation(mesh_program, "projection_matrix"), 1, GL_FALSE, value_ptr(d_to_f(camera->glProjectionMatrix(renderer->render_aspect_ratio))));
 
 	for (KL::Object* object : FILE->active_scene.pointer->objects) {
